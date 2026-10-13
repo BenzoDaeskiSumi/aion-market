@@ -152,14 +152,31 @@ tbody tr.na:hover td, tbody tr.na.sel td { opacity: .8; }
 footer { text-align: center; color: var(--dim); font-size: 14px; padding: 0 16px 20px; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
 footer a { color: var(--gold, inherit); }
 .side button.craft { margin-top: 2px; }
-.craft h3 { font-family: 'Marcellus', serif; font-weight: 400; font-size: 17px; margin: 18px 0 4px; }
-.craft .stepinfo { color: var(--dim); font-size: 14px; margin: 0 0 6px; }
+.craft .step { --gc: var(--g-white); margin: 14px 0 0; border: 1px solid var(--line); border-left: 3px solid var(--gc);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--gc) 10%, transparent), transparent 70%); }
+.craft .stephead { list-style: none; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 10px; padding: 8px 10px 7px; border-bottom: 2px solid color-mix(in srgb, var(--gc) 60%, transparent); }
+.craft .badge { flex: none; font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 13px; letter-spacing: .08em; text-transform: uppercase;
+  padding: 2px 8px; color: #0b0f18; background: var(--gc); }
+.craft .res { font-family: 'Marcellus', serif; font-size: 16px; color: var(--gc); line-height: 1.2; }
+.craft .stepinfo { color: var(--dim); font-size: 14px; margin: 0; padding: 6px 10px 2px; }
 .craft table { width: 100%; border-collapse: collapse; font-size: 15px; table-layout: fixed; }
-.craft td:first-child { width: 72%; overflow-wrap: anywhere; }
-.craft td { padding: 5px 4px; border-bottom: 1px solid var(--faint); vertical-align: top; }
+.craft td { padding: 6px 10px; border-bottom: 1px solid var(--faint); vertical-align: middle; }
+.craft td:first-child { width: 72%; white-space: normal; }
+:root[data-theme="elyos"] .craft .badge { color: #fff; }
+.craft .mat { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.craft .mat .slot { width: 26px; height: 26px; box-shadow: none; }
+.craft .mat .nm { font-size: 15px; overflow-wrap: anywhere; }
 .craft td.n { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.craft .via { display: block; color: var(--dim); font-size: 13px; }
-.craft .tot td { border-bottom: 0; font-weight: 600; }
+.craft .via { display: block; color: var(--dim); font-size: 13px; overflow-wrap: anywhere; }
+.craft .mat > div { min-width: 0; }
+.craft .stephead::-webkit-details-marker { display: none; }
+.craft .schev { flex: none; width: 8px; height: 8px; border-right: 2px solid var(--gc); border-bottom: 2px solid var(--gc); transform: rotate(45deg); margin: 0 2px 3px 2px; transition: transform .15s; }
+.craft .step:not([open]) .schev { transform: rotate(-45deg); margin-bottom: 0; }
+.craft .step:not([open]) .stephead { border-bottom-color: transparent; }
+.craft .stot { margin-left: auto; color: var(--dim); font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.craft .step[open] .stot { visibility: hidden; }
+.craft .stephead:hover .res { text-decoration: underline; text-underline-offset: 3px; }
+.craft .tot td { border-bottom: 0; font-weight: 600; color: var(--gc); }
 .craft .note { color: var(--dim); font-size: 14px; margin-top: 14px; }
 .sig.craftit { color: #7ee08a; border-color: currentColor; }
 .sig.buyit { color: #f0b860; border-color: currentColor; }
@@ -574,21 +591,34 @@ function drawCraftDetail() {
   const METHOD = {buy: 'compralo', craft: 'craftalo da', morph: 'trasmutalo da'};
   const fmtQ = (q) => q >= 10 ? fmtK(Math.round(q)) : d3.format('.1f')(q);
   cd.replaceChildren();
+  const gradeOf = (name, fallback) => ITEMS.find((x) => x.item === name)?.grade || fallback || 'white';
   r.target.steps.filter((st) => st.step_no <= r.tier).forEach((st) => {
-    const h = document.createElement('h3'); h.textContent = `Passo ${st.step_no}: ${st.result_name}`;
+    const g = gradeOf(st.result_name, TIER_GRADE[st.step_no - 1]);
+    const box = document.createElement('details'); box.className = 'step'; box.open = true; box.style.setProperty('--gc', `var(--g-${g})`);
+    const head = document.createElement('summary'); head.className = 'stephead';
+    const badge = document.createElement('span'); badge.className = 'badge'; badge.textContent = `Passo ${st.step_no}`;
+    const res = document.createElement('span'); res.className = 'res'; res.textContent = st.result_name;
+    const sum = document.createElement('span'); sum.className = 'stot'; sum.textContent = fmtC(Math.round(st.step_cost));
+    const chev = document.createElement('i'); chev.className = 'schev';
+    head.append(chev, badge, res, sum);
     const info = document.createElement('p'); info.className = 'stepinfo';
-    info.textContent = `Maestria ${st.mastery_level} · successo ${fmtPct(st.success_rate)} · servono in media ${d3.format('.1f')(st.attempts)} tentativi`;
+    info.textContent = `Maestria ${st.mastery_level} · successo ${fmtPct(st.success_rate)} · in media ${d3.format('.1f')(st.attempts)} tentativi`;
     const tbl = document.createElement('table');
     st.materials.forEach((m) => {
       const tr = tbl.insertRow();
-      const a = tr.insertCell(); a.textContent = m.name;
+      const a = tr.insertCell(); const mat = document.createElement('div'); mat.className = 'mat';
+      const mg = gradeOf(m.name);
+      const slot = document.createElement('div'); slot.className = 'slot g-' + mg;
+      if (ICONS[m.name]) { const img = document.createElement('img'); img.src = ICONS[m.name]; img.alt = ''; img.loading = 'lazy'; slot.appendChild(img); }
+      const txt = document.createElement('div');
+      const nm = document.createElement('span'); nm.className = 'nm g-' + mg; nm.textContent = m.name;
       const v = document.createElement('span'); v.className = 'via';
       v.textContent = `× ${fmtQ(m.expected)} da ${fmtK(Math.round(m.unit_price))} · ${m.per_attempt} a tentativo · ${METHOD[m.method] || m.method}` + (m.via?.length ? ' ' + m.via.map((x) => `${d3.format('.1f')(x.per_unit)} ${x.name}`).join(' + ') : '') + (m.method !== 'buy' && m.listing_price ? ` (al Market ${fmtK(m.listing_price)})` : '');
-      a.appendChild(v);
+      txt.append(nm, v); mat.append(slot, txt); a.appendChild(mat);
       const t = tr.insertCell(); t.className = 'n'; t.textContent = fmtK(Math.round(m.subtotal));
     });
     const tot = tbl.insertRow(); tot.className = 'tot'; const c1 = tot.insertCell(); c1.textContent = 'Totale passo'; const c2 = tot.insertCell(); c2.className = 'n'; c2.textContent = fmtK(Math.round(st.step_cost));
-    cd.append(h, info, tbl);
+    box.append(head, info, tbl); cd.appendChild(box);
   });
   const n = document.createElement('p'); n.className = 'note';
   n.textContent = 'Quantità e costi sono medie attese: contano i tentativi falliti, con maestria al massimo. Ogni materiale è al prezzo più conveniente tra comprarlo, craftarlo o trasmutarlo da Odyle. Dati: aion2.exchange (ricette dai file del gioco).';
