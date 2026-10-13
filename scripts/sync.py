@@ -126,6 +126,11 @@ def main():
         last[name] = row
         added += 1
 
+    sales = {it['name']: {'units_sold': it['units_sold'], 'avg': it['sold_avg_price'], 'min': it['sold_min_price'],
+                          'max': it['sold_max_price'], 'window_days': 28, 'fetched_at': it['stats_fetched_at']}
+             for it in items if it.get('units_sold') is not None}
+    with open('data/sales.json', 'w', encoding='utf-8') as f:
+        json.dump(sales, f, ensure_ascii=False, separators=(',', ':'))
     before = len(log)
     log = compact(log, datetime.now(ROME))
     write_log(log)

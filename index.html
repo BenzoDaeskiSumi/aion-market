@@ -65,6 +65,16 @@ button { font: inherit; color: inherit; }
 .themes button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .themes i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
 .take { padding: 7px 20px; border-bottom: 1px solid var(--line); font-size: 16px; }
+.take.tick { padding: 0; display: flex; align-items: stretch; overflow: hidden; }
+.take .tlabel { flex: none; display: flex; align-items: center; padding: 0 14px; font-family: 'Barlow Condensed', sans-serif; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; font-size: 14px; color: #0b0f18; background: var(--g-gold); }
+.take .tview { flex: 1; overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent); }
+.take .ttrack { display: flex; width: max-content; animation: tick var(--tdur, 60s) linear infinite; }
+.take .tview:hover .ttrack { animation-play-state: paused; }
+.take .deal { all: unset; cursor: pointer; display: inline-flex; align-items: baseline; gap: 6px; padding: 7px 18px; white-space: nowrap; border-right: 1px solid var(--line); }
+.take .deal:hover .nm, .take .deal:focus-visible .nm { text-decoration: underline; text-underline-offset: 3px; }
+.take .deal .nm { font-size: 16px; } .take .deal .pr { color: var(--dim); } .take .deal .up { font-weight: 600; }
+@keyframes tick { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .take .ttrack { animation: none; } .take .tview { overflow-x: auto; } }
 
 /* layout */
 .body { display: grid; grid-template-columns: 232px minmax(0, 1fr) 380px; align-items: start; }
@@ -254,6 +264,7 @@ footer a { color: var(--gold, inherit); }
             <th><button data-k="item">Item</button><span class="thsep">·</span><button data-k="grade_rank">Grado</button></th>
             <th class="hn"><button data-k="level">Lv</button></th>
             <th class="hn"><button data-k="listings">In vendita</button></th>
+            <th class="hn hm"><button data-k="sales_day" title="Unità vendute al giorno: dati del gioco quando ci sono, altrimenti stima dalle inserzioni sparite">Vendite/g</button></th>
             <th><button data-k="latest">Prezzo più basso</button></th>
             <th class="hn"><button data-k="change_pct">Variazione</button></th>
             <th class="hn hm"><button data-k="average">Media</button></th>
@@ -288,6 +299,7 @@ footer a { color: var(--gold, inherit); }
       <section class="help">
         <p><b>Profitto flip</b>: quanto guadagni comprando ora al prezzo più basso e rivendendo alla media, tolta la tassa del Market. <b>Media</b>: prezzo tipico (mediana) degli ultimi 3 giorni.</p>
         <p><b>Compra</b>: prezzo abbastanza sotto la media da guadagnarci. <b>Vendi</b>: prezzo molto sopra la media.</p>
+        <p><b>Vendite/g</b>: quanti pezzi si vendono al giorno. Con "~" è una stima dalle inserzioni sparite tra un controllo e l'altro (possono essere anche ritirate). Il segnale Compra compare solo se se ne vende almeno 1 al giorno.</p>
         <p><b>Non disponibile</b>: nessuno lo sta vendendo nel Market in questo momento.</p>
         <p><b>Servono più dati</b>: meno di 3 controlli, troppo pochi per giudicare il prezzo.</p>
       </section>
@@ -301,6 +313,7 @@ const fmtK = d3.format(',.0f');
 const fmtC = (v) => (Math.abs(v) >= 100000 && window.innerWidth < 760) ? new Intl.NumberFormat('en', {notation: 'compact', maximumFractionDigits: 1}).format(v) : fmtK(v);
 const fmtP = (v) => d3.format('+.1%')(v).replace('-', '−');
 const fmtPct = d3.format('.0%');
+const fmtSales = (v) => v >= 10 ? fmtK(Math.round(v)) : d3.format('.1f')(v);
 const fmtDT = (d) => { d = new Date(d); return isNaN(d) ? '—' : d.toLocaleString('it-IT', {day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'}); };
 
 /* Market structure: groups and their sub-categories, in the game's order */
@@ -320,7 +333,7 @@ const GRADE_RANK = {teal: 0.5, white: 1, green: 2, blue: 3, gold: 4, orange: 5};
 const SIG_SHORT = {'Compra per rivendere': 'Compra', 'Vendi ora': 'Vendi', 'Tieni': 'Tieni', 'Servono più dati': 'Servono più dati', 'Non disponibile': 'Non disponibile'};
 const GRADES_ON = new Set(Object.keys(GRADE));
 const store = {get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }};
-let CRAFTS = null, CROWS = [], cSortK = 'diff', cSortDir = -1, pickedCraft = null;
+let SALES = {}, CRAFTS = null, CROWS = [], cSortK = 'diff', cSortDir = -1, pickedCraft = null;
 let LOG = [], ITEMS = [], S = {}, ICONS = {}, SEL = {type: 'all'}, sortK = 'grade_rank', sortDir = -1, picked = null;
 let showNA = store.get('aion-na') !== 'hide';
 let OPEN = new Set((store.get('aion-open') ?? (window.innerWidth < 760 ? '' : 'weapons,armor,accessories,consumables,skins,materials')).split(',').filter(Boolean));
@@ -349,14 +362,24 @@ function computeItems(log, s) {
     // reference price = median of the last few days (launch-week prices were much higher, an all-time mean would mislead)
     const days = +(s.avg_days ?? 3), recent = sold.filter((r) => last.t - r.t <= days * 864e5);
     const base = recent.length ? recent : sold;
-    const avg = base.length ? d3.median(base, (r) => r.price) : null;
+    // sales: real 28-day statistics from the game when the API has them, otherwise an estimate from listings that disappeared
+    const real = SALES[item] && SALES[item].units_sold != null ? SALES[item] : null;
+    let perDay = null, salesKind = null;
+    if (real) { perDay = real.units_sold / (real.window_days || 28); salesKind = 'reali'; }
+    else {
+      const win = rs.filter((r) => last.t - r.t <= days * 864e5 && r.screenshot === 'aion2.exchange');
+      const span = win.length > 1 ? (win[win.length - 1].t - win[0].t) / 864e5 : 0;
+      if (span >= 0.5) { let gone = 0; for (let k = 1; k < win.length; k++) gone += Math.max(0, win[k - 1].n - win[k].n); perDay = gone / span; salesKind = 'stima'; }
+    }
+    const avg = real && real.avg ? real.avg : base.length ? d3.median(base, (r) => r.price) : null;
     const flip = available && avg != null ? avg * (1 - tax) - last.price : null;
     const margin = flip != null ? flip / last.price : null;
-    const signal = !available ? 'Non disponibile' : base.length < minC ? 'Servono più dati' : (flip >= minP && margin >= minM) ? 'Compra per rivendere' : last.price >= avg * (1 + sellA) ? 'Vendi ora' : 'Tieni';
+    const liquid = perDay == null || perDay >= +(s.min_sales_per_day ?? 1);
+    const signal = !available ? 'Non disponibile' : base.length < minC && !real ? 'Servono più dati' : (flip >= minP && margin >= minM && liquid) ? 'Compra per rivendere' : last.price >= avg * (1 + sellA) ? 'Vendi ora' : 'Tieni';
     return { item, category: last.category, grade: last.grade || 'white', level: last.level ?? null, available,
       last_checked: last.t, latest: available ? last.price : null, listings: last.n,
       change: prevSold ? last.price - prevSold.price : null, change_pct: prevSold && prevSold.price ? (last.price - prevSold.price) / prevSold.price : null,
-      average: avg != null ? Math.round(avg) : null, checks: rs.length, flip_profit: flip != null ? Math.round(flip) : null, flip_margin: margin, signal,
+      average: avg != null ? Math.round(avg) : null, avg_real: !!(real && real.avg), sales_day: perDay, sales_kind: salesKind, checks: rs.length, flip_profit: flip != null ? Math.round(flip) : null, flip_margin: margin, signal,
       grade_rank: GRADE_RANK[last.grade] || 0, cat_rank: CAT_ORDER[last.category] ?? 999, game_order: d3.min(rs, (r) => r.i) };
   });
 }
@@ -372,11 +395,26 @@ function drawAll() {
   document.getElementById('t-last').textContent = ITEMS.length ? fmtDT(d3.max(ITEMS, (r) => r.last_checked)) : '—';
   const take = document.getElementById('takeaway');
   const avail = ITEMS.filter((r) => r.available);
+  take.classList.remove('tick');
   if (buys.length) {
-    const best = buys.slice().sort((a, b) => b.flip_profit - a.flip_profit)[0];
-    take.textContent = `L'affare migliore ora è ${best.item}: comprandolo e rivendendolo alla media guadagni circa ${fmtK(best.flip_profit)} Kinah a pezzo, tassa inclusa.`;
+    const top = buys.slice().sort((a, b) => b.flip_profit - a.flip_profit).slice(0, 15);
+    const mkDeal = (r) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'deal'; b.dataset.key = r.item;
+      const nm = document.createElement('span'); nm.className = 'nm g-' + r.grade; nm.textContent = r.item;
+      const pr = document.createElement('span'); pr.className = 'pr'; pr.textContent = `a ${fmtC(r.latest)} · media ${fmtC(r.average)}`;
+      const up = document.createElement('span'); up.className = 'up'; up.textContent = `+${fmtC(r.flip_profit)}`;
+      b.append(nm, pr, up); return b;
+    };
+    const label = document.createElement('span'); label.className = 'tlabel'; label.textContent = 'Affari ora';
+    const view = document.createElement('div'); view.className = 'tview';
+    const track = document.createElement('div'); track.className = 'ttrack';
+    track.append(...top.map(mkDeal), ...top.map(mkDeal));          // two copies for a seamless loop
+    [...track.children].slice(top.length).forEach((el) => { el.setAttribute('aria-hidden', 'true'); el.tabIndex = -1; });
+    track.style.setProperty('--tdur', Math.max(30, top.length * 6) + 's');
+    view.appendChild(track); take.replaceChildren(label, view); take.classList.add('tick');
+    take.setAttribute('aria-label', 'Affari migliori adesso');
   } else if (avail.every((r) => r.signal === 'Servono più dati')) {
-    take.textContent = `Ancora nessun segnale: ogni item ha bisogno di almeno ${+S.min_checks} controlli. Più video arrivano, più i segnali diventano affidabili.`;
+    take.textContent = `Ancora nessun segnale: ogni item ha bisogno di almeno ${+S.min_checks} controlli.`;
   } else take.textContent = 'Per ora nessun item è abbastanza sotto la media da valere un flip.';
   drawCats(); drawTable(); drawChart();
 }
@@ -447,7 +485,7 @@ function drawTable() {
   });
   const tbody = document.getElementById('rows');
   if (!rows.length) {
-    const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 8; td.className = 'empty';
+    const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 9; td.className = 'empty';
     td.textContent = term ? `Nessun item contiene "${term}" con questi filtri. Prova un altro nome o mostra tutti i gradi.` : GRADES_ON.size === 0 ? 'Nessun grado selezionato. Clicca un grado per mostrarlo.' : 'Nessun item con questi filtri.';
     tr.appendChild(td); tbody.replaceChildren(tr); return;
   }
@@ -458,6 +496,7 @@ function drawTable() {
     const cell = (text, cls) => { const td = document.createElement('td'); if (cls) td.className = cls; td.textContent = text; tr.appendChild(td); return td; };
     cell(r.level ?? '', 'hn');
     cell(r.available ? fmtK(r.listings) : '0', 'hn');
+    cell(r.sales_day == null ? '—' : (r.sales_kind === 'stima' ? '~' : '') + fmtSales(r.sales_day), 'hn hm');
     const tdP = cell('', '');
     if (r.available) { const coin = document.createElement('span'); coin.className = 'coin'; tdP.append(coin, document.createTextNode(fmtC(r.latest))); } else tdP.textContent = '—';
     cell(r.change_pct == null ? '—' : fmtP(r.change_pct), 'hn ' + (r.change > 0 ? 'up' : r.change < 0 ? 'down' : ''));
@@ -494,7 +533,9 @@ function drawChart() {
   if (!r) { document.getElementById('hist-note').textContent = 'Clicca un item per vedere i dettagli e come è cambiato il suo prezzo.'; return; }
   pick.replaceChildren(itemBox(r));
   const f = [['Prezzo più basso', r.available ? fmtK(r.latest) : 'Non disponibile'], ['In vendita', fmtK(r.listings)], ['Media', r.average == null ? '—' : fmtK(r.average)],
-    ['Profitto flip', r.flip_profit == null ? '—' : (r.flip_profit > 0 ? '+' : '') + fmtK(r.flip_profit)], ['Controlli', fmtK(r.checks)], ['Ultimo controllo', fmtDT(r.last_checked)]];
+    ['Profitto flip', r.flip_profit == null ? '—' : (r.flip_profit > 0 ? '+' : '') + fmtK(r.flip_profit)],
+    ['Vendite al giorno' + (r.sales_kind === 'reali' ? ' (dati del gioco)' : r.sales_kind === 'stima' ? ' (stima)' : ''), r.sales_day == null ? 'Ancora pochi dati' : fmtSales(r.sales_day)],
+    [r.avg_real ? 'Media = prezzo di vendita reale' : 'Controlli', r.avg_real ? '28 giorni' : fmtK(r.checks)], ['Ultimo controllo', fmtDT(r.last_checked)]];
   facts.replaceChildren(...f.map(([k, v]) => { const d = document.createElement('div'); d.textContent = k; const b = document.createElement('b'); b.textContent = v; d.appendChild(b); return d; }));
   const pts = LOG.filter((x) => x.item === picked && +x.lowest_price > 0).map((x) => ({t: new Date(x.checked_at), v: +x.lowest_price, n: +x.listings})).sort((a, b) => a.t - b.t);
   document.getElementById('hist-note').textContent = !pts.length ? 'Mai visto in vendita finora, quindi non c\'è uno storico dei prezzi.' : pts.length < 2 ? "Per ora c'è un solo prezzo: la linea comparirà dal secondo controllo." : 'Prezzo più basso a ogni controllo, in Kinah.';
@@ -670,6 +711,13 @@ document.querySelectorAll('th button[data-k]').forEach((b) => b.addEventListener
   const k = b.dataset.k; if (sortK === k) sortDir = -sortDir; else { sortK = k; sortDir = (k === 'item' || k === 'signal') ? 1 : -1; } drawTable();
 }));
 document.getElementById('q').addEventListener('input', drawTable);
+document.getElementById('takeaway').addEventListener('click', (e) => {
+  const d = e.target.closest('.deal'); if (!d) return;
+  SEL = {type: 'all'};
+  picked = d.dataset.key; drawCats(); drawTable(); drawChart();
+  const row = document.querySelector('#rows tr.sel'), sc = document.querySelector('.scroll');
+  if (row && sc) sc.scrollTo({top: row.offsetTop - sc.clientHeight / 2, behavior: 'smooth'});
+});
 document.getElementById('rows').addEventListener('click', (e) => {
   const tr = e.target.closest('tr[data-key]'); if (!tr) return;
   picked = tr.dataset.key; drawTable(); drawChart();
@@ -678,8 +726,8 @@ document.getElementById('rows').addEventListener('click', (e) => {
 let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { drawTable(); drawChart(); }, 120); });
 
 const get = (u) => fetch(u, {cache: 'no-store'}).then((r) => { if (!r.ok) throw new Error(u); return r.json(); });
-Promise.all([get('data/price_log.json'), get('data/settings.json'), get('data/icons.json').catch(() => ({})), get('data/crafts.json').catch(() => null)])
-  .then(([log, settings, icons, crafts]) => { LOG = log; S = settings[0] || settings; ICONS = icons; CRAFTS = crafts; ITEMS = computeItems(LOG, S); CROWS = buildCraftRows(); drawAll(); })
+Promise.all([get('data/price_log.json'), get('data/settings.json'), get('data/icons.json').catch(() => ({})), get('data/crafts.json').catch(() => null), get('data/sales.json').catch(() => ({}))])
+  .then(([log, settings, icons, crafts, sales]) => { LOG = log; S = settings[0] || settings; ICONS = icons; CRAFTS = crafts; SALES = sales || {}; ITEMS = computeItems(LOG, S); CROWS = buildCraftRows(); drawAll(); })
   .catch(() => { const t = document.getElementById('takeaway'); t.textContent = 'Non riesco a caricare i dati. Ricarica la pagina tra qualche secondo.'; t.classList.add('err'); });
 </script>
 </body>

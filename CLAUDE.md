@@ -10,6 +10,10 @@ their name family, no level and no icon — videos fill those in. Credit aion2.e
 The same run saves data/crafts.json (/api/crafts + /api/crafts/{key}, without the heavy 'series'): the Artisan's Splendent lines,
 3 tiers each, with per-step materials (expected quantities, unit price, method buy/craft/morph). The page's "Crafting" view
 (sidebar, SEL.type 'craft') lists every tier with cost vs Market price and shows the recipe steps when clicked.
+Sales: the sync saves data/sales.json (real 28-day units sold / avg price, only for items the API has stats for — none on
+Marchutan yet). computeItems uses them as reference price and sales/day; otherwise sales/day is estimated from listing drops
+between API rows of the last 3 days ("~" in the table). "Compra" needs >= settings.min_sales_per_day. The top bar is a ticker of
+the 15 best deals (click one to open it).
 
 ## Updating prices ("aggiorna")
 1. Sources (check both; read only files not already named in the `screenshot` field of data/price_log.json):
