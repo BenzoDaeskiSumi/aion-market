@@ -245,7 +245,7 @@ footer a { color: var(--gold, inherit); }
         <div class="chart" id="chart"></div>
       </section>
       <section class="help">
-        <p><b>Profitto flip</b>: quanto guadagni comprando ora al prezzo più basso e rivendendo alla media, tolta la tassa del Market.</p>
+        <p><b>Profitto flip</b>: quanto guadagni comprando ora al prezzo più basso e rivendendo alla media, tolta la tassa del Market. <b>Media</b>: prezzo tipico (mediana) degli ultimi 3 giorni.</p>
         <p><b>Compra</b>: prezzo abbastanza sotto la media da guadagnarci. <b>Vendi</b>: prezzo molto sopra la media.</p>
         <p><b>Non disponibile</b>: nessuno lo sta vendendo nel Market in questo momento.</p>
         <p><b>Servono più dati</b>: meno di 3 controlli, troppo pochi per giudicare il prezzo.</p>
@@ -304,10 +304,13 @@ function computeItems(log, s) {
     const sold = rs.filter((r) => r.price > 0);           // checks where someone was selling it
     const available = last.price > 0;
     const prevSold = available && sold.length > 1 ? sold[sold.length - 2] : null;
-    const avg = sold.length ? d3.mean(sold, (r) => r.price) : null;
+    // reference price = median of the last few days (launch-week prices were much higher, an all-time mean would mislead)
+    const days = +(s.avg_days ?? 3), recent = sold.filter((r) => last.t - r.t <= days * 864e5);
+    const base = recent.length ? recent : sold;
+    const avg = base.length ? d3.median(base, (r) => r.price) : null;
     const flip = available && avg != null ? avg * (1 - tax) - last.price : null;
     const margin = flip != null ? flip / last.price : null;
-    const signal = !available ? 'Non disponibile' : sold.length < minC ? 'Servono più dati' : (flip >= minP && margin >= minM) ? 'Compra per rivendere' : last.price >= avg * (1 + sellA) ? 'Vendi ora' : 'Tieni';
+    const signal = !available ? 'Non disponibile' : base.length < minC ? 'Servono più dati' : (flip >= minP && margin >= minM) ? 'Compra per rivendere' : last.price >= avg * (1 + sellA) ? 'Vendi ora' : 'Tieni';
     return { item, category: last.category, grade: last.grade || 'white', level: last.level ?? null, available,
       last_checked: last.t, latest: available ? last.price : null, listings: last.n,
       change: prevSold ? last.price - prevSold.price : null, change_pct: prevSold && prevSold.price ? (last.price - prevSold.price) / prevSold.price : null,
