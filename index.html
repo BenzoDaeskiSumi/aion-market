@@ -550,7 +550,11 @@ function drawChart() {
   const rangesEl = document.getElementById('ranges'); rangesEl.hidden = !all.length;
   rangesEl.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.r === RANGE)));
   const end = all.length ? all[all.length - 1].t : null;
-  const pts = all.filter((d) => end - d.t <= RANGE * 864e5);
+  const inRange = all.filter((d) => end - d.t <= RANGE * 864e5);
+  // one point per bucket (the last price in it): raw for 24 h, every 6 h for 7 days, daily for 30/90 days.
+  // Otherwise days with many checks (hourly sync, videos) pile up next to days with a single price.
+  const every = RANGE <= 1 ? null : RANGE <= 7 ? d3.timeHour.every(6) : d3.timeDay;
+  const pts = !every ? inRange : Array.from(d3.rollup(inRange, (v) => v[v.length - 1], (d) => +every.floor(d.t)).values()).sort((a, b) => a.t - b.t);
   const rlabel = {1: 'nelle ultime 24 ore', 7: 'negli ultimi 7 giorni', 30: 'negli ultimi 30 giorni', 90: 'negli ultimi 90 giorni'}[RANGE];
   document.getElementById('hist-note').textContent = !all.length ? 'Mai visto in vendita finora, quindi non c\'è uno storico dei prezzi.'
     : !pts.length ? `Nessun prezzo ${rlabel}: prova un periodo più lungo.` : pts.length < 2 ? `Un solo prezzo ${rlabel}: prova un periodo più lungo.` : `Prezzo più basso ${rlabel}, in Kinah.`;
