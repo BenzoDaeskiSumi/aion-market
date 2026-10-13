@@ -102,7 +102,9 @@ button { font: inherit; color: inherit; }
 table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
 th { position: sticky; top: 0; z-index: 1; background: var(--bg2); font-weight: 500; color: var(--dim); font-size: 15px; text-align: right; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
 th button { all: unset; cursor: pointer; }
-th button:hover, th[aria-sort="ascending"] button, th[aria-sort="descending"] button { color: var(--text); }
+th .thsep { margin: 0 6px; opacity: .5; }
+th button.on { color: var(--text); }
+th button:hover { color: var(--text); }
 th:first-child, td:first-child { text-align: left; }
 td { padding: 7px 10px; text-align: right; border-bottom: 1px solid var(--faint); font-size: 18px; white-space: nowrap; }
 tbody tr { cursor: pointer; }
@@ -188,7 +190,7 @@ footer { text-align: center; color: var(--dim); font-size: 14px; padding: 0 16px
       <div class="scroll">
         <table>
           <thead><tr>
-            <th><button data-k="item">Item</button></th>
+            <th><button data-k="item">Item</button><span class="thsep">·</span><button data-k="grade_rank">Grado</button></th>
             <th class="hn"><button data-k="listings">In vendita</button></th>
             <th><button data-k="latest">Prezzo più basso</button></th>
             <th class="hn"><button data-k="change_pct">Variazione</button></th>
@@ -226,8 +228,10 @@ const CAT_IT = {'Gathering Material': 'Raccolta', 'Crafting Material': 'Crafting
 const GRADE = {white: 'Common', green: 'Non rare', blue: 'Rare', gold: 'Legendary', orange: 'Mythic'};
 const SIG_SHORT = {'Compra per rivendere': 'Compra', 'Vendi ora': 'Vendi', 'Tieni': 'Tieni', 'Servono più dati': 'Servono più dati'};
 const catName = (c) => CAT_IT[c] || c;
+const GRADE_RANK = {white: 1, green: 2, blue: 3, gold: 4, orange: 5};
+const CAT_ORDER = {'Gathering Material': 1, 'Crafting Material': 2, 'Substance Morph Material': 3, 'Potions': 4, 'Pantheon': 5};
 const GRADES_ON = new Set(['white', 'green', 'blue', 'gold', 'orange']);
-let LOG = [], ITEMS = [], S = {}, ICONS = {}, CAT = 'all', sortK = 'latest', sortDir = -1, picked = null;
+let LOG = [], ITEMS = [], S = {}, ICONS = {}, CAT = 'all', sortK = 'grade_rank', sortDir = -1, picked = null;
 
 /* ---------- theme switch ---------- */
 const themeBtns = document.querySelectorAll('.themes button');
@@ -244,7 +248,7 @@ paintThemes();
 /* ---------- data ---------- */
 function computeItems(log, s) {
   const tax = +s.tax_rate, minP = +s.min_flip_profit, minM = +s.min_flip_margin, sellA = +s.sell_above_avg, minC = +s.min_checks;
-  const g = d3.group(log.map((r) => ({...r, price: +r.lowest_price, n: +r.listings, t: new Date(r.checked_at)})), (r) => r.item);
+  const g = d3.group(log.map((r, i) => ({...r, i, price: +r.lowest_price, n: +r.listings, t: new Date(r.checked_at)})), (r) => r.item);
   return Array.from(g, ([item, rs]) => {
     rs.sort((a, b) => a.t - b.t);
     const last = rs[rs.length - 1], prev = rs.length > 1 ? rs[rs.length - 2] : null;
@@ -252,7 +256,7 @@ function computeItems(log, s) {
     const signal = rs.length < minC ? 'Servono più dati' : (flip >= minP && margin >= minM) ? 'Compra per rivendere' : last.price >= avg * (1 + sellA) ? 'Vendi ora' : 'Tieni';
     return { item, category: last.category, grade: last.grade || 'white', last_checked: last.t, latest: last.price, listings: last.n,
       change: prev ? last.price - prev.price : null, change_pct: prev && prev.price ? (last.price - prev.price) / prev.price : null,
-      average: Math.round(avg), checks: rs.length, flip_profit: Math.round(flip), flip_margin: margin, signal };
+      average: Math.round(avg), checks: rs.length, grade_rank: GRADE_RANK[last.grade] || 0, cat_rank: CAT_ORDER[last.category] || 9, game_order: d3.min(rs, (r) => r.i), flip_profit: Math.round(flip), flip_margin: margin, signal };
   });
 }
 
@@ -293,12 +297,14 @@ function drawTable() {
   const rows = ITEMS.filter((r) => (CAT === 'all' || r.category === CAT) && GRADES_ON.has(r.grade) && (!term || (r.item + ' ' + catName(r.category) + ' ' + GRADE[r.grade]).toLowerCase().includes(term)))
     .sort((a, b) => {
       const x = a[sortK], y = b[sortK];
-      if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
-      return (typeof x === 'string' ? x.localeCompare(y) : x - y) * sortDir;
+      const tie = () => (a.cat_rank - b.cat_rank) || (a.game_order - b.game_order);
+      if (x == null && y == null) return tie(); if (x == null) return 1; if (y == null) return -1;
+      return ((typeof x === 'string' ? x.localeCompare(y) : x - y) * sortDir) || tie();
     });
   document.querySelectorAll('th').forEach((th) => {
-    const k = th.querySelector('button')?.dataset.k;
-    th.setAttribute('aria-sort', k === sortK ? (sortDir > 0 ? 'ascending' : 'descending') : 'none');
+    const ks = [...th.querySelectorAll('button')].map((b) => b.dataset.k);
+    th.setAttribute('aria-sort', ks.includes(sortK) ? (sortDir > 0 ? 'ascending' : 'descending') : 'none');
+    th.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.k === sortK));
   });
   const tbody = document.getElementById('rows');
   if (!rows.length) {
