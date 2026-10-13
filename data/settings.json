@@ -1,0 +1,9 @@
+[
+ {
+  "tax_rate": 0.1,
+  "min_flip_profit": 1000,
+  "min_flip_margin": 0.1,
+  "sell_above_avg": 0.15,
+  "min_checks": 3
+ }
+]
