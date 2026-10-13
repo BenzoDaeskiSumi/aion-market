@@ -7,6 +7,9 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 shared by its developers on their Discord; server 12305 = Marchutan · EU · Asmodian) and appends a row only when price/listings changed
 (or every 12 h). Rows from the API have `screenshot: "aion2.exchange"`. The API has no grade/level/icon: new items get the grade of
 their name family, no level and no icon — videos fill those in. Credit aion2.exchange in the page footer.
+The same run saves data/crafts.json (/api/crafts + /api/crafts/{key}, without the heavy 'series'): the Artisan's Splendent lines,
+3 tiers each, with per-step materials (expected quantities, unit price, method buy/craft/morph). The page's "Crafting" view
+(sidebar, SEL.type 'craft') lists every tier with cost vs Market price and shows the recipe steps when clicked.
 
 ## Updating prices ("aggiorna")
 1. Sources (check both; read only files not already named in the `screenshot` field of data/price_log.json):

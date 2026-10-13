@@ -151,6 +151,18 @@ tbody tr.na:hover td, tbody tr.na.sel td { opacity: .8; }
 .help b { color: var(--text); font-weight: 500; }
 footer { text-align: center; color: var(--dim); font-size: 14px; padding: 0 16px 20px; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
 footer a { color: var(--gold, inherit); }
+.side button.craft { margin-top: 2px; }
+.craft h3 { font-family: 'Marcellus', serif; font-weight: 400; font-size: 17px; margin: 18px 0 4px; }
+.craft .stepinfo { color: var(--dim); font-size: 14px; margin: 0 0 6px; }
+.craft table { width: 100%; border-collapse: collapse; font-size: 15px; table-layout: fixed; }
+.craft td:first-child { width: 72%; overflow-wrap: anywhere; }
+.craft td { padding: 5px 4px; border-bottom: 1px solid var(--faint); vertical-align: top; }
+.craft td.n { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.craft .via { display: block; color: var(--dim); font-size: 13px; }
+.craft .tot td { border-bottom: 0; font-weight: 600; }
+.craft .note { color: var(--dim); font-size: 14px; margin-top: 14px; }
+.sig.craftit { color: #7ee08a; border-color: currentColor; }
+.sig.buyit { color: #f0b860; border-color: currentColor; }
 .err { color: var(--down); }
 
 @media (max-width: 1400px) {
@@ -220,7 +232,7 @@ footer a { color: var(--gold, inherit); }
         <button type="button" class="reset" id="grades-reset" hidden>Mostra tutti</button>
       </div>
       <div class="scroll">
-        <table>
+        <table id="maintab">
           <thead><tr>
             <th><button data-k="item">Item</button><span class="thsep">·</span><button data-k="grade_rank">Grado</button></th>
             <th class="hn"><button data-k="level">Lv</button></th>
@@ -233,6 +245,17 @@ footer a { color: var(--gold, inherit); }
           </tr></thead>
           <tbody id="rows"></tbody>
         </table>
+        <table id="crafttab" hidden>
+          <thead><tr>
+            <th><button data-c="name">Oggetto</button></th>
+            <th class="hn"><button data-c="skill">Professione</button></th>
+            <th><button data-c="cost">Costo crafting</button></th>
+            <th><button data-c="market">Prezzo Market</button></th>
+            <th><button data-c="diff">Risparmio</button></th>
+            <th class="hn"><button data-c="verdict">Conviene</button></th>
+          </tr></thead>
+          <tbody id="crows"></tbody>
+        </table>
       </div>
     </div>
 
@@ -243,6 +266,7 @@ footer a { color: var(--gold, inherit); }
         <div class="facts" id="facts" hidden></div>
         <p id="hist-note">Clicca un item per vedere i dettagli e come è cambiato il suo prezzo.</p>
         <div class="chart" id="chart"></div>
+        <div class="craft" id="craftdetail" hidden></div>
       </section>
       <section class="help">
         <p><b>Profitto flip</b>: quanto guadagni comprando ora al prezzo più basso e rivendendo alla media, tolta la tassa del Market. <b>Media</b>: prezzo tipico (mediana) degli ultimi 3 giorni.</p>
@@ -279,6 +303,7 @@ const GRADE_RANK = {teal: 0.5, white: 1, green: 2, blue: 3, gold: 4, orange: 5};
 const SIG_SHORT = {'Compra per rivendere': 'Compra', 'Vendi ora': 'Vendi', 'Tieni': 'Tieni', 'Servono più dati': 'Servono più dati', 'Non disponibile': 'Non disponibile'};
 const GRADES_ON = new Set(Object.keys(GRADE));
 const store = {get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }};
+let CRAFTS = null, CROWS = [], cSortK = 'diff', cSortDir = -1, pickedCraft = null;
 let LOG = [], ITEMS = [], S = {}, ICONS = {}, SEL = {type: 'all'}, sortK = 'grade_rank', sortDir = -1, picked = null;
 let showNA = store.get('aion-na') !== 'hide';
 let OPEN = new Set((store.get('aion-open') ?? (window.innerWidth < 760 ? '' : 'weapons,armor,accessories,consumables,skins,materials')).split(',').filter(Boolean));
@@ -341,7 +366,7 @@ function drawAll() {
 
 /* ---------- sidebar accordion ---------- */
 const inSel = (r) => SEL.type === 'all' || (SEL.type === 'group' && CAT_GROUP[r.category] === SEL.id) || (SEL.type === 'cat' && r.category === SEL.id);
-const selEq = (t, id) => SEL.type === t && (t === 'all' || SEL.id === id);
+const selEq = (t, id) => SEL.type === t && (t === 'all' || t === 'craft' || SEL.id === id);
 function drawCats() {
   const counts = d3.rollup(ITEMS, (v) => v.length, (r) => r.category);
   const nav = document.getElementById('cats'); nav.replaceChildren();
@@ -350,8 +375,13 @@ function drawCats() {
     b.append(document.createTextNode(label)); const s = document.createElement('span'); s.textContent = fmtK(n); b.appendChild(s); return b;
   };
   const all = mk('all', 'Tutte', ITEMS.length, selEq('all'));
-  all.addEventListener('click', () => { SEL = {type: 'all'}; drawCats(); drawTable(); });
+  all.addEventListener('click', () => { SEL = {type: 'all'}; drawCats(); drawTable(); drawChart(); });
   nav.appendChild(all);
+  if (CROWS.length) {
+    const cr = mk('all craft', 'Crafting', CROWS.length, selEq('craft'));
+    cr.addEventListener('click', () => { SEL = {type: 'craft'}; drawCats(); drawTable(); drawChart(); });
+    nav.appendChild(cr);
+  }
   GROUPS.forEach((g) => {
     const cats = g.cats.filter(([c]) => counts.get(c));
     if (!cats.length) return;
@@ -365,12 +395,12 @@ function drawCats() {
     head.addEventListener('click', () => {
       // first click on a closed group opens it and shows the whole group; clicking an open, selected group closes it
       if (OPEN.has(g.id) && selEq('group', g.id)) OPEN.delete(g.id); else { OPEN.add(g.id); SEL = {type: 'group', id: g.id}; }
-      store.set('aion-open', [...OPEN].join(',')); drawCats(); drawTable();
+      store.set('aion-open', [...OPEN].join(',')); drawCats(); drawTable(); drawChart();
     });
     const sub = document.createElement('div'); sub.className = 'sub';
     cats.forEach(([c, label]) => {
       const b = mk('', label, counts.get(c), selEq('cat', c));
-      b.addEventListener('click', () => { SEL = {type: 'cat', id: c}; drawCats(); drawTable(); });
+      b.addEventListener('click', () => { SEL = {type: 'cat', id: c}; drawCats(); drawTable(); drawChart(); });
       sub.appendChild(b);
     });
     wrap.append(head, sub); nav.appendChild(wrap);
@@ -379,6 +409,10 @@ function drawCats() {
 
 /* ---------- table ---------- */
 function drawTable() {
+  const craft = SEL.type === 'craft';
+  document.getElementById('maintab').hidden = craft; document.getElementById('crafttab').hidden = !craft;
+  document.getElementById('grades').style.display = craft ? 'none' : ''; naBtn.style.display = craft ? 'none' : '';
+  if (craft) return drawCraft();
   const term = document.getElementById('q').value.trim().toLowerCase();
   const rows = ITEMS.filter((r) => inSel(r) && GRADES_ON.has(r.grade) && (showNA || r.available) && (!term || (r.item + ' ' + catName(r.category) + ' ' + GRADE[r.grade]).toLowerCase().includes(term)))
     .sort((a, b) => {
@@ -389,7 +423,7 @@ function drawTable() {
       if (x == null && y == null) return tie(); if (x == null) return 1; if (y == null) return -1;
       return ((typeof x === 'string' ? x.localeCompare(y) : x - y) * sortDir) || tie();
     });
-  document.querySelectorAll('th').forEach((th) => {
+  document.querySelectorAll('#maintab th').forEach((th) => {
     const ks = [...th.querySelectorAll('button')].map((b) => b.dataset.k);
     th.setAttribute('aria-sort', ks.includes(sortK) ? (sortDir > 0 ? 'ascending' : 'descending') : 'none');
     th.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.k === sortK));
@@ -431,6 +465,10 @@ function itemBox(r, big) {
 
 /* ---------- details + chart ---------- */
 function drawChart() {
+  const cd = document.getElementById('craftdetail'), help = document.querySelector('.aside .help');
+  const chartBox = document.getElementById('chart');
+  if (SEL.type === 'craft') { help.hidden = true; chartBox.style.display = 'none'; return drawCraftDetail(); }
+  cd.hidden = true; help.hidden = false; chartBox.style.display = '';
   const box = document.getElementById('chart'); box.replaceChildren();
   const r = ITEMS.find((x) => x.item === picked);
   const pick = document.getElementById('pick'), facts = document.getElementById('facts');
@@ -467,6 +505,104 @@ function drawChart() {
     }).on('mouseleave', () => { tip.hidden = true; });
 }
 
+
+/* ---------- crafting ---------- */
+const TIER_GRADE = ['green', 'blue', 'gold'];
+function buildCraftRows() {
+  const seen = new Map(), tax = +S.tax_rate;
+  (CRAFTS?.targets || []).forEach((t) => (t.tiers || []).forEach((tr) => {
+    if (seen.has(tr.name)) return;
+    const it = ITEMS.find((x) => x.item === tr.name);
+    const market = tr.market_price ?? null, cost = tr.cost;
+    seen.set(tr.name, { name: tr.name, tier: tr.tier, target: t, skill: t.skill, line: t.profile_label, cost, market,
+      grade: it?.grade || TIER_GRADE[tr.tier - 1] || 'white', level: it?.level ?? null,
+      diff: market != null ? market - cost : null, sell: market != null ? market * (1 - tax) - cost : null,
+      verdict: market == null ? 'Solo crafting' : market > cost ? 'Craftalo' : 'Compralo' });
+  }));
+  return [...seen.values()];
+}
+function craftBox(r) {
+  const it = document.createElement('div'); it.className = 'it';
+  const slot = document.createElement('div'); slot.className = 'slot g-' + r.grade;
+  if (ICONS[r.name]) { const img = document.createElement('img'); img.src = ICONS[r.name]; img.alt = ''; img.loading = 'lazy'; img.width = 40; img.height = 40; slot.appendChild(img); }
+  const txt = document.createElement('div');
+  const nm = document.createElement('span'); nm.className = 'nm g-' + r.grade; nm.textContent = r.name;
+  const ct = document.createElement('span'); ct.className = 'ct'; ct.textContent = r.line + ' · passo ' + r.tier + ' di 3' + (r.level ? ' · Lv ' + r.level : '');
+  txt.append(nm, ct); it.append(slot, txt); return it;
+}
+const signed = (v) => (v > 0 ? '+' : v < 0 ? '−' : '') + fmtC(Math.abs(Math.round(v)));
+function drawCraft() {
+  const term = document.getElementById('q').value.trim().toLowerCase();
+  const rows = CROWS.filter((r) => !term || (r.name + ' ' + r.skill + ' ' + r.line).toLowerCase().includes(term)).sort((a, b) => {
+    const x = a[cSortK], y = b[cSortK];
+    if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
+    return (typeof x === 'string' ? x.localeCompare(y) : x - y) * cSortDir;
+  });
+  document.querySelectorAll('#crafttab th').forEach((th) => {
+    const k = th.querySelector('button').dataset.c;
+    th.setAttribute('aria-sort', k === cSortK ? (cSortDir > 0 ? 'ascending' : 'descending') : 'none');
+    th.querySelector('button').classList.toggle('on', k === cSortK);
+  });
+  const tb = document.getElementById('crows');
+  if (!rows.length) { const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 6; td.className = 'empty'; td.textContent = CROWS.length ? `Nessun oggetto craftabile contiene "${term}".` : 'Dati di crafting non ancora disponibili.'; tr.appendChild(td); tb.replaceChildren(tr); return; }
+  tb.replaceChildren(...rows.map((r) => {
+    const tr = document.createElement('tr'); tr.dataset.craft = r.name; if (r.name === pickedCraft) tr.classList.add('sel');
+    const td0 = document.createElement('td'); td0.appendChild(craftBox(r)); tr.appendChild(td0);
+    const cell = (t, c) => { const td = document.createElement('td'); if (c) td.className = c; td.textContent = t; tr.appendChild(td); return td; };
+    cell(r.skill, 'hn');
+    const tc = cell('', ''); const coin = document.createElement('span'); coin.className = 'coin'; tc.append(coin, document.createTextNode(fmtC(Math.round(r.cost))));
+    const tm = cell('', ''); if (r.market != null) { const c2 = document.createElement('span'); c2.className = 'coin'; tm.append(c2, document.createTextNode(fmtC(r.market))); } else tm.textContent = 'Non in vendita';
+    cell(r.diff == null ? '—' : signed(r.diff), r.diff == null ? '' : r.diff > 0 ? 'up' : 'down');
+    const ts = cell('', 'hn'); const sp = document.createElement('span'); sp.className = 'sig ' + (r.verdict === 'Craftalo' ? 'craftit' : r.verdict === 'Compralo' ? 'buyit' : 'na'); sp.textContent = r.verdict; ts.appendChild(sp);
+    return tr;
+  }));
+}
+function drawCraftDetail() {
+  const cd = document.getElementById('craftdetail'), pick = document.getElementById('pick'), facts = document.getElementById('facts');
+  document.getElementById('chart').replaceChildren();
+  const r = CROWS.find((x) => x.name === pickedCraft);
+  pick.hidden = facts.hidden = cd.hidden = !r;
+  document.getElementById('hist-title').textContent = r ? 'Ricetta' : 'Crafting';
+  const when = CRAFTS?.captured_at ? fmtDT(CRAFTS.captured_at) : '—';
+  document.getElementById('hist-note').textContent = r ? '' : `Clicca un oggetto per vedere i materiali di ogni passo e quanto costano adesso. Prezzi dei materiali aggiornati: ${when}.`;
+  if (!r) return;
+  pick.replaceChildren(craftBox(r));
+  const f = [['Costo crafting', fmtK(Math.round(r.cost))], ['Prezzo Market', r.market == null ? 'Non in vendita' : fmtK(r.market)],
+    ['Risparmio craftando', r.diff == null ? '—' : signed(r.diff)], ['Profitto se lo rivendi', r.sell == null ? '—' : signed(r.sell)],
+    ['Professione', r.skill], ['Prezzi aggiornati', when]];
+  facts.replaceChildren(...f.map(([k, v]) => { const d = document.createElement('div'); d.textContent = k; const b = document.createElement('b'); b.textContent = v; d.appendChild(b); return d; }));
+  const METHOD = {buy: 'compralo', craft: 'craftalo da', morph: 'trasmutalo da'};
+  const fmtQ = (q) => q >= 10 ? fmtK(Math.round(q)) : d3.format('.1f')(q);
+  cd.replaceChildren();
+  r.target.steps.filter((st) => st.step_no <= r.tier).forEach((st) => {
+    const h = document.createElement('h3'); h.textContent = `Passo ${st.step_no}: ${st.result_name}`;
+    const info = document.createElement('p'); info.className = 'stepinfo';
+    info.textContent = `Maestria ${st.mastery_level} · successo ${fmtPct(st.success_rate)} · servono in media ${d3.format('.1f')(st.attempts)} tentativi`;
+    const tbl = document.createElement('table');
+    st.materials.forEach((m) => {
+      const tr = tbl.insertRow();
+      const a = tr.insertCell(); a.textContent = m.name;
+      const v = document.createElement('span'); v.className = 'via';
+      v.textContent = `× ${fmtQ(m.expected)} da ${fmtK(Math.round(m.unit_price))} · ${m.per_attempt} a tentativo · ${METHOD[m.method] || m.method}` + (m.via?.length ? ' ' + m.via.map((x) => `${d3.format('.1f')(x.per_unit)} ${x.name}`).join(' + ') : '') + (m.method !== 'buy' && m.listing_price ? ` (al Market ${fmtK(m.listing_price)})` : '');
+      a.appendChild(v);
+      const t = tr.insertCell(); t.className = 'n'; t.textContent = fmtK(Math.round(m.subtotal));
+    });
+    const tot = tbl.insertRow(); tot.className = 'tot'; const c1 = tot.insertCell(); c1.textContent = 'Totale passo'; const c2 = tot.insertCell(); c2.className = 'n'; c2.textContent = fmtK(Math.round(st.step_cost));
+    cd.append(h, info, tbl);
+  });
+  const n = document.createElement('p'); n.className = 'note';
+  n.textContent = 'Quantità e costi sono medie attese: contano i tentativi falliti, con maestria al massimo. Ogni materiale è al prezzo più conveniente tra comprarlo, craftarlo o trasmutarlo da Odyle. Dati: aion2.exchange (ricette dai file del gioco).';
+  cd.appendChild(n);
+}
+document.querySelectorAll('#crafttab th button').forEach((b) => b.addEventListener('click', () => {
+  const k = b.dataset.c; if (cSortK === k) cSortDir = -cSortDir; else { cSortK = k; cSortDir = (k === 'name' || k === 'skill' || k === 'verdict') ? 1 : -1; } drawCraft();
+}));
+document.getElementById('crows').addEventListener('click', (e) => {
+  const tr = e.target.closest('tr[data-craft]'); if (!tr) return;
+  pickedCraft = tr.dataset.craft; drawCraft(); drawChart();
+  if (window.innerWidth <= 1400) document.querySelector('.aside').scrollIntoView({behavior: 'smooth', block: 'start'});
+});
+
 /* ---------- grade filter ---------- */
 const gradeBtns = document.querySelectorAll('#grades button[data-grade]');
 const gradeReset = document.getElementById('grades-reset');
@@ -500,7 +636,7 @@ naBtn.addEventListener('click', () => { showNA = !showNA; store.set('aion-na', s
 paintSide(); paintNA();
 
 /* ---------- events ---------- */
-document.querySelectorAll('th button').forEach((b) => b.addEventListener('click', () => {
+document.querySelectorAll('th button[data-k]').forEach((b) => b.addEventListener('click', () => {
   const k = b.dataset.k; if (sortK === k) sortDir = -sortDir; else { sortK = k; sortDir = (k === 'item' || k === 'signal') ? 1 : -1; } drawTable();
 }));
 document.getElementById('q').addEventListener('input', drawTable);
@@ -512,8 +648,8 @@ document.getElementById('rows').addEventListener('click', (e) => {
 let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { drawTable(); drawChart(); }, 120); });
 
 const get = (u) => fetch(u, {cache: 'no-store'}).then((r) => { if (!r.ok) throw new Error(u); return r.json(); });
-Promise.all([get('data/price_log.json'), get('data/settings.json'), get('data/icons.json').catch(() => ({}))])
-  .then(([log, settings, icons]) => { LOG = log; S = settings[0] || settings; ICONS = icons; ITEMS = computeItems(LOG, S); drawAll(); })
+Promise.all([get('data/price_log.json'), get('data/settings.json'), get('data/icons.json').catch(() => ({})), get('data/crafts.json').catch(() => null)])
+  .then(([log, settings, icons, crafts]) => { LOG = log; S = settings[0] || settings; ICONS = icons; CRAFTS = crafts; ITEMS = computeItems(LOG, S); CROWS = buildCraftRows(); drawAll(); })
   .catch(() => { const t = document.getElementById('takeaway'); t.textContent = 'Non riesco a caricare i dati. Ricarica la pagina tra qualche secondo.'; t.classList.add('err'); });
 </script>
 </body>
