@@ -15836,5 +15836,3995 @@
   "lowest_price": 38000,
   "listings": 65,
   "screenshot": "Ritaglia_1.791.911.117.965.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Holy Spirit Longsword",
+  "category": "Longsword",
+  "grade": "gold",
+  "lowest_price": 1000000,
+  "listings": 1,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Fantasy Longsword",
+  "category": "Longsword",
+  "grade": "gold",
+  "lowest_price": 599994,
+  "listings": 10,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Spectral Longsword",
+  "category": "Longsword",
+  "grade": "gold",
+  "lowest_price": 599990,
+  "listings": 28,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Courage Longsword",
+  "category": "Longsword",
+  "grade": "gold",
+  "lowest_price": 589990,
+  "listings": 25,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Fallen Ancient God Longsword",
+  "category": "Longsword",
+  "grade": "gold",
+  "lowest_price": 14999998,
+  "listings": 2,
+  "level": 46,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Artisan's Splendent Orichalcum Longsword",
+  "category": "Longsword",
+  "grade": "gold",
+  "lowest_price": 19899970,
+  "listings": 8,
+  "level": 44,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Star Dragon Lord Longsword",
+  "category": "Longsword",
+  "grade": "gold",
+  "lowest_price": 66999664,
+  "listings": 3,
+  "level": 62,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Destruction Longsword",
+  "category": "Longsword",
+  "grade": "blue",
+  "lowest_price": 100000,
+  "listings": 2,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Bloodthirsty Longsword",
+  "category": "Longsword",
+  "grade": "blue",
+  "lowest_price": 25999,
+  "listings": 9,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Expert's Splendent Orichalcum Longsword",
+  "category": "Longsword",
+  "grade": "blue",
+  "lowest_price": 1111110,
+  "listings": 15,
+  "level": 35,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Artisan's Orichalcum Longsword",
+  "category": "Longsword",
+  "grade": "blue",
+  "lowest_price": 289000,
+  "listings": 29,
+  "level": 39,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Discipline Longsword",
+  "category": "Longsword",
+  "grade": "blue",
+  "lowest_price": 40000,
+  "listings": 6,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Chaos Longsword",
+  "category": "Longsword",
+  "grade": "green",
+  "lowest_price": 30000,
+  "listings": 16,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Luminous Longsword",
+  "category": "Longsword",
+  "grade": "green",
+  "lowest_price": 10000,
+  "listings": 9,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Vagabond Longsword",
+  "category": "Longsword",
+  "grade": "green",
+  "lowest_price": 488888,
+  "listings": 9,
+  "level": 30,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Orichalcum Longsword",
+  "category": "Longsword",
+  "grade": "green",
+  "lowest_price": 70000,
+  "listings": 38,
+  "level": 22,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Expert's Orichalcum Longsword",
+  "category": "Longsword",
+  "grade": "green",
+  "lowest_price": 10000137,
+  "listings": 3,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Riverside Longsword",
+  "category": "Longsword",
+  "grade": "white",
+  "lowest_price": 15000,
+  "listings": 1,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Shade Longsword",
+  "category": "Longsword",
+  "grade": "white",
+  "lowest_price": 2999,
+  "listings": 14,
+  "level": 13,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Phantasm Longsword",
+  "category": "Longsword",
+  "grade": "white",
+  "lowest_price": 8399,
+  "listings": 2,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Orichalcum Longsword",
+  "category": "Longsword",
+  "grade": "white",
+  "lowest_price": 29999,
+  "listings": 33,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Earth Longsword",
+  "category": "Longsword",
+  "grade": "white",
+  "lowest_price": 5000,
+  "listings": 7,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Wisdom Longsword",
+  "category": "Longsword",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Tranquility Longsword",
+  "category": "Longsword",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Dark Dragon Lord Longsword",
+  "category": "Longsword",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 78,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Star Dragon Lord Longsword",
+  "category": "Longsword",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 70,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Ebony Dragon Lord Longsword",
+  "category": "Longsword",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 94,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Dark Dragon Lord Longsword",
+  "category": "Longsword",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 86,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Ebony Dragon Lord Longsword",
+  "category": "Longsword",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 102,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Elder Longsword",
+  "category": "Longsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Temple Guardian Longsword",
+  "category": "Longsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Illusion Longsword",
+  "category": "Longsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Relic Collector Longsword",
+  "category": "Longsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Pragmatist Longsword",
+  "category": "Longsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Whispering Oblivion Longsword",
+  "category": "Longsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Defender Longsword",
+  "category": "Longsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Order Longsword",
+  "category": "Longsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Pact-Bound Longsword",
+  "category": "Longsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 43,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Lunatic Longsword",
+  "category": "Longsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 45,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Vowed Longsword",
+  "category": "Longsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Frontline Longsword",
+  "category": "Longsword",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Rainy Forest Longsword",
+  "category": "Longsword",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 15,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Ethereal Longsword",
+  "category": "Longsword",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Comet Longsword",
+  "category": "Longsword",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Tempest Longsword",
+  "category": "Longsword",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 15,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Forgotten Longsword",
+  "category": "Longsword",
+  "grade": "white",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 13,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Fantasy Greatsword",
+  "category": "Greatsword",
+  "grade": "gold",
+  "lowest_price": 664999,
+  "listings": 17,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Star Dragon Lord Greatsword",
+  "category": "Greatsword",
+  "grade": "gold",
+  "lowest_price": 85000000,
+  "listings": 1,
+  "level": 70,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Artisan's Splendent Orichalcum Greatsword",
+  "category": "Greatsword",
+  "grade": "gold",
+  "lowest_price": 19399999,
+  "listings": 6,
+  "level": 44,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Courage Greatsword",
+  "category": "Greatsword",
+  "grade": "gold",
+  "lowest_price": 580000,
+  "listings": 24,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Spectral Greatsword",
+  "category": "Greatsword",
+  "grade": "gold",
+  "lowest_price": 599990,
+  "listings": 20,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Star Dragon Lord Greatsword",
+  "category": "Greatsword",
+  "grade": "gold",
+  "lowest_price": 71999999,
+  "listings": 3,
+  "level": 62,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Relic Collector Greatsword",
+  "category": "Greatsword",
+  "grade": "blue",
+  "lowest_price": 499996,
+  "listings": 4,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Bloodthirsty Greatsword",
+  "category": "Greatsword",
+  "grade": "blue",
+  "lowest_price": 40000,
+  "listings": 5,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Destruction Greatsword",
+  "category": "Greatsword",
+  "grade": "blue",
+  "lowest_price": 29900,
+  "listings": 3,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Expert's Splendent Orichalcum Greatsword",
+  "category": "Greatsword",
+  "grade": "blue",
+  "lowest_price": 1999996,
+  "listings": 17,
+  "level": 35,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Artisan's Orichalcum Greatsword",
+  "category": "Greatsword",
+  "grade": "blue",
+  "lowest_price": 280000,
+  "listings": 18,
+  "level": 39,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Ethereal Greatsword",
+  "category": "Greatsword",
+  "grade": "green",
+  "lowest_price": 20000,
+  "listings": 1,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Chaos Greatsword",
+  "category": "Greatsword",
+  "grade": "green",
+  "lowest_price": 200000,
+  "listings": 2,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Luminous Greatsword",
+  "category": "Greatsword",
+  "grade": "green",
+  "lowest_price": 99999,
+  "listings": 13,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Vagabond Greatsword",
+  "category": "Greatsword",
+  "grade": "green",
+  "lowest_price": 22000,
+  "listings": 11,
+  "level": 30,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Orichalcum Greatsword",
+  "category": "Greatsword",
+  "grade": "green",
+  "lowest_price": 65000,
+  "listings": 26,
+  "level": 22,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Expert's Orichalcum Greatsword",
+  "category": "Greatsword",
+  "grade": "green",
+  "lowest_price": 2000000,
+  "listings": 12,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Forgotten Greatsword",
+  "category": "Greatsword",
+  "grade": "white",
+  "lowest_price": 1000,
+  "listings": 1,
+  "level": 13,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Shade Greatsword",
+  "category": "Greatsword",
+  "grade": "white",
+  "lowest_price": 8887,
+  "listings": 19,
+  "level": 13,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Phantasm Greatsword",
+  "category": "Greatsword",
+  "grade": "white",
+  "lowest_price": 40000,
+  "listings": 23,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Orichalcum Greatsword",
+  "category": "Greatsword",
+  "grade": "white",
+  "lowest_price": 24987,
+  "listings": 105,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Earth Greatsword",
+  "category": "Greatsword",
+  "grade": "white",
+  "lowest_price": 1500,
+  "listings": 11,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Wisdom Greatsword",
+  "category": "Greatsword",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Holy Spirit Greatsword",
+  "category": "Greatsword",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Tranquility Greatsword",
+  "category": "Greatsword",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Fallen Ancient God Greatsword",
+  "category": "Greatsword",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 46,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Dark Dragon Lord Greatsword",
+  "category": "Greatsword",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 78,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Dark Dragon Lord Greatsword",
+  "category": "Greatsword",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 86,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Ebony Dragon Lord Greatsword",
+  "category": "Greatsword",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 94,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Ebony Dragon Lord Greatsword",
+  "category": "Greatsword",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 102,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Elder Greatsword",
+  "category": "Greatsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Temple Guardian Greatsword",
+  "category": "Greatsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Illusion Greatsword",
+  "category": "Greatsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Defender Greatsword",
+  "category": "Greatsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Order Greatsword",
+  "category": "Greatsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Discipline Greatsword",
+  "category": "Greatsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Vowed Greatsword",
+  "category": "Greatsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Whispering Oblivion Greatsword",
+  "category": "Greatsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Pact-Bound Greatsword",
+  "category": "Greatsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 43,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Lunatic Greatsword",
+  "category": "Greatsword",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 45,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Rainy Forest Greatsword",
+  "category": "Greatsword",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 15,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Comet Greatsword",
+  "category": "Greatsword",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Tempest Greatsword",
+  "category": "Greatsword",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 15,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Intruder Greatsword",
+  "category": "Greatsword",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Riverside Greatsword",
+  "category": "Greatsword",
+  "grade": "white",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Fantasy Knife",
+  "category": "Dagger",
+  "grade": "gold",
+  "lowest_price": 620000,
+  "listings": 12,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Spectral Knife",
+  "category": "Dagger",
+  "grade": "gold",
+  "lowest_price": 599999,
+  "listings": 16,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Courage Dagger",
+  "category": "Dagger",
+  "grade": "gold",
+  "lowest_price": 578888,
+  "listings": 20,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Artisan's Splendent Orichalcum Dagger",
+  "category": "Dagger",
+  "grade": "gold",
+  "lowest_price": 22500000,
+  "listings": 3,
+  "level": 44,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Star Dragon Lord Dagger",
+  "category": "Dagger",
+  "grade": "gold",
+  "lowest_price": 58888888,
+  "listings": 1,
+  "level": 62,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Relic Collector Dagger",
+  "category": "Dagger",
+  "grade": "blue",
+  "lowest_price": 49997,
+  "listings": 2,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Destruction Dagger",
+  "category": "Dagger",
+  "grade": "blue",
+  "lowest_price": 89999,
+  "listings": 1,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Bloodthirsty Dagger",
+  "category": "Dagger",
+  "grade": "blue",
+  "lowest_price": 25000,
+  "listings": 1,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Expert's Splendent Orichalcum Dagger",
+  "category": "Dagger",
+  "grade": "blue",
+  "lowest_price": 1150000,
+  "listings": 14,
+  "level": 35,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Artisan's Orichalcum Dagger",
+  "category": "Dagger",
+  "grade": "blue",
+  "lowest_price": 298000,
+  "listings": 6,
+  "level": 39,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Discipline Dagger",
+  "category": "Dagger",
+  "grade": "blue",
+  "lowest_price": 200000,
+  "listings": 1,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Chaos Dagger",
+  "category": "Dagger",
+  "grade": "green",
+  "lowest_price": 6000,
+  "listings": 4,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Luminous Dagger",
+  "category": "Dagger",
+  "grade": "green",
+  "lowest_price": 13484,
+  "listings": 14,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Vagabond Dagger",
+  "category": "Dagger",
+  "grade": "green",
+  "lowest_price": 180000,
+  "listings": 17,
+  "level": 30,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Orichalcum Dagger",
+  "category": "Dagger",
+  "grade": "green",
+  "lowest_price": 59989,
+  "listings": 34,
+  "level": 22,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Expert's Orichalcum Dagger",
+  "category": "Dagger",
+  "grade": "green",
+  "lowest_price": 233333,
+  "listings": 18,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Forgotten Dagger",
+  "category": "Dagger",
+  "grade": "white",
+  "lowest_price": 15000,
+  "listings": 1,
+  "level": 13,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Shade Dagger",
+  "category": "Dagger",
+  "grade": "white",
+  "lowest_price": 1000,
+  "listings": 10,
+  "level": 13,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Phantasm Dagger",
+  "category": "Dagger",
+  "grade": "white",
+  "lowest_price": 4449,
+  "listings": 5,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Orichalcum Dagger",
+  "category": "Dagger",
+  "grade": "white",
+  "lowest_price": 30000,
+  "listings": 2,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Earth Dagger",
+  "category": "Dagger",
+  "grade": "white",
+  "lowest_price": 20000,
+  "listings": 11,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Wisdom Knife",
+  "category": "Dagger",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Holy Spirit Knife",
+  "category": "Dagger",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Tranquility Dagger",
+  "category": "Dagger",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Fallen Ancient God Dagger",
+  "category": "Dagger",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 46,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Dark Dragon Lord Dagger",
+  "category": "Dagger",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 78,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Star Dragon Lord Dagger",
+  "category": "Dagger",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 70,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Dark Dragon Lord Dagger",
+  "category": "Dagger",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 86,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Ebony Dragon Lord Dagger",
+  "category": "Dagger",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 94,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Ebony Dragon Lord Dagger",
+  "category": "Dagger",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 102,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Illusion Dagger",
+  "category": "Dagger",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Pragmatist Dagger",
+  "category": "Dagger",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Whispering Oblivion Dagger",
+  "category": "Dagger",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Order Dagger",
+  "category": "Dagger",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Lunatic Dagger",
+  "category": "Dagger",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 45,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Defender Dagger",
+  "category": "Dagger",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Frontline Dagger",
+  "category": "Dagger",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Rainy Forest Dagger",
+  "category": "Dagger",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 15,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Ethereal Dagger",
+  "category": "Dagger",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Comet Dagger",
+  "category": "Dagger",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Tempest Dagger",
+  "category": "Dagger",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 15,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Riverside Dagger",
+  "category": "Dagger",
+  "grade": "white",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Fantasy Bow",
+  "category": "Bow",
+  "grade": "gold",
+  "lowest_price": 600000,
+  "listings": 27,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Spectral Bow",
+  "category": "Bow",
+  "grade": "gold",
+  "lowest_price": 588779,
+  "listings": 9,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Courage Bow",
+  "category": "Bow",
+  "grade": "gold",
+  "lowest_price": 599996,
+  "listings": 25,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Artisan's Splendent Asvata Bow",
+  "category": "Bow",
+  "grade": "gold",
+  "lowest_price": 30999990,
+  "listings": 3,
+  "level": 44,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Star Dragon Lord Bow",
+  "category": "Bow",
+  "grade": "gold",
+  "lowest_price": 88888888,
+  "listings": 1,
+  "level": 70,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Pragmatist Bow",
+  "category": "Bow",
+  "grade": "blue",
+  "lowest_price": 5000177,
+  "listings": 1,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Destruction Bow",
+  "category": "Bow",
+  "grade": "blue",
+  "lowest_price": 499990,
+  "listings": 8,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Bloodthirsty Bow",
+  "category": "Bow",
+  "grade": "blue",
+  "lowest_price": 35000,
+  "listings": 7,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Expert's Splendent Asvata Bow",
+  "category": "Bow",
+  "grade": "blue",
+  "lowest_price": 1688888,
+  "listings": 28,
+  "level": 35,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Artisan's Asvata Bow",
+  "category": "Bow",
+  "grade": "blue",
+  "lowest_price": 150000,
+  "listings": 35,
+  "level": 39,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Discipline Bow",
+  "category": "Bow",
+  "grade": "blue",
+  "lowest_price": 29997,
+  "listings": 7,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Ethereal Bow",
+  "category": "Bow",
+  "grade": "green",
+  "lowest_price": 250000,
+  "listings": 3,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Chaos Bow",
+  "category": "Bow",
+  "grade": "green",
+  "lowest_price": 25000,
+  "listings": 29,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Luminous Bow",
+  "category": "Bow",
+  "grade": "green",
+  "lowest_price": 166666,
+  "listings": 2,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Vagabond Bow",
+  "category": "Bow",
+  "grade": "green",
+  "lowest_price": 20000,
+  "listings": 2,
+  "level": 30,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Asvata Bow",
+  "category": "Bow",
+  "grade": "green",
+  "lowest_price": 135000,
+  "listings": 88,
+  "level": 22,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Expert's Asvata Bow",
+  "category": "Bow",
+  "grade": "green",
+  "lowest_price": 39987,
+  "listings": 88,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Riverside Bow",
+  "category": "Bow",
+  "grade": "white",
+  "lowest_price": 1000,
+  "listings": 1,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Shade Bow",
+  "category": "Bow",
+  "grade": "white",
+  "lowest_price": 2500,
+  "listings": 13,
+  "level": 13,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Phantasm Bow",
+  "category": "Bow",
+  "grade": "white",
+  "lowest_price": 99997,
+  "listings": 10,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Asvata Bow",
+  "category": "Bow",
+  "grade": "white",
+  "lowest_price": 23000,
+  "listings": 31,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Wisdom Bow",
+  "category": "Bow",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Holy Spirit Bow",
+  "category": "Bow",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Tranquility Bow",
+  "category": "Bow",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Fallen Ancient God Bow",
+  "category": "Bow",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 46,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Star Dragon Lord Bow",
+  "category": "Bow",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 62,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Dark Dragon Lord Bow",
+  "category": "Bow",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 78,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Dark Dragon Lord Bow",
+  "category": "Bow",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 86,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Ebony Dragon Lord Bow",
+  "category": "Bow",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 94,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Ebony Dragon Lord Bow",
+  "category": "Bow",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 102,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Elder Bow",
+  "category": "Bow",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Illusion Bow",
+  "category": "Bow",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Relic Collector Bow",
+  "category": "Bow",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Temple Guardian Bow",
+  "category": "Bow",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Order Bow",
+  "category": "Bow",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Vowed Bow",
+  "category": "Bow",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Lunatic Bow",
+  "category": "Bow",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 45,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Pact-Bound Bow",
+  "category": "Bow",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 43,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Comet Bow",
+  "category": "Bow",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Tempest Bow",
+  "category": "Bow",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 15,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Frontline Bow",
+  "category": "Bow",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Intruder Bow",
+  "category": "Bow",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Forgotten Bow",
+  "category": "Bow",
+  "grade": "white",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 13,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Earth Bow",
+  "category": "Bow",
+  "grade": "white",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Holy Spirit Spellbook",
+  "category": "Spellbook",
+  "grade": "gold",
+  "lowest_price": 1500000,
+  "listings": 1,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Fantasy Spellbook",
+  "category": "Spellbook",
+  "grade": "gold",
+  "lowest_price": 599998,
+  "listings": 20,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Spectral Spellbook",
+  "category": "Spellbook",
+  "grade": "gold",
+  "lowest_price": 611111,
+  "listings": 21,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Courage Spellbook",
+  "category": "Spellbook",
+  "grade": "gold",
+  "lowest_price": 599999,
+  "listings": 15,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Artisan's Splendent Truth Spellbook",
+  "category": "Spellbook",
+  "grade": "gold",
+  "lowest_price": 30000000,
+  "listings": 2,
+  "level": 44,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Star Dragon Lord Spellbook",
+  "category": "Spellbook",
+  "grade": "gold",
+  "lowest_price": 57777777,
+  "listings": 2,
+  "level": 62,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Star Dragon Lord Spellbook",
+  "category": "Spellbook",
+  "grade": "gold",
+  "lowest_price": 66666666,
+  "listings": 1,
+  "level": 70,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Illusion Spellbook",
+  "category": "Spellbook",
+  "grade": "blue",
+  "lowest_price": 3000000,
+  "listings": 1,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Relic Collector Spellbook",
+  "category": "Spellbook",
+  "grade": "blue",
+  "lowest_price": 20000,
+  "listings": 3,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Destruction Spellbook",
+  "category": "Spellbook",
+  "grade": "blue",
+  "lowest_price": 500000,
+  "listings": 8,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Bloodthirsty Spellbook",
+  "category": "Spellbook",
+  "grade": "blue",
+  "lowest_price": 500000,
+  "listings": 1,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Expert's Splendent Truth Spellbook",
+  "category": "Spellbook",
+  "grade": "blue",
+  "lowest_price": 2000000,
+  "listings": 14,
+  "level": 35,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Artisan's Truth Spellbook",
+  "category": "Spellbook",
+  "grade": "blue",
+  "lowest_price": 217999,
+  "listings": 14,
+  "level": 39,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Discipline Spellbook",
+  "category": "Spellbook",
+  "grade": "blue",
+  "lowest_price": 10000923,
+  "listings": 2,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Tempest Spellbook",
+  "category": "Spellbook",
+  "grade": "green",
+  "lowest_price": 5000000,
+  "listings": 1,
+  "level": 15,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Chaos Spellbook",
+  "category": "Spellbook",
+  "grade": "green",
+  "lowest_price": 18000,
+  "listings": 17,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Luminous Spellbook",
+  "category": "Spellbook",
+  "grade": "green",
+  "lowest_price": 24990,
+  "listings": 2,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Vagabond Spellbook",
+  "category": "Spellbook",
+  "grade": "green",
+  "lowest_price": 9000,
+  "listings": 6,
+  "level": 30,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Truth Spellbook",
+  "category": "Spellbook",
+  "grade": "green",
+  "lowest_price": 129995,
+  "listings": 31,
+  "level": 22,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Expert's Truth Spellbook",
+  "category": "Spellbook",
+  "grade": "green",
+  "lowest_price": 28888,
+  "listings": 37,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Riverside Spellbook",
+  "category": "Spellbook",
+  "grade": "white",
+  "lowest_price": 1000,
+  "listings": 1,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Shade Spellbook",
+  "category": "Spellbook",
+  "grade": "white",
+  "lowest_price": 10000,
+  "listings": 24,
+  "level": 13,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Phantasm Spellbook",
+  "category": "Spellbook",
+  "grade": "white",
+  "lowest_price": 79999,
+  "listings": 10,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Truth Spellbook",
+  "category": "Spellbook",
+  "grade": "white",
+  "lowest_price": 16880,
+  "listings": 31,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Earth Spellbook",
+  "category": "Spellbook",
+  "grade": "white",
+  "lowest_price": 15000,
+  "listings": 15,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Ebony Dragon Lord Spellbook",
+  "category": "Spellbook",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 102,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Wisdom Spellbook",
+  "category": "Spellbook",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Tranquility Spellbook",
+  "category": "Spellbook",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Fallen Ancient God Spellbook",
+  "category": "Spellbook",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 46,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Dark Dragon Lord Spellbook",
+  "category": "Spellbook",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 78,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Dark Dragon Lord Spellbook",
+  "category": "Spellbook",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 86,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Ebony Dragon Lord Spellbook",
+  "category": "Spellbook",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 94,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Ethereal Spellbook",
+  "category": "Spellbook",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Elder Spellbook",
+  "category": "Spellbook",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Rainy Forest Spellbook",
+  "category": "Spellbook",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 15,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Defender Spellbook",
+  "category": "Spellbook",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Whispering Oblivion Spellbook",
+  "category": "Spellbook",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Vowed Spellbook",
+  "category": "Spellbook",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Pact-Bound Spellbook",
+  "category": "Spellbook",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 43,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Order Spellbook",
+  "category": "Spellbook",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Comet Spellbook",
+  "category": "Spellbook",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Frontline Spellbook",
+  "category": "Spellbook",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Intruder Spellbook",
+  "category": "Spellbook",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Forgotten Spellbook",
+  "category": "Spellbook",
+  "grade": "white",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 13,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Fantasy Orb",
+  "category": "Orb",
+  "grade": "gold",
+  "lowest_price": 649000,
+  "listings": 16,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Spectral Orb",
+  "category": "Orb",
+  "grade": "gold",
+  "lowest_price": 599000,
+  "listings": 16,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Courage Orb",
+  "category": "Orb",
+  "grade": "gold",
+  "lowest_price": 600000,
+  "listings": 14,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Artisan's Splendent Truth Orb",
+  "category": "Orb",
+  "grade": "gold",
+  "lowest_price": 24000000,
+  "listings": 1,
+  "level": 44,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Illusion Orb",
+  "category": "Orb",
+  "grade": "blue",
+  "lowest_price": 500000,
+  "listings": 1,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Relic Collector Orb",
+  "category": "Orb",
+  "grade": "blue",
+  "lowest_price": 99999,
+  "listings": 1,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Destruction Orb",
+  "category": "Orb",
+  "grade": "blue",
+  "lowest_price": 49994,
+  "listings": 25,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Bloodthirsty Orb",
+  "category": "Orb",
+  "grade": "blue",
+  "lowest_price": 39999,
+  "listings": 6,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Expert's Splendent Truth Orb",
+  "category": "Orb",
+  "grade": "blue",
+  "lowest_price": 1750000,
+  "listings": 20,
+  "level": 35,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Artisan's Truth Orb",
+  "category": "Orb",
+  "grade": "blue",
+  "lowest_price": 25555,
+  "listings": 29,
+  "level": 39,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Discipline Orb",
+  "category": "Orb",
+  "grade": "blue",
+  "lowest_price": 30000,
+  "listings": 2,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Chaos Orb",
+  "category": "Orb",
+  "grade": "green",
+  "lowest_price": 14997,
+  "listings": 8,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Luminous Orb",
+  "category": "Orb",
+  "grade": "green",
+  "lowest_price": 8500,
+  "listings": 10,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Vagabond Orb",
+  "category": "Orb",
+  "grade": "green",
+  "lowest_price": 5998,
+  "listings": 3,
+  "level": 30,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Truth Orb",
+  "category": "Orb",
+  "grade": "green",
+  "lowest_price": 215000,
+  "listings": 30,
+  "level": 22,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Expert's Truth Orb",
+  "category": "Orb",
+  "grade": "green",
+  "lowest_price": 39999,
+  "listings": 39,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Shade Orb",
+  "category": "Orb",
+  "grade": "white",
+  "lowest_price": 3500,
+  "listings": 22,
+  "level": 13,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Phantasm Orb",
+  "category": "Orb",
+  "grade": "white",
+  "lowest_price": 99985,
+  "listings": 2,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Truth Orb",
+  "category": "Orb",
+  "grade": "white",
+  "lowest_price": 19979,
+  "listings": 30,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Earth Orb",
+  "category": "Orb",
+  "grade": "white",
+  "lowest_price": 20998,
+  "listings": 10,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Wisdom Orb",
+  "category": "Orb",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Holy Spirit Orb",
+  "category": "Orb",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Tranquility Orb",
+  "category": "Orb",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Fallen Ancient God Orb",
+  "category": "Orb",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 46,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Star Dragon Lord Orb",
+  "category": "Orb",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 62,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Dark Dragon Lord Orb",
+  "category": "Orb",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 78,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Star Dragon Lord Orb",
+  "category": "Orb",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 70,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Dark Dragon Lord Orb",
+  "category": "Orb",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 86,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Ebony Dragon Lord Orb",
+  "category": "Orb",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 94,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Ebony Dragon Lord Orb",
+  "category": "Orb",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 102,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Temple Guardian Orb",
+  "category": "Orb",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Pragmatist Orb",
+  "category": "Orb",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Defender Orb",
+  "category": "Orb",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Order Orb",
+  "category": "Orb",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Vowed Orb",
+  "category": "Orb",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Whispering Oblivion Orb",
+  "category": "Orb",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Pact-Bound Orb",
+  "category": "Orb",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 43,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Lunatic Orb",
+  "category": "Orb",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 45,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Comet Orb",
+  "category": "Orb",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Rainy Forest Orb",
+  "category": "Orb",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 15,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Tempest Orb",
+  "category": "Orb",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 15,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Intruder Orb",
+  "category": "Orb",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Frontline Orb",
+  "category": "Orb",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Forgotten Orb",
+  "category": "Orb",
+  "grade": "white",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 13,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Fantasy Mace",
+  "category": "Mace",
+  "grade": "gold",
+  "lowest_price": 578888,
+  "listings": 26,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Spectral Mace",
+  "category": "Mace",
+  "grade": "gold",
+  "lowest_price": 597993,
+  "listings": 17,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Courage Mace",
+  "category": "Mace",
+  "grade": "gold",
+  "lowest_price": 599993,
+  "listings": 19,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Artisan's Splendent Orichalcum Mace",
+  "category": "Mace",
+  "grade": "gold",
+  "lowest_price": 18999995,
+  "listings": 9,
+  "level": 44,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Star Dragon Lord Mace",
+  "category": "Mace",
+  "grade": "gold",
+  "lowest_price": 69000000,
+  "listings": 1,
+  "level": 62,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Destruction Mace",
+  "category": "Mace",
+  "grade": "blue",
+  "lowest_price": 29999,
+  "listings": 5,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Bloodthirsty Mace",
+  "category": "Mace",
+  "grade": "blue",
+  "lowest_price": 57000,
+  "listings": 16,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Expert's Splendent Orichalcum Mace",
+  "category": "Mace",
+  "grade": "blue",
+  "lowest_price": 1999898,
+  "listings": 16,
+  "level": 35,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Artisan's Orichalcum Mace",
+  "category": "Mace",
+  "grade": "blue",
+  "lowest_price": 299999,
+  "listings": 10,
+  "level": 39,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Order Mace",
+  "category": "Mace",
+  "grade": "blue",
+  "lowest_price": 999999,
+  "listings": 2,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Discipline Mace",
+  "category": "Mace",
+  "grade": "blue",
+  "lowest_price": 24999,
+  "listings": 9,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Tempest Mace",
+  "category": "Mace",
+  "grade": "green",
+  "lowest_price": 10000,
+  "listings": 1,
+  "level": 15,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Luminous Mace",
+  "category": "Mace",
+  "grade": "green",
+  "lowest_price": 15000,
+  "listings": 7,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Vagabond Mace",
+  "category": "Mace",
+  "grade": "green",
+  "lowest_price": 19999,
+  "listings": 14,
+  "level": 30,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Orichalcum Mace",
+  "category": "Mace",
+  "grade": "green",
+  "lowest_price": 78888,
+  "listings": 12,
+  "level": 22,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Expert's Orichalcum Mace",
+  "category": "Mace",
+  "grade": "green",
+  "lowest_price": 100000,
+  "listings": 6,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Riverside Mace",
+  "category": "Mace",
+  "grade": "white",
+  "lowest_price": 1000,
+  "listings": 1,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Shade Mace",
+  "category": "Mace",
+  "grade": "white",
+  "lowest_price": 1000,
+  "listings": 1,
+  "level": 13,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Phantasm Mace",
+  "category": "Mace",
+  "grade": "white",
+  "lowest_price": 90999,
+  "listings": 19,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Orichalcum Mace",
+  "category": "Mace",
+  "grade": "white",
+  "lowest_price": 25000,
+  "listings": 42,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Tranquility Mace",
+  "category": "Mace",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Wisdom Mace",
+  "category": "Mace",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Holy Spirit Mace",
+  "category": "Mace",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Fallen Ancient God Mace",
+  "category": "Mace",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 46,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Dark Dragon Lord Mace",
+  "category": "Mace",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 78,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Star Dragon Lord Mace",
+  "category": "Mace",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 70,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Ebony Dragon Lord Mace",
+  "category": "Mace",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 94,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Dark Dragon Lord Mace",
+  "category": "Mace",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 86,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Ebony Dragon Lord Mace",
+  "category": "Mace",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 102,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Whispering Oblivion Mace",
+  "category": "Mace",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Pragmatist Mace",
+  "category": "Mace",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Defender Mace",
+  "category": "Mace",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Elder Mace",
+  "category": "Mace",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Temple Guardian Mace",
+  "category": "Mace",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Relic Collector Mace",
+  "category": "Mace",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Illusion Mace",
+  "category": "Mace",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Vowed Mace",
+  "category": "Mace",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Pact-Bound Mace",
+  "category": "Mace",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 43,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Lunatic Mace",
+  "category": "Mace",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 45,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Ethereal Mace",
+  "category": "Mace",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Rainy Forest Mace",
+  "category": "Mace",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 15,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Comet Mace",
+  "category": "Mace",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Chaos Mace",
+  "category": "Mace",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Intruder Mace",
+  "category": "Mace",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Frontline Mace",
+  "category": "Mace",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Forgotten Mace",
+  "category": "Mace",
+  "grade": "white",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 13,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Earth Mace",
+  "category": "Mace",
+  "grade": "white",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Wisdom Staff",
+  "category": "Staff",
+  "grade": "gold",
+  "lowest_price": 999998,
+  "listings": 2,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Fantasy Staff",
+  "category": "Staff",
+  "grade": "gold",
+  "lowest_price": 614000,
+  "listings": 17,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Spectral Staff",
+  "category": "Staff",
+  "grade": "gold",
+  "lowest_price": 600000,
+  "listings": 6,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Courage Staff",
+  "category": "Staff",
+  "grade": "gold",
+  "lowest_price": 610000,
+  "listings": 20,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Artisan's Splendent Asvata Staff",
+  "category": "Staff",
+  "grade": "gold",
+  "lowest_price": 25999999,
+  "listings": 6,
+  "level": 44,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Star Dragon Lord Staff",
+  "category": "Staff",
+  "grade": "gold",
+  "lowest_price": 69900000,
+  "listings": 1,
+  "level": 62,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Illusion Staff",
+  "category": "Staff",
+  "grade": "blue",
+  "lowest_price": 200000,
+  "listings": 2,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Relic Collector Staff",
+  "category": "Staff",
+  "grade": "blue",
+  "lowest_price": 399999,
+  "listings": 4,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Destruction Staff",
+  "category": "Staff",
+  "grade": "blue",
+  "lowest_price": 43800,
+  "listings": 14,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Expert's Splendent Asvata Staff",
+  "category": "Staff",
+  "grade": "blue",
+  "lowest_price": 1500000,
+  "listings": 12,
+  "level": 35,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Artisan's Asvata Staff",
+  "category": "Staff",
+  "grade": "blue",
+  "lowest_price": 220000,
+  "listings": 36,
+  "level": 39,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Discipline Staff",
+  "category": "Staff",
+  "grade": "blue",
+  "lowest_price": 19999,
+  "listings": 8,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Tempest Staff",
+  "category": "Staff",
+  "grade": "green",
+  "lowest_price": 10000,
+  "listings": 1,
+  "level": 15,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Chaos Staff",
+  "category": "Staff",
+  "grade": "green",
+  "lowest_price": 9900,
+  "listings": 10,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Luminous Staff",
+  "category": "Staff",
+  "grade": "green",
+  "lowest_price": 50000,
+  "listings": 17,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Vagabond Staff",
+  "category": "Staff",
+  "grade": "green",
+  "lowest_price": 12000,
+  "listings": 3,
+  "level": 30,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Asvata Staff",
+  "category": "Staff",
+  "grade": "green",
+  "lowest_price": 139998,
+  "listings": 44,
+  "level": 22,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Expert's Asvata Staff",
+  "category": "Staff",
+  "grade": "green",
+  "lowest_price": 39998,
+  "listings": 33,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Shade Staff",
+  "category": "Staff",
+  "grade": "white",
+  "lowest_price": 6000,
+  "listings": 22,
+  "level": 13,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Phantasm Staff",
+  "category": "Staff",
+  "grade": "white",
+  "lowest_price": 4494,
+  "listings": 8,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Asvata Staff",
+  "category": "Staff",
+  "grade": "white",
+  "lowest_price": 38888,
+  "listings": 34,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Earth Staff",
+  "category": "Staff",
+  "grade": "white",
+  "lowest_price": 20000,
+  "listings": 6,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Holy Spirit Staff",
+  "category": "Staff",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Tranquility Staff",
+  "category": "Staff",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Fallen Ancient God Staff",
+  "category": "Staff",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 46,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Dark Dragon Lord Staff",
+  "category": "Staff",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 78,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Star Dragon Lord Staff",
+  "category": "Staff",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 70,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Ebony Dragon Lord Staff",
+  "category": "Staff",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 94,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Ebony Dragon Lord Staff",
+  "category": "Staff",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 102,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Ethereal Staff",
+  "category": "Staff",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Elder Staff",
+  "category": "Staff",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Defender Staff",
+  "category": "Staff",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Whispering Oblivion Staff",
+  "category": "Staff",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Order Staff",
+  "category": "Staff",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Vowed Staff",
+  "category": "Staff",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Pact-Bound Staff",
+  "category": "Staff",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 43,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Bloodthirsty Staff",
+  "category": "Staff",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Rainy Forest Staff",
+  "category": "Staff",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 15,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Frontline Staff",
+  "category": "Staff",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Comet Staff",
+  "category": "Staff",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Intruder Staff",
+  "category": "Staff",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Forgotten Staff",
+  "category": "Staff",
+  "grade": "white",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 13,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Riverside Staff",
+  "category": "Staff",
+  "grade": "white",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Dark Dragon Lord Guard",
+  "category": "Guard",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 78,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Wisdom Guard",
+  "category": "Guard",
+  "grade": "gold",
+  "lowest_price": 869000,
+  "listings": 1,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Holy Spirit Guard",
+  "category": "Guard",
+  "grade": "gold",
+  "lowest_price": 645000,
+  "listings": 2,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Fantasy Guard",
+  "category": "Guard",
+  "grade": "gold",
+  "lowest_price": 578888,
+  "listings": 15,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Spectral Guard",
+  "category": "Guard",
+  "grade": "gold",
+  "lowest_price": 580000,
+  "listings": 15,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Courage Guard",
+  "category": "Guard",
+  "grade": "gold",
+  "lowest_price": 600000,
+  "listings": 11,
+  "level": 41,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Fallen Ancient God Guard",
+  "category": "Guard",
+  "grade": "gold",
+  "lowest_price": 9000000,
+  "listings": 1,
+  "level": 46,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Artisan's Splendent Orichalcum Guard",
+  "category": "Guard",
+  "grade": "gold",
+  "lowest_price": 23888888,
+  "listings": 8,
+  "level": 44,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Tranquility Guard",
+  "category": "Guard",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 36,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Star Dragon Lord Guard",
+  "category": "Guard",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 62,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Star Dragon Lord Guard",
+  "category": "Guard",
+  "grade": "gold",
+  "lowest_price": 75000000,
+  "listings": 1,
+  "level": 70,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Dark Dragon Lord Guard",
+  "category": "Guard",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 86,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Ebony Dragon Lord Guard",
+  "category": "Guard",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 94,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Ebony Dragon Lord Guard",
+  "category": "Guard",
+  "grade": "gold",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 102,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Elder Guard",
+  "category": "Guard",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Destruction Guard",
+  "category": "Guard",
+  "grade": "blue",
+  "lowest_price": 29999,
+  "listings": 7,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Illusion Guard",
+  "category": "Guard",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Pragmatist Guard",
+  "category": "Guard",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Forgotten Guard",
+  "category": "Guard",
+  "grade": "white",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 13,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Relic Collector Guard",
+  "category": "Guard",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 23,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Whispering Oblivion Guard",
+  "category": "Guard",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Bloodthirsty Guard",
+  "category": "Guard",
+  "grade": "blue",
+  "lowest_price": 4999998,
+  "listings": 1,
+  "level": 33,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Expert's Splendent Orichalcum Guard",
+  "category": "Guard",
+  "grade": "blue",
+  "lowest_price": 2099000,
+  "listings": 13,
+  "level": 35,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Artisan's Orichalcum Guard",
+  "category": "Guard",
+  "grade": "blue",
+  "lowest_price": 290000,
+  "listings": 12,
+  "level": 39,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Order Guard",
+  "category": "Guard",
+  "grade": "blue",
+  "lowest_price": 249995,
+  "listings": 2,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Discipline Guard",
+  "category": "Guard",
+  "grade": "blue",
+  "lowest_price": 25000,
+  "listings": 5,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Vowed Guard",
+  "category": "Guard",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 38,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Pact-Bound Guard",
+  "category": "Guard",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 43,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Lunatic Guard",
+  "category": "Guard",
+  "grade": "blue",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 45,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Rainy Forest Guard",
+  "category": "Guard",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 15,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Ethereal Guard",
+  "category": "Guard",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Riverside Guard",
+  "category": "Guard",
+  "grade": "white",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Chaos Guard",
+  "category": "Guard",
+  "grade": "green",
+  "lowest_price": 120000,
+  "listings": 8,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Tempest Guard",
+  "category": "Guard",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 15,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Luminous Guard",
+  "category": "Guard",
+  "grade": "green",
+  "lowest_price": 9989,
+  "listings": 9,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Vagabond Guard",
+  "category": "Guard",
+  "grade": "green",
+  "lowest_price": 600000,
+  "listings": 1,
+  "level": 30,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Splendent Orichalcum Guard",
+  "category": "Guard",
+  "grade": "green",
+  "lowest_price": 89000,
+  "listings": 25,
+  "level": 22,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Frontline Guard",
+  "category": "Guard",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Intruder Guard",
+  "category": "Guard",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 25,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Expert's Orichalcum Guard",
+  "category": "Guard",
+  "grade": "green",
+  "lowest_price": 0,
+  "listings": 0,
+  "level": 28,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Shade Guard",
+  "category": "Guard",
+  "grade": "white",
+  "lowest_price": 15000,
+  "listings": 14,
+  "level": 13,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Phantasm Guard",
+  "category": "Guard",
+  "grade": "white",
+  "lowest_price": 15000,
+  "listings": 12,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Orichalcum Guard",
+  "category": "Guard",
+  "grade": "white",
+  "lowest_price": 23999,
+  "listings": 4,
+  "level": 18,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
+ },
+ {
+  "checked_at": "2026-10-13T21:27:00+02:00",
+  "item": "Earth Guard",
+  "category": "Guard",
+  "grade": "white",
+  "lowest_price": 6999,
+  "listings": 6,
+  "level": 20,
+  "screenshot": "Ritaglia_1.791.919.673.329.mp4"
  }
 ]
