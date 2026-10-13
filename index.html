@@ -264,8 +264,11 @@ const fmtDT = (d) => { d = new Date(d); return isNaN(d) ? '—' : d.toLocaleStri
 /* Market structure: groups and their sub-categories, in the game's order */
 const GROUPS = [
   {id: 'weapons', name: 'Armi', cats: [['Longsword', 'Longsword'], ['Greatsword', 'Greatsword'], ['Dagger', 'Dagger'], ['Bow', 'Bow'], ['Spellbook', 'Spellbook'], ['Orb', 'Orb'], ['Mace', 'Mace'], ['Staff', 'Staff'], ['Guard', 'Guard']]},
-  {id: 'materials', name: 'Materiali', cats: [['Gathering Material', 'Raccolta'], ['Crafting Material', 'Crafting'], ['Substance Morph Material', 'Trasmutazione'], ['Miscellaneous', 'Materiali vari']]},
-  {id: 'consumables', name: 'Consumabili', cats: [['Potions', 'Pozioni'], ['Food', 'Cibo'], ['Scroll', 'Pergamene'], ['Candy', 'Caramelle'], ['Manastone/Soulstone', 'Manastone e Soulstone'], ['Wings', 'Ali'], ['Pantheon', 'Pantheon'], ['Consumable Miscellaneous', 'Consumabili vari']]},
+  {id: 'armor', name: 'Armature', cats: [['Helm', 'Elmo'], ['Pauldrons', 'Spallacci'], ['Top', 'Corazza'], ['Legs', 'Gambali'], ['Gloves', 'Guanti'], ['Shoes', 'Stivali'], ['Cloak', 'Mantello']]},
+  {id: 'accessories', name: 'Accessori', cats: [['Necklace', 'Collana'], ['Earrings', 'Orecchini'], ['Ring', 'Anello'], ['Bracelet', 'Bracciale']]},
+  {id: 'consumables', name: 'Consumabili', cats: [['Potions', 'Pozioni'], ['Food', 'Cibo'], ['Scroll', 'Pergamene'], ['Candy', 'Caramelle'], ['Manastone/Soulstone', 'Manastone e Soulstone'], ['Theostone', 'Theostone'], ['Wings', 'Ali'], ['Pantheon', 'Pantheon'], ['Duration Ticket', 'Biglietti a tempo'], ['Chest', 'Forzieri'], ['Consumable Miscellaneous', 'Consumabili vari']]},
+  {id: 'skins', name: 'Aspetto', cats: [['Skin Armor', 'Aspetto armature'], ['Skin Decoration', 'Aspetto accessori']]},
+  {id: 'materials', name: 'Materiali', cats: [['Gathering Material', 'Raccolta'], ['Crafting Material', 'Crafting'], ['Substance Morph Material', 'Trasmutazione'], ['Special Material', 'Materiali speciali'], ['Miscellaneous', 'Materiali vari']]},
 ];
 const CAT_IT = {}, CAT_ORDER = {}, CAT_GROUP = {};
 GROUPS.forEach((g, gi) => g.cats.forEach(([c, label], ci) => { CAT_IT[c] = label; CAT_ORDER[c] = gi * 100 + ci; CAT_GROUP[c] = g.id; }));
@@ -277,7 +280,7 @@ const GRADES_ON = new Set(Object.keys(GRADE));
 const store = {get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }};
 let LOG = [], ITEMS = [], S = {}, ICONS = {}, SEL = {type: 'all'}, sortK = 'grade_rank', sortDir = -1, picked = null;
 let showNA = store.get('aion-na') !== 'hide';
-let OPEN = new Set((store.get('aion-open') ?? (window.innerWidth < 760 ? '' : 'weapons,materials,consumables')).split(',').filter(Boolean));
+let OPEN = new Set((store.get('aion-open') ?? (window.innerWidth < 760 ? '' : 'weapons,armor,accessories,consumables,skins,materials')).split(',').filter(Boolean));
 
 /* ---------- theme switch ---------- */
 const themeBtns = document.querySelectorAll('.themes button');

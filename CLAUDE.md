@@ -13,15 +13,20 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
      with tesseract to know what was seen, then verify every row visually from its sharpest frame (OCR misreads numbers).
      Weapon names follow a fixed series per type (see SERIES below) — use it to spot rows that were missed.
      The user can't have files deleted by Claude: after an update, tell them which processed video they can delete.
+     Pipeline notes: the list lags ~12 frames behind the sidebar click, so assign category by frame-12; the first row under the header has no top
+     separator (header ends at y≈306, add a virtual one). Greyed rows are low-contrast: blur/dedupe filters drop them easily, and similar rows can
+     merge in thumbnail dedupe — never merge rows whose Item Level differs. Grade of greyed rows: compare text RGB (gold r≈g>b, blue r<0.6b, green g>r).
+     Non-gear lists (consumables, skins, materials) are short: read them visually from still frames rather than trusting OCR.
    - Screenshots (F12): C:\Program Files (x86)\Steam\userdata\1171700832\760\remote\3393110\screenshots
    - Greyed rows (0 listings, price 0) ARE recorded with lowest_price 0 and listings 0: the page shows them as 'Non disponibile'.
-   - Weapons also get `level` (the 'Item Level' under the name).
+   - Weapons, armor and accessories also get `level` (the 'Item Level' under the name).
 2. For each item row, append to data/price_log.json:
    {checked_at (ISO, Europe/Rome offset, from the screenshot file name), item, category, grade, lowest_price, listings, screenshot}
    - grade = name color in game: white (Common) | green (Non rare) | blue (Rare) | gold (Legendary) | orange (Mythic) | teal (shown as 'Speciale'; game lists it after Common)
-   - category = the Market sub-category. Materials tab: "Gathering Material", "Crafting Material", "Substance Morph Material", "Miscellaneous".
-     Consumables tab: "Potions", "Food", "Scroll", "Candy", "Manastone/Soulstone", "Wings", "Pantheon", "Consumable Miscellaneous".
-     Weapons tab: "Longsword", "Greatsword", "Dagger" (incl. "... Knife"), "Bow", "Spellbook", "Orb", "Mace", "Staff", "Guard".
+   - category = the Market sub-category (sidebar entry selected in game). Weapons tab: "Longsword", "Greatsword", "Dagger" (incl. "... Knife"), "Bow", "Spellbook", "Orb", "Mace", "Staff", "Guard".
+     Armor tab: "Helm", "Pauldrons", "Top" (Breastplate), "Legs" (Greaves), "Gloves", "Shoes" (Boots), "Cloak". Accessories tab: "Necklace", "Earrings", "Ring", "Bracelet".
+     Consumables tab: "Potions", "Food", "Scroll", "Candy", "Manastone/Soulstone", "Theostone", "Wings", "Pantheon", "Duration Ticket", "Chest", "Consumable Miscellaneous".
+     Skins tab (Armor/Decoration): "Skin Armor", "Skin Decoration". Materials tab: "Gathering Material", "Crafting Material", "Substance Morph Material", "Special Material", "Miscellaneous".
      A new category also needs an entry in GROUPS in index.html (sidebar accordion).
    - Consecutive screenshots overlap: never add the same item twice from one batch of screenshots.
    - Flag rows only half visible at the bottom of a screenshot that never appear fully in the next one.
