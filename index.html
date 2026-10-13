@@ -77,8 +77,26 @@ button { font: inherit; color: inherit; }
 .main { padding: 14px 22px 18px; min-width: 0; }
 .search { width: 100%; border: 1px solid var(--line); background: var(--field); padding: 9px 14px; color: var(--text); font: inherit; margin-bottom: 8px; }
 .search::placeholder { color: var(--dim); }
-.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 14px; color: var(--dim); margin: 0 0 6px; }
-.legend span::before { content: ""; display: inline-block; width: 9px; height: 9px; border: 1.5px solid currentColor; margin-right: 6px; vertical-align: 0; }
+.grades { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; font-size: 15px; margin: 0 0 6px; }
+.grades .lbl { color: var(--dim); margin-right: 4px; }
+.grades button { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; padding: 3px 8px; border: 1px solid transparent; }
+.grades button::before { content: ""; width: 11px; height: 11px; border: 1.5px solid currentColor; box-sizing: border-box; flex: none; }
+.grades button[aria-pressed="true"]::before { background: currentColor; box-shadow: inset 0 0 0 2px var(--bg2); }
+.grades button[aria-pressed="false"] { opacity: .45; }
+.grades button:hover { border-color: var(--line); opacity: 1; }
+.grades button:focus-visible { outline: 2px solid var(--accent); outline-offset: 0; }
+.grades .g-white { color: var(--g-white); } .grades .g-green { color: var(--g-green); } .grades .g-blue { color: var(--g-blue); } .grades .g-gold { color: var(--g-gold); } .grades .g-orange { color: var(--g-orange); }
+.grades .reset { color: var(--dim); text-decoration: underline; text-underline-offset: 3px; margin-left: 4px; }
+.grades .reset::before { display: none; }
+.grades .reset[hidden] { display: none; }
+.tools { display: flex; gap: 8px; margin-bottom: 8px; }
+.tools .search { margin: 0; flex: 1; min-width: 0; }
+.sidetoggle { all: unset; cursor: pointer; flex: none; display: inline-flex; align-items: center; gap: 7px; padding: 0 12px; border: 1px solid var(--line); background: var(--field); color: var(--dim); font-size: 16px; }
+.sidetoggle:hover { color: var(--text); border-color: var(--accent); }
+.sidetoggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sidetoggle svg { width: 16px; height: 16px; }
+.win.noside .body { grid-template-columns: minmax(0, 1fr); }
+.win.noside .side { display: none; }
 
 .scroll { max-height: 640px; overflow: auto; }
 table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
@@ -123,13 +141,14 @@ footer { text-align: center; color: var(--dim); font-size: 14px; padding: 0 16px
   .side button { width: auto; flex: none; padding: 12px; gap: 6px; }
   .side button[aria-pressed="true"] { box-shadow: inset 0 -2px 0 var(--accent); background: none; }
   .main { padding: 12px 12px 14px; }
+  .sidetoggle span { display: none; }
   .hn { display: none; }
   td, th { padding: 7px 5px; } .slot { width: 38px; height: 38px; } .it { gap: 10px; } .nm { font-size: 18px; }
 }
 </style>
 </head>
 <body>
-<div class="win">
+<div class="win" id="win">
   <div class="bar">
     <h1>Aion 2 Market<small>by Benzodaeskisumi</small></h1>
     <div class="right">
@@ -153,8 +172,19 @@ footer { text-align: center; color: var(--dim); font-size: 14px; padding: 0 16px
   <div class="body">
     <nav class="side" id="cats" aria-label="Categorie"></nav>
     <div class="main">
-      <input class="search" id="q" type="search" placeholder="Cerca un item…" aria-label="Cerca un item">
-      <div class="legend" aria-label="Gradi"><span class="g-white">Common</span><span class="g-green">Non rare</span><span class="g-blue">Rare</span><span class="g-gold">Legendary</span><span class="g-orange">Mythic</span></div>
+      <div class="tools">
+        <button class="sidetoggle" id="sidetoggle" type="button" aria-controls="cats"></button>
+        <input class="search" id="q" type="search" placeholder="Cerca un item…" aria-label="Cerca un item">
+      </div>
+      <div class="grades" id="grades" role="group" aria-label="Filtra per grado">
+        <span class="lbl">Grado</span>
+        <button type="button" class="g-white" data-grade="white" aria-pressed="true">Common</button>
+        <button type="button" class="g-green" data-grade="green" aria-pressed="true">Non rare</button>
+        <button type="button" class="g-blue" data-grade="blue" aria-pressed="true">Rare</button>
+        <button type="button" class="g-gold" data-grade="gold" aria-pressed="true">Legendary</button>
+        <button type="button" class="g-orange" data-grade="orange" aria-pressed="true">Mythic</button>
+        <button type="button" class="reset" id="grades-reset" hidden>Mostra tutti</button>
+      </div>
       <div class="scroll">
         <table>
           <thead><tr>
@@ -196,6 +226,7 @@ const CAT_IT = {'Gathering Material': 'Raccolta', 'Crafting Material': 'Crafting
 const GRADE = {white: 'Common', green: 'Non rare', blue: 'Rare', gold: 'Legendary', orange: 'Mythic'};
 const SIG_SHORT = {'Compra per rivendere': 'Compra', 'Vendi ora': 'Vendi', 'Tieni': 'Tieni', 'Servono più dati': 'Servono più dati'};
 const catName = (c) => CAT_IT[c] || c;
+const GRADES_ON = new Set(['white', 'green', 'blue', 'gold', 'orange']);
 let LOG = [], ITEMS = [], S = {}, ICONS = {}, CAT = 'all', sortK = 'latest', sortDir = -1, picked = null;
 
 /* ---------- theme switch ---------- */
@@ -259,7 +290,7 @@ function drawCats() {
 
 function drawTable() {
   const term = document.getElementById('q').value.trim().toLowerCase();
-  const rows = ITEMS.filter((r) => (CAT === 'all' || r.category === CAT) && (!term || (r.item + ' ' + catName(r.category) + ' ' + GRADE[r.grade]).toLowerCase().includes(term)))
+  const rows = ITEMS.filter((r) => (CAT === 'all' || r.category === CAT) && GRADES_ON.has(r.grade) && (!term || (r.item + ' ' + catName(r.category) + ' ' + GRADE[r.grade]).toLowerCase().includes(term)))
     .sort((a, b) => {
       const x = a[sortK], y = b[sortK];
       if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
@@ -272,7 +303,7 @@ function drawTable() {
   const tbody = document.getElementById('rows');
   if (!rows.length) {
     const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 7; td.className = 'empty';
-    td.textContent = term ? `Nessun item contiene "${term}". Prova un altro nome.` : 'Nessun item in questa categoria.';
+    td.textContent = term ? `Nessun item contiene "${term}" con questi filtri. Prova un altro nome o mostra tutti i gradi.` : GRADES_ON.size === 0 ? 'Nessun grado selezionato. Clicca un grado per mostrarlo.' : 'Nessun item di questi gradi in questa categoria.';
     tr.appendChild(td); tbody.replaceChildren(tr); return;
   }
   tbody.replaceChildren(...rows.map((r) => {
@@ -326,6 +357,39 @@ function drawChart() {
       tip.style.top = Math.max(0, y(d.v) / H * box.clientHeight - tip.offsetHeight - 10) + 'px';
     }).on('mouseleave', () => { tip.hidden = true; });
 }
+
+/* ---------- grade filter ---------- */
+const gradeBtns = document.querySelectorAll('#grades button[data-grade]');
+const gradeReset = document.getElementById('grades-reset');
+function paintGrades() {
+  gradeBtns.forEach((b) => b.setAttribute('aria-pressed', String(GRADES_ON.has(b.dataset.grade))));
+  gradeReset.hidden = GRADES_ON.size === gradeBtns.length;
+}
+gradeBtns.forEach((b) => b.addEventListener('click', (e) => {
+  const g = b.dataset.grade;
+  // Click toggles one grade; Shift/Ctrl/Cmd-click (or click on the only active one when all are on) shows only that grade.
+  if (e.shiftKey || e.ctrlKey || e.metaKey) { GRADES_ON.clear(); GRADES_ON.add(g); }
+  else if (GRADES_ON.has(g)) GRADES_ON.delete(g); else GRADES_ON.add(g);
+  paintGrades(); drawTable();
+}));
+gradeReset.addEventListener('click', () => { gradeBtns.forEach((b) => GRADES_ON.add(b.dataset.grade)); paintGrades(); drawTable(); });
+
+/* ---------- sidebar toggle ---------- */
+const win = document.getElementById('win'), sideBtn = document.getElementById('sidetoggle');
+const ICON_SIDE = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 2.5v11" stroke="currentColor" stroke-width="1.4"/></svg>';
+function paintSide() {
+  const hidden = win.classList.contains('noside');
+  sideBtn.innerHTML = ICON_SIDE + '<span>' + (hidden ? 'Mostra categorie' : 'Nascondi categorie') + '</span>';
+  sideBtn.setAttribute('aria-expanded', String(!hidden));
+  sideBtn.setAttribute('aria-label', hidden ? 'Mostra la barra delle categorie' : 'Nascondi la barra delle categorie');
+}
+try { if (localStorage.getItem('aion-side') === 'hidden') win.classList.add('noside'); } catch (e) {}
+sideBtn.addEventListener('click', () => {
+  win.classList.toggle('noside');
+  try { localStorage.setItem('aion-side', win.classList.contains('noside') ? 'hidden' : 'shown'); } catch (e) {}
+  paintSide(); drawChart();
+});
+paintSide();
 
 /* ---------- events ---------- */
 document.querySelectorAll('th button').forEach((b) => b.addEventListener('click', () => {

@@ -17,4 +17,4 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 5. Commit and push to main. Pages redeploys in about a minute.
 
 Page logic lives in index.html (computeItems). d3 is vendored in lib/.
-Themes: Abyss (default), Elyos (light), Asmodian; chosen theme is remembered in localStorage ('aion-theme').
+Themes: Abyss (default), Elyos (light), Asmodian; chosen theme is remembered in localStorage ('aion-theme'). Sidebar shown/hidden is remembered as 'aion-side'. Grade filter buttons (#grades) toggle grades; Shift-click shows one grade only.
