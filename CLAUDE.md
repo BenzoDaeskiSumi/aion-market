@@ -2,6 +2,12 @@
 
 Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 
+## Automatic sync
+`.github/workflows/sync.yml` runs `scripts/sync.py` every hour: it reads the public API https://aion2.exchange/api (docs at /api/docs,
+shared by its developers on their Discord; server 12305 = Marchutan · EU · Asmodian) and appends a row only when price/listings changed
+(or every 12 h). Rows from the API have `screenshot: "aion2.exchange"`. The API has no grade/level/icon: new items get the grade of
+their name family, no level and no icon — videos fill those in. Credit aion2.exchange in the page footer.
+
 ## Updating prices ("aggiorna")
 1. Sources (check both; read only files not already named in the `screenshot` field of data/price_log.json):
    - Videos (preferred): MP4 clips the user exports from Steam to C:\Users\Nicol\Desktop\Nuova cartella\claude\aion2
