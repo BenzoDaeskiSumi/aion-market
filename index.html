@@ -18,7 +18,7 @@
   --bg1: #0b1a33; --bg2: #07122a; --glow1: rgba(80,140,255,.22); --glow2: rgba(127,212,255,.10);
   --panel: rgba(10,24,52,.78); --line: rgba(127,212,255,.22); --faint: rgba(127,212,255,.08); --field: rgba(0,0,0,.25);
   --accent: #7fd4ff; --text: #dce6f5; --dim: #8193b3; --kinah: #d9b45a; --up: #62e07a; --down: #ff6d6d;
-  --g-white: #e9eef7; --g-green: #62e07a; --g-blue: #4ea6ff; --g-gold: #f0c43f; --g-orange: #ff8a3d;
+  --g-white: #e9eef7; --g-green: #62e07a; --g-blue: #4ea6ff; --g-gold: #f0c43f; --g-orange: #ff8a3d; --g-teal: #3fe0c8;
   --shadow: 0 30px 80px rgba(0,0,0,.45);
   color-scheme: dark;
 }
@@ -27,7 +27,7 @@
   --bg1: #f4f1e6; --bg2: #e6eef3; --glow1: rgba(255,214,120,.45); --glow2: rgba(140,200,240,.35);
   --panel: rgba(255,255,255,.74); --line: rgba(150,120,50,.28); --faint: rgba(150,120,50,.12); --field: rgba(255,255,255,.85);
   --accent: #b8862b; --text: #1e2a3a; --dim: #66707f; --kinah: #a87a1e; --up: #167a47; --down: #c0392b;
-  --g-white: #4d5868; --g-green: #1f8f4c; --g-blue: #1f63c9; --g-gold: #a87410; --g-orange: #cf5a12;
+  --g-white: #4d5868; --g-green: #1f8f4c; --g-blue: #1f63c9; --g-gold: #a87410; --g-orange: #cf5a12; --g-teal: #0f8f80;
   --shadow: 0 30px 80px rgba(80,70,40,.18);
   color-scheme: light;
 }
@@ -36,7 +36,7 @@
   --bg1: #1d0f2b; --bg2: #120818; --glow1: rgba(196,60,120,.25); --glow2: rgba(120,70,220,.16);
   --panel: rgba(30,14,42,.80); --line: rgba(232,120,170,.24); --faint: rgba(232,120,170,.09); --field: rgba(0,0,0,.28);
   --accent: #ff7ab0; --text: #efe2ee; --dim: #a68aa6; --kinah: #e0b457; --up: #7ee0a0; --down: #ff6b6b;
-  --g-white: #f2e8f1; --g-green: #74e08e; --g-blue: #6aa8ff; --g-gold: #f3c64a; --g-orange: #ff8a3d;
+  --g-white: #f2e8f1; --g-green: #74e08e; --g-blue: #6aa8ff; --g-gold: #f3c64a; --g-orange: #ff8a3d; --g-teal: #46e3cc;
   --shadow: 0 30px 80px rgba(0,0,0,.5);
   color-scheme: dark;
 }
@@ -73,6 +73,7 @@ button { font: inherit; color: inherit; }
 .side button:hover { color: var(--text); }
 .side button[aria-pressed="true"] { color: var(--text); box-shadow: inset 2px 0 0 var(--accent); background: linear-gradient(90deg, var(--faint), transparent); }
 .side button span { font-size: 14px; opacity: .7; }
+.side .grp { padding: 14px 22px 4px; font-size: 13px; color: var(--dim); opacity: .8; }
 .side button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .main { padding: 14px 22px 18px; min-width: 0; }
 .search { width: 100%; border: 1px solid var(--line); background: var(--field); padding: 9px 14px; color: var(--text); font: inherit; margin-bottom: 8px; }
@@ -85,7 +86,7 @@ button { font: inherit; color: inherit; }
 .grades button[aria-pressed="false"] { opacity: .45; }
 .grades button:hover { border-color: var(--line); opacity: 1; }
 .grades button:focus-visible { outline: 2px solid var(--accent); outline-offset: 0; }
-.grades .g-white { color: var(--g-white); } .grades .g-green { color: var(--g-green); } .grades .g-blue { color: var(--g-blue); } .grades .g-gold { color: var(--g-gold); } .grades .g-orange { color: var(--g-orange); }
+.grades .g-white { color: var(--g-white); } .grades .g-green { color: var(--g-green); } .grades .g-blue { color: var(--g-blue); } .grades .g-gold { color: var(--g-gold); } .grades .g-orange { color: var(--g-orange); } .grades .g-teal { color: var(--g-teal); }
 .grades .reset { color: var(--dim); text-decoration: underline; text-underline-offset: 3px; margin-left: 4px; }
 .grades .reset::before { display: none; }
 .grades .reset[hidden] { display: none; }
@@ -115,7 +116,7 @@ tbody tr.sel td:first-child { box-shadow: inset 2px 0 0 var(--accent); }
 .slot img { width: 100%; height: 100%; display: block; }
 .nm { font-size: 20px; font-weight: 500; white-space: normal; }
 .ct { display: block; font-size: 13px; color: var(--dim); }
-.g-white { color: var(--g-white); } .g-green { color: var(--g-green); } .g-blue { color: var(--g-blue); } .g-gold { color: var(--g-gold); } .g-orange { color: var(--g-orange); }
+.g-white { color: var(--g-white); } .g-green { color: var(--g-green); } .g-blue { color: var(--g-blue); } .g-gold { color: var(--g-gold); } .g-orange { color: var(--g-orange); } .g-teal { color: var(--g-teal); }
 .up { color: var(--up); } .down { color: var(--down); }
 .sig { display: inline-block; font-size: 15px; padding: 2px 10px; border: 1px solid var(--line); color: var(--dim); }
 .sig.buy { color: var(--up); border-color: var(--up); } .sig.sell { color: var(--kinah); border-color: var(--kinah); }
@@ -141,6 +142,7 @@ footer { text-align: center; color: var(--dim); font-size: 14px; padding: 0 16px
   .body { grid-template-columns: minmax(0, 1fr); }
   .side { border-right: 0; border-bottom: 1px solid var(--line); padding: 0 8px; display: flex; overflow-x: auto; }
   .side button { width: auto; flex: none; padding: 12px; gap: 6px; }
+  .side .grp { display: none; }
   .side button[aria-pressed="true"] { box-shadow: inset 0 -2px 0 var(--accent); background: none; }
   .main { padding: 12px 12px 14px; }
   .sidetoggle span { display: none; }
@@ -185,6 +187,7 @@ footer { text-align: center; color: var(--dim); font-size: 14px; padding: 0 16px
         <button type="button" class="g-blue" data-grade="blue" aria-pressed="true">Rare</button>
         <button type="button" class="g-gold" data-grade="gold" aria-pressed="true">Legendary</button>
         <button type="button" class="g-orange" data-grade="orange" aria-pressed="true">Mythic</button>
+        <button type="button" class="g-teal" data-grade="teal" aria-pressed="true">Speciale</button>
         <button type="button" class="reset" id="grades-reset" hidden>Mostra tutti</button>
       </div>
       <div class="scroll">
@@ -224,13 +227,15 @@ const fmtC = (v) => (Math.abs(v) >= 100000 && window.innerWidth < 760) ? new Int
 const fmtP = (v) => d3.format('+.1%')(v).replace('-', '−');
 const fmtPct = d3.format('.0%');
 const fmtDT = (d) => { d = new Date(d); return isNaN(d) ? '—' : d.toLocaleString('it-IT', {day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'}); };
-const CAT_IT = {'Gathering Material': 'Raccolta', 'Crafting Material': 'Crafting', 'Substance Morph Material': 'Trasmutazione', 'Potions': 'Pozioni', 'Pantheon': 'Pantheon'};
-const GRADE = {white: 'Common', green: 'Non rare', blue: 'Rare', gold: 'Legendary', orange: 'Mythic'};
+const CAT_IT = {'Gathering Material': 'Raccolta', 'Crafting Material': 'Crafting', 'Substance Morph Material': 'Trasmutazione', 'Miscellaneous': 'Materiali vari',
+  'Potions': 'Pozioni', 'Food': 'Cibo', 'Scroll': 'Pergamene', 'Candy': 'Caramelle', 'Manastone/Soulstone': 'Manastone e Soulstone', 'Wings': 'Ali', 'Pantheon': 'Pantheon', 'Consumable Miscellaneous': 'Consumabili vari'};
+const CAT_GROUP = {'Gathering Material': 'Materiali', 'Crafting Material': 'Materiali', 'Substance Morph Material': 'Materiali', 'Miscellaneous': 'Materiali'};
+const GRADE = {teal: 'Speciale', white: 'Common', green: 'Non rare', blue: 'Rare', gold: 'Legendary', orange: 'Mythic'};
 const SIG_SHORT = {'Compra per rivendere': 'Compra', 'Vendi ora': 'Vendi', 'Tieni': 'Tieni', 'Servono più dati': 'Servono più dati'};
 const catName = (c) => CAT_IT[c] || c;
-const GRADE_RANK = {white: 1, green: 2, blue: 3, gold: 4, orange: 5};
-const CAT_ORDER = {'Gathering Material': 1, 'Crafting Material': 2, 'Substance Morph Material': 3, 'Potions': 4, 'Pantheon': 5};
-const GRADES_ON = new Set(['white', 'green', 'blue', 'gold', 'orange']);
+const GRADE_RANK = {teal: 0.5, white: 1, green: 2, blue: 3, gold: 4, orange: 5};
+const CAT_ORDER = {'Gathering Material': 1, 'Crafting Material': 2, 'Substance Morph Material': 3, 'Miscellaneous': 4, 'Potions': 5, 'Food': 6, 'Scroll': 7, 'Candy': 8, 'Manastone/Soulstone': 9, 'Wings': 10, 'Pantheon': 11, 'Consumable Miscellaneous': 12};
+const GRADES_ON = new Set(['white', 'green', 'blue', 'gold', 'orange', 'teal']);
 let LOG = [], ITEMS = [], S = {}, ICONS = {}, CAT = 'all', sortK = 'grade_rank', sortDir = -1, picked = null;
 
 /* ---------- theme switch ---------- */
@@ -281,8 +286,12 @@ function drawAll() {
 
 function drawCats() {
   const counts = d3.rollup(ITEMS, (v) => v.length, (r) => r.category);
-  const cats = [['all', 'Tutte', ITEMS.length], ...Array.from(counts, ([c, n]) => [c, catName(c), n])];
+  const sorted = Array.from(counts).sort((a, b) => (CAT_ORDER[a[0]] || 99) - (CAT_ORDER[b[0]] || 99));
+  const cats = [['all', 'Tutte', ITEMS.length]];
+  let lastGroup = null;
+  sorted.forEach(([c, n]) => { const g = CAT_GROUP[c] || 'Consumabili'; if (g !== lastGroup) { cats.push(['#' + g]); lastGroup = g; } cats.push([c, catName(c), n]); });
   document.getElementById('cats').replaceChildren(...cats.map(([c, label, n]) => {
+    if (c.startsWith('#')) { const h = document.createElement('div'); h.className = 'grp'; h.textContent = c.slice(1); return h; }
     const b = document.createElement('button'); b.type = 'button';
     b.setAttribute('aria-pressed', String(CAT === c));
     b.append(document.createTextNode(label));
