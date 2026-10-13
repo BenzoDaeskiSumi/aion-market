@@ -36,6 +36,33 @@ def rome(iso):
     return datetime.fromisoformat(iso.replace('Z', '+00:00')).astimezone(ROME).replace(microsecond=0)
 
 
+def compact(log, now):
+    """Thin old rows so the log stays small: last 2 days kept as is, then one row per item per 6 h,
+    older than 14 days one per day. Each item's first row is always kept (it fixes the in-game order)."""
+    def bucket(t):
+        age = now - t
+        if age < timedelta(days=2):
+            return t.isoformat()
+        h = 6 if age < timedelta(days=14) else 24
+        return t.strftime('%Y-%m-%d') + '/' + str(t.hour // h)
+    keep, seen_first, last_in_bucket = [False] * len(log), set(), {}
+    for i, e in enumerate(log):
+        if e['item'] not in seen_first:
+            seen_first.add(e['item']); keep[i] = True
+        k = (e['item'], bucket(datetime.fromisoformat(e['checked_at'])))
+        j = last_in_bucket.get(k)
+        if j is None or log[j]['checked_at'] <= e['checked_at']:
+            last_in_bucket[k] = i
+    for i in last_in_bucket.values():
+        keep[i] = True
+    return [e for e, k in zip(log, keep) if k]
+
+
+def write_log(log):
+    with open(LOG, 'w', encoding='utf-8') as f:
+        f.write('[\n' + ',\n'.join(json.dumps(r, ensure_ascii=False) for r in log) + '\n]\n')
+
+
 def main():
     health = get('/health')
     snap = rome(health['latest_snapshot_at'])
@@ -82,12 +109,13 @@ def main():
         last[name] = row
         added += 1
 
-    with open(LOG, 'w', encoding='utf-8') as f:
-        f.write('[\n' + ',\n'.join(json.dumps(r, ensure_ascii=False) for r in log) + '\n]\n')
+    before = len(log)
+    log = compact(log, datetime.now(ROME))
+    write_log(log)
     json.dump({'source': 'aion2.exchange', 'server': 'Marchutan · Europe · Asmodian', 'snapshot': snap.isoformat(),
                'synced_at': datetime.now(ROME).replace(microsecond=0).isoformat(), 'items': len(items)},
               open('data/meta.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-    print(f'{len(items)} items from API, {added} rows added ({new} new items), snapshot {snap.isoformat()}')
+    print(f'{len(items)} items from API, {added} rows added ({new} new items), {before - len(log)} old rows thinned, snapshot {snap.isoformat()}')
 
 
 if __name__ == '__main__':
