@@ -63,7 +63,24 @@ def write_log(log):
         f.write('[\n' + ',\n'.join(json.dumps(r, ensure_ascii=False) for r in log) + '\n]\n')
 
 
+def sync_crafts():
+    """Crafting costs of the Artisan's Splendent lines (3 tiers each) with the material breakdown."""
+    lst = get(f'/crafts?server={SERVER}')
+    out = {'source': 'aion2.exchange', 'captured_at': lst['captured_at'], 'model': lst['model'], 'targets': []}
+    for t in lst['targets']:
+        d = get(f"/crafts/{t['target_key']}?server={SERVER}")
+        d.pop('series', None); d.pop('model', None)
+        out['targets'].append(d)
+    with open('data/crafts.json', 'w', encoding='utf-8') as f:
+        json.dump(out, f, ensure_ascii=False, separators=(',', ':'))
+    print(f"crafts: {len(out['targets'])} lines")
+
+
 def main():
+    try:
+        sync_crafts()
+    except Exception as ex:      # crafting data is optional; never block the price sync
+        print('crafts failed:', ex)
     health = get('/health')
     snap = rome(health['latest_snapshot_at'])
     data = get(f'/items?server={SERVER}&limit=1000')
