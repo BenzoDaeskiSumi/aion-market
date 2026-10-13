@@ -221,8 +221,9 @@ details.help summary::-webkit-details-marker { display: none; }
 details.help summary::before { content: "?"; display: inline-grid; place-items: center; width: 18px; height: 18px; border: 1px solid currentColor; border-radius: 50%; font-size: 12px; }
 details.help summary:hover { color: var(--text); }
 details.help[open] summary { margin-bottom: 8px; }
-.win.craftview .side { display: none; } .win.craftview .body { grid-template-columns: minmax(0, 1fr) 420px; }
-@media (max-width: 1400px) { .win.craftview .body { grid-template-columns: minmax(0, 1fr); } }
+.win.craftview:not(.noside) .body { grid-template-columns: 232px minmax(0, 1fr) 420px; } .win.craftview.noside .body { grid-template-columns: minmax(0, 1fr) 420px; }
+@media (max-width: 1400px) { .win.craftview:not(.noside) .body { grid-template-columns: 220px minmax(0, 1fr); } .win.craftview.noside .body { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 760px) { .win.craftview:not(.noside) .body { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 760px) { .tabs { padding: 6px 8px 0; } .tabs [role="tab"] { padding: 6px 10px 7px; font-size: 16px; } .dealfilter { margin: 4px 0 6px; } .hero b { font-size: 23px; } }
 
 @media (max-width: 1400px) {
@@ -381,7 +382,7 @@ let RANGE = +(store.get('aion-range') || 7);
 let SALES = {}, CRAFTS = null, CROWS = [], cSortK = 'diff', cSortDir = -1, pickedCraft = null;
 let LOG = [], ITEMS = [], S = {}, ICONS = {}, SEL = {type: 'all'}, sortK = 'grade_rank', sortDir = -1, picked = null;
 let showNA = store.get('aion-na') === 'show';
-let VIEW = 'market', DEAL = 'buy';
+let VIEW = 'market', DEAL = 'buy', CSEL = {type: 'all'}, COPEN = new Set();
 let OPEN = new Set();   // accordion: only the selected group is open
 
 /* ---------- theme switch ---------- */
@@ -470,7 +471,42 @@ function drawAll() {
 /* ---------- sidebar accordion ---------- */
 const inSel = (r) => SEL.type === 'all' || (SEL.type === 'group' && CAT_GROUP[r.category] === SEL.id) || (SEL.type === 'cat' && r.category === SEL.id);
 const selEq = (t, id) => SEL.type === t && (t === 'all' || SEL.id === id);
+const CRAFT_GROUPS = [
+  {id: 'cat', name: 'Tipo', key: (r) => r.target.category, items: [['Weapon', 'Armi'], ['Armor', 'Armature'], ['Accessory', 'Accessori']]},
+  {id: 'tier', name: 'Livello', key: (r) => String(r.tier), items: [['1', 'Splendent'], ['2', "Expert's Splendent"], ['3', "Artisan's Splendent"]]},
+  {id: 'skill', name: 'Professione', key: (r) => r.skill, items: [['Blacksmithing', 'Blacksmithing'], ['Tailoring', 'Tailoring'], ['Jewelcrafting', 'Jewelcrafting'], ['Alchemy', 'Alchemy']]},
+];
+const inCSel = (r) => CSEL.type === 'all' || CRAFT_GROUPS.find((g) => g.id === CSEL.type).key(r) === CSEL.id;
+function drawCraftCats() {
+  const nav = document.getElementById('cats'); nav.replaceChildren();
+  const mk = (cls, label, n, pressed) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.setAttribute('aria-pressed', String(pressed));
+    b.append(document.createTextNode(label)); const sp = document.createElement('span'); sp.textContent = fmtK(n); b.appendChild(sp); return b;
+  };
+  const all = mk('all', 'Tutti', CROWS.length, CSEL.type === 'all');
+  all.addEventListener('click', () => { CSEL = {type: 'all'}; drawCats(); drawCraft(); });
+  nav.appendChild(all);
+  CRAFT_GROUPS.forEach((g) => {
+    const counts = d3.rollup(CROWS, (v) => v.length, g.key);
+    const items = g.items.filter(([k]) => counts.get(k));
+    if (!items.length) return;
+    const open = COPEN.has(g.id) || CSEL.type === g.id;
+    const wrap = document.createElement('div'); wrap.className = 'grp' + (open ? ' open' : '');
+    const head = document.createElement('button'); head.type = 'button'; head.className = 'head'; head.setAttribute('aria-expanded', String(open));
+    const chev = document.createElement('i'); chev.className = 'chev';
+    head.append(chev, document.createTextNode(g.name));
+    head.addEventListener('click', () => { if (open) { COPEN.delete(g.id); if (CSEL.type === g.id) CSEL = {type: 'all'}; } else COPEN = new Set([g.id]); drawCats(); drawCraft(); });
+    const sub = document.createElement('div'); sub.className = 'sub';
+    items.forEach(([k, label]) => {
+      const b = mk('', label, counts.get(k), CSEL.type === g.id && CSEL.id === k);
+      b.addEventListener('click', () => { CSEL = {type: g.id, id: k}; COPEN = new Set([g.id]); drawCats(); drawCraft(); });
+      sub.appendChild(b);
+    });
+    wrap.append(head, sub); nav.appendChild(wrap);
+  });
+}
 function drawCats() {
+  if (VIEW === 'craft') return drawCraftCats();
   const counts = d3.rollup(ITEMS, (v) => v.length, (r) => r.category);
   const nav = document.getElementById('cats'); nav.replaceChildren();
   const mk = (cls, label, n, pressed) => {
@@ -667,7 +703,7 @@ function craftBox(r) {
 const signed = (v) => (v > 0 ? '+' : v < 0 ? '−' : '') + fmtC(Math.abs(Math.round(v)));
 function drawCraft() {
   const term = document.getElementById('q').value.trim().toLowerCase();
-  const rows = CROWS.filter((r) => !term || (r.name + ' ' + r.skill + ' ' + r.line).toLowerCase().includes(term)).sort((a, b) => {
+  const rows = CROWS.filter((r) => inCSel(r)) .filter((r) => !term || (r.name + ' ' + r.skill + ' ' + r.line).toLowerCase().includes(term)).sort((a, b) => {
     const x = a[cSortK], y = b[cSortK];
     if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
     return (typeof x === 'string' ? x.localeCompare(y) : x - y) * cSortDir;
