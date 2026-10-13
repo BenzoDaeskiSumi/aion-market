@@ -43,7 +43,7 @@ the 15 best deals (click one to open it).
      A new category also needs an entry in GROUPS in index.html (sidebar accordion).
    - Consecutive screenshots overlap: never add the same item twice from one batch of screenshots.
    - Flag rows only half visible at the bottom of a screenshot that never appear fully in the next one.
-3. For every new item, crop its icon from the screenshot or video frame (icon box ≈ x 446–528 px on a 2560×1440 frame, centred on the row), save 96×96 PNG to icons/<slug>.png and add it to data/icons.json.
+3. For every new item, crop its icon (then run scripts/clean_icon.py's clean() on it: it inpaints the in-game overlays — red 'book' marker, '?' scroll badge bottom-left, white dash top-left) from the screenshot or video frame (icon box ≈ x 446–528 px on a 2560×1440 frame, centred on the row), save 96×96 PNG to icons/<slug>.png and add it to data/icons.json.
 4. If the in-game "Current Tax Rate" changed, update data/settings.json.
 5. Commit and push to main. Pages redeploys in about a minute.
 

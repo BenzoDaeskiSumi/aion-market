@@ -823,10 +823,12 @@ document.querySelectorAll('th button[data-k]').forEach((b) => b.addEventListener
   const k = b.dataset.k; if (sortK === k) sortDir = -sortDir; else { sortK = k; sortDir = (k === 'item' || k === 'signal') ? 1 : -1; } drawTable();
 }));
 document.getElementById('q').addEventListener('input', drawTable);
+let MARKET_SORT = null;   // the Market tab keeps its own sort (default: by grade, like the game)
 function setView(v, deal) {
+  if (VIEW === 'market' && v !== 'market') MARKET_SORT = [sortK, sortDir];
   VIEW = v; if (deal) DEAL = deal;
   if (v === 'deals') { sortK = DEAL === 'buy' ? 'flip_profit' : 'over_avg'; sortDir = -1; }
-  else if (v === 'market' && (sortK === 'over_avg')) { sortK = 'grade_rank'; sortDir = -1; }
+  else if (v === 'market') { [sortK, sortDir] = MARKET_SORT || ['grade_rank', -1]; }
   document.getElementById('q').placeholder = v === 'craft' ? 'Cerca un oggetto craftabile…' : 'Cerca un item…';
   drawCats(); drawTable(); drawChart();
 }
@@ -834,7 +836,7 @@ document.querySelectorAll('.tabs [role="tab"]').forEach((t) => t.addEventListene
 document.querySelectorAll('[data-deal]').forEach((b) => b.addEventListener('click', () => setView('deals', b.dataset.deal)));
 document.getElementById('takeaway').addEventListener('click', (e) => {
   const d = e.target.closest('.deal'); if (!d) return;
-  SEL = {type: 'all'}; VIEW = 'market';
+  SEL = {type: 'all'}; if (VIEW !== 'market') setView('market');
   picked = d.dataset.key; drawCats(); drawTable(); drawChart();
   const row = document.querySelector('#rows tr.sel'), sc = document.querySelector('.scroll');
   if (row && sc) sc.scrollTo({top: row.offsetTop - sc.clientHeight / 2, behavior: 'smooth'});
