@@ -12,7 +12,9 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
    - category = the Market sub-category shown on the left (e.g. "Gathering Material", "Crafting Material", "Potions", "Pantheon")
    - Consecutive screenshots overlap: never add the same item twice from one batch of screenshots.
    - Flag rows only half visible at the bottom of a screenshot that never appear fully in the next one.
-3. If the in-game "Current Tax Rate" changed, update data/settings.json.
-4. Commit and push to main. Pages redeploys in about a minute.
+3. For every new item, crop its icon from the screenshot (icon box ≈ x 445–527 px on a 2560×1440 shot, centred on the row), save 96×96 PNG to icons/<slug>.png and add it to data/icons.json.
+4. If the in-game "Current Tax Rate" changed, update data/settings.json.
+5. Commit and push to main. Pages redeploys in about a minute.
 
 Page logic lives in index.html (computeItems). d3 is vendored in lib/.
+Themes: Abyss (default), Elyos (light), Asmodian; chosen theme is remembered in localStorage ('aion-theme').

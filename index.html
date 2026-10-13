@@ -5,148 +5,212 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aion 2 Market · Benzodaeskisumi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600&family=Marcellus&display=swap" rel="stylesheet">
+<script>
+  // Apply the saved theme before the page paints, so it never flashes.
+  try { const t = localStorage.getItem('aion-theme'); if (['abyss', 'elyos', 'asmodian'].includes(t)) document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
 <script src="lib/d3.min.js"></script>
 <style>
+/* Abyss (default) */
 :root {
-  --bg: #0d1220; --panel: #151c2f; --panel-2: #1b2440; --line: #263152;
-  --fg: #e8ecf6; --muted: #8e9ab8; --gold: #e7c26a; --ok: #4fd18b; --bad: #ff6b6b; --warn: #f5b041;
-  --accent: #7aa7ff; --radius: 10px;
+  --bg1: #0b1a33; --bg2: #07122a; --glow1: rgba(80,140,255,.22); --glow2: rgba(127,212,255,.10);
+  --panel: rgba(10,24,52,.78); --line: rgba(127,212,255,.22); --faint: rgba(127,212,255,.08); --field: rgba(0,0,0,.25);
+  --accent: #7fd4ff; --text: #dce6f5; --dim: #8193b3; --kinah: #d9b45a; --up: #62e07a; --down: #ff6d6d;
+  --g-white: #e9eef7; --g-green: #62e07a; --g-blue: #4ea6ff; --g-gold: #f0c43f; --g-orange: #ff8a3d;
+  --shadow: 0 30px 80px rgba(0,0,0,.45);
+  color-scheme: dark;
+}
+/* Elyos (light) */
+:root[data-theme="elyos"] {
+  --bg1: #f4f1e6; --bg2: #e6eef3; --glow1: rgba(255,214,120,.45); --glow2: rgba(140,200,240,.35);
+  --panel: rgba(255,255,255,.74); --line: rgba(150,120,50,.28); --faint: rgba(150,120,50,.12); --field: rgba(255,255,255,.85);
+  --accent: #b8862b; --text: #1e2a3a; --dim: #66707f; --kinah: #a87a1e; --up: #167a47; --down: #c0392b;
+  --g-white: #4d5868; --g-green: #1f8f4c; --g-blue: #1f63c9; --g-gold: #a87410; --g-orange: #cf5a12;
+  --shadow: 0 30px 80px rgba(80,70,40,.18);
+  color-scheme: light;
+}
+/* Asmodian (dark violet) */
+:root[data-theme="asmodian"] {
+  --bg1: #1d0f2b; --bg2: #120818; --glow1: rgba(196,60,120,.25); --glow2: rgba(120,70,220,.16);
+  --panel: rgba(30,14,42,.80); --line: rgba(232,120,170,.24); --faint: rgba(232,120,170,.09); --field: rgba(0,0,0,.28);
+  --accent: #ff7ab0; --text: #efe2ee; --dim: #a68aa6; --kinah: #e0b457; --up: #7ee0a0; --down: #ff6b6b;
+  --g-white: #f2e8f1; --g-green: #74e08e; --g-blue: #6aa8ff; --g-gold: #f3c64a; --g-orange: #ff8a3d;
+  --shadow: 0 30px 80px rgba(0,0,0,.5);
+  color-scheme: dark;
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: radial-gradient(1200px 600px at 70% -10%, #1d2a52 0%, var(--bg) 60%) fixed, var(--bg); color: var(--fg); font-family: Inter, system-ui, sans-serif; font-size: 15px; }
-.wrap { max-width: 1200px; margin: 0 auto; padding: 32px 16px 48px; display: flex; flex-direction: column; gap: 20px; }
-header h1 { font-family: Cinzel, serif; font-weight: 700; font-size: clamp(26px, 4vw, 38px); margin: 0; color: var(--gold); letter-spacing: .02em; }
-header .by { color: var(--muted); font-size: 13px; margin-top: 4px; }
-.take { color: var(--fg); margin: 10px 0 0; line-height: 1.5; max-width: 70ch; }
-.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: 12px; }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; min-width: 0; }
-.tile .lbl { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
-.tile .num { font-family: Cinzel, serif; font-size: 28px; margin-top: 6px; font-variant-numeric: tabular-nums; }
-.tile .num.small { font-family: Inter, sans-serif; font-size: 17px; font-weight: 500; margin-top: 10px; }
-.card h2 { font-size: 17px; font-weight: 600; margin: 0; }
-.note { font-size: 13px; color: var(--muted); margin: 6px 0 14px; line-height: 1.5; }
-.tools input { width: 100%; font: inherit; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--fg); margin-bottom: 10px; }
-.scroll { max-height: 560px; overflow: auto; }
+html { background: var(--bg2); }
+body {
+  margin: 0; min-height: 100vh; color: var(--text); font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-size: 17px;
+  background: radial-gradient(900px 500px at 75% 0%, var(--glow1), transparent 60%), radial-gradient(700px 400px at 0% 100%, var(--glow2), transparent 60%), linear-gradient(var(--bg1), var(--bg2)) fixed;
+}
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.win { max-width: 1240px; margin: 24px auto; border: 1px solid var(--line); background: var(--panel); backdrop-filter: blur(8px); box-shadow: var(--shadow); }
+.bar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 24px; padding: 16px 24px; border-bottom: 1px solid var(--line); }
+.bar h1 { font-family: Marcellus, serif; font-weight: 400; font-size: 32px; margin: 0; line-height: 1.1; }
+.bar h1 small { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; color: var(--dim); margin-left: 12px; }
+.bar .right { margin-left: auto; display: flex; align-items: center; flex-wrap: wrap; gap: 10px 18px; }
+.coin { display: inline-block; width: 13px; height: 13px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff1b8, #d9b45a 55%, #8a6a22); margin-right: 6px; vertical-align: -1px; flex: none; }
+.themes { display: inline-flex; border: 1px solid var(--line); background: var(--field); }
+.themes button { all: unset; cursor: pointer; padding: 5px 12px; font-size: 16px; color: var(--dim); display: inline-flex; align-items: center; gap: 7px; }
+.themes button + button { border-left: 1px solid var(--line); }
+.themes button:hover { color: var(--text); }
+.themes button[aria-pressed="true"] { color: var(--text); box-shadow: inset 0 -2px 0 var(--accent); }
+.themes button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.themes i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+.status { display: flex; flex-wrap: wrap; gap: 6px 28px; padding: 10px 24px; border-bottom: 1px solid var(--line); font-size: 16px; color: var(--dim); }
+.status b { color: var(--text); font-weight: 500; margin-left: 6px; font-variant-numeric: tabular-nums; }
+.status .take { flex-basis: 100%; color: var(--text); }
+
+.body { display: grid; grid-template-columns: 190px minmax(0, 1fr); }
+.side { border-right: 1px solid var(--line); padding: 12px 0; }
+.side button { all: unset; box-sizing: border-box; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 10px 22px; color: var(--dim); font-size: 18px; cursor: pointer; }
+.side button:hover { color: var(--text); }
+.side button[aria-pressed="true"] { color: var(--text); box-shadow: inset 2px 0 0 var(--accent); background: linear-gradient(90deg, var(--faint), transparent); }
+.side button span { font-size: 14px; opacity: .7; }
+.side button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.main { padding: 14px 22px 18px; min-width: 0; }
+.search { width: 100%; border: 1px solid var(--line); background: var(--field); padding: 9px 14px; color: var(--text); font: inherit; margin-bottom: 8px; }
+.search::placeholder { color: var(--dim); }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 14px; color: var(--dim); margin: 0 0 6px; }
+.legend span::before { content: ""; display: inline-block; width: 9px; height: 9px; border: 1.5px solid currentColor; margin-right: 6px; vertical-align: 0; }
+
+.scroll { max-height: 640px; overflow: auto; }
 table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
-th { position: sticky; top: 0; background: var(--panel); text-align: right; font-weight: 500; font-size: 12px; color: var(--muted); padding: 8px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { position: sticky; top: 0; z-index: 1; background: var(--bg2); font-weight: 500; color: var(--dim); font-size: 15px; text-align: right; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
 th button { all: unset; cursor: pointer; }
-th button:hover { color: var(--fg); }
+th button:hover, th[aria-sort="ascending"] button, th[aria-sort="descending"] button { color: var(--text); }
 th:first-child, td:first-child { text-align: left; }
-td { text-align: right; padding: 9px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 7px 10px; text-align: right; border-bottom: 1px solid var(--faint); font-size: 18px; white-space: nowrap; }
 tbody tr { cursor: pointer; }
-tbody tr:hover td { background: var(--panel-2); }
-tbody tr.sel td { background: var(--panel-2); }
-tbody tr.sel td:first-child { box-shadow: inset 3px 0 0 var(--gold); }
-.g-white { color: #e8ecf6; } .g-green { color: #5ee06a; } .g-blue { color: #5aa6ff; } .g-gold { color: #f2c94c; } .g-orange { color: #ff8a3d; }
-td.item { font-weight: 500; }
-td.item .nm { display: inline-block; vertical-align: middle; }
-.cat { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px 1px 6px; }
-.cat svg { width: 12px; height: 12px; flex: none; }
-td.catc { text-align: left; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-.chip { font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--muted); cursor: pointer; }
-.chip:hover { color: var(--fg); border-color: #3a4a78; }
-.chip[aria-pressed="true"] { color: var(--bg); background: var(--gold); border-color: var(--gold); font-weight: 500; }
-.chip svg { width: 14px; height: 14px; }
-.chip .n { font-size: 11px; opacity: .75; }
-.grades { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--muted); margin: 0 0 12px; }
-.grades span::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: currentColor; margin-right: 6px; vertical-align: 1px; }
-.up { color: var(--ok); } .down { color: var(--bad); }
-.sig { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; }
-.sig.buy { color: var(--ok); border: 1px solid var(--ok); }
-.sig.sell { color: var(--warn); border: 1px solid var(--warn); }
-.sig.wait { color: var(--muted); }
-@media (max-width: 1599px) { .hn2 { display: none; } }
-@media (min-width: 1600px) { .wrap { max-width: 1560px; } }
-@media (max-width: 680px) { td.item { white-space: normal; min-width: 6em; } td, th { padding: 8px 5px; } td .sig { white-space: normal; text-align: center; } }
-@media (max-width: 680px) { .hn { display: none; } }
+tbody tr:hover td, tbody tr.sel td { background: var(--faint); }
+tbody tr.sel td:first-child { box-shadow: inset 2px 0 0 var(--accent); }
+.it { display: flex; align-items: center; gap: 14px; }
+.slot { width: 46px; height: 46px; flex: none; border: 1.5px solid currentColor; padding: 1px; background: #000; box-shadow: 0 0 12px -5px currentColor; }
+.slot img { width: 100%; height: 100%; display: block; }
+.nm { font-size: 20px; font-weight: 500; white-space: normal; }
+.ct { display: block; font-size: 13px; color: var(--dim); }
+.g-white { color: var(--g-white); } .g-green { color: var(--g-green); } .g-blue { color: var(--g-blue); } .g-gold { color: var(--g-gold); } .g-orange { color: var(--g-orange); }
+.up { color: var(--up); } .down { color: var(--down); }
+.sig { display: inline-block; font-size: 15px; padding: 2px 10px; border: 1px solid var(--line); color: var(--dim); }
+.sig.buy { color: var(--up); border-color: var(--up); } .sig.sell { color: var(--kinah); border-color: var(--kinah); }
+.empty { padding: 28px 10px; color: var(--dim); text-align: center; }
+
+.hist { border-top: 1px solid var(--line); padding: 16px 24px 20px; }
+.hist h2 { font-family: Marcellus, serif; font-weight: 400; font-size: 22px; margin: 0; }
+.hist p { margin: 4px 0 8px; color: var(--dim); font-size: 15px; }
 .chart { position: relative; min-height: 220px; }
-.tip { position: absolute; pointer-events: none; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; font-size: 12px; white-space: nowrap; box-shadow: 0 6px 20px rgba(0,0,0,.4); }
-.tip .d { color: var(--muted); }
-.help p { margin: 0 0 6px; font-size: 13px; color: var(--muted); line-height: 1.5; }
-.help b { color: var(--fg); }
-.err { color: var(--bad); }
-footer { color: var(--muted); font-size: 12px; text-align: center; }
+.tip { position: absolute; pointer-events: none; background: var(--bg2); border: 1px solid var(--line); padding: 6px 10px; font-size: 14px; white-space: nowrap; box-shadow: var(--shadow); }
+.tip .d { color: var(--dim); }
+.help { border-top: 1px solid var(--line); padding: 14px 24px 18px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 8px 24px; font-size: 15px; color: var(--dim); line-height: 1.4; }
+.help b { color: var(--text); font-weight: 500; }
+footer { text-align: center; color: var(--dim); font-size: 14px; padding: 0 16px 28px; }
+.err { color: var(--down); }
+
+@media (max-width: 1100px) { .hm { display: none; } }
+@media (max-width: 760px) {
+  .win { margin: 0 0 20px; border-left: 0; border-right: 0; border-top: 0; }
+  .bar, .status, .hist, .help { padding-left: 16px; padding-right: 16px; }
+  .bar h1 { font-size: 26px; } .bar h1 small { display: block; margin: 2px 0 0; }
+  .bar .right { margin-left: 0; }
+  .body { grid-template-columns: minmax(0, 1fr); }
+  .side { border-right: 0; border-bottom: 1px solid var(--line); padding: 0 8px; display: flex; overflow-x: auto; }
+  .side button { width: auto; flex: none; padding: 12px; gap: 6px; }
+  .side button[aria-pressed="true"] { box-shadow: inset 0 -2px 0 var(--accent); background: none; }
+  .main { padding: 12px 12px 14px; }
+  .hn { display: none; }
+  td, th { padding: 7px 5px; } .slot { width: 38px; height: 38px; } .it { gap: 10px; } .nm { font-size: 18px; }
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1>Aion 2 Market</h1>
-    <div class="by">by Benzodaeskisumi</div>
-    <p class="take" id="takeaway">Caricamento…</p>
-  </header>
-
-  <section class="tiles">
-    <div class="card tile"><div class="lbl">Item tracciati</div><div class="num" id="t-tracked">—</div></div>
-    <div class="card tile"><div class="lbl">Da comprare</div><div class="num" id="t-buys">—</div></div>
-    <div class="card tile"><div class="lbl">Da vendere</div><div class="num" id="t-sells">—</div></div>
-    <div class="card tile"><div class="lbl">Tassa Market</div><div class="num" id="t-tax">—</div></div>
-    <div class="card tile"><div class="lbl">Ultimo controllo</div><div class="num small" id="t-last">—</div></div>
-  </section>
-
-  <section class="card">
-    <h2>Prezzi e profitto per item</h2>
-    <p class="note">Prezzo più basso nel Market all'ultimo controllo, confrontato con il controllo precedente e con la media. Il profitto flip è quanto guadagni comprando ora e rivendendo alla media, tassa inclusa. Clicca una riga per vederne lo storico.</p>
-    <div class="chips" id="chips" role="group" aria-label="Categoria"></div>
-    <div class="grades" aria-label="Gradi">Grado:<span class="g-white">Common</span><span class="g-green">Non rare</span><span class="g-blue">Rare</span><span class="g-gold">Legendary</span><span class="g-orange">Mythic</span></div>
-    <div class="tools"><input id="q" type="search" placeholder="Cerca item…" aria-label="Cerca"></div>
-    <div class="scroll">
-      <table>
-        <thead><tr>
-          <th><button data-k="item">Item</button></th>
-          <th class="hn hn2" style="text-align:left"><button data-k="category">Categoria</button></th>
-          <th><button data-k="latest">Prezzo</button></th>
-          <th class="hn"><button data-k="change">Variazione</button></th>
-          <th class="hn"><button data-k="change_pct">Var. %</button></th>
-          <th class="hn"><button data-k="average">Media</button></th>
-          <th class="hn hn2"><button data-k="low">Minimo</button></th>
-          <th class="hn hn2"><button data-k="high">Massimo</button></th>
-          <th class="hn"><button data-k="listings">In vendita</button></th>
-          <th class="hn"><button data-k="checks">Controlli</button></th>
-          <th><button data-k="flip_profit">Profitto</button></th>
-          <th class="hn"><button data-k="flip_margin">Margine</button></th>
-          <th><button data-k="signal">Segnale</button></th>
-        </tr></thead>
-        <tbody id="rows"></tbody>
-      </table>
+<div class="win">
+  <div class="bar">
+    <h1>Aion 2 Market<small>by Benzodaeskisumi</small></h1>
+    <div class="right">
+      <span><span class="coin"></span>Tassa del Market <b id="t-tax">—</b></span>
+      <div class="themes" role="group" aria-label="Tema">
+        <button type="button" data-theme="abyss"><i style="background:#7fd4ff"></i>Abyss</button>
+        <button type="button" data-theme="elyos"><i style="background:#e8c46a"></i>Elyos</button>
+        <button type="button" data-theme="asmodian"><i style="background:#ff7ab0"></i>Asmodian</button>
+      </div>
     </div>
-  </section>
+  </div>
 
-  <section class="card">
+  <div class="status" aria-live="polite">
+    <span>Item tracciati<b id="t-tracked">—</b></span>
+    <span>Da comprare<b id="t-buys">—</b></span>
+    <span>Da vendere<b id="t-sells">—</b></span>
+    <span>Ultimo controllo<b id="t-last">—</b></span>
+    <span class="take" id="takeaway">Caricamento…</span>
+  </div>
+
+  <div class="body">
+    <nav class="side" id="cats" aria-label="Categorie"></nav>
+    <div class="main">
+      <input class="search" id="q" type="search" placeholder="Cerca un item…" aria-label="Cerca un item">
+      <div class="legend" aria-label="Gradi"><span class="g-white">Common</span><span class="g-green">Non rare</span><span class="g-blue">Rare</span><span class="g-gold">Legendary</span><span class="g-orange">Mythic</span></div>
+      <div class="scroll">
+        <table>
+          <thead><tr>
+            <th><button data-k="item">Item</button></th>
+            <th class="hn"><button data-k="listings">In vendita</button></th>
+            <th><button data-k="latest">Prezzo più basso</button></th>
+            <th class="hn"><button data-k="change_pct">Variazione</button></th>
+            <th class="hn hm"><button data-k="average">Media</button></th>
+            <th><button data-k="flip_profit">Profitto flip</button></th>
+            <th class="hn"><button data-k="signal">Segnale</button></th>
+          </tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <section class="hist">
     <h2 id="hist-title">Storico prezzi</h2>
-    <p class="note" id="hist-note">Prezzo più basso a ogni controllo.</p>
+    <p id="hist-note">Clicca un item per vedere come è cambiato il suo prezzo.</p>
     <div class="chart" id="chart"></div>
   </section>
 
-  <section class="card help">
-    <h2 style="margin-bottom:10px">Come leggere i segnali</h2>
-    <p><b>Compra per rivendere</b>: il prezzo è abbastanza sotto la media da guadagnare rivendendo alla media, tassa inclusa.</p>
-    <p><b>Vendi ora</b>: il prezzo è molto sopra la media, buon momento per vendere.</p>
-    <p><b>Servono più dati</b>: l'item ha ancora troppi pochi controlli per giudicare il prezzo.</p>
+  <section class="help">
+    <div><b>Profitto flip</b>: quanto guadagni comprando ora al prezzo più basso e rivendendo alla media, tolta la tassa del Market.</div>
+    <div><b>Compra</b>: il prezzo è abbastanza sotto la media da guadagnarci rivendendo. <b>Vendi</b>: il prezzo è molto sopra la media.</div>
+    <div><b>Servono più dati</b>: l'item ha ancora meno di 3 controlli, troppo pochi per giudicare il prezzo.</div>
   </section>
-
-  <footer>Prezzi raccolti dal Market in gioco. Non affiliato a NCSOFT.</footer>
 </div>
+<footer>Prezzi raccolti dal Market in gioco. Non affiliato a NCSOFT.</footer>
 
 <script>
-const fmtK = d3.format(',.0f'), fmtC = (v) => (Math.abs(v) >= 100000 && window.innerWidth < 680) ? new Intl.NumberFormat('en', {notation: 'compact', maximumFractionDigits: 1}).format(v) : fmtK(v), fmtP = d3.format('+.1%'), fmtPct = d3.format('.0%');
+const fmtK = d3.format(',.0f');
+const fmtC = (v) => (Math.abs(v) >= 100000 && window.innerWidth < 760) ? new Intl.NumberFormat('en', {notation: 'compact', maximumFractionDigits: 1}).format(v) : fmtK(v);
+const fmtP = (v) => d3.format('+.1%')(v).replace('-', '−');
+const fmtPct = d3.format('.0%');
 const fmtDT = (d) => { d = new Date(d); return isNaN(d) ? '—' : d.toLocaleString('it-IT', {day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'}); };
-const ICON = {
-  'Gathering Material': '<path d="M3 13l4-7 3 4 2-3 3 6z" fill="currentColor"/>',
-  'Crafting Material': '<path d="M2 14l6-6M9 3l4 4-3 3-4-4z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/>',
-  'Substance Morph Material': '<path d="M8 2c2 3 5 4 5 7a5 5 0 01-10 0c0-3 3-4 5-7z" fill="currentColor"/>',
-  'Potions': '<path d="M6 2h4v3l3 5a3 3 0 01-3 4H6a3 3 0 01-3-4l3-5z" fill="currentColor"/>',
-  'Pantheon': '<rect x="2.5" y="2.5" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M4 12l3-4 2 2 1.5-1.5L12 12z" fill="currentColor"/>',
-  _all: '<circle cx="5" cy="5" r="2" fill="currentColor"/><circle cx="11" cy="5" r="2" fill="currentColor"/><circle cx="5" cy="11" r="2" fill="currentColor"/><circle cx="11" cy="11" r="2" fill="currentColor"/>',
-};
 const CAT_IT = {'Gathering Material': 'Raccolta', 'Crafting Material': 'Crafting', 'Substance Morph Material': 'Trasmutazione', 'Potions': 'Pozioni', 'Pantheon': 'Pantheon'};
+const GRADE = {white: 'Common', green: 'Non rare', blue: 'Rare', gold: 'Legendary', orange: 'Mythic'};
+const SIG_SHORT = {'Compra per rivendere': 'Compra', 'Vendi ora': 'Vendi', 'Tieni': 'Tieni', 'Servono più dati': 'Servono più dati'};
 const catName = (c) => CAT_IT[c] || c;
-const icon = (c) => { const ns = 'http://www.w3.org/2000/svg'; const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', '0 0 16 16'); svg.setAttribute('aria-hidden', 'true'); svg.innerHTML = ICON[c] || ICON._all; return svg; };
-let CAT = 'all';
-let LOG = [], ITEMS = [], S = {}, sortK = 'flip_profit', sortDir = -1, picked = null;
+let LOG = [], ITEMS = [], S = {}, ICONS = {}, CAT = 'all', sortK = 'latest', sortDir = -1, picked = null;
 
+/* ---------- theme switch ---------- */
+const themeBtns = document.querySelectorAll('.themes button');
+const currentTheme = () => document.documentElement.dataset.theme || 'abyss';
+function paintThemes() { themeBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.theme === currentTheme()))); }
+themeBtns.forEach((b) => b.addEventListener('click', () => {
+  const t = b.dataset.theme;
+  if (t === 'abyss') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t;
+  try { localStorage.setItem('aion-theme', t); } catch (e) {}
+  paintThemes(); drawChart();
+}));
+paintThemes();
+
+/* ---------- data ---------- */
 function computeItems(log, s) {
   const tax = +s.tax_rate, minP = +s.min_flip_profit, minM = +s.min_flip_margin, sellA = +s.sell_above_avg, minC = +s.min_checks;
   const g = d3.group(log.map((r) => ({...r, price: +r.lowest_price, n: +r.listings, t: new Date(r.checked_at)})), (r) => r.item);
@@ -155,9 +219,9 @@ function computeItems(log, s) {
     const last = rs[rs.length - 1], prev = rs.length > 1 ? rs[rs.length - 2] : null;
     const avg = d3.mean(rs, (r) => r.price), flip = avg * (1 - tax) - last.price, margin = last.price ? flip / last.price : null;
     const signal = rs.length < minC ? 'Servono più dati' : (flip >= minP && margin >= minM) ? 'Compra per rivendere' : last.price >= avg * (1 + sellA) ? 'Vendi ora' : 'Tieni';
-    return { item, category: last.category, grade: last.grade || 'white', last_checked: last.t, latest: last.price, listings: last.n, change: prev ? last.price - prev.price : null,
-      change_pct: prev && prev.price ? (last.price - prev.price) / prev.price : null, average: Math.round(avg),
-      low: d3.min(rs, (r) => r.price), high: d3.max(rs, (r) => r.price), checks: rs.length, flip_profit: Math.round(flip), flip_margin: margin, signal };
+    return { item, category: last.category, grade: last.grade || 'white', last_checked: last.t, latest: last.price, listings: last.n,
+      change: prev ? last.price - prev.price : null, change_pct: prev && prev.price ? (last.price - prev.price) / prev.price : null,
+      average: Math.round(avg), checks: rs.length, flip_profit: Math.round(flip), flip_margin: margin, signal };
   });
 }
 
@@ -172,53 +236,64 @@ function drawAll() {
   const need = ITEMS.filter((r) => r.signal === 'Servono più dati').length;
   const take = document.getElementById('takeaway');
   if (buys.length) {
-    const best = buys.sort((a, b) => b.flip_profit - a.flip_profit)[0];
+    const best = buys.slice().sort((a, b) => b.flip_profit - a.flip_profit)[0];
     take.textContent = `L'affare migliore ora è ${best.item}: comprandolo e rivendendolo alla media guadagni circa ${fmtK(best.flip_profit)} Kinah a pezzo, tassa inclusa.`;
   } else if (need === ITEMS.length) {
     take.textContent = `Ancora nessun segnale: ogni item ha bisogno di almeno ${+S.min_checks} controlli. Più screenshot arrivano, più i segnali diventano affidabili.`;
   } else take.textContent = 'Per ora nessun item è abbastanza sotto la media da valere un flip.';
-  drawChips(); drawTable(); drawChart();
+  drawCats(); drawTable(); drawChart();
 }
 
-function drawChips() {
+function drawCats() {
   const counts = d3.rollup(ITEMS, (v) => v.length, (r) => r.category);
   const cats = [['all', 'Tutte', ITEMS.length], ...Array.from(counts, ([c, n]) => [c, catName(c), n])];
-  document.getElementById('chips').replaceChildren(...cats.map(([c, label, n]) => {
-    const b = document.createElement('button'); b.className = 'chip'; b.type = 'button';
+  document.getElementById('cats').replaceChildren(...cats.map(([c, label, n]) => {
+    const b = document.createElement('button'); b.type = 'button';
     b.setAttribute('aria-pressed', String(CAT === c));
-    b.append(icon(c === 'all' ? '_all' : c), document.createTextNode(label));
-    const sn = document.createElement('span'); sn.className = 'n'; sn.textContent = n; b.appendChild(sn);
-    b.addEventListener('click', () => { CAT = c; drawChips(); drawTable(); });
+    b.append(document.createTextNode(label));
+    const sn = document.createElement('span'); sn.textContent = n; b.appendChild(sn);
+    b.addEventListener('click', () => { CAT = c; drawCats(); drawTable(); });
     return b;
   }));
 }
 
 function drawTable() {
   const term = document.getElementById('q').value.trim().toLowerCase();
-  const rows = ITEMS.filter((r) => (CAT === 'all' || r.category === CAT) && (!term || (r.item + ' ' + catName(r.category)).toLowerCase().includes(term))).sort((a, b) => {
-    const x = a[sortK], y = b[sortK];
-    if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
-    return (typeof x === 'string' ? x.localeCompare(y) : x - y) * sortDir;
-  });
-  const hn = new Set(['change', 'average', 'change_pct', 'low', 'high', 'listings', 'checks', 'flip_margin']);
-  document.getElementById('rows').replaceChildren(...rows.map((r) => {
-    const tr = document.createElement('tr'); tr.dataset.key = r.item; if (r.item === picked) tr.className = 'sel';
-    [['item', r.item], ['category', null], ['latest', fmtC(r.latest)], ['change', r.change == null ? '—' : (r.change > 0 ? '+' : '') + fmtK(r.change)],
-     ['change_pct', r.change_pct == null ? '—' : fmtP(r.change_pct)], ['average', fmtK(r.average)], ['low', fmtK(r.low)], ['high', fmtK(r.high)],
-     ['listings', fmtK(r.listings)], ['checks', fmtK(r.checks)], ['flip_profit', (r.flip_profit > 0 ? '+' : '') + fmtC(r.flip_profit)],
-     ['flip_margin', r.flip_margin == null ? '—' : fmtP(r.flip_margin)], ['signal', null]].forEach(([k, v]) => {
-      const td = document.createElement('td');
-      if (hn.has(k) || k === 'category') td.classList.add('hn');
-      if (k === 'category') td.classList.add('hn2');
-      if (k === 'low' || k === 'high') td.classList.add('hn2');
-      if (k === 'item') { td.classList.add('item', 'g-' + r.grade); }
-      if (k === 'category') { td.classList.add('catc'); const c = document.createElement('span'); c.className = 'cat'; c.append(icon(r.category), document.createTextNode(catName(r.category))); td.appendChild(c); }
-      if (k === 'category') {} else if (k === 'signal') { const sp = document.createElement('span'); sp.className = 'sig ' + (r.signal === 'Compra per rivendere' ? 'buy' : r.signal === 'Vendi ora' ? 'sell' : 'wait'); sp.textContent = r.signal; td.appendChild(sp); }
-      else td.textContent = v;
-      if ((k === 'change' || k === 'change_pct') && r.change) td.classList.add(r.change > 0 ? 'up' : 'down');
-      if (k === 'flip_profit' || k === 'flip_margin') td.classList.add(r.flip_profit > 0 ? 'up' : 'down');
-      tr.appendChild(td);
+  const rows = ITEMS.filter((r) => (CAT === 'all' || r.category === CAT) && (!term || (r.item + ' ' + catName(r.category) + ' ' + GRADE[r.grade]).toLowerCase().includes(term)))
+    .sort((a, b) => {
+      const x = a[sortK], y = b[sortK];
+      if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
+      return (typeof x === 'string' ? x.localeCompare(y) : x - y) * sortDir;
     });
+  document.querySelectorAll('th').forEach((th) => {
+    const k = th.querySelector('button')?.dataset.k;
+    th.setAttribute('aria-sort', k === sortK ? (sortDir > 0 ? 'ascending' : 'descending') : 'none');
+  });
+  const tbody = document.getElementById('rows');
+  if (!rows.length) {
+    const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 7; td.className = 'empty';
+    td.textContent = term ? `Nessun item contiene "${term}". Prova un altro nome.` : 'Nessun item in questa categoria.';
+    tr.appendChild(td); tbody.replaceChildren(tr); return;
+  }
+  tbody.replaceChildren(...rows.map((r) => {
+    const tr = document.createElement('tr'); tr.dataset.key = r.item; if (r.item === picked) tr.className = 'sel';
+    const tdI = document.createElement('td');
+    const it = document.createElement('div'); it.className = 'it';
+    const slot = document.createElement('div'); slot.className = 'slot g-' + r.grade;
+    if (ICONS[r.item]) { const img = document.createElement('img'); img.src = ICONS[r.item]; img.alt = ''; img.loading = 'lazy'; img.width = 46; img.height = 46; slot.appendChild(img); }
+    const txt = document.createElement('div');
+    const nm = document.createElement('span'); nm.className = 'nm g-' + r.grade; nm.textContent = r.item;
+    const ct = document.createElement('span'); ct.className = 'ct'; ct.textContent = catName(r.category) + ' · ' + GRADE[r.grade];
+    txt.append(nm, ct); it.append(slot, txt); tdI.appendChild(it); tr.appendChild(tdI);
+    const cell = (text, cls) => { const td = document.createElement('td'); if (cls) td.className = cls; td.textContent = text; tr.appendChild(td); return td; };
+    cell(fmtK(r.listings), 'hn');
+    const tdP = cell('', ''); const coin = document.createElement('span'); coin.className = 'coin'; tdP.append(coin, document.createTextNode(fmtC(r.latest)));
+    cell(r.change_pct == null ? '—' : fmtP(r.change_pct), 'hn ' + (r.change > 0 ? 'up' : r.change < 0 ? 'down' : ''));
+    cell(fmtK(r.average), 'hn hm');
+    cell((r.flip_profit > 0 ? '+' : r.flip_profit < 0 ? '−' : '') + fmtC(Math.abs(r.flip_profit)), r.flip_profit > 0 ? 'up' : 'down');
+    const tdS = cell('', 'hn'); const sp = document.createElement('span');
+    sp.className = 'sig ' + (r.signal === 'Compra per rivendere' ? 'buy' : r.signal === 'Vendi ora' ? 'sell' : '');
+    sp.textContent = SIG_SHORT[r.signal]; tdS.appendChild(sp);
     return tr;
   }));
 }
@@ -226,23 +301,24 @@ function drawTable() {
 function drawChart() {
   const box = document.getElementById('chart'); box.replaceChildren();
   const pts = LOG.filter((r) => r.item === picked).map((r) => ({t: new Date(r.checked_at), v: +r.lowest_price, n: +r.listings})).sort((a, b) => a.t - b.t);
-  document.getElementById('hist-title').textContent = picked ? 'Storico prezzi: ' + picked : 'Storico prezzi';
-  document.getElementById('hist-note').textContent = pts.length < 2 ? "Per ora c'è un solo controllo: la linea comparirà dal secondo." : 'Prezzo più basso a ogni controllo, in Kinah.';
+  document.getElementById('hist-title').textContent = picked ? 'Storico prezzi · ' + picked : 'Storico prezzi';
+  document.getElementById('hist-note').textContent = !picked ? 'Clicca un item per vedere come è cambiato il suo prezzo.' : pts.length < 2 ? "Per ora c'è un solo controllo: la linea comparirà dal secondo." : 'Prezzo più basso a ogni controllo, in Kinah.';
   if (!pts.length) return;
+  const css = getComputedStyle(document.documentElement), C = (v) => css.getPropertyValue(v).trim();
   const W = Math.max(280, box.clientWidth), H = 220;
-  const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+  const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('font-family', "'Barlow Condensed', sans-serif");
   const ext = d3.extent(pts, (d) => d.v), pad = (ext[1] - ext[0]) * 0.15 || ext[0] * 0.1;
   const y = d3.scaleLinear([ext[0] - pad, ext[1] + pad], [H - 28, 12]).nice(), ticks = y.ticks(4);
-  const probe = svg.append('text').attr('font-size', 12).text(fmtK(d3.max(ticks))); const ml = probe.node().getComputedTextLength() + 14; probe.remove();
+  const probe = svg.append('text').attr('font-size', 14).text(fmtK(d3.max(ticks))); const ml = probe.node().getComputedTextLength() + 14; probe.remove();
   const tx = pts.length > 1 ? d3.extent(pts, (d) => d.t) : [d3.timeHour.offset(pts[0].t, -12), d3.timeHour.offset(pts[0].t, 12)];
-  const x = d3.scaleTime(tx, [ml, W - 20]);
-  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', ml).attr('x2', W - 20).attr('y1', y).attr('y2', y).attr('stroke', 'var(--line)');
-  svg.append('g').selectAll('text').data(ticks).join('text').attr('x', ml - 8).attr('y', y).attr('dy', '.32em').attr('text-anchor', 'end').attr('font-size', 12).attr('fill', 'var(--muted)').text(fmtK);
-  const xt = pts.length > 1 ? x.ticks(Math.max(2, Math.floor(W / 150))) : [pts[0].t];
-  svg.append('g').selectAll('text').data(xt).join('text').attr('x', x).attr('y', H - 8).attr('text-anchor', 'middle').attr('font-size', 12).attr('fill', 'var(--muted)').text(fmtDT);
-  if (pts.length > 1) svg.append('path').datum(pts).attr('fill', 'none').attr('stroke', 'var(--gold)').attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round').attr('d', d3.line((d) => x(d.t), (d) => y(d.v)));
+  const x = d3.scaleTime(tx, [ml, W - 24]);
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', ml).attr('x2', W - 24).attr('y1', y).attr('y2', y).attr('stroke', C('--faint'));
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('x', ml - 8).attr('y', y).attr('dy', '.32em').attr('text-anchor', 'end').attr('font-size', 14).attr('fill', C('--dim')).text(fmtK);
+  const xt = pts.length > 1 ? x.ticks(Math.max(2, Math.floor(W / 160))) : [pts[0].t];
+  svg.append('g').selectAll('text').data(xt).join('text').attr('x', x).attr('y', H - 6).attr('text-anchor', 'middle').attr('font-size', 14).attr('fill', C('--dim')).text(fmtDT);
+  if (pts.length > 1) svg.append('path').datum(pts).attr('fill', 'none').attr('stroke', C('--accent')).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round').attr('d', d3.line((d) => x(d.t), (d) => y(d.v)));
   const tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; box.appendChild(tip);
-  svg.append('g').selectAll('circle').data(pts).join('circle').attr('cx', (d) => x(d.t)).attr('cy', (d) => y(d.v)).attr('r', 4.5).attr('fill', 'var(--gold)')
+  svg.append('g').selectAll('circle').data(pts).join('circle').attr('cx', (d) => x(d.t)).attr('cy', (d) => y(d.v)).attr('r', 5).attr('fill', C('--accent'))
     .on('mouseenter', (e, d) => {
       tip.replaceChildren(Object.assign(document.createElement('div'), {className: 'd', textContent: fmtDT(d.t)}), Object.assign(document.createElement('div'), {textContent: `${fmtK(d.v)} Kinah · ${fmtK(d.n)} in vendita`}));
       tip.hidden = false; const bw = box.clientWidth, px = x(d.t) / W * bw;
@@ -251,20 +327,25 @@ function drawChart() {
     }).on('mouseleave', () => { tip.hidden = true; });
 }
 
+/* ---------- events ---------- */
 document.querySelectorAll('th button').forEach((b) => b.addEventListener('click', () => {
   const k = b.dataset.k; if (sortK === k) sortDir = -sortDir; else { sortK = k; sortDir = (k === 'item' || k === 'signal') ? 1 : -1; } drawTable();
 }));
 document.getElementById('q').addEventListener('input', drawTable);
-document.getElementById('rows').addEventListener('click', (e) => { const tr = e.target.closest('tr[data-key]'); if (tr) { picked = tr.dataset.key; drawTable(); drawChart(); } });
-window.addEventListener('resize', () => { drawTable(); drawChart(); });
+document.getElementById('rows').addEventListener('click', (e) => {
+  const tr = e.target.closest('tr[data-key]'); if (!tr) return;
+  picked = tr.dataset.key; drawTable(); drawChart();
+  if (window.innerWidth < 760) document.querySelector('.hist').scrollIntoView({behavior: 'smooth', block: 'start'});
+});
+let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { drawTable(); drawChart(); }, 120); });
 
-Promise.all([fetch('data/price_log.json', {cache: 'no-store'}).then((r) => r.json()), fetch('data/settings.json', {cache: 'no-store'}).then((r) => r.json())])
-  .then(([log, settings]) => {
-    LOG = log; S = settings[0] || settings; ITEMS = computeItems(LOG, S);
-    if (ITEMS.length) picked = ITEMS.slice().sort((a, b) => b.latest - a.latest)[0].item;
+const get = (u) => fetch(u, {cache: 'no-store'}).then((r) => { if (!r.ok) throw new Error(u); return r.json(); });
+Promise.all([get('data/price_log.json'), get('data/settings.json'), get('data/icons.json').catch(() => ({}))])
+  .then(([log, settings, icons]) => {
+    LOG = log; S = settings[0] || settings; ICONS = icons; ITEMS = computeItems(LOG, S);
     drawAll();
   })
-  .catch(() => { const t = document.getElementById('takeaway'); t.textContent = 'Non riesco a caricare i dati.'; t.classList.add('err'); });
+  .catch(() => { const t = document.getElementById('takeaway'); t.textContent = 'Non riesco a caricare i dati. Ricarica la pagina tra qualche secondo.'; t.classList.add('err'); });
 </script>
 </body>
 </html>
