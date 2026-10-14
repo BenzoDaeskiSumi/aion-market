@@ -1,24 +1,43 @@
 name: Backfill history
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      servers:
+        description: 'Server ids, JSON list'
+        default: '[12301,12302,12303,12304,12306,12307,12308,12309,12310,12311,12312,12313,12314,12315,12316,12317,12318,12319,12320,12321,12322,12323]'
 permissions:
   contents: write
-concurrency:
-  group: sync-prices
-  cancel-in-progress: false
 jobs:
-  backfill:
+  fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      max-parallel: 3                 # gentle on the API: 3 servers at a time, ~1.5 requests/s each
+      matrix:
+        server: ${{ fromJSON(inputs.servers) }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: python scripts/backfill.py
+        with: {python-version: '3.12'}
+      - run: python scripts/backfill.py fetch ${{ matrix.server }}
+      - uses: actions/upload-artifact@v4
+        with: {name: 'bf-${{ matrix.server }}', path: backfill/, if-no-files-found: ignore}
+  merge:
+    needs: fetch
+    if: always()
+    runs-on: ubuntu-latest
+    concurrency: {group: sync-prices, cancel-in-progress: false}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/download-artifact@v4
+        with: {path: backfill, pattern: 'bf-*'}
+      - run: python scripts/backfill.py merge
       - name: Commit
         run: |
           git config user.name "BenzoDaeskiSumi"
           git config user.email "173538282+BenzoDaeskiSumi@users.noreply.github.com"
-          git add data/price_log.json
-          git diff --cached --quiet || (git commit -m "Storico prezzi importato da aion2.exchange (dal 4 ottobre)" && git pull --rebase && git push)
+          git add data/s
+          git diff --cached --quiet || (git commit -m "Storico prezzi dal 4 ottobre per tutti i server Asmodian" && git pull --rebase && git push)
