@@ -9,17 +9,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
       - name: Deploy the Worker to Cloudflare
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: bot
-          secrets: DISCORD_PUBLIC_KEY
+        working-directory: bot
         env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           DISCORD_PUBLIC_KEY: ${{ secrets.DISCORD_PUBLIC_KEY }}
+        run: |
+          # wrangler's output goes into annotations so it can be read without the raw logs
+          report() { tail -n 25 "$1" | sed 's/\x1b\[[0-9;]*m//g' | grep -v '^\s*$' | while IFS= read -r l; do echo "::$2::$l"; done; }
+          [ -n "$CLOUDFLARE_API_TOKEN" ] || echo "::error::secret CLOUDFLARE_API_TOKEN missing"
+          [ -n "$CLOUDFLARE_ACCOUNT_ID" ] || echo "::error::secret CLOUDFLARE_ACCOUNT_ID missing"
+          [ -n "$DISCORD_PUBLIC_KEY" ] || echo "::error::secret DISCORD_PUBLIC_KEY missing"
+          if ! npx -y wrangler@4 deploy > deploy.txt 2>&1; then report deploy.txt error; exit 1; fi
+          grep -o 'https://[^ ]*workers.dev' deploy.txt | head -1 | sed 's/^/::notice::Worker URL /'
+          if ! printf '%s' "$DISCORD_PUBLIC_KEY" | npx -y wrangler@4 secret put DISCORD_PUBLIC_KEY > secret.txt 2>&1; then report secret.txt error; exit 1; fi
       - name: Register the slash commands
-        run: node bot/register.mjs
+        run: node bot/register.mjs 2>&1 | tee reg.txt; s=${PIPESTATUS[0]}; [ $s -eq 0 ] || sed 's/^/::error::/' reg.txt; exit $s
+        shell: bash
         env:
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
           DISCORD_APP_ID: ${{ secrets.DISCORD_APP_ID }}
