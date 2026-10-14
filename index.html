@@ -204,8 +204,13 @@ footer a { color: var(--gold, inherit); }
 .acct button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .acct .dc { width: 18px; height: 18px; }
 .acct .out { color: var(--dim); }
-.fav { all: unset; cursor: pointer; flex: none; width: 22px; height: 22px; display: grid; place-items: center; color: var(--dim); opacity: .45; }
-.fav svg { width: 17px; height: 17px; }
+.fav { all: unset; cursor: pointer; flex: none; width: 26px; height: 26px; display: grid; place-items: center; color: var(--dim); opacity: .8; }
+.fav svg { width: 20px; height: 20px; }
+.favbig { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; margin: 0 0 10px; padding: 6px 12px; border: 1px solid var(--line); background: var(--field); color: var(--text); }
+.favbig svg { width: 18px; height: 18px; color: var(--g-gold); }
+.favbig.fav { width: auto; height: auto; opacity: 1; display: inline-flex; color: var(--text); }
+.favbig:hover { border-color: var(--g-gold); }
+.favbig:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .fav:hover { opacity: 1; color: var(--g-gold); }
 .fav[aria-pressed="true"] { opacity: 1; color: var(--g-gold); }
 .fav:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; opacity: 1; }
@@ -641,15 +646,18 @@ document.addEventListener('click', (e) => { const b = e.target.closest('.fav[dat
 function drawChart() {
   const cd = document.getElementById('craftdetail'), help = document.querySelector('.aside .help');
   const chartBox = document.getElementById('chart');
-  if (VIEW === 'craft') { document.getElementById('hero').hidden = true; help.hidden = true; chartBox.style.display = 'none'; document.getElementById('ranges').hidden = true; return drawCraftDetail(); }
+  if (VIEW === 'craft') { document.querySelectorAll('.aside .favbig').forEach((x) => x.remove()); document.getElementById('hero').hidden = true; help.hidden = true; chartBox.style.display = 'none'; document.getElementById('ranges').hidden = true; return drawCraftDetail(); }
   cd.hidden = true; help.hidden = false; chartBox.style.display = '';
   const box = document.getElementById('chart'); box.replaceChildren();
   const r = ITEMS.find((x) => x.item === picked);
   const pick = document.getElementById('pick'), facts = document.getElementById('facts');
-  pick.hidden = facts.hidden = !r; document.getElementById('hero').hidden = true;
+  pick.hidden = facts.hidden = !r; document.getElementById('hero').hidden = true; document.querySelectorAll('.aside .favbig').forEach((x) => x.remove());
   document.getElementById('hist-title').textContent = r ? 'Dettagli' : 'Storico prezzi';
   if (!r) { document.getElementById('hist-note').textContent = 'Clicca un item per vedere i dettagli e come è cambiato il suo prezzo.'; return; }
   pick.replaceChildren(itemBox(r));
+  const fb = document.createElement('button'); fb.type = 'button'; fb.className = 'favbig fav'; fb.dataset.fav = r.item;
+  fb.innerHTML = (FAVS.has(r.item) ? STAR : STAR_O) + '<span>' + (FAVS.has(r.item) ? 'Nei preferiti — togli' : 'Aggiungi ai preferiti') + '</span>';
+  pick.after(fb); document.querySelectorAll('.aside .favbig').forEach((x) => { if (x !== fb) x.remove(); });
   const hero = document.getElementById('hero'); hero.hidden = false;
   const hv = [['Prezzo più basso', r.available ? fmtK(r.latest) : 'Non disponibile', ''], ['Profitto flip', r.flip_profit == null ? '—' : (r.flip_profit > 0 ? '+' : '') + fmtK(r.flip_profit), r.flip_profit > 0 ? 'up' : r.flip_profit < 0 ? 'down' : '']];
   hero.replaceChildren(...hv.map(([k, v, c]) => { const d = document.createElement('div'); d.textContent = k; const b = document.createElement('b'); b.textContent = v; if (c) b.className = c; d.appendChild(b); return d; }));
