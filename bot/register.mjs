@@ -8,6 +8,8 @@ const commands = [
     {type: 3, name: 'oggetto', description: 'Nome dell’oggetto (in inglese, come in gioco)', required: true, autocomplete: true}, server]},
   {name: 'affari', description: 'I migliori affari del momento', options: [
     {type: 3, name: 'tipo', description: 'Cosa cerchi', required: false, choices: [{name: 'Da comprare (flip)', value: 'compra'}, {name: 'Da vendere ora', value: 'vendi'}]}, server]},
+  {name: 'preferiti', description: 'I tuoi preferiti del sito (accedi con Discord), uno alla volta con le frecce', options: [
+    {...server, description: 'Server (predefinito: quello scelto sul sito)'}]},
 ];
 const {DISCORD_TOKEN, DISCORD_APP_ID} = process.env;
 const r = await fetch(`https://discord.com/api/v10/applications/${DISCORD_APP_ID}/commands`, {

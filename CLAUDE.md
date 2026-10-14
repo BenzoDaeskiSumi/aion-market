@@ -65,9 +65,12 @@ Look: modern dark app skin (Inter font, rounded cards, KPI row, pill tabs) — t
 
 ## Discord bot
 bot/ is a Cloudflare Worker (Discord "Interactions Endpoint URL", slash commands only, no gateway): /prezzo <oggetto> [server] with
-autocomplete and /affari [tipo compra|vendi] [server]. It reads data/s/<id>/summary.json (per-item snapshot written by sync.py's
+autocomplete, /affari [tipo compra|vendi] [server] and /preferiti [server] (the user's site favourites, one card at a time; ◀ ▶ buttons
+edit the same message, only the owner can press them). /preferiti reads Supabase through the SQL function in bot/supabase.sql
+(favorites_by_discord, Discord id -> favourites via auth.identities; only service_role may execute it). It reads data/s/<id>/summary.json (per-item snapshot written by sync.py's
 write_summary, same rules as computeItems — keep the two in sync) plus data/icons.json / data/servers.json from GitHub Pages.
 Embed links open the page at ?s=<server>&item=<name> (deep link handled at page start-up).
 .github/workflows/bot.yml deploys it (wrangler-action) and registers the commands (bot/register.mjs) on every push to bot/**.
-Repo secrets (set by the user, never in chat): CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, DISCORD_PUBLIC_KEY, DISCORD_APP_ID, DISCORD_TOKEN.
+Repo secrets (set by the user, never in chat): CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, DISCORD_PUBLIC_KEY, DISCORD_APP_ID, DISCORD_TOKEN, SUPABASE_SERVICE_KEY.
+Worker URL: https://aion-market-bot.aion2-market.workers.dev (Discord Interactions Endpoint URL). Deploy errors are printed as run annotations.
 To limit the bot to one channel: Discord server settings → Integrations → the bot → channels (no code).

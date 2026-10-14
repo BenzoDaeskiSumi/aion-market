@@ -53,14 +53,9 @@ const serverOf = (data, env) => +(opt(data, 'server')?.value || env.DEFAULT_SERV
 const reply = (data) => Response.json({type: 4, data: {allowed_mentions: {parse: []}, ...data}});
 const oops = (content) => reply({content, flags: 64});        // 64 = only the user who asked sees it
 
-// ---------- /prezzo ----------
-async function prezzo(data, env) {
-  const sid = serverOf(data, env), q = String(opt(data, 'oggetto')?.value || '').trim();
-  const [sum, srv, ico] = await Promise.all([summary(env, sid), servers(env), icons(env)]);
-  const name = sum[q] ? q : search(Object.entries(sum), q, 1)[0];
-  if (!name) return oops(`Non trovo **${q}** sul market. Scegli un nome dai suggerimenti mentre scrivi.`);
-  const r = sum[name], [gname, color] = GRADE[r.g] || GRADE.white;
-  const sname = srv.find((s) => s.id === sid)?.name || sid;
+// ---------- item card (used by /prezzo and /preferiti) ----------
+function itemEmbed(name, r, sid, sname, ico, env) {
+  const [gname, color] = GRADE[r.g] || GRADE.white;
   const ch = r.ch ? ` (${r.ch > 0 ? '▲ +' : '▼ '}${kin(Math.abs(r.ch))})` : '';
   const fields = [
     {name: 'Prezzo più basso', value: r.p > 0 ? `**${kin(r.p)}** kinah${ch}` : 'Non in vendita', inline: true},
@@ -72,26 +67,81 @@ async function prezzo(data, env) {
     {name: 'Segnale', value: SIGNAL[r.s] || r.s, inline: false},
   ];
   const icon = ico[name] || `icons/${slug(name)}.png`;
-  return reply({embeds: [{
-    title: name, url: `${env.SITE}/?s=${sid}&item=${encodeURIComponent(name)}`, color,
+  return {
+    title: name, url: itemUrl(env, sid, name), color,
     description: [gname, r.c, r.l ? `Item Level ${r.l}` : null].filter(Boolean).join(' · '),
     thumbnail: {url: `${env.SITE}/${icon}`}, fields,
     footer: {text: `${sname} · Asmodian · dati aion2.exchange`}, timestamp: r.t,
-  }]});
+  };
+}
+const itemUrl = (env, sid, name) => `${env.SITE}/?s=${sid}&item=${encodeURIComponent(name)}`;
+const serverName = (srv, sid) => srv.find((s) => s.id === sid)?.name || String(sid);
+
+// ---------- /prezzo ----------
+async function prezzo(data, env) {
+  const sid = serverOf(data, env), q = String(opt(data, 'oggetto')?.value || '').trim();
+  const [sum, srv, ico] = await Promise.all([summary(env, sid), servers(env), icons(env)]);
+  const name = sum[q] ? q : search(Object.entries(sum), q, 1)[0];
+  if (!name) return oops(`Non trovo **${q}** sul market. Scegli un nome dai suggerimenti mentre scrivi.`);
+  return reply({embeds: [itemEmbed(name, sum[name], sid, serverName(srv, sid), ico, env)]});
+}
+
+// ---------- /preferiti: the favourites saved on the site (Discord login), one card at a time with arrows ----------
+async function profile(env, uid) {
+  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_KEY) throw new Error('supabase not configured');
+  // SQL function favorites_by_discord (see bot/supabase.sql): only the service key may call it
+  const r = await fetch(`${env.SUPABASE_URL}/rest/v1/rpc/favorites_by_discord`, {method: 'POST',
+    headers: {apikey: env.SUPABASE_SERVICE_KEY, 'Content-Type': 'application/json',
+      // legacy service_role keys are JWTs and go in Authorization too; new sb_secret_ keys only in apikey
+      ...(env.SUPABASE_SERVICE_KEY.startsWith('eyJ') ? {Authorization: `Bearer ${env.SUPABASE_SERVICE_KEY}`} : {})},
+    body: JSON.stringify({did: uid})});
+  if (!r.ok) throw new Error(`supabase ${r.status}`);
+  return (await r.json())[0] || null;
+}
+async function favPage(env, uid, sid, idx) {
+  const prof = await profile(env, uid);
+  const favs = (prof?.favorites || []).slice().sort((a, b) => a.localeCompare(b));
+  if (!favs.length) return null;
+  sid = sid || prof.server_id || +env.DEFAULT_SERVER;
+  const [sum, srv, ico] = await Promise.all([summary(env, sid), servers(env), icons(env)]);
+  const n = favs.length, i = ((idx % n) + n) % n, name = favs[i];
+  const r = sum[name];
+  const embed = r ? itemEmbed(name, r, sid, serverName(srv, sid), ico, env)
+    : {title: name, url: itemUrl(env, sid, name), color: 0x5b8cff, description: `Nessun dato per questo oggetto su ${serverName(srv, sid)}.`};
+  embed.author = {name: `Preferiti · ${i + 1} di ${n}`};
+  const btn = (to, label, style = 2) => ({type: 2, style, label, custom_id: `fav:${uid}:${sid}:${to}:${label}`, disabled: n < 2});
+  return {embeds: [embed], components: [{type: 1, components: [
+    btn(i - 1, '◀'), {type: 2, style: 2, label: `${i + 1} / ${n}`, custom_id: `fav:noop:${uid}`, disabled: true}, btn(i + 1, '▶'),
+    {type: 2, style: 5, label: 'Apri sul sito', url: itemUrl(env, sid, name)},
+  ]}]};
+}
+async function preferiti(i, env) {
+  const uid = i.member?.user?.id || i.user?.id, srv = opt(i.data, 'server')?.value;
+  const page = await favPage(env, uid, srv ? +srv : null, 0);
+  if (!page) return oops(`Non hai ancora preferiti. Accedi con Discord su ${env.SITE} e premi la ⭐ accanto agli oggetti che ti interessano.`);
+  return reply(page);
+}
+async function favButton(i, env) {
+  const [, owner, sid, idx] = i.data.custom_id.split(':');
+  const uid = i.member?.user?.id || i.user?.id;
+  if (uid !== owner) return oops('Questi sono i preferiti di un altro utente: usa /preferiti per vedere i tuoi.');
+  const page = await favPage(env, owner, +sid, +idx);
+  if (!page) return Response.json({type: 7, data: {content: 'Nessun preferito.', embeds: [], components: []}});
+  return Response.json({type: 7, data: page});                      // 7 = edit the same message, no new posts
 }
 
 // ---------- /affari ----------
 async function affari(data, env) {
   const sid = serverOf(data, env), kind = opt(data, 'tipo')?.value || 'compra';
   const [sum, srv] = await Promise.all([summary(env, sid), servers(env)]);
-  const sname = srv.find((s) => s.id === sid)?.name || sid;
+  const sname = serverName(srv, sid);
   const rows = Object.entries(sum);
   const top = kind === 'vendi'
     ? rows.filter(([, r]) => r.s === 'Vendi ora').sort((a, b) => (b[1].p / b[1].a) - (a[1].p / a[1].a))
     : rows.filter(([, r]) => r.s === 'Compra per rivendere').sort((a, b) => b[1].f - a[1].f);
   const lines = top.slice(0, 12).map(([n, r], i) => kind === 'vendi'
-    ? `**${i + 1}. [${n}](${env.SITE}/?s=${sid}&item=${encodeURIComponent(n)})** — ${kin(r.p)} (media ${kin(r.a)}, +${pct(r.p / r.a - 1)})`
-    : `**${i + 1}. [${n}](${env.SITE}/?s=${sid}&item=${encodeURIComponent(n)})** — compra a ${kin(r.p)}, media ${kin(r.a)} → **+${kin(r.f)}**`);
+    ? `**${i + 1}. [${n}](${itemUrl(env, sid, n)})** — ${kin(r.p)} (media ${kin(r.a)}, +${pct(r.p / r.a - 1)})`
+    : `**${i + 1}. [${n}](${itemUrl(env, sid, n)})** — compra a ${kin(r.p)}, media ${kin(r.a)} → **+${kin(r.f)}**`);
   return reply({embeds: [{
     title: kind === 'vendi' ? `Da vendere ora · ${sname}` : `Affari da comprare · ${sname}`,
     url: env.SITE, color: kind === 'vendi' ? 0xff5c6c : 0x62e07a,
@@ -118,7 +168,9 @@ export default {
       if (i.type === 2) {
         if (i.data.name === 'prezzo') return await prezzo(i.data, env);
         if (i.data.name === 'affari') return await affari(i.data, env);
+        if (i.data.name === 'preferiti') return await preferiti(i, env);
       }
+      if (i.type === 3 && i.data.custom_id?.startsWith('fav:')) return await favButton(i, env);
       return oops('Comando sconosciuto.');
     } catch (e) {
       return oops('Non riesco a leggere i dati del market in questo momento, riprova tra un minuto.');

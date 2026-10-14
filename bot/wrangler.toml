@@ -7,3 +7,4 @@ compatibility_date = "2025-09-01"
 [vars]
 SITE = "https://benzodaeskisumi.github.io/aion-market"
 DEFAULT_SERVER = "12305"
+SUPABASE_URL = "https://xmtenkcpocwwqcpfhkgr.supabase.co"
