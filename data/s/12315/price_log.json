@@ -605,5 +605,17 @@
 {"checked_at": "2026-10-14T11:10:19+02:00", "item": "Ruby Gemstone", "category": "Gathering Material", "grade": "white", "lowest_price": 750, "listings": 41, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T11:10:19+02:00", "item": "Shade Gloves", "category": "Gloves", "grade": "white", "lowest_price": 29000, "listings": 18, "level": 13, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T11:10:19+02:00", "item": "Shade Mace", "category": "Mace", "grade": "white", "lowest_price": 150000, "listings": 5, "level": 13, "screenshot": "aion2.exchange"},
-{"checked_at": "2026-10-14T11:10:19+02:00", "item": "Splendent Orichalcum Mace", "category": "Mace", "grade": "green", "lowest_price": 189990, "listings": 27, "level": 22, "screenshot": "aion2.exchange"}
+{"checked_at": "2026-10-14T11:10:19+02:00", "item": "Splendent Orichalcum Mace", "category": "Mace", "grade": "green", "lowest_price": 189990, "listings": 27, "level": 22, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:19+02:00", "item": "Balaur's Essence", "category": "Crafting Material", "grade": "blue", "lowest_price": 23999, "listings": 108, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:19+02:00", "item": "Discipline Greatsword", "category": "Greatsword", "grade": "blue", "lowest_price": 79989, "listings": 3, "level": 38, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:19+02:00", "item": "Fantasy Staff", "category": "Staff", "grade": "gold", "lowest_price": 649998, "listings": 12, "level": 36, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:19+02:00", "item": "Festival Shugo Transformation Candy", "category": "Candy", "grade": "teal", "lowest_price": 10000, "listings": 55, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:19+02:00", "item": "Luminous Greaves", "category": "Legs", "grade": "green", "lowest_price": 15000, "listings": 10, "level": 25, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:19+02:00", "item": "Luminous Mace", "category": "Mace", "grade": "green", "lowest_price": 99000, "listings": 16, "level": 25, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:19+02:00", "item": "Ohkra Fried Meat", "category": "Food", "grade": "white", "lowest_price": 9995, "listings": 16, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:19+02:00", "item": "Orichalcum Mace", "category": "Mace", "grade": "white", "lowest_price": 9499, "listings": 34, "level": 18, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:19+02:00", "item": "Radiant Orichalcum Ore", "category": "Gathering Material", "grade": "gold", "lowest_price": 49999, "listings": 22, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:19+02:00", "item": "Seed of Detection", "category": "Consumable Miscellaneous", "grade": "white", "lowest_price": 448, "listings": 40, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:19+02:00", "item": "Shade Orb", "category": "Orb", "grade": "white", "lowest_price": 29888, "listings": 7, "level": 13, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:19+02:00", "item": "Shugo Transformation Candy", "category": "Candy", "grade": "teal", "lowest_price": 10000, "listings": 71, "screenshot": "aion2.exchange"}
 ]

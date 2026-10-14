@@ -470,5 +470,11 @@
 {"checked_at": "2026-10-14T11:10:26+02:00", "item": "Orichalcum Ingot", "category": "Crafting Material", "grade": "white", "lowest_price": 699, "listings": 37, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T11:10:26+02:00", "item": "Radiant Orichalcum Ore", "category": "Gathering Material", "grade": "gold", "lowest_price": 19000, "listings": 19, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T11:10:26+02:00", "item": "Sealed Ancient Aullaeu Wings", "category": "Substance Morph Material", "grade": "gold", "lowest_price": 779990, "listings": 23, "screenshot": "aion2.exchange"},
-{"checked_at": "2026-10-14T11:10:26+02:00", "item": "Steamed Pujery", "category": "Food", "grade": "white", "lowest_price": 400, "listings": 12, "screenshot": "aion2.exchange"}
+{"checked_at": "2026-10-14T11:10:26+02:00", "item": "Steamed Pujery", "category": "Food", "grade": "white", "lowest_price": 400, "listings": 12, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:27+02:00", "item": "Expert's Refining Stone", "category": "Crafting Material", "grade": "green", "lowest_price": 89995, "listings": 65, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:27+02:00", "item": "Fresh Fruit", "category": "Crafting Material", "grade": "white", "lowest_price": 5800, "listings": 41, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:27+02:00", "item": "Pure Diamond Gemstone", "category": "Gathering Material", "grade": "blue", "lowest_price": 13000, "listings": 31, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:27+02:00", "item": "Seed of Detection", "category": "Consumable Miscellaneous", "grade": "white", "lowest_price": 250, "listings": 28, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:27+02:00", "item": "Spectral Mace", "category": "Mace", "grade": "gold", "lowest_price": 400000, "listings": 3, "level": 41, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:27+02:00", "item": "Splendent Sapphire Ring", "category": "Ring", "grade": "green", "lowest_price": 55000, "listings": 52, "level": 22, "screenshot": "aion2.exchange"}
 ]

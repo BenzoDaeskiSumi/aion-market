@@ -551,5 +551,17 @@
 {"checked_at": "2026-10-14T11:10:22+02:00", "item": "Seed of Detection", "category": "Consumable Miscellaneous", "grade": "white", "lowest_price": 194, "listings": 49, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T11:10:22+02:00", "item": "Shade Gloves", "category": "Gloves", "grade": "white", "lowest_price": 15000, "listings": 13, "level": 13, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T11:10:22+02:00", "item": "Shade Orb", "category": "Orb", "grade": "white", "lowest_price": 49999, "listings": 9, "level": 13, "screenshot": "aion2.exchange"},
-{"checked_at": "2026-10-14T11:10:22+02:00", "item": "Splendent Sapphire Ring", "category": "Ring", "grade": "green", "lowest_price": 82995, "listings": 44, "level": 22, "screenshot": "aion2.exchange"}
+{"checked_at": "2026-10-14T11:10:22+02:00", "item": "Splendent Sapphire Ring", "category": "Ring", "grade": "green", "lowest_price": 82995, "listings": 44, "level": 22, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:23+02:00", "item": "Diamond Decoration", "category": "Crafting Material", "grade": "white", "lowest_price": 998, "listings": 17, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:23+02:00", "item": "Festival Shugo Transformation Candy", "category": "Candy", "grade": "teal", "lowest_price": 10000, "listings": 53, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:23+02:00", "item": "Light Droplet (Skin: Earrings)", "category": "Skin Decoration", "grade": "blue", "lowest_price": 150000, "listings": 3, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:23+02:00", "item": "Luminous Orb", "category": "Orb", "grade": "green", "lowest_price": 25000, "listings": 6, "level": 25, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:23+02:00", "item": "Raydam", "category": "Gathering Material", "grade": "white", "lowest_price": 100, "listings": 44, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:23+02:00", "item": "Ruby Decoration", "category": "Crafting Material", "grade": "white", "lowest_price": 800, "listings": 21, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:23+02:00", "item": "Seed of Detection", "category": "Consumable Miscellaneous", "grade": "white", "lowest_price": 194, "listings": 48, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:23+02:00", "item": "Shade Gloves", "category": "Gloves", "grade": "white", "lowest_price": 15000, "listings": 12, "level": 13, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:23+02:00", "item": "Shugo Transformation Candy", "category": "Candy", "grade": "teal", "lowest_price": 10000, "listings": 61, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:23+02:00", "item": "Steamed Pujery", "category": "Food", "grade": "white", "lowest_price": 246, "listings": 13, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:23+02:00", "item": "White Petal Sigh (Skin: Earrings)", "category": "Skin Decoration", "grade": "gold", "lowest_price": 250000, "listings": 4, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:23+02:00", "item": "Wrathful Mind", "category": "Crafting Material", "grade": "gold", "lowest_price": 2000000, "listings": 15, "screenshot": "aion2.exchange"}
 ]

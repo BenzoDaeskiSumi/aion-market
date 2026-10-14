@@ -537,5 +537,16 @@
 {"checked_at": "2026-10-14T11:10:17+02:00", "item": "Conide", "category": "Gathering Material", "grade": "white", "lowest_price": 1995, "listings": 18, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T11:10:17+02:00", "item": "Festival Shugo Transformation Candy", "category": "Candy", "grade": "teal", "lowest_price": 10000, "listings": 48, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T11:10:17+02:00", "item": "Orichalcum Dagger", "category": "Dagger", "grade": "white", "lowest_price": 24997, "listings": 18, "level": 18, "screenshot": "aion2.exchange"},
-{"checked_at": "2026-10-14T11:10:17+02:00", "item": "Shugo Transformation Candy", "category": "Candy", "grade": "teal", "lowest_price": 10000, "listings": 54, "screenshot": "aion2.exchange"}
+{"checked_at": "2026-10-14T11:10:17+02:00", "item": "Shugo Transformation Candy", "category": "Candy", "grade": "teal", "lowest_price": 10000, "listings": 54, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:17+02:00", "item": "Conide Pasta", "category": "Food", "grade": "white", "lowest_price": 499, "listings": 6, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:17+02:00", "item": "Expert's Truth Orb", "category": "Orb", "grade": "green", "lowest_price": 299999, "listings": 6, "level": 28, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:17+02:00", "item": "Festival Shugo Transformation Candy", "category": "Candy", "grade": "teal", "lowest_price": 10000, "listings": 47, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:17+02:00", "item": "Kukuru", "category": "Gathering Material", "grade": "white", "lowest_price": 900, "listings": 4, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:17+02:00", "item": "Moonlight Blossom (Skin: Necklace)", "category": "Skin Decoration", "grade": "gold", "lowest_price": 999999, "listings": 3, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:17+02:00", "item": "Promise Legion (Skin: Cloak)", "category": "Skin Armor", "grade": "blue", "lowest_price": 150000, "listings": 4, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:17+02:00", "item": "Ruby Decoration", "category": "Crafting Material", "grade": "white", "lowest_price": 250, "listings": 22, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:17+02:00", "item": "Spectral Cloak", "category": "Cloak", "grade": "gold", "lowest_price": 650000, "listings": 15, "level": 41, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:17+02:00", "item": "Steamed Pujery", "category": "Food", "grade": "white", "lowest_price": 4200, "listings": 19, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:17+02:00", "item": "Verdant Leaf (Skin: Necklace)", "category": "Skin Decoration", "grade": "blue", "lowest_price": 450000, "listings": 5, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:17+02:00", "item": "Wind Serum", "category": "Potions", "grade": "white", "lowest_price": 2690, "listings": 5, "screenshot": "aion2.exchange"}
 ]

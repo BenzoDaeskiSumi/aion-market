@@ -584,5 +584,18 @@
 {"checked_at": "2026-10-14T11:10:13+02:00", "item": "Luminous Mace", "category": "Mace", "grade": "green", "lowest_price": 10000, "listings": 5, "level": 25, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T11:10:13+02:00", "item": "Splendent Asvata Bow", "category": "Bow", "grade": "green", "lowest_price": 175000, "listings": 5, "level": 22, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T11:10:13+02:00", "item": "Superior Soulstone", "category": "Manastone/Soulstone", "grade": "white", "lowest_price": 780000, "listings": 6, "screenshot": "aion2.exchange"},
-{"checked_at": "2026-10-14T11:10:13+02:00", "item": "Vagabond Helm", "category": "Helm", "grade": "green", "lowest_price": 14999, "listings": 16, "level": 30, "screenshot": "aion2.exchange"}
+{"checked_at": "2026-10-14T11:10:13+02:00", "item": "Vagabond Helm", "category": "Helm", "grade": "green", "lowest_price": 14999, "listings": 16, "level": 30, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:14+02:00", "item": "Artisan's Ultimate Refining Stone", "category": "Crafting Material", "grade": "gold", "lowest_price": 140000, "listings": 63, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:14+02:00", "item": "Bloodthirsty Orb", "category": "Orb", "grade": "blue", "lowest_price": 17000, "listings": 4, "level": 33, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:14+02:00", "item": "Curry Meat Stirfry", "category": "Food", "grade": "white", "lowest_price": 550, "listings": 4, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:14+02:00", "item": "Destruction Pauldrons", "category": "Pauldrons", "grade": "blue", "lowest_price": 79990, "listings": 14, "level": 33, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:14+02:00", "item": "Discipline Boots", "category": "Shoes", "grade": "blue", "lowest_price": 38494, "listings": 12, "level": 38, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:14+02:00", "item": "Expert's Diamond Earrings", "category": "Earrings", "grade": "green", "lowest_price": 40000, "listings": 24, "level": 28, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:14+02:00", "item": "Festival Shugo Transformation Candy", "category": "Candy", "grade": "teal", "lowest_price": 10000, "listings": 55, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:14+02:00", "item": "Raydam", "category": "Gathering Material", "grade": "white", "lowest_price": 119, "listings": 33, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:14+02:00", "item": "Shade Mace", "category": "Mace", "grade": "white", "lowest_price": 15000, "listings": 1, "level": 13, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:14+02:00", "item": "Status Effect Resist Scroll", "category": "Scroll", "grade": "white", "lowest_price": 2000, "listings": 15, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:14+02:00", "item": "Superior Courage Scroll", "category": "Scroll", "grade": "white", "lowest_price": 10999, "listings": 19, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:14+02:00", "item": "Superior Life Potion", "category": "Potions", "grade": "white", "lowest_price": 3900, "listings": 30, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:14+02:00", "item": "Vagabond Cloak", "category": "Cloak", "grade": "green", "lowest_price": 24110, "listings": 19, "level": 30, "screenshot": "aion2.exchange"}
 ]

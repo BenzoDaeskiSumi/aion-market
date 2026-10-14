@@ -462,5 +462,12 @@
 {"checked_at": "2026-10-14T11:10:27+02:00", "item": "Sealed Forest Spirit Wings", "category": "Substance Morph Material", "grade": "gold", "lowest_price": 1700000, "listings": 13, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T11:10:27+02:00", "item": "Shade Gloves", "category": "Gloves", "grade": "white", "lowest_price": 500, "listings": 2, "level": 13, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T11:10:27+02:00", "item": "Spectral Pauldrons", "category": "Pauldrons", "grade": "gold", "lowest_price": 350000, "listings": 6, "level": 41, "screenshot": "aion2.exchange"},
-{"checked_at": "2026-10-14T11:10:27+02:00", "item": "Wrathful Will", "category": "Crafting Material", "grade": "gold", "lowest_price": 99998, "listings": 36, "screenshot": "aion2.exchange"}
+{"checked_at": "2026-10-14T11:10:27+02:00", "item": "Wrathful Will", "category": "Crafting Material", "grade": "gold", "lowest_price": 99998, "listings": 36, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:28+02:00", "item": "Artisan's Refining Stone", "category": "Crafting Material", "grade": "blue", "lowest_price": 310000, "listings": 19, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:28+02:00", "item": "Expert's Splendent Sapphire Ring", "category": "Ring", "grade": "blue", "lowest_price": 999999, "listings": 14, "level": 35, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:28+02:00", "item": "Fine Diamond Gemstone", "category": "Gathering Material", "grade": "green", "lowest_price": 1660, "listings": 19, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:28+02:00", "item": "Fine Orichalcum Ore", "category": "Gathering Material", "grade": "green", "lowest_price": 885, "listings": 23, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:28+02:00", "item": "Radiant Orichalcum Ore", "category": "Gathering Material", "grade": "gold", "lowest_price": 38999, "listings": 36, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:28+02:00", "item": "Ruby Decoration", "category": "Crafting Material", "grade": "white", "lowest_price": 749, "listings": 26, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:28+02:00", "item": "Splendent Orichalcum Dagger", "category": "Dagger", "grade": "green", "lowest_price": 170000, "listings": 4, "level": 22, "screenshot": "aion2.exchange"}
 ]

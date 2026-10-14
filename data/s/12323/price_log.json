@@ -293,5 +293,8 @@
 {"checked_at": "2026-10-14T10:10:33+02:00", "item": "Woodland Whisper (Skin: Necklace)", "category": "Skin Decoration", "grade": "blue", "lowest_price": 500000, "listings": 1, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T10:10:33+02:00", "item": "Wrathful Mind", "category": "Crafting Material", "grade": "gold", "lowest_price": 850000, "listings": 22, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T10:10:33+02:00", "item": "Wrathful Will", "category": "Crafting Material", "grade": "gold", "lowest_price": 100000, "listings": 16, "screenshot": "aion2.exchange"},
-{"checked_at": "2026-10-14T10:07:55+02:00", "item": "Yggdrasil Log", "category": "Gathering Material", "grade": "white", "lowest_price": 0, "listings": 0, "screenshot": "aion2.exchange"}
+{"checked_at": "2026-10-14T10:07:55+02:00", "item": "Yggdrasil Log", "category": "Gathering Material", "grade": "white", "lowest_price": 0, "listings": 0, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:07:54+02:00", "item": "Chaos Spellbook", "category": "Spellbook", "grade": "green", "lowest_price": 0, "listings": 0, "level": 20, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:34+02:00", "item": "Radiant Orichalcum Ore", "category": "Gathering Material", "grade": "gold", "lowest_price": 33333, "listings": 40, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:34+02:00", "item": "Shugo Transformation Candy", "category": "Candy", "grade": "teal", "lowest_price": 10000, "listings": 26, "screenshot": "aion2.exchange"}
 ]

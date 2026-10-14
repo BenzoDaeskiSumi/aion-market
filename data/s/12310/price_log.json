@@ -560,5 +560,12 @@
 {"checked_at": "2026-10-14T11:10:10+02:00", "item": "Ruby Powder", "category": "Crafting Material", "grade": "white", "lowest_price": 100, "listings": 43, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T11:10:10+02:00", "item": "Sapphire Powder", "category": "Crafting Material", "grade": "white", "lowest_price": 599, "listings": 32, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T11:10:10+02:00", "item": "Spectral Longsword", "category": "Longsword", "grade": "gold", "lowest_price": 850000, "listings": 4, "level": 41, "screenshot": "aion2.exchange"},
-{"checked_at": "2026-10-14T11:10:10+02:00", "item": "Status Effect Resist Scroll", "category": "Scroll", "grade": "white", "lowest_price": 2700, "listings": 24, "screenshot": "aion2.exchange"}
+{"checked_at": "2026-10-14T11:10:10+02:00", "item": "Status Effect Resist Scroll", "category": "Scroll", "grade": "white", "lowest_price": 2700, "listings": 24, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:11+02:00", "item": "Diamond Earrings", "category": "Earrings", "grade": "white", "lowest_price": 6000, "listings": 55, "level": 16, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:11+02:00", "item": "Kukuru", "category": "Gathering Material", "grade": "white", "lowest_price": 100, "listings": 1, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:11+02:00", "item": "Luminous Guard", "category": "Guard", "grade": "green", "lowest_price": 2000, "listings": 2, "level": 25, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:11+02:00", "item": "Ruby Decoration", "category": "Crafting Material", "grade": "white", "lowest_price": 280, "listings": 38, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:11+02:00", "item": "Sapphire Decoration", "category": "Crafting Material", "grade": "white", "lowest_price": 900, "listings": 15, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:11+02:00", "item": "Seed of Detection", "category": "Consumable Miscellaneous", "grade": "white", "lowest_price": 191, "listings": 38, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T12:10:11+02:00", "item": "Shugo Transformation Candy", "category": "Candy", "grade": "teal", "lowest_price": 10000, "listings": 57, "screenshot": "aion2.exchange"}
 ]
