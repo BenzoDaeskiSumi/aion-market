@@ -5,10 +5,15 @@ on:
       servers:
         description: 'Server ids, JSON list'
         default: '[12301,12302,12303,12304,12306,12307,12308,12309,12310,12311,12312,12313,12314,12315,12316,12317,12318,12319,12320,12321,12322,12323]'
+      from_run:
+        description: 'Only merge the history already downloaded by this earlier run id (skips fetching)'
+        default: ''
 permissions:
   contents: write
+  actions: read
 jobs:
   fetch:
+    if: inputs.from_run == ''
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
@@ -33,11 +38,22 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
       - uses: actions/download-artifact@v4
-        with: {path: backfill, pattern: 'bf-*'}
-      - run: python scripts/backfill.py merge
-      - name: Commit
+        with:
+          path: backfill
+          pattern: 'bf-*'
+          run-id: ${{ inputs.from_run || github.run_id }}
+          github-token: ${{ github.token }}
+      - name: Merge and commit (retries if the hourly sync pushed meanwhile)
         run: |
           git config user.name "BenzoDaeskiSumi"
           git config user.email "173538282+BenzoDaeskiSumi@users.noreply.github.com"
-          git add data/s
-          git diff --cached --quiet || (git commit -m "Storico prezzi dal 4 ottobre per tutti i server Asmodian" && git pull --rebase && git push)
+          for try in 1 2 3 4 5 6; do
+            git fetch -q origin main && git reset -q --hard origin/main
+            python scripts/backfill.py merge
+            git add data/s
+            git diff --cached --quiet && { echo "::notice::nothing to add"; exit 0; }
+            git commit -qm "Storico prezzi dal 4 ottobre per tutti i server Asmodian"
+            git push -q origin HEAD:main && { echo "::notice::history pushed"; exit 0; }
+            sleep 30
+          done
+          exit 1
