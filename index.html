@@ -196,6 +196,9 @@ footer a { color: var(--gold, inherit); }
 .sig.craftit { color: #7ee08a; border-color: currentColor; }
 .sig.buyit { color: #f0b860; border-color: currentColor; }
 .err { color: var(--down); }
+.srv { display: inline-flex; align-items: center; gap: 8px; color: var(--dim); font-size: 16px; }
+.srv select { font: inherit; color: var(--text); background: var(--field); border: 1px solid var(--line); padding: 4px 8px; cursor: pointer; }
+.srv select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .statbtn { all: unset; cursor: pointer; color: var(--dim); border-bottom: 1px dashed transparent; }
 .statbtn:hover, .statbtn:focus-visible { color: var(--text); border-bottom-color: var(--accent); }
 .tabs { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 0 4px; padding: 8px 20px 0; border-bottom: 1px solid var(--line); }
@@ -263,6 +266,7 @@ details.help[open] summary { margin-bottom: 8px; }
       <span>Ultimo controllo<b id="t-last">—</b></span>
     </div>
     <div class="right">
+      <label class="srv"><span>Server</span><select id="server" aria-label="Server"><option value="12305">Marchutan</option></select></label>
       <span><span class="coin"></span>Tassa <b id="t-tax">—</b></span>
       <div class="themes" role="group" aria-label="Tema">
         <button type="button" data-theme="abyss"><i style="background:#7fd4ff"></i>Abyss</button>
@@ -351,7 +355,7 @@ details.help[open] summary { margin-bottom: 8px; }
     </aside>
   </div>
 </div>
-<footer>Prezzi del server Marchutan (Europa · Asmodiani), aggiornati ogni ora dai dati pubblici di <a href="https://aion2.exchange/" target="_blank" rel="noopener">aion2.exchange</a> e dai video del Market in gioco. Non affiliato a NCSOFT.</footer>
+<footer>Prezzi del server <span id="f-server">Marchutan</span> (Europa · Asmodiani), aggiornati ogni ora dai dati pubblici di <a href="https://aion2.exchange/" target="_blank" rel="noopener">aion2.exchange</a> e dai video del Market in gioco. Non affiliato a NCSOFT.</footer>
 
 <script>
 const fmtK = d3.format(',.0f');
@@ -849,8 +853,27 @@ document.getElementById('rows').addEventListener('click', (e) => {
 let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { drawTable(); drawChart(); }, 120); });
 
 const get = (u) => fetch(u, {cache: 'no-store'}).then((r) => { if (!r.ok) throw new Error(u); return r.json(); });
-Promise.all([get('data/price_log.json'), get('data/settings.json'), get('data/icons.json').catch(() => ({})), get('data/crafts.json').catch(() => null), get('data/sales.json').catch(() => ({}))])
-  .then(([log, settings, icons, crafts, sales]) => { LOG = log; S = settings[0] || settings; ICONS = icons; CRAFTS = crafts; SALES = sales || {}; ITEMS = computeItems(LOG, S); CROWS = buildCraftRows(); drawAll(); })
+let SERVER = +(store.get('aion-server') || 12305);
+const srvSel = document.getElementById('server');
+function loadServer() {
+  const t = document.getElementById('takeaway'); t.classList.remove('err');
+  const base = `data/s/${SERVER}/`;
+  return Promise.all([get(base + 'price_log.json'), get(base + 'crafts.json').catch(() => null), get(base + 'sales.json').catch(() => ({}))])
+    .then(([log, crafts, sales]) => {
+      LOG = log; CRAFTS = crafts; SALES = sales || {}; picked = null; pickedCraft = null;
+      ITEMS = computeItems(LOG, S); CROWS = buildCraftRows(); drawAll();
+      document.getElementById('f-server').textContent = srvSel.selectedOptions[0]?.textContent || '';
+    })
+    .catch(() => { t.textContent = 'Non riesco a caricare i dati di questo server. Riprova tra qualche minuto.'; t.classList.add('err'); });
+}
+srvSel.addEventListener('change', () => { SERVER = +srvSel.value; store.set('aion-server', String(SERVER)); loadServer(); });
+Promise.all([get('data/settings.json'), get('data/icons.json').catch(() => ({})), get('data/servers.json').catch(() => [{id: 12305, name: 'Marchutan'}])])
+  .then(([settings, icons, servers]) => {
+    S = settings[0] || settings; ICONS = icons;
+    if (!servers.some((x) => x.id === SERVER)) SERVER = 12305;
+    srvSel.replaceChildren(...servers.map((x) => Object.assign(document.createElement('option'), {value: x.id, textContent: x.name, selected: x.id === SERVER})));
+    return loadServer();
+  })
   .catch(() => { const t = document.getElementById('takeaway'); t.textContent = 'Non riesco a caricare i dati. Ricarica la pagina tra qualche secondo.'; t.classList.add('err'); });
 </script>
 </body>
