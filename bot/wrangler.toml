@@ -1,0 +1,9 @@
+# Discord bot of the Aion 2 Market tracker (Cloudflare Worker, Discord "Interactions Endpoint URL").
+# Deployed by .github/workflows/bot.yml; DISCORD_PUBLIC_KEY is a Worker secret set by that workflow.
+name = "aion-market-bot"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+
+[vars]
+SITE = "https://benzodaeskisumi.github.io/aion-market"
+DEFAULT_SERVER = "12305"

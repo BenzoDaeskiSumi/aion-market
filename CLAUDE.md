@@ -62,3 +62,12 @@ Chaos, Luminous, Vagabond, Splendent X, Expert's X, Tempest, Ethereal, Comet, Ra
 Views: tabs Market / Affari (VIEW 'deals': only Compra or Vendi rows, DEAL 'buy'|'sell', also opened by the header counters) / Crafting (VIEW 'craft', sidebar hidden). Sidebar accordion keeps only the selected group open; unavailable items hidden by default ('aion-na'). Detail pane: hero (price + flip), facts, chart ranges ('aion-range'), help collapsed behind '?'.
 Accounts: 'Accedi con Discord' via Supabase (project xmtenkcpocwwqcpfhkgr, anon key in index.html is public by design). Table public.profiles (id = auth uid, discord_name, server_id, favorites text[], alerts jsonb) with RLS: each user only their own row. Favourites (star next to each item, 'Preferiti' filter) work without login in localStorage 'aion-favs' and merge into the profile on login; server choice 'aion-server' too.
 Look: modern dark app skin (Inter font, rounded cards, KPI row, pill tabs) — the '/* modern dark app skin */' block at the end of <style> overrides the older game-window CSS. Themes: Abyss (default, blue accent), Elyos (light), Asmodian (pink accent); chosen theme is remembered in localStorage ('aion-theme'). Sidebar shown/hidden is remembered as 'aion-side'. Grade filter buttons (#grades) toggle grades; Shift-click shows one grade only. Default sort = grade (Mythic first), ties keep in-game order (category, then order of first appearance in price_log.json) — so append new items in the order they appear in the Market.
+
+## Discord bot
+bot/ is a Cloudflare Worker (Discord "Interactions Endpoint URL", slash commands only, no gateway): /prezzo <oggetto> [server] with
+autocomplete and /affari [tipo compra|vendi] [server]. It reads data/s/<id>/summary.json (per-item snapshot written by sync.py's
+write_summary, same rules as computeItems — keep the two in sync) plus data/icons.json / data/servers.json from GitHub Pages.
+Embed links open the page at ?s=<server>&item=<name> (deep link handled at page start-up).
+.github/workflows/bot.yml deploys it (wrangler-action) and registers the commands (bot/register.mjs) on every push to bot/**.
+Repo secrets (set by the user, never in chat): CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, DISCORD_PUBLIC_KEY, DISCORD_APP_ID, DISCORD_TOKEN.
+To limit the bot to one channel: Discord server settings → Integrations → the bot → channels (no code).

@@ -6,7 +6,7 @@ or its last row is older than KEEPALIVE hours. Grade / level / category of an it
 every server, so they come from data/catalog.json (built from all logs; videos of Marchutan fill it).
 Data source: https://aion2.exchange/api/docs (credited on the page).
 """
-import json, os, re, sys, time, urllib.request
+import json, os, re, statistics, sys, time, urllib.request
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
@@ -105,6 +105,52 @@ def load_catalog():
     return cat
 
 
+def write_summary(server, log, sales, settings):
+    """Small per-item snapshot for the Discord bot (same rules as computeItems in index.html)."""
+    tax, minP, minM = float(settings['tax_rate']), float(settings['min_flip_profit']), float(settings['min_flip_margin'])
+    sellA, minC, days = float(settings['sell_above_avg']), int(settings['min_checks']), float(settings.get('avg_days', 3))
+    minS = float(settings.get('min_sales_per_day', 1))
+    by = {}
+    for e in log:
+        by.setdefault(e['item'], []).append((datetime.fromisoformat(e['checked_at']), e))
+    out = {}
+    for item, rs in by.items():
+        rs.sort(key=lambda x: x[0])
+        lt, last = rs[-1]
+        price, avail = last['lowest_price'], last['lowest_price'] > 0
+        sold = [(t, e) for t, e in rs if e['lowest_price'] > 0]
+        recent = [(t, e) for t, e in sold if (lt - t).total_seconds() <= days * 86400]
+        base = recent or sold
+        real = sales.get(item) if sales.get(item, {}).get('units_sold') is not None else None
+        per_day = kind = None
+        if real:
+            per_day, kind = real['units_sold'] / (real.get('window_days') or 28), 'reali'
+        else:
+            win = [(t, e) for t, e in rs if (lt - t).total_seconds() <= days * 86400 and e.get('screenshot') == 'aion2.exchange']
+            span = (win[-1][0] - win[0][0]).total_seconds() / 86400 if len(win) > 1 else 0
+            if span >= 0.5:
+                gone = sum(max(0, win[k - 1][1]['listings'] - win[k][1]['listings']) for k in range(1, len(win)))
+                per_day, kind = gone / span, 'stima'
+        avg = real['avg'] if real and real.get('avg') else statistics.median(e['lowest_price'] for _, e in base) if base else None
+        flip = avg * (1 - tax) - price if avail and avg is not None else None
+        margin = flip / price if flip is not None else None
+        liquid = per_day is None or per_day >= minS
+        if not avail: sig = 'Non disponibile'
+        elif len(base) < minC and not real: sig = 'Servono più dati'
+        elif flip >= minP and margin >= minM and liquid: sig = 'Compra per rivendere'
+        elif price >= avg * (1 + sellA): sig = 'Vendi ora'
+        else: sig = 'Tieni'
+        week = [e['lowest_price'] for t, e in sold if (lt - t).days < 7]
+        prev = sold[-2][1]['lowest_price'] if avail and len(sold) > 1 else None
+        out[item] = {'c': last['category'], 'g': last.get('grade') or 'white', 'l': last.get('level'), 'p': price, 'n': last['listings'],
+                     'a': round(avg) if avg is not None else None, 'd': round(per_day, 1) if per_day is not None else None, 'k': kind,
+                     'f': round(flip) if flip is not None else None, 'm': round(margin, 3) if margin is not None else None, 's': sig,
+                     'ch': price - prev if prev else None, 'lo': min(week) if week else None, 'hi': max(week) if week else None,
+                     't': lt.isoformat()}
+    with open(path(server, 'summary.json'), 'w', encoding='utf-8') as f:
+        json.dump(out, f, ensure_ascii=False, separators=(',', ':'))
+
+
 def sync_server(server, name, catalog, fam, health):
     os.makedirs(f'data/s/{server}', exist_ok=True)
     snap = rome(health['latest_snapshot_at'])
@@ -147,6 +193,11 @@ def sync_server(server, name, catalog, fam, health):
         json.dump(sales, f, ensure_ascii=False, separators=(',', ':'))
     log = compact(log, datetime.now(ROME))
     write_log(log, logf)
+    try:
+        st = json.load(open('data/settings.json', encoding='utf-8'))
+        write_summary(server, log, sales, st[0] if isinstance(st, list) else st)
+    except Exception as ex:
+        print(f'{name}: summary failed: {ex}')
     json.dump({'source': 'aion2.exchange', 'server': f'{name} · Europe · Asmodian', 'server_id': server, 'snapshot': snap.isoformat(),
                'synced_at': datetime.now(ROME).replace(microsecond=0).isoformat(), 'items': len(items)},
               open(path(server, 'meta.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
