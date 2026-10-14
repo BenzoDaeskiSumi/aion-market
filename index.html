@@ -6,7 +6,7 @@
 <title>Aion 2 Market · Benzodaeskisumi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600&family=Marcellus&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <script>
   // Apply the saved theme before the page paints, so it never flashes.
   try { const t = localStorage.getItem('aion-theme'); if (['abyss', 'elyos', 'asmodian'].includes(t)) document.documentElement.dataset.theme = t; } catch (e) {}
@@ -42,7 +42,7 @@
 * { box-sizing: border-box; }
 html { background: var(--bg2); }
 body {
-  margin: 0; min-height: 100vh; color: var(--text); font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-size: 17px;
+  margin: 0; min-height: 100vh; color: var(--text); font-family: var(--font); font-size: 17px;
   background: linear-gradient(var(--veil), var(--veil)), var(--wall) center / cover no-repeat fixed, var(--bg2);
 }
 button { font: inherit; color: inherit; }
@@ -52,8 +52,8 @@ button { font: inherit; color: inherit; }
 
 /* top bar */
 .bar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 22px; padding: 12px 20px; border-bottom: 1px solid var(--line); }
-.bar h1 { font-family: Marcellus, serif; font-weight: 400; font-size: 30px; margin: 0; line-height: 1.1; }
-.bar h1 small { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; color: var(--dim); margin-left: 10px; }
+.bar h1 { font-family: var(--font); font-weight: 400; font-size: 30px; margin: 0; line-height: 1.1; }
+.bar h1 small { font-family: var(--font); font-size: 15px; color: var(--dim); margin-left: 10px; }
 .stats { display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: 16px; color: var(--dim); }
 .stats b { color: var(--text); font-weight: 500; margin-left: 5px; font-variant-numeric: tabular-nums; }
 .bar .right { margin-left: auto; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
@@ -67,7 +67,7 @@ button { font: inherit; color: inherit; }
 .themes i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
 .take { padding: 7px 20px; border-bottom: 1px solid var(--line); font-size: 16px; }
 .take.tick { padding: 0; display: flex; align-items: stretch; overflow: hidden; }
-.take .tlabel { flex: none; display: flex; align-items: center; padding: 0 14px; font-family: 'Barlow Condensed', sans-serif; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; font-size: 14px; color: #0b0f18; background: var(--g-gold); }
+.take .tlabel { flex: none; display: flex; align-items: center; padding: 0 14px; font-family: var(--font); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; font-size: 14px; color: #0b0f18; background: var(--g-gold); }
 .take .tview { flex: 1; overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent); }
 .take .ttrack { display: flex; width: max-content; animation: tick var(--tdur, 60s) linear infinite; }
 .take .tview:hover .ttrack { animation-play-state: paused; }
@@ -88,7 +88,7 @@ button { font: inherit; color: inherit; }
 .side .all { padding: 9px 18px; font-size: 18px; color: var(--dim); }
 .side .all span, .grp .head .n, .sub button span { margin-left: auto; font-size: 14px; opacity: .7; font-variant-numeric: tabular-nums; }
 .grp { border-top: 1px solid var(--faint); }
-.grp > .head { padding: 10px 18px; font-family: Marcellus, serif; font-size: 18px; color: var(--text); }
+.grp > .head { padding: 10px 18px; font-family: var(--font); font-size: 18px; color: var(--text); }
 .grp > .head .chev { width: 10px; height: 10px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform .15s; margin-right: 2px; opacity: .7; }
 .grp.open > .head .chev { transform: rotate(45deg); }
 .sub { display: none; padding: 0 0 6px; }
@@ -148,7 +148,7 @@ tbody tr.na:hover td, tbody tr.na.sel td { opacity: .8; }
 
 /* right column: history + help */
 .aside { padding: 12px 16px; position: sticky; top: 0; }
-.aside h2 { font-family: Marcellus, serif; font-weight: 400; font-size: 21px; margin: 0; line-height: 1.2; }
+.aside h2 { font-family: var(--font); font-weight: 400; font-size: 21px; margin: 0; line-height: 1.2; }
 .aside p { margin: 4px 0 8px; color: var(--dim); font-size: 15px; }
 .pick { display: flex; gap: 12px; align-items: center; margin: 4px 0 10px; }
 .pick .slot { width: 56px; height: 56px; }
@@ -171,9 +171,9 @@ footer a { color: var(--gold, inherit); }
 .craft .step { --gc: var(--g-white); margin: 14px 0 0; border: 1px solid var(--line); border-left: 3px solid var(--gc);
   background: linear-gradient(180deg, color-mix(in srgb, var(--gc) 10%, transparent), transparent 70%); }
 .craft .stephead { list-style: none; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 10px; padding: 8px 10px 7px; border-bottom: 2px solid color-mix(in srgb, var(--gc) 60%, transparent); }
-.craft .badge { flex: none; font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 13px; letter-spacing: .08em; text-transform: uppercase;
+.craft .badge { flex: none; font-family: var(--font); font-weight: 600; font-size: 13px; letter-spacing: .08em; text-transform: uppercase;
   padding: 2px 8px; color: #0b0f18; background: var(--gc); }
-.craft .res { font-family: 'Marcellus', serif; font-size: 16px; color: var(--gc); line-height: 1.2; }
+.craft .res { font-family: var(--font); font-size: 16px; color: var(--gc); line-height: 1.2; }
 .craft .stepinfo { color: var(--dim); font-size: 14px; margin: 0; padding: 6px 10px 2px; }
 .craft table { width: 100%; border-collapse: collapse; font-size: 15px; table-layout: fixed; }
 .craft td { padding: 6px 10px; border-bottom: 1px solid var(--faint); vertical-align: middle; }
@@ -220,8 +220,8 @@ footer a { color: var(--gold, inherit); }
 .statbtn { all: unset; cursor: pointer; color: var(--dim); border-bottom: 1px dashed transparent; }
 .statbtn:hover, .statbtn:focus-visible { color: var(--text); border-bottom-color: var(--accent); }
 .tabs { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 0 4px; padding: 8px 20px 0; border-bottom: 1px solid var(--line); }
-.tabs [role="tab"] { all: unset; cursor: pointer; padding: 8px 18px 9px; font-family: Marcellus, serif; font-size: 18px; color: var(--dim); border: 1px solid transparent; border-bottom: 0; margin-bottom: -1px; }
-.tabs [role="tab"] span { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; opacity: .75; margin-left: 4px; }
+.tabs [role="tab"] { all: unset; cursor: pointer; padding: 8px 18px 9px; font-family: var(--font); font-size: 18px; color: var(--dim); border: 1px solid transparent; border-bottom: 0; margin-bottom: -1px; }
+.tabs [role="tab"] span { font-family: var(--font); font-size: 14px; opacity: .75; margin-left: 4px; }
 .tabs [role="tab"]:hover { color: var(--text); }
 .tabs [role="tab"][aria-selected="true"] { color: var(--text); border-color: var(--line); background: var(--panel-solid); box-shadow: inset 0 2px 0 var(--accent); }
 .tabs [role="tab"]:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
@@ -270,19 +270,119 @@ details.help[open] summary { margin-bottom: 8px; }
   .aside { display: block; }
   .tbtn span { display: none; }
 }
+
+/* ================= modern dark app skin (overrides the older game-window styles above) ================= */
+:root {
+  --bg2: #0b0e14; --panel: #11151d; --panel-solid: #141923; --card: #161b26; --line: #232a38; --faint: rgba(255,255,255,.04); --field: #0e121a;
+  --accent: #5b8cff; --text: #e7ebf3; --dim: #8a94a7; --kinah: #e3b54f; --up: #34d399; --down: #f87171;
+  --g-white: #d6dbe5; --g-green: #4ade80; --g-blue: #60a5fa; --g-gold: #fbbf24; --g-orange: #fb923c; --g-teal: #2dd4bf;
+  --shadow: 0 8px 30px rgba(0,0,0,.35); --r: 12px; --r-sm: 8px;
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+:root[data-theme="asmodian"] { --bg2: #0e0a12; --panel: #15101b; --panel-solid: #1a1421; --card: #1d1625; --line: #2e2337; --accent: #e879a9; --field: #120d17; }
+:root[data-theme="elyos"] {
+  --bg2: #f4f6fa; --panel: #ffffff; --panel-solid: #ffffff; --card: #ffffff; --line: #e3e7ef; --faint: rgba(15,23,42,.035); --field: #f7f9fc;
+  --accent: #3b6cf5; --text: #172033; --dim: #667085; --kinah: #b7861b; --up: #0f9d6b; --down: #dc3b3b;
+  --g-white: #4b5565; --g-green: #16a34a; --g-blue: #2563eb; --g-gold: #b7791f; --g-orange: #ea580c; --g-teal: #0d9488;
+  --shadow: 0 8px 24px rgba(15,23,42,.08); color-scheme: light;
+}
+body { font-family: var(--font); font-size: 15px; background: var(--bg2); }
+:root[data-theme="elyos"] body { background: var(--bg2); }
+.win { width: min(1760px, calc(100% - 40px)); margin: 20px auto; border: 0; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; box-shadow: none; }
+/* top bar */
+.bar { padding: 14px 4px 16px; border: 0; gap: 10px 18px; }
+.bar h1 { font-family: var(--font); font-weight: 700; font-size: 22px; letter-spacing: -.01em; display: flex; align-items: center; gap: 10px; }
+.bar h1 small { font-family: var(--font); font-size: 13px; font-weight: 500; }
+.logo { width: 28px; height: 28px; border-radius: 8px; background: conic-gradient(from 200deg, var(--accent), var(--g-gold), var(--accent)); box-shadow: 0 0 0 1px var(--line); }
+.bar .right { gap: 10px; }
+.themes { border-radius: 999px; overflow: hidden; background: var(--panel); border-color: var(--line); }
+.themes button { font-size: 13px; padding: 6px 12px; }
+.themes button[aria-pressed="true"] { box-shadow: none; background: color-mix(in srgb, var(--accent) 18%, transparent); }
+.srv select, .acct button { border-radius: var(--r-sm); background: var(--panel); border-color: var(--line); font-size: 14px; padding: 6px 10px; }
+.srv, .acct { font-size: 14px; }
+/* KPI cards */
+.stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin: 0 0 12px; color: var(--dim); font-size: 13px; }
+.kpi { all: unset; box-sizing: border-box; display: flex; flex-direction: column; gap: 2px; padding: 14px 16px; border-radius: var(--r); background: var(--panel); border: 1px solid var(--line); color: var(--dim); font-size: 13px; }
+.kpi b { margin: 0; font-size: 24px; font-weight: 700; color: var(--text); letter-spacing: -.01em; }
+.kpi.statbtn { cursor: pointer; border-bottom: 1px solid var(--line); }
+.kpi.statbtn:hover, .kpi.statbtn:focus-visible { border-color: var(--accent); color: var(--text); }
+.kpi.buy b { color: var(--up); } .kpi.sell b { color: var(--kinah); }
+/* ticker */
+.take { border: 1px solid var(--line); border-radius: var(--r); background: var(--panel); margin: 0 0 12px; font-size: 14px; overflow: hidden; }
+.take .tlabel { font-family: var(--font); font-size: 11px; letter-spacing: .08em; border-radius: 0; background: var(--accent); color: #fff; }
+.take .deal { border-right-color: var(--line); padding: 9px 18px; }
+.take .deal .nm { font-size: 14px; font-weight: 600; }
+/* tabs as segmented pills */
+.tabs { padding: 0; border: 0; gap: 6px; margin: 0 0 12px; align-items: center; }
+.tabs [role="tab"] { font-family: var(--font); font-size: 14px; font-weight: 600; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); margin: 0; background: var(--panel); }
+.tabs [role="tab"][aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: none; }
+.tabs [role="tab"] span { font-family: var(--font); font-size: 12px; }
+.dealfilter { border-radius: 999px; overflow: hidden; background: var(--panel); }
+/* layout: three cards */
+.body { gap: 12px; grid-template-columns: 210px minmax(0, 1fr) 360px; }
+.win.noside .body { grid-template-columns: minmax(0, 1fr) 360px; }
+.side, .main, .aside { background: var(--panel); border: 1px solid var(--line) !important; border-radius: var(--r); }
+.side { padding: 8px; top: 12px; max-height: calc(100vh - 24px); }
+.side .all, .grp > .head, .sub button { border-radius: var(--r-sm); }
+.side .all { font-size: 15px; font-weight: 600; padding: 9px 12px; }
+.grp { border-top: 0; }
+.grp > .head { font-family: var(--font); font-size: 15px; font-weight: 600; padding: 9px 12px; }
+.sub button { font-size: 14px; padding: 7px 12px 7px 32px; }
+.side [aria-pressed="true"] { box-shadow: none; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--text); }
+.main { padding: 12px; }
+.aside { padding: 16px; top: 12px; }
+/* toolbar */
+.search, .tbtn { border-radius: var(--r-sm); background: var(--field); border-color: var(--line); font-size: 14px; }
+.search { padding: 8px 12px; }
+.tbtn { padding: 7px 12px; }
+.tbtn[aria-pressed="true"] { border-color: var(--accent); color: var(--text); background: color-mix(in srgb, var(--accent) 12%, var(--field)); }
+.grades { font-size: 13px; gap: 4px; margin: 4px 0 8px; }
+.grades button { border-radius: 999px; padding: 3px 10px; border: 1px solid var(--line); }
+.grades button::before { border-radius: 50%; width: 9px; height: 9px; }
+/* table */
+.scroll { border-radius: var(--r-sm); height: calc(100vh - 330px); }
+th { background: var(--panel-solid); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--dim); padding: 9px 10px; }
+td { font-size: 14px; padding: 7px 8px; font-variant-numeric: tabular-nums; }
+th { padding: 9px 8px; }
+.it { gap: 10px; }
+.fav { width: 22px; }
+tbody tr:hover td, tbody tr.sel td { background: color-mix(in srgb, var(--accent) 7%, transparent); }
+tbody tr.sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+.nm { font-size: 15px; font-weight: 600; }
+.ct { font-size: 12px; }
+.slot { width: 38px; height: 38px; border-radius: 8px; border-width: 1px; box-shadow: none; overflow: hidden; }
+.slot img { border-radius: 7px; }
+.pick .slot { width: 52px; height: 52px; border-radius: 10px; }
+.sig { border-radius: 999px; font-size: 12px; font-weight: 600; padding: 3px 10px; }
+.sig.buy { background: color-mix(in srgb, var(--up) 14%, transparent); }
+.sig.sell { background: color-mix(in srgb, var(--kinah) 14%, transparent); }
+.pv { font-size: 11px; margin-top: 2px; }
+.coin { width: 11px; height: 11px; }
+/* details */
+.aside h2 { font-family: var(--font); font-weight: 700; font-size: 17px; }
+.hero { border-radius: var(--r); background: var(--card); border-color: var(--line); padding: 14px 16px; }
+.hero b { font-size: 26px; font-weight: 700; }
+.facts { font-size: 13px; gap: 8px 14px; } .facts div { font-size: 13px; } .facts b { font-size: 16px; font-weight: 600; }
+.aside p { font-size: 13px; }
+.help, details.help summary { font-size: 13px; }
+.ranges { border-radius: 999px; overflow: hidden; }
+.favbig { border-radius: var(--r-sm); font-size: 14px; }
+.chart { min-height: 220px; }
+.tip { border-radius: var(--r-sm); }
+/* crafting */
+.craft .step { border-radius: var(--r-sm); overflow: hidden; }
+.craft .res { font-family: var(--font); font-weight: 600; }
+.craft .badge { font-family: var(--font); border-radius: 6px; }
+footer { padding: 6px 16px 24px; font-size: 13px; text-shadow: none; }
+@media (max-width: 1400px) { .body { grid-template-columns: 220px minmax(0, 1fr); } .aside { grid-column: 1 / -1; } }
+@media (max-width: 900px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .win { width: calc(100% - 20px); margin: 10px auto; } .body, .win.noside .body { grid-template-columns: minmax(0, 1fr); } .scroll { height: auto; } .kpi b { font-size: 20px; } }
 </style>
 </head>
 <body>
 <div class="win" id="win">
   <div class="bar">
-    <h1>Aion 2 Market<small>by Benzodaeskisumi</small></h1>
-    <div class="stats" aria-live="polite">
-      <span>Item<b id="t-tracked">—</b></span>
-      <span>Disponibili<b id="t-avail">—</b></span>
-      <button type="button" class="statbtn" data-deal="buy">Da comprare<b id="t-buys">—</b></button>
-      <button type="button" class="statbtn" data-deal="sell">Da vendere<b id="t-sells">—</b></button>
-      <span>Ultimo controllo<b id="t-last">—</b></span>
-    </div>
+    <h1><span class="logo" aria-hidden="true"></span>Aion 2 Market<small>by Benzodaeskisumi</small></h1>
     <div class="right">
       <span class="acct" id="acct"></span>
       <label class="srv"><span>Server</span><select id="server" aria-label="Server"><option value="12305">Marchutan</option></select></label>
@@ -293,6 +393,13 @@ details.help[open] summary { margin-bottom: 8px; }
         <button type="button" data-theme="asmodian"><i style="background:#ff7ab0"></i>Asmodian</button>
       </div>
     </div>
+  </div>
+  <div class="stats" aria-live="polite">
+    <span class="kpi"><b id="t-tracked">—</b>Oggetti</span>
+    <span class="kpi"><b id="t-avail">—</b>In vendita</span>
+    <button type="button" class="kpi statbtn buy" data-deal="buy"><b id="t-buys">—</b>Da comprare</button>
+    <button type="button" class="kpi statbtn sell" data-deal="sell"><b id="t-sells">—</b>Da vendere</button>
+    <span class="kpi"><b id="t-last">—</b>Ultimo aggiornamento</span>
   </div>
   <div class="take" id="takeaway">Caricamento…</div>
   <div class="tabs" role="tablist" aria-label="Sezioni">
@@ -618,7 +725,7 @@ function drawTable() {
     return tr;
   }));
 }
-function itemBox(r, big) {
+function itemBox(r, noFav) {
   const it = document.createElement('div'); it.className = 'it';
   const slot = document.createElement('div'); slot.className = 'slot g-' + r.grade;
   if (ICONS[r.item]) { const img = document.createElement('img'); img.src = ICONS[r.item]; img.alt = ''; img.loading = 'lazy'; img.width = 40; img.height = 40; slot.appendChild(img); }
@@ -626,7 +733,7 @@ function itemBox(r, big) {
   const nm = document.createElement('span'); nm.className = 'nm g-' + r.grade; nm.textContent = r.item;
   const ct = document.createElement('span'); ct.className = 'ct';
   ct.textContent = catName(r.category) + ' · ' + GRADE[r.grade] + (r.level ? ' · Lv ' + r.level : '') + (r.available ? '' : ' · Non disponibile');
-  txt.append(nm, ct); it.append(favBtn(r.item), slot, txt); return it;
+  txt.append(nm, ct); noFav ? it.append(slot, txt) : it.append(favBtn(r.item), slot, txt); return it;
 }
 const STAR = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.7l-5.1 2.7 1-5.6-4.1-4 5.7-.8z" fill="currentColor"/></svg>';
 const STAR_O = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.7l-5.1 2.7 1-5.6-4.1-4 5.7-.8z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>';
@@ -654,7 +761,7 @@ function drawChart() {
   pick.hidden = facts.hidden = !r; document.getElementById('hero').hidden = true; document.querySelectorAll('.aside .favbig').forEach((x) => x.remove());
   document.getElementById('hist-title').textContent = r ? 'Dettagli' : 'Storico prezzi';
   if (!r) { document.getElementById('hist-note').textContent = 'Clicca un item per vedere i dettagli e come è cambiato il suo prezzo.'; return; }
-  pick.replaceChildren(itemBox(r));
+  pick.replaceChildren(itemBox(r, true));
   const fb = document.createElement('button'); fb.type = 'button'; fb.className = 'favbig fav'; fb.dataset.fav = r.item;
   fb.innerHTML = (FAVS.has(r.item) ? STAR : STAR_O) + '<span>' + (FAVS.has(r.item) ? 'Nei preferiti — togli' : 'Aggiungi ai preferiti') + '</span>';
   pick.after(fb); document.querySelectorAll('.aside .favbig').forEach((x) => { if (x !== fb) x.remove(); });
@@ -680,7 +787,7 @@ function drawChart() {
   if (!pts.length) return;
   const css = getComputedStyle(document.documentElement), C = (v) => css.getPropertyValue(v).trim();
   const W = Math.max(260, box.clientWidth), H = 200;
-  const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('font-family', "'Barlow Condensed', sans-serif");
+  const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('font-family', "Inter, system-ui, sans-serif");
   const ext = d3.extent(pts, (d) => d.v), pad = (ext[1] - ext[0]) * 0.15 || ext[0] * 0.1;
   const y = d3.scaleLinear([Math.max(0, ext[0] - pad), ext[1] + pad], [H - 26, 10]).nice(), ticks = y.ticks(4);
   const fmtY = (v) => Math.abs(v) >= 1e6 ? d3.format('.3~s')(v).replace('G', 'B') : fmtK(v);
