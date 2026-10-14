@@ -461,5 +461,14 @@
 {"checked_at": "2026-10-14T10:10:26+02:00", "item": "Wrathful Ego", "category": "Crafting Material", "grade": "gold", "lowest_price": 3000000, "listings": 15, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T10:10:26+02:00", "item": "Wrathful Mind", "category": "Crafting Material", "grade": "gold", "lowest_price": 995000, "listings": 47, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T10:10:26+02:00", "item": "Wrathful Will", "category": "Crafting Material", "grade": "gold", "lowest_price": 74999, "listings": 45, "screenshot": "aion2.exchange"},
-{"checked_at": "2026-10-14T10:10:26+02:00", "item": "Yggdrasil Log", "category": "Gathering Material", "grade": "white", "lowest_price": 3700, "listings": 3, "screenshot": "aion2.exchange"}
+{"checked_at": "2026-10-14T10:10:26+02:00", "item": "Yggdrasil Log", "category": "Gathering Material", "grade": "white", "lowest_price": 3700, "listings": 3, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:26+02:00", "item": "Artisan's Splendent Sapphire Ring", "category": "Ring", "grade": "gold", "lowest_price": 4999950, "listings": 6, "level": 44, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:26+02:00", "item": "Artisan's Ultimate Refining Stone", "category": "Crafting Material", "grade": "gold", "lowest_price": 190000, "listings": 43, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:26+02:00", "item": "Discipline Mace", "category": "Mace", "grade": "blue", "lowest_price": 50000, "listings": 1, "level": 38, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:26+02:00", "item": "Fantasy Greaves", "category": "Legs", "grade": "gold", "lowest_price": 399998, "listings": 6, "level": 36, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:26+02:00", "item": "Morfa", "category": "Gathering Material", "grade": "white", "lowest_price": 499, "listings": 21, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:26+02:00", "item": "Orichalcum Ingot", "category": "Crafting Material", "grade": "white", "lowest_price": 699, "listings": 37, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:26+02:00", "item": "Radiant Orichalcum Ore", "category": "Gathering Material", "grade": "gold", "lowest_price": 19000, "listings": 19, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:26+02:00", "item": "Sealed Ancient Aullaeu Wings", "category": "Substance Morph Material", "grade": "gold", "lowest_price": 779990, "listings": 23, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:26+02:00", "item": "Steamed Pujery", "category": "Food", "grade": "white", "lowest_price": 400, "listings": 12, "screenshot": "aion2.exchange"}
 ]

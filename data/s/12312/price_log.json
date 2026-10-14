@@ -574,5 +574,15 @@
 {"checked_at": "2026-10-14T10:10:14+02:00", "item": "Wrathful Ego", "category": "Crafting Material", "grade": "gold", "lowest_price": 2899988, "listings": 39, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T10:10:14+02:00", "item": "Wrathful Mind", "category": "Crafting Material", "grade": "gold", "lowest_price": 1790000, "listings": 37, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T10:10:14+02:00", "item": "Wrathful Will", "category": "Crafting Material", "grade": "gold", "lowest_price": 140000, "listings": 37, "screenshot": "aion2.exchange"},
-{"checked_at": "2026-10-14T10:10:14+02:00", "item": "Yggdrasil Log", "category": "Gathering Material", "grade": "white", "lowest_price": 100, "listings": 3, "screenshot": "aion2.exchange"}
+{"checked_at": "2026-10-14T10:10:14+02:00", "item": "Yggdrasil Log", "category": "Gathering Material", "grade": "white", "lowest_price": 100, "listings": 3, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:13+02:00", "item": "Chaos Dagger", "category": "Dagger", "grade": "green", "lowest_price": 14988, "listings": 5, "level": 20, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:13+02:00", "item": "Chaos Longsword", "category": "Longsword", "grade": "green", "lowest_price": 10000, "listings": 3, "level": 20, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:13+02:00", "item": "Curry Meat Stirfry", "category": "Food", "grade": "white", "lowest_price": 550, "listings": 5, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:13+02:00", "item": "Destruction Bow", "category": "Bow", "grade": "blue", "lowest_price": 49999, "listings": 3, "level": 33, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:13+02:00", "item": "Expert's Diamond Earrings", "category": "Earrings", "grade": "green", "lowest_price": 40000, "listings": 26, "level": 28, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:13+02:00", "item": "Fruit Salad", "category": "Food", "grade": "white", "lowest_price": 400, "listings": 23, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:13+02:00", "item": "Luminous Mace", "category": "Mace", "grade": "green", "lowest_price": 10000, "listings": 5, "level": 25, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:13+02:00", "item": "Splendent Asvata Bow", "category": "Bow", "grade": "green", "lowest_price": 175000, "listings": 5, "level": 22, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:13+02:00", "item": "Superior Soulstone", "category": "Manastone/Soulstone", "grade": "white", "lowest_price": 780000, "listings": 6, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:13+02:00", "item": "Vagabond Helm", "category": "Helm", "grade": "green", "lowest_price": 14999, "listings": 16, "level": 30, "screenshot": "aion2.exchange"}
 ]

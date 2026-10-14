@@ -610,5 +610,16 @@
 {"checked_at": "2026-10-14T10:10:21+02:00", "item": "Wrathful Ego", "category": "Crafting Material", "grade": "gold", "lowest_price": 2500000, "listings": 29, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T10:10:21+02:00", "item": "Wrathful Mind", "category": "Crafting Material", "grade": "gold", "lowest_price": 1435000, "listings": 67, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T10:10:21+02:00", "item": "Wrathful Will", "category": "Crafting Material", "grade": "gold", "lowest_price": 330000, "listings": 117, "screenshot": "aion2.exchange"},
-{"checked_at": "2026-10-14T10:10:21+02:00", "item": "Yggdrasil Log", "category": "Gathering Material", "grade": "white", "lowest_price": 4940, "listings": 18, "screenshot": "aion2.exchange"}
+{"checked_at": "2026-10-14T10:10:21+02:00", "item": "Yggdrasil Log", "category": "Gathering Material", "grade": "white", "lowest_price": 4940, "listings": 18, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:20+02:00", "item": "Apple Candy (Skin: Helm)", "category": "Skin Armor", "grade": "blue", "lowest_price": 167996, "listings": 15, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:20+02:00", "item": "Diamond Decoration", "category": "Crafting Material", "grade": "white", "lowest_price": 1888, "listings": 26, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:20+02:00", "item": "Discipline Boots", "category": "Shoes", "grade": "blue", "lowest_price": 34000, "listings": 8, "level": 38, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:20+02:00", "item": "Discipline Staff", "category": "Staff", "grade": "blue", "lowest_price": 40000, "listings": 9, "level": 38, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:20+02:00", "item": "Luminous Gloves", "category": "Gloves", "grade": "green", "lowest_price": 8999, "listings": 12, "level": 25, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:20+02:00", "item": "Sapphire Ring", "category": "Ring", "grade": "white", "lowest_price": 1480, "listings": 51, "level": 16, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:20+02:00", "item": "Seed of Detection", "category": "Consumable Miscellaneous", "grade": "white", "lowest_price": 219, "listings": 54, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:20+02:00", "item": "Spectral Cloak", "category": "Cloak", "grade": "gold", "lowest_price": 699989, "listings": 10, "level": 41, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:20+02:00", "item": "Star Dragon Lord Ring", "category": "Ring", "grade": "gold", "lowest_price": 20499999, "listings": 3, "level": 62, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:20+02:00", "item": "Superior Courage Scroll", "category": "Scroll", "grade": "white", "lowest_price": 7494, "listings": 11, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:20+02:00", "item": "Vagabond Longsword", "category": "Longsword", "grade": "green", "lowest_price": 14999, "listings": 3, "level": 30, "screenshot": "aion2.exchange"}
 ]

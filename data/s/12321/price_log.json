@@ -462,5 +462,7 @@
 {"checked_at": "2026-10-14T10:10:29+02:00", "item": "Wrathful Ego", "category": "Crafting Material", "grade": "gold", "lowest_price": 2100000, "listings": 4, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T10:10:29+02:00", "item": "Wrathful Mind", "category": "Crafting Material", "grade": "gold", "lowest_price": 900000, "listings": 24, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T10:10:29+02:00", "item": "Wrathful Will", "category": "Crafting Material", "grade": "gold", "lowest_price": 96000, "listings": 54, "screenshot": "aion2.exchange"},
-{"checked_at": "2026-10-14T10:07:55+02:00", "item": "Yggdrasil Log", "category": "Gathering Material", "grade": "white", "lowest_price": 0, "listings": 0, "screenshot": "aion2.exchange"}
+{"checked_at": "2026-10-14T10:07:55+02:00", "item": "Yggdrasil Log", "category": "Gathering Material", "grade": "white", "lowest_price": 0, "listings": 0, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:29+02:00", "item": "Artwork: Urugugu", "category": "Pantheon", "grade": "gold", "lowest_price": 1399420, "listings": 17, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:29+02:00", "item": "Expert's Sapphire Ring", "category": "Ring", "grade": "green", "lowest_price": 39000, "listings": 21, "level": 28, "screenshot": "aion2.exchange"}
 ]

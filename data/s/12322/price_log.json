@@ -489,5 +489,12 @@
 {"checked_at": "2026-10-14T10:10:31+02:00", "item": "Wrathful Ego", "category": "Crafting Material", "grade": "gold", "lowest_price": 1200000, "listings": 10, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T10:10:31+02:00", "item": "Wrathful Mind", "category": "Crafting Material", "grade": "gold", "lowest_price": 900000, "listings": 33, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T10:10:31+02:00", "item": "Wrathful Will", "category": "Crafting Material", "grade": "gold", "lowest_price": 170000, "listings": 84, "screenshot": "aion2.exchange"},
-{"checked_at": "2026-10-14T10:10:31+02:00", "item": "Yggdrasil Log", "category": "Gathering Material", "grade": "white", "lowest_price": 25000, "listings": 11, "screenshot": "aion2.exchange"}
+{"checked_at": "2026-10-14T10:10:31+02:00", "item": "Yggdrasil Log", "category": "Gathering Material", "grade": "white", "lowest_price": 25000, "listings": 11, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:31+02:00", "item": "Chaos Orb", "category": "Orb", "grade": "green", "lowest_price": 35532, "listings": 2, "level": 20, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:31+02:00", "item": "Conide", "category": "Gathering Material", "grade": "white", "lowest_price": 2498, "listings": 38, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:31+02:00", "item": "Ohkra", "category": "Gathering Material", "grade": "white", "lowest_price": 434, "listings": 11, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:31+02:00", "item": "Radiant Diamond Gemstone", "category": "Gathering Material", "grade": "gold", "lowest_price": 34996, "listings": 15, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:31+02:00", "item": "Raydam", "category": "Gathering Material", "grade": "white", "lowest_price": 1293, "listings": 42, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:31+02:00", "item": "Sapphire Ring", "category": "Ring", "grade": "white", "lowest_price": 1500, "listings": 66, "level": 16, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:31+02:00", "item": "Sealed Blue Wave Wings", "category": "Substance Morph Material", "grade": "gold", "lowest_price": 890000, "listings": 4, "screenshot": "aion2.exchange"}
 ]

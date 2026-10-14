@@ -595,5 +595,15 @@
 {"checked_at": "2026-10-14T10:10:19+02:00", "item": "Wrathful Ego", "category": "Crafting Material", "grade": "gold", "lowest_price": 2888888, "listings": 26, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T10:10:19+02:00", "item": "Wrathful Mind", "category": "Crafting Material", "grade": "gold", "lowest_price": 2300000, "listings": 26, "screenshot": "aion2.exchange"},
 {"checked_at": "2026-10-14T10:10:19+02:00", "item": "Wrathful Will", "category": "Crafting Material", "grade": "gold", "lowest_price": 438999, "listings": 137, "screenshot": "aion2.exchange"},
-{"checked_at": "2026-10-14T10:10:19+02:00", "item": "Yggdrasil Log", "category": "Gathering Material", "grade": "white", "lowest_price": 1696, "listings": 24, "screenshot": "aion2.exchange"}
+{"checked_at": "2026-10-14T10:10:19+02:00", "item": "Yggdrasil Log", "category": "Gathering Material", "grade": "white", "lowest_price": 1696, "listings": 24, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:19+02:00", "item": "Balaur's Essence", "category": "Crafting Material", "grade": "blue", "lowest_price": 23999, "listings": 109, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:19+02:00", "item": "Bloodthirsty Boots", "category": "Shoes", "grade": "blue", "lowest_price": 37000, "listings": 13, "level": 33, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:19+02:00", "item": "Bloodthirsty Bow", "category": "Bow", "grade": "blue", "lowest_price": 250000, "listings": 13, "level": 33, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:19+02:00", "item": "Destruction Helm", "category": "Helm", "grade": "blue", "lowest_price": 40000, "listings": 7, "level": 33, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:19+02:00", "item": "Expert's Asvata Staff", "category": "Staff", "grade": "green", "lowest_price": 50000, "listings": 42, "level": 28, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:19+02:00", "item": "Luminous Boots", "category": "Shoes", "grade": "green", "lowest_price": 9999, "listings": 9, "level": 25, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:19+02:00", "item": "Ruby Gemstone", "category": "Gathering Material", "grade": "white", "lowest_price": 750, "listings": 41, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:19+02:00", "item": "Shade Gloves", "category": "Gloves", "grade": "white", "lowest_price": 29000, "listings": 18, "level": 13, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:19+02:00", "item": "Shade Mace", "category": "Mace", "grade": "white", "lowest_price": 150000, "listings": 5, "level": 13, "screenshot": "aion2.exchange"},
+{"checked_at": "2026-10-14T11:10:19+02:00", "item": "Splendent Orichalcum Mace", "category": "Mace", "grade": "green", "lowest_price": 189990, "listings": 27, "level": 22, "screenshot": "aion2.exchange"}
 ]
