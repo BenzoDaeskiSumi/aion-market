@@ -23,7 +23,19 @@ jobs:
           [ -n "$CLOUDFLARE_API_TOKEN" ] || echo "::error::secret CLOUDFLARE_API_TOKEN missing"
           [ -n "$CLOUDFLARE_ACCOUNT_ID" ] || echo "::error::secret CLOUDFLARE_ACCOUNT_ID missing"
           [ -n "$DISCORD_PUBLIC_KEY" ] || echo "::error::secret DISCORD_PUBLIC_KEY missing"
-          if ! npx -y wrangler@4 deploy > deploy.txt 2>&1; then report deploy.txt error; exit 1; fi
+          npx -y wrangler@4 deploy > deploy.txt 2>&1 || true
+          if grep -q 'register a workers.dev subdomain' deploy.txt; then
+            # first deploy on this account: create the free *.workers.dev subdomain, then deploy again
+            for sub in aion2-market aion2-market-bot aion-market-$RANDOM; do
+              r=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" \
+                -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H 'Content-Type: application/json' -d "{\"subdomain\":\"$sub\"}")
+              echo "::notice::subdomain $sub: $(echo "$r" | jq -c '{success, errors}')"
+              echo "$r" | jq -e .success > /dev/null && break
+            done
+            sleep 10
+            npx -y wrangler@4 deploy > deploy.txt 2>&1 || true
+          fi
+          if ! grep -q 'workers.dev' deploy.txt || grep -q 'ERROR\|register a workers.dev' deploy.txt; then report deploy.txt error; exit 1; fi
           grep -o 'https://[^ ]*workers.dev' deploy.txt | head -1 | sed 's/^/::notice::Worker URL /'
           if ! printf '%s' "$DISCORD_PUBLIC_KEY" | npx -y wrangler@4 secret put DISCORD_PUBLIC_KEY > secret.txt 2>&1; then report secret.txt error; exit 1; fi
       - name: Register the slash commands
