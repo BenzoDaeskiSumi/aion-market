@@ -49,7 +49,15 @@ function search(names, q, limit = 25) {
 }
 
 const opt = (data, name) => data.options?.find((o) => o.name === name);
-const serverOf = (data, env) => +(opt(data, 'server')?.value || env.DEFAULT_SERVER || 12305);
+const userId = (i) => i.member?.user?.id || i.user?.id;
+// server registered with /server (Cloudflare KV), null when the user never set one
+async function savedServer(i, env) {
+  try { return env.USERS ? +(await env.USERS.get(`srv:${userId(i)}`)) || null : null; } catch { return null; }
+}
+// option on the command > server registered with /server > Marchutan
+async function serverOf(i, env) {
+  return +(opt(i.data, 'server')?.value || await savedServer(i, env) || env.DEFAULT_SERVER || 12305);
+}
 const reply = (data) => Response.json({type: 4, data: {allowed_mentions: {parse: []}, ...data}});
 const oops = (content) => reply({content, flags: 64});        // 64 = only the user who asked sees it
 
@@ -78,8 +86,8 @@ const itemUrl = (env, sid, name) => `${env.SITE}/?s=${sid}&item=${encodeURICompo
 const serverName = (srv, sid) => srv.find((s) => s.id === sid)?.name || String(sid);
 
 // ---------- /prezzo ----------
-async function prezzo(data, env) {
-  const sid = serverOf(data, env), q = String(opt(data, 'oggetto')?.value || '').trim();
+async function prezzo(i, env) {
+  const data = i.data, sid = await serverOf(i, env), q = String(opt(data, 'oggetto')?.value || '').trim();
   const [sum, srv, ico] = await Promise.all([summary(env, sid), servers(env), icons(env)]);
   const name = sum[q] ? q : search(Object.entries(sum), q, 1)[0];
   if (!name) return oops(`Non trovo **${q}** sul market. Scegli un nome dai suggerimenti mentre scrivi.`);
@@ -116,14 +124,14 @@ async function favPage(env, uid, sid, idx) {
   ]}]};
 }
 async function preferiti(i, env) {
-  const uid = i.member?.user?.id || i.user?.id, srv = opt(i.data, 'server')?.value;
+  const uid = userId(i), srv = opt(i.data, 'server')?.value || await savedServer(i, env);
   const page = await favPage(env, uid, srv ? +srv : null, 0);
   if (!page) return oops(`Non hai ancora preferiti. Accedi con Discord su ${env.SITE} e premi la ⭐ accanto agli oggetti che ti interessano.`);
   return reply(page);
 }
 async function favButton(i, env) {
   const [, owner, sid, idx] = i.data.custom_id.split(':');
-  const uid = i.member?.user?.id || i.user?.id;
+  const uid = userId(i);
   if (uid !== owner) return oops('Questi sono i preferiti di un altro utente: usa /preferiti per vedere i tuoi.');
   const page = await favPage(env, owner, +sid, +idx);
   if (!page) return Response.json({type: 7, data: {content: 'Nessun preferito.', embeds: [], components: []}});
@@ -131,8 +139,8 @@ async function favButton(i, env) {
 }
 
 // ---------- /affari ----------
-async function affari(data, env) {
-  const sid = serverOf(data, env), kind = opt(data, 'tipo')?.value || 'compra';
+async function affari(i, env) {
+  const data = i.data, sid = await serverOf(i, env), kind = opt(data, 'tipo')?.value || 'compra';
   const [sum, srv] = await Promise.all([summary(env, sid), servers(env)]);
   const sname = serverName(srv, sid);
   const rows = Object.entries(sum);
@@ -150,6 +158,15 @@ async function affari(data, env) {
   }]});
 }
 
+// ---------- /server: remember the user's server ----------
+async function setServer(i, env) {
+  const sid = +opt(i.data, 'server')?.value, srv = await servers(env);
+  if (!srv.some((s) => s.id === sid)) return oops('Server non valido: sceglilo dalla lista.');
+  if (!env.USERS) return oops('Salvataggio non disponibile in questo momento.');
+  await env.USERS.put(`srv:${userId(i)}`, String(sid));
+  return oops(`✅ Server registrato: **${serverName(srv, sid)}**. Da ora /prezzo, /affari e /preferiti useranno questo server; per cambiarlo rifai /server.`);
+}
+
 // ---------- entry point ----------
 export default {
   async fetch(req, env) {
@@ -160,14 +177,15 @@ export default {
     if (i.type === 1) return Response.json({type: 1});                       // PING from Discord
     try {
       if (i.type === 4) {                                                       // autocomplete
-        const sid = serverOf(i.data, env), q = String(i.data.options?.find((o) => o.focused)?.value || '');
+        const sid = await serverOf(i, env), q = String(i.data.options?.find((o) => o.focused)?.value || '');
         const sum = await summary(env, sid);
         const names = q ? search(Object.entries(sum), q) : Object.entries(sum).filter(([, r]) => r.s === 'Compra per rivendere').map(([n]) => n).slice(0, 25);
         return Response.json({type: 8, data: {choices: names.map((n) => ({name: n.slice(0, 100), value: n.slice(0, 100)}))}});
       }
       if (i.type === 2) {
-        if (i.data.name === 'prezzo') return await prezzo(i.data, env);
-        if (i.data.name === 'affari') return await affari(i.data, env);
+        if (i.data.name === 'prezzo') return await prezzo(i, env);
+        if (i.data.name === 'affari') return await affari(i, env);
+        if (i.data.name === 'server') return await setServer(i, env);
         if (i.data.name === 'preferiti') return await preferiti(i, env);
       }
       if (i.type === 3 && i.data.custom_id?.startsWith('fav:')) return await favButton(i, env);

@@ -24,6 +24,11 @@ jobs:
           [ -n "$CLOUDFLARE_API_TOKEN" ] || echo "::error::secret CLOUDFLARE_API_TOKEN missing"
           [ -n "$CLOUDFLARE_ACCOUNT_ID" ] || echo "::error::secret CLOUDFLARE_ACCOUNT_ID missing"
           [ -n "$DISCORD_PUBLIC_KEY" ] || echo "::error::secret DISCORD_PUBLIC_KEY missing"
+          # KV namespace for /server (created once, then reused)
+          kvid() { npx -y wrangler@4 kv namespace list 2>/dev/null | jq -r '[.[] | select(.title | endswith("bot-users"))][0].id // empty'; }
+          id=$(kvid)
+          if [ -z "$id" ]; then npx -y wrangler@4 kv namespace create aion-market-bot-users > kv.txt 2>&1 || report kv.txt error; id=$(kvid); fi
+          if [ -n "$id" ]; then printf '\n[[kv_namespaces]]\nbinding = "USERS"\nid = "%s"\n' "$id" >> wrangler.toml; else echo "::warning::KV namespace missing: /server disabled"; fi
           npx -y wrangler@4 deploy > deploy.txt 2>&1 || true
           if grep -q 'register a workers.dev subdomain' deploy.txt; then
             # first deploy on this account: create the free *.workers.dev subdomain, then deploy again

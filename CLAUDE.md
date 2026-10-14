@@ -65,7 +65,8 @@ Look: modern dark app skin (Inter font, rounded cards, KPI row, pill tabs) — t
 
 ## Discord bot
 bot/ is a Cloudflare Worker (Discord "Interactions Endpoint URL", slash commands only, no gateway): /prezzo <oggetto> [server] with
-autocomplete, /affari [tipo compra|vendi] [server] and /preferiti [server] (the user's site favourites, one card at a time; ◀ ▶ buttons
+autocomplete, /affari [tipo compra|vendi] [server] /server <server> (remembers the user's server in Cloudflare KV, binding USERS,
+namespace 'aion-market-bot-users' created by bot.yml; precedence: command option > /server > site profile > Marchutan) and /preferiti [server] (the user's site favourites, one card at a time; ◀ ▶ buttons
 edit the same message, only the owner can press them). /preferiti reads Supabase through the SQL function in bot/supabase.sql
 (favorites_by_discord, Discord id -> favourites via auth.identities; only service_role may execute it). It reads data/s/<id>/summary.json (per-item snapshot written by sync.py's
 write_summary, same rules as computeItems — keep the two in sync) plus data/icons.json / data/servers.json from GitHub Pages.
