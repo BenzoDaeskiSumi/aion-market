@@ -7,6 +7,10 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 shared by its developers on their Discord; server 12305 = Marchutan · EU · Asmodian) and appends a row only when price/listings changed
 (or every 12 h). Rows from the API have `screenshot: "aion2.exchange"`. The API has no grade/level/icon: new items get the grade of
 their name family, no level and no icon — videos fill those in. Credit aion2.exchange in the page footer.
+Icons: the 'Official icons' workflow (scripts/official_icons.py) maps item name -> id (aion2.exchange) -> official icon URL
+(NCSOFT dictionary tw.ncsoft.com/aion2_tw/v2.0/dict/search/item, paged, size 50) and saves transparent 96x96 PNGs from
+assets.playnccdn.com. Re-run it (gh api -X POST .../actions/workflows/icons.yml/dispatches -f ref=main) when new items appear.
+data/icons_meta.json lists items without an official icon (mostly white materials): those keep video crops cleaned by clean_icon.py.
 The same run saves data/crafts.json (/api/crafts + /api/crafts/{key}, without the heavy 'series'): the Artisan's Splendent lines,
 3 tiers each, with per-step materials (expected quantities, unit price, method buy/craft/morph). The page's "Crafting" view
 (sidebar, SEL.type 'craft') lists every tier with cost vs Market price and shows the recipe steps when clicked.
