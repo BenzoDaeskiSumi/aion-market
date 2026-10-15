@@ -243,6 +243,7 @@ footer a { color: var(--gold, inherit); }
 .alertbox li button { all: unset; cursor: pointer; color: var(--dim); padding: 0 6px; } .alertbox li button:hover { color: var(--text); }
 .alertbox form { display: flex; gap: 6px; flex-wrap: wrap; } .alertbox select, .alertbox input { font: inherit; color: var(--text); background: var(--card, transparent); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; min-width: 0; }
 .alertbox input { width: 110px; flex: 1; } .alertbox form button { font: inherit; cursor: pointer; border: 0; border-radius: 6px; padding: 5px 12px; background: var(--accent); color: #fff; }
+#crows td.dim { color: var(--dim); }
 .alertbox p { margin: 0; color: var(--dim); }
 .alertbox .prev { flex-basis: 100%; font-size: 12px; margin-top: 2px; }
 .alertbox .chips { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
@@ -465,6 +466,7 @@ footer { padding: 6px 16px 24px; font-size: 13px; text-shadow: none; }
             <th><button data-c="name">Oggetto</button></th>
             <th class="hn"><button data-c="skill">Professione</button></th>
             <th><button data-c="cost">Costo 1 craft</button></th>
+            <th><button data-c="est" title="Expert's e Artisan's: escono solo con la combo del 25%">Costo stimato</button></th>
             <th><button data-c="market">Prezzo Market</button></th>
             <th><button data-c="diff">Risparmio</button></th>
             <th class="hn"><button data-c="verdict">Conviene</button></th>
@@ -859,10 +861,16 @@ function buildCraftRows() {
     const it = ITEMS.find((x) => x.item === tr.name);
     const market = it?.available ? it.latest : (tr.market_price ?? null), st = recipeOf(t, tr.tier), cost = recipeCost(st);
     if (cost == null) return;
-    seen.set(tr.name, { name: tr.name, tier: tr.tier, target: t, skill: t.skill, line: t.profile_label, cost, market,
+    // expected cost: failed crafts count too; from tier 2 (Expert's, Artisan's) the item only comes out on a combo
+    // (combo_probability, 25%) and each attempt also uses the item of the tier before (cheaper of buying or crafting it)
+    const combo = tr.tier > 1 ? (st.combo_probability || 1) : 1, chance = (st.success_rate || 1) * combo;
+    const prevTr = t.tiers.find((x) => x.tier === tr.tier - 1), prevRow = prevTr && seen.get(prevTr.name);
+    const prevIn = prevRow ? Math.min(prevRow.est, prevRow.market ?? Infinity) : 0;
+    const est = (cost + prevIn) / chance;
+    seen.set(tr.name, { name: tr.name, tier: tr.tier, target: t, skill: t.skill, line: t.profile_label, cost, market, est, chance, combo, prevIn, prevName: prevTr?.name,
       grade: it?.grade || TIER_GRADE[tr.tier - 1] || 'white', level: it?.level ?? null,
-      diff: market != null ? market - cost : null, sell: market != null ? market * (1 - tax) - cost : null,
-      verdict: market == null ? 'Solo crafting' : market > cost ? 'Craftalo' : 'Compralo' });
+      diff: market != null ? market - est : null, sell: market != null ? market * (1 - tax) - est : null,
+      verdict: market == null ? 'Solo crafting' : market > est ? 'Craftalo' : 'Compralo' });
   }));
   return [...seen.values()];
 }
@@ -889,13 +897,14 @@ function drawCraft() {
     th.querySelector('button').classList.toggle('on', k === cSortK);
   });
   const tb = document.getElementById('crows');
-  if (!rows.length) { const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 6; td.className = 'empty'; td.textContent = onlyFav && !rows.length && !term ? 'Nessun oggetto craftabile tra i preferiti: clicca la stellina accanto a un oggetto per aggiungerlo.' : CROWS.length ? `Nessun oggetto craftabile contiene "${term}".` : 'Dati di crafting non ancora disponibili.'; tr.appendChild(td); tb.replaceChildren(tr); return; }
+  if (!rows.length) { const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 7; td.className = 'empty'; td.textContent = onlyFav && !rows.length && !term ? 'Nessun oggetto craftabile tra i preferiti: clicca la stellina accanto a un oggetto per aggiungerlo.' : CROWS.length ? `Nessun oggetto craftabile contiene "${term}".` : 'Dati di crafting non ancora disponibili.'; tr.appendChild(td); tb.replaceChildren(tr); return; }
   tb.replaceChildren(...rows.map((r) => {
     const tr = document.createElement('tr'); tr.dataset.craft = r.name; if (r.name === pickedCraft) tr.classList.add('sel');
     const td0 = document.createElement('td'); td0.appendChild(craftBox(r)); tr.appendChild(td0);
     const cell = (t, c) => { const td = document.createElement('td'); if (c) td.className = c; td.textContent = t; tr.appendChild(td); return td; };
     cell(r.skill, 'hn');
-    const tc = cell('', ''); const coin = document.createElement('span'); coin.className = 'coin'; tc.append(coin, document.createTextNode(fmtC(Math.round(r.cost))));
+    const tc = cell('', 'dim'); const coin = document.createElement('span'); coin.className = 'coin'; tc.append(coin, document.createTextNode(fmtC(Math.round(r.cost))));
+    const te = cell('', ''); const coin2 = document.createElement('span'); coin2.className = 'coin'; te.append(coin2, document.createTextNode(fmtC(Math.round(r.est))));
     const tm = cell('', ''); if (r.market != null) { const c2 = document.createElement('span'); c2.className = 'coin'; tm.append(c2, document.createTextNode(fmtC(r.market))); } else tm.textContent = 'Non in vendita';
     cell(r.diff == null ? '—' : signed(r.diff), r.diff == null ? '' : r.diff > 0 ? 'up' : 'down');
     const ts = cell('', 'hn'); const sp = document.createElement('span'); sp.className = 'sig ' + (r.verdict === 'Craftalo' ? 'craftit' : r.verdict === 'Compralo' ? 'buyit' : 'na'); sp.textContent = r.verdict; ts.appendChild(sp);
@@ -916,7 +925,8 @@ function drawCraftDetail() {
   const fb = document.createElement('button'); fb.type = 'button'; fb.className = 'favbig fav'; fb.dataset.fav = r.name;
   fb.innerHTML = (FAVS.has(r.name) ? STAR : STAR_O) + '<span>' + (FAVS.has(r.name) ? 'Nei preferiti — togli' : 'Aggiungi ai preferiti') + '</span>';
   pick.after(fb);
-  const f = [['Costo di 1 craft', fmtK(Math.round(r.cost))], ['Prezzo Market', r.market == null ? 'Non in vendita' : fmtK(r.market)],
+  const f = [['Costo di 1 craft', fmtK(Math.round(r.cost))], [r.combo < 1 ? 'Costo stimato (combo 25%)' : 'Costo stimato (con fallimenti)', fmtK(Math.round(r.est))],
+    ['Differenza', '+' + fmtK(Math.round(r.est - r.cost)) + ' (×' + d3.format('.1f')(r.est / r.cost) + ')'], ['Prezzo Market', r.market == null ? 'Non in vendita' : fmtK(r.market)],
     ['Risparmio craftando', r.diff == null ? '—' : signed(r.diff)], ['Profitto se lo rivendi', r.sell == null ? '—' : signed(r.sell)],
     ['Professione', r.skill], ['Prezzi aggiornati', when]];
   facts.replaceChildren(...f.map(([k, v]) => { const d = document.createElement('div'); d.textContent = k; const b = document.createElement('b'); b.textContent = v; d.appendChild(b); return d; }));
@@ -945,7 +955,12 @@ function drawCraftDetail() {
   const tot = tbl.insertRow(); tot.className = 'tot'; const c1 = tot.insertCell(); c1.textContent = 'Totale'; const c2 = tot.insertCell(); c2.className = 'n'; c2.textContent = fmtK(Math.round(r.cost));
   box.append(head, tbl); cd.appendChild(box);
   const n = document.createElement('p'); n.className = 'note';
-  n.textContent = `Costo di un singolo craft: le quantità della ricetta per i prezzi più bassi di adesso al Market. Successo del craft: ${fmtPct(st.success_rate)} (maestria ${st.mastery_level}). Ricette: aion2.exchange (dai file del gioco).`;
+  const tries = 1 / r.chance;
+  n.textContent = `Costo di 1 craft: le quantità della ricetta ai prezzi più bassi di adesso al Market. ` +
+    (r.combo < 1 ? `L'oggetto però esce solo con la combo (25%) di un craft riuscito (${fmtPct(st.success_rate)}): in media serve 1 craft su ${d3.format('.1f')(tries)}, quindi il costo stimato è ${d3.format('.1f')(tries)} volte i materiali`
+      : `Il craft riesce il ${fmtPct(st.success_rate)} delle volte: il costo stimato conta anche i tentativi falliti`) +
+    (r.prevName ? `, più ${fmtK(Math.round(r.prevIn))} a tentativo per ${r.prevName} (il livello prima, al prezzo più basso tra comprarlo e craftarlo).` : '.') +
+    ` Ricette: aion2.exchange (dai file del gioco).`;
   cd.appendChild(n);
 }
 document.querySelectorAll('#crafttab th button').forEach((b) => b.addEventListener('click', () => {
