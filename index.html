@@ -193,6 +193,7 @@ footer a { color: var(--gold, inherit); }
 .craft .schev { flex: none; width: 8px; height: 8px; border-right: 2px solid var(--gc); border-bottom: 2px solid var(--gc); transform: rotate(45deg); margin: 0 2px 3px 2px; transition: transform .15s; }
 .craft .step:not([open]) .schev { transform: rotate(-45deg); margin-bottom: 0; }
 .craft .step:not([open]) .stephead { border-bottom-color: transparent; }
+.craft tr.est td { color: var(--dim); font-size: 14px; }
 .craft .stot { margin-left: auto; color: var(--dim); font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .craft .step[open] .stot { visibility: hidden; }
 .craft .stephead:hover .res { text-decoration: underline; text-underline-offset: 3px; }
@@ -585,6 +586,7 @@ const RLABEL = {'nelle ultime 24 ore': 'in the last 24 hours', 'negli ultimi 7 g
 const rl = (x) => RLABEL[x] || x;
 const EN_RE = [
   [/^· prossimo aggiornamento verso le (.+)$/, '· next update around $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· data is late, the next update should fix it'],
+  [/^Passo (\d)$/, 'Step $1'],
   [/^Preferiti \((\d+)\)$/, 'Favourites ($1)'],
   [/^Aggiungi ai preferiti: (.+)$/, 'Add to favourites: $1'], [/^Togli dai preferiti: (.+)$/, 'Remove from favourites: $1'],
   [/^Nessun item contiene "(.*)" con questi filtri\. Prova un altro nome o mostra tutti i gradi\.$/, 'No item contains "$1" with these filters. Try another name or show all grades.'],
@@ -662,6 +664,7 @@ const RLABEL_ES = {'nelle ultime 24 ore': 'en las últimas 24 horas', 'negli ult
 const rlEs = (x) => RLABEL_ES[x] || x;
 const ES_RE = [
   [/^· prossimo aggiornamento verso le (.+)$/, '· próxima actualización hacia las $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· datos con retraso, la próxima actualización debería arreglarlo'],
+  [/^Passo (\d)$/, 'Paso $1'],
   [/^Preferiti \((\d+)\)$/, 'Favoritos ($1)'],
   [/^Aggiungi ai preferiti: (.+)$/, 'Añadir a favoritos: $1'], [/^Togli dai preferiti: (.+)$/, 'Quitar de favoritos: $1'],
   [/^Nessun item contiene "(.*)" con questi filtri\. Prova un altro nome o mostra tutti i gradi\.$/, 'Ningún objeto contiene "$1" con estos filtros. Prueba otro nombre o muestra todos los grados.'],
@@ -740,6 +743,7 @@ const RLABEL_FR = {'nelle ultime 24 ore': 'sur les dernières 24 heures', 'negli
 const rlFr = (x) => RLABEL_FR[x] || x;
 const FR_RE = [
   [/^· prossimo aggiornamento verso le (.+)$/, '· prochaine mise à jour vers $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· données en retard, la prochaine mise à jour devrait corriger cela'],
+  [/^Passo (\d)$/, 'Étape $1'],
   [/^Preferiti \((\d+)\)$/, 'Favoris ($1)'],
   [/^Aggiungi ai preferiti: (.+)$/, (m, n) => 'Ajouter aux favoris : ' + iname(n)], [/^Togli dai preferiti: (.+)$/, (m, n) => 'Retirer des favoris : ' + iname(n)],
   [/^Nessun item contiene "(.*)" con questi filtri\. Prova un altro nome o mostra tutti i gradi\.$/, 'Aucun objet ne contient « $1 » avec ces filtres. Essaie un autre nom ou affiche tous les rangs.'],
@@ -1229,27 +1233,37 @@ function drawCraftDetail() {
   cd.replaceChildren();
   const gradeOf = (name, fallback) => ITEMS.find((x) => x.item === name)?.grade || fallback || 'white';
   const st = recipeOf(r.target, r.tier);
-  const box = document.createElement('div'); box.className = 'step'; box.style.setProperty('--gc', `var(--g-${r.grade})`);
-  const head = document.createElement('div'); head.className = 'stephead';
-  const badge = document.createElement('span'); badge.className = 'badge'; badge.textContent = 'Ricetta';
-  const res = document.createElement('span'); res.className = 'res'; res.textContent = '1 × ' + r.name;
-  const sum = document.createElement('span'); sum.className = 'stot'; sum.textContent = fmtC(Math.round(r.cost));
-  head.append(badge, res, sum);
-  const tbl = document.createElement('table');
-  st.materials.forEach((m) => {
-    const tr = tbl.insertRow(), price = matPrice(m);
-    const a = tr.insertCell(); const mat = document.createElement('div'); mat.className = 'mat';
-    const mg = gradeOf(m.name);
-    const slot = document.createElement('div'); slot.className = 'slot g-' + mg;
-    if (ICONS[m.name]) { const img = document.createElement('img'); img.src = ICONS[m.name]; img.alt = ''; img.loading = 'lazy'; slot.appendChild(img); }
-    const txt = document.createElement('div');
-    const nm = document.createElement('span'); nm.className = 'nm g-' + mg; nm.textContent = `${m.per_attempt} × ${m.name}`;
-    const v = document.createElement('span'); v.className = 'via'; v.textContent = price ? `${fmtK(price)} l'uno al Market` : 'Non in vendita';
-    txt.append(nm, v); mat.append(slot, txt); a.appendChild(mat);
-    const t = tr.insertCell(); t.className = 'n'; t.textContent = price ? fmtK(Math.round(m.per_attempt * price)) : '—';
-  });
-  const tot = tbl.insertRow(); tot.className = 'tot'; const c1 = tot.insertCell(); c1.textContent = 'Totale'; const c2 = tot.insertCell(); c2.className = 'n'; c2.textContent = fmtK(Math.round(r.cost));
-  box.append(head, tbl); cd.appendChild(box);
+  // every step up to this tier, as collapsible boxes: the earlier tiers closed, the chosen one open
+  for (let tier = 1; tier <= r.tier; tier++) {
+    const tTier = r.target.tiers.find((x) => x.tier === tier);
+    const row = CROWS.find((x) => x.name === tTier?.name) || (tier === r.tier ? r : null);
+    const sti = recipeOf(r.target, tier);
+    if (!row || !sti) continue;
+    const box = document.createElement('details'); box.className = 'step'; box.open = tier === r.tier;
+    box.style.setProperty('--gc', `var(--g-${row.grade})`);
+    const head = document.createElement('summary'); head.className = 'stephead';
+    const chev = document.createElement('i'); chev.className = 'schev';
+    const badge = document.createElement('span'); badge.className = 'badge'; badge.textContent = `Passo ${tier}`;
+    const res = document.createElement('span'); res.className = 'res'; res.textContent = '1 × ' + row.name;
+    const sum = document.createElement('span'); sum.className = 'stot'; sum.textContent = fmtC(Math.round(row.cost));
+    head.append(chev, badge, res, sum);
+    const tbl = document.createElement('table');
+    sti.materials.forEach((m) => {
+      const tr = tbl.insertRow(), price = matPrice(m);
+      const a = tr.insertCell(); const mat = document.createElement('div'); mat.className = 'mat';
+      const mg = gradeOf(m.name);
+      const slot = document.createElement('div'); slot.className = 'slot g-' + mg;
+      if (ICONS[m.name]) { const img = document.createElement('img'); img.src = ICONS[m.name]; img.alt = ''; img.loading = 'lazy'; slot.appendChild(img); }
+      const txt = document.createElement('div');
+      const nm = document.createElement('span'); nm.className = 'nm g-' + mg; nm.textContent = `${m.per_attempt} × ${m.name}`;
+      const v = document.createElement('span'); v.className = 'via'; v.textContent = price ? `${fmtK(price)} l'uno al Market` : 'Non in vendita';
+      txt.append(nm, v); mat.append(slot, txt); a.appendChild(mat);
+      const t = tr.insertCell(); t.className = 'n'; t.textContent = price ? fmtK(Math.round(m.per_attempt * price)) : '—';
+    });
+    const tot = tbl.insertRow(); tot.className = 'tot'; const c1 = tot.insertCell(); c1.textContent = 'Totale'; const c2 = tot.insertCell(); c2.className = 'n'; c2.textContent = fmtK(Math.round(row.cost));
+    const est = tbl.insertRow(); est.className = 'est'; const e1 = est.insertCell(); e1.textContent = row.combo < 1 ? 'Costo stimato (combo 25%)' : 'Costo stimato (con fallimenti)'; const e2 = est.insertCell(); e2.className = 'n'; e2.textContent = fmtK(Math.round(row.est));
+    box.append(head, tbl); cd.appendChild(box);
+  }
   const n = document.createElement('p'); n.className = 'note';
   const tries = 1 / r.chance;
   n.textContent = `Costo di 1 craft: le quantità della ricetta ai prezzi più bassi di adesso al Market. ` +
