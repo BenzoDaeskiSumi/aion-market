@@ -244,6 +244,10 @@ footer a { color: var(--gold, inherit); }
 .alertbox form { display: flex; gap: 6px; flex-wrap: wrap; } .alertbox select, .alertbox input { font: inherit; color: var(--text); background: var(--card, transparent); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; min-width: 0; }
 .alertbox input { width: 110px; flex: 1; } .alertbox form button { font: inherit; cursor: pointer; border: 0; border-radius: 6px; padding: 5px 12px; background: var(--accent); color: #fff; }
 #crows td.dim { color: var(--dim); }
+.upd { padding: 6px 20px; font-size: 14px; color: var(--dim); }
+.upd b { color: var(--text); font-weight: 600; }
+.upd.late b { color: var(--down); }
+.upd:empty { display: none; }
 .alertbox p { margin: 0; color: var(--dim); }
 .alertbox .prev { flex-basis: 100%; font-size: 12px; margin-top: 2px; }
 .alertbox .chips { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
@@ -414,6 +418,7 @@ footer { padding: 6px 16px 24px; font-size: 13px; text-shadow: none; }
       </div>
     </div>
   </div>
+  <div class="upd" id="upd" aria-live="polite"></div>
   <div class="stats" aria-live="polite">
     <span class="kpi"><b id="t-tracked">—</b>Oggetti</span>
     <span class="kpi"><b id="t-avail">—</b>In vendita</span>
@@ -562,6 +567,7 @@ const EN = {
   'Non sono riuscito a salvare, riprova.': "Couldn't save, try again.", 'Il bot ti scrive nel canale avvisi del server Discord (controllo ogni 15 minuti).': 'The bot writes to you in the alerts channel of the Discord server (checked every 15 minutes).',
   'Media 3 giorni': '3-day average', 'Min 7g': '7d min', 'Max 7g': '7d max',
   // account
+  '🕒 Prezzi aggiornati:': '🕒 Prices updated:',
   'Accedi con Discord': 'Log in with Discord', 'Esci': 'Log out',
   // help
   'Come leggere i numeri': 'How to read the numbers',
@@ -578,6 +584,7 @@ const EN = {
 const RLABEL = {'nelle ultime 24 ore': 'in the last 24 hours', 'negli ultimi 7 giorni': 'in the last 7 days', 'negli ultimi 30 giorni': 'in the last 30 days', 'negli ultimi 90 giorni': 'in the last 90 days'};
 const rl = (x) => RLABEL[x] || x;
 const EN_RE = [
+  [/^· prossimo aggiornamento verso le (.+)$/, '· next update around $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· data is late, the next update should fix it'],
   [/^Preferiti \((\d+)\)$/, 'Favourites ($1)'],
   [/^Aggiungi ai preferiti: (.+)$/, 'Add to favourites: $1'], [/^Togli dai preferiti: (.+)$/, 'Remove from favourites: $1'],
   [/^Nessun item contiene "(.*)" con questi filtri\. Prova un altro nome o mostra tutti i gradi\.$/, 'No item contains "$1" with these filters. Try another name or show all grades.'],
@@ -639,6 +646,7 @@ const ES = {
   'Scrivi un prezzo, es. 250000, 250k o 1.5m.': 'Escribe un precio, p. ej. 250000, 250k o 1.5m.', 'Hai già 25 avvisi: togline qualcuno.': 'Ya tienes 25 avisos: quita alguno.',
   'Non sono riuscito a salvare, riprova.': 'No he podido guardar, inténtalo de nuevo.', 'Il bot ti scrive nel canale avvisi del server Discord (controllo ogni 15 minuti).': 'El bot te escribe en el canal de avisos del servidor de Discord (comprueba cada 15 minutos).',
   'Media 3 giorni': 'Media 3 días', 'Min 7g': 'Mín 7d', 'Max 7g': 'Máx 7d',
+  '🕒 Prezzi aggiornati:': '🕒 Precios actualizados:',
   'Accedi con Discord': 'Entrar con Discord', 'Esci': 'Salir',
   'Come leggere i numeri': 'Cómo leer los números',
   ': quanto guadagni comprando ora al prezzo più basso e rivendendo alla media, tolta la tassa del Market.': ': cuánto ganas comprando ahora al precio más bajo y revendiendo a la media, descontado el impuesto del Market.',
@@ -653,6 +661,7 @@ const ES = {
 const RLABEL_ES = {'nelle ultime 24 ore': 'en las últimas 24 horas', 'negli ultimi 7 giorni': 'en los últimos 7 días', 'negli ultimi 30 giorni': 'en los últimos 30 días', 'negli ultimi 90 giorni': 'en los últimos 90 días'};
 const rlEs = (x) => RLABEL_ES[x] || x;
 const ES_RE = [
+  [/^· prossimo aggiornamento verso le (.+)$/, '· próxima actualización hacia las $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· datos con retraso, la próxima actualización debería arreglarlo'],
   [/^Preferiti \((\d+)\)$/, 'Favoritos ($1)'],
   [/^Aggiungi ai preferiti: (.+)$/, 'Añadir a favoritos: $1'], [/^Togli dai preferiti: (.+)$/, 'Quitar de favoritos: $1'],
   [/^Nessun item contiene "(.*)" con questi filtri\. Prova un altro nome o mostra tutti i gradi\.$/, 'Ningún objeto contiene "$1" con estos filtros. Prueba otro nombre o muestra todos los grados.'],
@@ -715,6 +724,7 @@ const FR = {
   'Scrivi un prezzo, es. 250000, 250k o 1.5m.': 'Écris un prix, par ex. 250000, 250k ou 1.5m.', 'Hai già 25 avvisi: togline qualcuno.': 'Tu as déjà 25 alertes : retires-en quelques-unes.',
   'Non sono riuscito a salvare, riprova.': "Impossible d'enregistrer, réessaie.", 'Il bot ti scrive nel canale avvisi del server Discord (controllo ogni 15 minuti).': "Le bot t'écrit dans le salon d'alertes du serveur Discord (vérification toutes les 15 minutes).",
   'Media 3 giorni': 'Moyenne 3 jours', 'Min 7g': 'Min 7j', 'Max 7g': 'Max 7j',
+  '🕒 Prezzi aggiornati:': '🕒 Prix mis à jour :',
   'Accedi con Discord': 'Se connecter avec Discord', 'Esci': 'Déconnexion',
   'Come leggere i numeri': 'Comment lire les chiffres',
   ': quanto guadagni comprando ora al prezzo più basso e rivendendo alla media, tolta la tassa del Market.': ' : combien tu gagnes en achetant maintenant au prix le plus bas et en revendant à la moyenne, taxe du Market déduite.',
@@ -729,6 +739,7 @@ const FR = {
 const RLABEL_FR = {'nelle ultime 24 ore': 'sur les dernières 24 heures', 'negli ultimi 7 giorni': 'sur les 7 derniers jours', 'negli ultimi 30 giorni': 'sur les 30 derniers jours', 'negli ultimi 90 giorni': 'sur les 90 derniers jours'};
 const rlFr = (x) => RLABEL_FR[x] || x;
 const FR_RE = [
+  [/^· prossimo aggiornamento verso le (.+)$/, '· prochaine mise à jour vers $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· données en retard, la prochaine mise à jour devrait corriger cela'],
   [/^Preferiti \((\d+)\)$/, 'Favoris ($1)'],
   [/^Aggiungi ai preferiti: (.+)$/, (m, n) => 'Ajouter aux favoris : ' + iname(n)], [/^Togli dai preferiti: (.+)$/, (m, n) => 'Retirer des favoris : ' + iname(n)],
   [/^Nessun item contiene "(.*)" con questi filtri\. Prova un altro nome o mostra tutti i gradi\.$/, 'Aucun objet ne contient « $1 » avec ces filtres. Essaie un autre nom ou affiche tous les rangs.'],
@@ -812,7 +823,7 @@ const SIG_SHORT = {'Compra per rivendere': 'Compra', 'Vendi ora': 'Vendi', 'Tien
 const GRADES_ON = new Set(Object.keys(GRADE));
 const store = {get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }};
 let RANGE = +(store.get('aion-range') || 7);
-let SNAP = null;   // time of the latest aion2.exchange snapshot of this server (meta.json)
+let SNAP = null, SYNCED = null;   // time of the latest aion2.exchange snapshot of this server (meta.json)
 let SALES = {}, CRAFTS = null, CROWS = [], cSortK = 'diff', cSortDir = -1, pickedCraft = null;
 let LOG = [], ITEMS = [], S = {}, ICONS = {}, SEL = {type: 'all'}, sortK = 'grade_rank', sortDir = -1, picked = null;
 let showNA = store.get('aion-na') === 'show';
@@ -1335,13 +1346,29 @@ function loadServer() {
     .then(([log, crafts, sales, meta]) => {
       // latest check through the API: the newest API row (items are captured a minute or two after the snapshot)
       SNAP = d3.max([meta?.snapshot ? new Date(meta.snapshot) : null, d3.max(log, (x) => x.screenshot === 'aion2.exchange' ? new Date(x.checked_at) : null)].filter(Boolean)) || null;
+      SYNCED = meta?.synced_at ? new Date(meta.synced_at) : null;
       LOG = log; CRAFTS = crafts; SALES = sales || {}; picked = null; pickedCraft = null;
-      ITEMS = computeItems(LOG, S); CROWS = buildCraftRows(); drawAll();
+      ITEMS = computeItems(LOG, S); CROWS = buildCraftRows(); drawAll(); paintUpd();
       document.getElementById('f-server').textContent = srvSel.selectedOptions[0]?.textContent || '';
     })
     .catch(() => { t.textContent = 'Non riesco a caricare i dati di questo server. Riprova tra qualche minuto.'; t.classList.add('err'); });
 }
 srvSel.addEventListener('change', () => { SERVER = +srvSel.value; store.set('aion-server', String(SERVER)); saveProfile(); loadServer(); });
+
+/* ---------- status line at the top: time of the latest prices (also when no price changed) ---------- */
+function paintUpd() {
+  const el = document.getElementById('upd'); el.replaceChildren();
+  if (!SNAP) return;
+  const hm = (d) => d.toLocaleTimeString(LOCALE, {hour: '2-digit', minute: '2-digit'});
+  const late = Date.now() - SNAP > 2.5 * 36e5;
+  el.classList.toggle('late', late);
+  const b = document.createElement('b'); b.textContent = fmtDT(SNAP);
+  // aion2.exchange takes a new snapshot every hour; our hourly sync picks it up at its next run (+ ~2 min to publish)
+  let next = SYNCED ? +SYNCED : +SNAP + 36e5;
+  while (next < +SNAP + 36e5 + 3 * 6e4) next += 36e5;
+  el.append('🕒 Prezzi aggiornati: ', b, late ? ' · dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli' : ' · prossimo aggiornamento verso le ' + hm(new Date(next + 2 * 6e4)));
+}
+setInterval(() => { if (SNAP) paintUpd(); }, 60000);
 
 /* ---------- price alerts (logged-in users): saved in profiles.alerts, the Discord bot posts when they hit ---------- */
 let ALERTS = [];

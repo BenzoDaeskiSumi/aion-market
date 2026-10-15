@@ -22,6 +22,10 @@ Marchutan yet). computeItems uses them as reference price and sales/day; otherwi
 between API rows of the last 3 days ("~" in the table). "Compra" needs >= settings.min_sales_per_day. The top bar is a ticker of
 the 15 best deals (click one to open it).
 
+Times: rows are written only when price/listings change, so the page NEVER shows a row's time as "last check" for API items:
+SNAP = newest of meta.snapshot and the newest API row of the server; last_checked/summary 't' = SNAP for items whose last row is from the API,
+the chart extends the last price to it, and the status line '#upd' at the top shows it (+ next update computed from meta.synced_at).
+
 ## Updating prices ("aggiorna")
 1. Sources (check both; read only files not already named in the `screenshot` field of data/s/12305/price_log.json):
    - Videos (preferred): MP4 clips the user exports from Steam to C:\Users\Nicol\Desktop\Nuova cartella\claude\aion2
