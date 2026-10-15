@@ -689,10 +689,10 @@ const FR = {
   'Aggiungi ai preferiti': 'Ajouter aux favoris', 'Togli dai preferiti': 'Retirer des favoris', 'Nei preferiti — togli': 'Dans les favoris — retirer',
   'Tutte': 'Toutes', 'Tutti': 'Tous', 'Tipo': 'Type', 'Livello': 'Niveau',
   'Armi': 'Armes', 'Armature': 'Armures', 'Accessori': 'Accessoires', 'Consumabili': 'Consommables', 'Aspetto': 'Apparence', 'Materiali': 'Matériaux',
-  'Elmo': 'Casque', 'Spallacci': 'Épaulières', 'Corazza': 'Plastron', 'Gambali': 'Jambières', 'Guanti': 'Gants', 'Stivali': 'Bottes', 'Mantello': 'Cape',
+  'Elmo': 'Casque', 'Spallacci': 'Épaulettes', 'Corazza': 'Cuirasse', 'Gambali': 'Grèves', 'Guanti': 'Gants', 'Stivali': 'Bottes', 'Mantello': 'Cape',
   'Collana': 'Collier', 'Orecchini': "Boucles d'oreilles", 'Anello': 'Anneau', 'Bracciale': 'Bracelet', 'Pozioni': 'Potions', 'Cibo': 'Nourriture', 'Pergamene': 'Parchemins',
   'Caramelle': 'Bonbons', 'Manastone e Soulstone': 'Manastones et Soulstones', 'Ali': 'Ailes', 'Biglietti a tempo': 'Tickets à durée', 'Forzieri': 'Coffres',
-  'Consumabili vari': 'Consommables divers', 'Aspetto armature': "Apparence d'armures", 'Aspetto accessori': "Apparence d'accessoires", 'Raccolta': 'Récolte',
+  'Consumabili vari': 'Consommables divers', 'Aspetto armature': "Apparence d'armures", 'Aspetto accessori': "Apparence d'accessoires", 'Raccolta': 'Matériaux de collecte',
   'Trasmutazione': 'Transmutation', 'Materiali speciali': 'Matériaux spéciaux', 'Materiali vari': 'Matériaux divers',
   'Speciale': 'Spécial', 'Non rare': 'Peu commun', 'Common': 'Commun', 'Rare': 'Rare', 'Legendary': 'Légendaire', 'Mythic': 'Mythique',
   'Compra per rivendere': 'Acheter pour revendre', 'Vendi ora': 'Vendre maintenant', 'Tieni': 'Garder', 'Compra': 'Acheter', 'Vendi': 'Vendre', 'Servono più dati': 'Pas assez de données',
@@ -730,7 +730,7 @@ const RLABEL_FR = {'nelle ultime 24 ore': 'sur les dernières 24 heures', 'negli
 const rlFr = (x) => RLABEL_FR[x] || x;
 const FR_RE = [
   [/^Preferiti \((\d+)\)$/, 'Favoris ($1)'],
-  [/^Aggiungi ai preferiti: (.+)$/, 'Ajouter aux favoris : $1'], [/^Togli dai preferiti: (.+)$/, 'Retirer des favoris : $1'],
+  [/^Aggiungi ai preferiti: (.+)$/, (m, n) => 'Ajouter aux favoris : ' + iname(n)], [/^Togli dai preferiti: (.+)$/, (m, n) => 'Retirer des favoris : ' + iname(n)],
   [/^Nessun item contiene "(.*)" con questi filtri\. Prova un altro nome o mostra tutti i gradi\.$/, 'Aucun objet ne contient « $1 » avec ces filtres. Essaie un autre nom ou affiche tous les rangs.'],
   [/^Nessun oggetto craftabile contiene "(.*)"\.$/, 'Aucun objet fabricable ne contient « $1 ».'],
   [/^Ancora nessun segnale: ogni item ha bisogno di almeno (\d+) controlli\.$/, "Pas encore de signal : chaque objet a besoin d'au moins $1 relevés."],
@@ -744,11 +744,16 @@ const FR_RE = [
   [/^Costo di 1 craft: le quantità della ricetta ai prezzi più bassi di adesso al Market\. (.*)$/, (m, rest) => 'Coût de 1 craft : les quantités de la recette aux prix les plus bas actuels du Market. ' + rest
     .replace(/L'oggetto però esce solo con la combo \(25%\) di un craft riuscito \((\d+%)\): in media serve 1 craft su ([\d.]+), quindi il costo stimato è ([\d.]+) volte i materiali/, "Mais l'objet n'apparaît qu'avec le combo de 25 % d'un craft réussi ($1) : en moyenne 1 craft sur $2 le donne, donc le coût estimé vaut $3 fois les matériaux")
     .replace(/Il craft riesce il (\d+%) delle volte: il costo stimato conta anche i tentativi falliti/, 'Le craft réussit $1 du temps : le coût estimé compte aussi les tentatives ratées')
-    .replace(/, più ([\d,]+) a tentativo per (.+?) \(il livello prima, al prezzo più basso tra comprarlo e craftarlo\)\./, ', plus $1 par tentative pour $2 (le niveau précédent, au moins cher entre l\'acheter et le fabriquer).')
+    .replace(/, più ([\d,]+) a tentativo per (.+?) \(il livello prima, al prezzo più basso tra comprarlo e craftarlo\)\./, (x, a, n) => `, plus ${a} par tentative pour ${iname(n)} (le niveau précédent, au moins cher entre l'acheter et le fabriquer).`)
     .replace(/Ricette: aion2\.exchange \(dai file del gioco\)\./, 'Recettes : aion2.exchange (fichiers du jeu).')],
 ];
 
 const DICT = {en: EN, es: ES, fr: FR}[LANG] || {}, RE = {en: EN_RE, es: ES_RE, fr: FR_RE}[LANG] || [];
+// in-game item names exist in French: with LANG fr they are shown instead of the English ones (data/names_fr.json)
+let NAMES = {};
+const iname = (n) => NAMES[n] || n;
+const fold = (t) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+if (LANG === 'fr') RE.unshift([/^(\d+) × (.+)$/, (m, q, n) => `${q} × ${iname(n)}`]);
 function tr(text) {
   const core = text.trim();
   if (!core || !/[a-zà-ú]/i.test(core)) return text;
@@ -981,9 +986,9 @@ function drawTable() {
   document.querySelectorAll('#dealfilter button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.deal === DEAL)));
   document.getElementById('grades').style.display = craft ? 'none' : ''; naBtn.style.display = craft ? 'none' : '';
   if (craft) return drawCraft();
-  const term = document.getElementById('q').value.trim().toLowerCase();
+  const term = fold(document.getElementById('q').value.trim());
   const dealSig = DEAL === 'buy' ? 'Compra per rivendere' : 'Vendi ora';
-  const rows = ITEMS.filter((r) => inSel(r) && GRADES_ON.has(r.grade) && (VIEW !== 'deals' || r.signal === dealSig) && (showNA || r.available || VIEW === 'deals' || onlyFav) && (!onlyFav || FAVS.has(r.item)) && (!term || (r.item + ' ' + catName(r.category) + ' ' + GRADE[r.grade]).toLowerCase().includes(term)))
+  const rows = ITEMS.filter((r) => inSel(r) && GRADES_ON.has(r.grade) && (VIEW !== 'deals' || r.signal === dealSig) && (showNA || r.available || VIEW === 'deals' || onlyFav) && (!onlyFav || FAVS.has(r.item)) && (!term || fold(r.item + ' ' + (NAMES[r.item] || '') + ' ' + catName(r.category) + ' ' + GRADE[r.grade]).includes(term)))
     .sort((a, b) => {
       const x = a[sortK], y = b[sortK];
       const tie = () => (a.cat_rank - b.cat_rank) || (a.game_order - b.game_order);
@@ -1163,8 +1168,8 @@ function craftBox(r, noFav) {
 }
 const signed = (v) => (v > 0 ? '+' : v < 0 ? '−' : '') + fmtC(Math.abs(Math.round(v)));
 function drawCraft() {
-  const term = document.getElementById('q').value.trim().toLowerCase();
-  const rows = CROWS.filter((r) => inCSel(r) && (!onlyFav || FAVS.has(r.name))).filter((r) => !term || (r.name + ' ' + r.skill + ' ' + r.line).toLowerCase().includes(term)).sort((a, b) => {
+  const term = fold(document.getElementById('q').value.trim());
+  const rows = CROWS.filter((r) => inCSel(r) && (!onlyFav || FAVS.has(r.name))).filter((r) => !term || fold(r.name + ' ' + (NAMES[r.name] || '') + ' ' + r.skill + ' ' + r.line).includes(term)).sort((a, b) => {
     const x = a[cSortK], y = b[cSortK];
     if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
     return (typeof x === 'string' ? x.localeCompare(y) : x - y) * cSortDir;
@@ -1453,9 +1458,14 @@ if (sb) {
   });
 }
 paintAcct();
-Promise.all([get('data/settings.json'), get('data/icons.json').catch(() => ({})), get('data/servers.json').catch(() => [{id: 12305, name: 'Marchutan'}])])
-  .then(([settings, icons, servers]) => {
-    S = settings[0] || settings; ICONS = icons;
+Promise.all([get('data/settings.json'), get('data/icons.json').catch(() => ({})), get('data/servers.json').catch(() => [{id: 12305, name: 'Marchutan'}]),
+  LANG === 'fr' ? get('data/names_fr.json').catch(() => ({})) : {}])
+  .then(([settings, icons, servers, names]) => {
+    S = settings[0] || settings; ICONS = icons; NAMES = names || {}; Object.assign(DICT, NAMES);
+    if (LANG === 'fr') {      // credit for the French item names (followed link, as MetaBot.GG asks)
+      const a = Object.assign(document.createElement('a'), {href: 'https://metabot.gg/fr_FR/aion-2/items', target: '_blank', textContent: 'MetaBot.GG'});
+      document.querySelector('footer').append(' Noms des objets en français : ', a, '.');
+    }
     const qs = new URLSearchParams(location.search);              // deep link from the Discord bot: ?s=<server>&item=<name>
     if (servers.some((x) => x.id === +qs.get('s'))) SERVER = +qs.get('s');
     if (!servers.some((x) => x.id === SERVER)) SERVER = 12305;
