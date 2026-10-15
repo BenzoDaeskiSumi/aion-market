@@ -206,8 +206,32 @@ def sync_server(server, name, catalog, fam, health):
     print(f'{name}: {len(items)} items, {added} rows added ({new} new items), log {len(log)} rows')
 
 
+def wait_for_new_snapshot(max_wait=25 * 60):
+    """aion2.exchange takes its hourly snapshot a few minutes past the hour; the trigger fires at :00.
+    Wait (up to max_wait) until a snapshot newer than the one we already have is published, so the site
+    gets this hour's prices instead of last hour's."""
+    try:
+        have = datetime.fromisoformat(json.load(open(path(HOME, 'meta.json'), encoding='utf-8'))['snapshot'])
+    except Exception:
+        have = None
+    start = time.time()
+    while True:
+        health = get('/health')
+        snap = rome(health['latest_snapshot_at'])
+        if have is None or snap > have:
+            if time.time() - start > 1:
+                time.sleep(90)            # let the snapshot's item rows settle
+                health = get('/health')
+            print(f'snapshot {snap.isoformat()} (waited {int(time.time() - start)} s)')
+            return health
+        if time.time() - start > max_wait:
+            print(f'no new snapshot after {max_wait // 60} min, syncing {snap.isoformat()} again')
+            return health
+        time.sleep(60)
+
+
 def main():
-    health = get('/health')
+    health = wait_for_new_snapshot()
     servers = [s for s in get('/servers')['servers'] if s['region'] == REGION and s['faction'] == FACTION and s.get('has_data')]
     servers.sort(key=lambda s: s['server_id'])
     json.dump([{'id': s['server_id'], 'name': s['name']} for s in servers], open('data/servers.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
