@@ -409,6 +409,9 @@ footer { padding: 6px 16px 24px; font-size: 13px; text-shadow: none; }
         <button type="button" data-theme="elyos"><i style="background:#e8c46a"></i>Elyos</button>
         <button type="button" data-theme="asmodian"><i style="background:#ff7ab0"></i>Asmodian</button>
       </div>
+      <div class="themes langs" role="group" aria-label="Lingua">
+        <button type="button" data-lang="it" title="Italiano">IT</button><button type="button" data-lang="en" title="English">EN</button>
+      </div>
     </div>
   </div>
   <div class="stats" aria-live="polite">
@@ -504,12 +507,133 @@ footer { padding: 6px 16px 24px; font-size: 13px; text-shadow: none; }
 <footer>Prezzi del server <span id="f-server">Marchutan</span> (Europa · Asmodiani), aggiornati ogni ora dai dati pubblici di <a href="https://aion2.exchange/" target="_blank" rel="noopener">aion2.exchange</a> e dai video del Market in gioco. Non affiliato a NCSOFT.</footer>
 
 <script>
+/* ---------- language: the page is written in Italian; with English chosen, a translator rewrites every text node
+   and label as it appears (exact phrases, ' · ' separated parts, and patterns for sentences with numbers/names) ---------- */
+const LANG = (() => { try { return localStorage.getItem('aion-lang') === 'en' ? 'en' : 'it'; } catch (e) { return 'it'; } })();
+document.documentElement.lang = LANG;
+const EN = {
+  // header, KPIs, tabs, tools
+  'Tassa': 'Tax', 'Tema': 'Theme', 'Lingua': 'Language', 'Oggetti': 'Items', 'In vendita': 'Listed', 'Da comprare': 'To buy', 'Da vendere': 'To sell',
+  'Ultimo aggiornamento': 'Last update', 'Caricamento…': 'Loading…', 'Sezioni': 'Sections', 'Affari': 'Deals', 'Tipo di affare': 'Deal type',
+  'Categorie': 'Categories', 'Cerca un item…': 'Search an item…', 'Cerca un item': 'Search an item', 'Cerca un oggetto craftabile…': 'Search a craftable item…',
+  'Filtra per grado': 'Filter by grade', 'Grado': 'Grade', 'Mostra tutti': 'Show all', 'Item': 'Item', 'Vendite/g': 'Sales/day',
+  'Unità vendute al giorno: dati del gioco quando ci sono, altrimenti stima dalle inserzioni sparite': 'Units sold per day: game data when available, otherwise estimated from listings that disappeared',
+  'Prezzo più basso': 'Lowest price', 'Media': 'Average', 'Profitto flip': 'Flip profit', 'Segnale': 'Signal', 'Oggetto': 'Item', 'Professione': 'Profession',
+  'Costo 1 craft': 'Cost of 1 craft', 'Costo stimato': 'Estimated cost', "Expert's e Artisan's: escono solo con la combo del 25%": "Expert's and Artisan's: only come out on the 25% combo",
+  'Prezzo Market': 'Market price', 'Risparmio': 'Savings', 'Conviene': 'Best choice', 'Storico prezzi': 'Price history', 'Periodo del grafico': 'Chart period',
+  '24 ore': '24 hours', '7 giorni': '7 days', '30 giorni': '30 days', '90 giorni': '90 days',
+  'Clicca un item per vedere i dettagli e come è cambiato il suo prezzo.': 'Click an item to see its details and how its price changed.',
+  'Mostra categorie': 'Show categories', 'Nascondi categorie': 'Hide categories', 'Mostra la barra delle categorie': 'Show the category bar', 'Nascondi la barra delle categorie': 'Hide the category bar',
+  'Mostra non disponibili': 'Show unavailable', 'Nascondi non disponibili': 'Hide unavailable', 'Mostra gli item non disponibili': 'Show unavailable items', 'Nascondi gli item non disponibili': 'Hide unavailable items',
+  'Mostra solo i preferiti': 'Show favourites only', 'Mostra tutti gli oggetti': 'Show all items', 'Preferiti': 'Favourites',
+  'Aggiungi ai preferiti': 'Add to favourites', 'Togli dai preferiti': 'Remove from favourites', 'Nei preferiti — togli': 'In favourites — remove',
+  'Tutte': 'All', 'Tutti': 'All', 'Tipo': 'Type', 'Livello': 'Tier',
+  // groups and categories
+  'Armi': 'Weapons', 'Armature': 'Armor', 'Accessori': 'Accessories', 'Consumabili': 'Consumables', 'Aspetto': 'Skins', 'Materiali': 'Materials',
+  'Elmo': 'Helm', 'Spallacci': 'Pauldrons', 'Corazza': 'Breastplate', 'Gambali': 'Greaves', 'Guanti': 'Gloves', 'Stivali': 'Boots', 'Mantello': 'Cloak',
+  'Collana': 'Necklace', 'Orecchini': 'Earrings', 'Anello': 'Ring', 'Bracciale': 'Bracelet', 'Pozioni': 'Potions', 'Cibo': 'Food', 'Pergamene': 'Scrolls',
+  'Caramelle': 'Candy', 'Manastone e Soulstone': 'Manastones & Soulstones', 'Ali': 'Wings', 'Biglietti a tempo': 'Duration tickets', 'Forzieri': 'Chests',
+  'Consumabili vari': 'Other consumables', 'Aspetto armature': 'Armor skins', 'Aspetto accessori': 'Accessory skins', 'Raccolta': 'Gathering',
+  'Trasmutazione': 'Substance morph', 'Materiali speciali': 'Special materials', 'Materiali vari': 'Other materials',
+  'Speciale': 'Special', 'Non rare': 'Uncommon',
+  // signals and verdicts
+  'Compra per rivendere': 'Buy to resell', 'Vendi ora': 'Sell now', 'Tieni': 'Hold', 'Compra': 'Buy', 'Vendi': 'Sell', 'Servono più dati': 'Needs more data',
+  'Non disponibile': 'Unavailable', 'Craftalo': 'Craft it', 'Compralo': 'Buy it', 'Solo crafting': 'Craft only', 'Non in vendita': 'Not on sale',
+  // ticker, messages
+  'Affari ora': 'Deals now', 'Affari migliori adesso': 'Best deals right now', 'Per ora nessun item è abbastanza sotto la media da valere un flip.': 'No item is far enough below its average to be worth a flip right now.',
+  'Non riesco a caricare i dati di questo server. Riprova tra qualche minuto.': "Can't load this server's data. Try again in a few minutes.",
+  'Non riesco a caricare i dati. Ricarica la pagina tra qualche secondo.': "Can't load the data. Reload the page in a few seconds.",
+  'Nessun grado selezionato. Clicca un grado per mostrarlo.': 'No grade selected. Click a grade to show it.', 'Nessun item con questi filtri.': 'No items with these filters.',
+  'Non hai ancora preferiti: clicca la stellina accanto a un oggetto per aggiungerlo.': "You don't have favourites yet: click the star next to an item to add it.",
+  'Nessun oggetto craftabile tra i preferiti: clicca la stellina accanto a un oggetto per aggiungerlo.': 'No craftable item in your favourites: click the star next to an item to add it.',
+  'Dati di crafting non ancora disponibili.': 'Crafting data not available yet.',
+  "Mai visto in vendita finora, quindi non c'è uno storico dei prezzi.": 'Never seen on sale so far, so there is no price history.',
+  // detail pane
+  'Dettagli': 'Details', 'Ricetta': 'Recipe', 'Crafting': 'Crafting', 'Totale': 'Total', 'Controlli': 'Checks', 'Ultimo controllo': 'Last check',
+  'Vendite al giorno': 'Sales per day', 'Ancora pochi dati': 'Not enough data yet', 'Media = prezzo di vendita reale': 'Average = real sale price', '28 giorni': '28 days',
+  'Costo di 1 craft': 'Cost of 1 craft', 'Costo stimato (combo 25%)': 'Estimated cost (25% combo)', 'Costo stimato (con fallimenti)': 'Estimated cost (with failures)',
+  'Differenza': 'Difference', 'Risparmio craftando': 'Saved by crafting', 'Profitto se lo rivendi': 'Profit if you resell it', 'Prezzi aggiornati': 'Prices updated',
+  // alerts
+  '🔔 Avviso di prezzo': '🔔 Price alert', 'Accedi con Discord per ricevere un messaggio dal bot quando questo oggetto arriva al prezzo che vuoi.': 'Log in with Discord to get a message from the bot when this item reaches the price you want.',
+  'Scende sotto': 'Drops below', 'Sale sopra': 'Rises above', 'Avvisami': 'Alert me', 'Quando': 'When', 'Prezzo': 'Price', 'Togli avviso': 'Remove alert',
+  'Scrivi un prezzo (anche 250k, 1.5m) o scegli qui sotto': 'Type a price (also 250k, 1.5m) or pick one below', 'Prezzo non valido': 'Invalid price',
+  'Scrivi un prezzo, es. 250000, 250k o 1.5m.': 'Type a price, e.g. 250000, 250k or 1.5m.', 'Hai già 25 avvisi: togline qualcuno.': 'You already have 25 alerts: remove some.',
+  'Non sono riuscito a salvare, riprova.': "Couldn't save, try again.", 'Il bot ti scrive nel canale avvisi del server Discord (controllo ogni 15 minuti).': 'The bot writes to you in the alerts channel of the Discord server (checked every 15 minutes).',
+  'Media 3 giorni': '3-day average', 'Min 7g': '7d min', 'Max 7g': '7d max',
+  // account
+  'Accedi con Discord': 'Log in with Discord', 'Esci': 'Log out',
+  // help
+  'Come leggere i numeri': 'How to read the numbers',
+  ': quanto guadagni comprando ora al prezzo più basso e rivendendo alla media, tolta la tassa del Market.': ': how much you earn buying now at the lowest price and reselling at the average, after the Market tax.',
+  ': prezzo tipico (mediana) degli ultimi 3 giorni.': ': typical price (median) of the last 3 days.',
+  ': prezzo abbastanza sotto la media da guadagnarci.': ': price far enough below the average to make a profit.', ': prezzo molto sopra la media.': ': price well above the average.',
+  ': quanti pezzi si vendono al giorno. Con "~" è una stima dalle inserzioni sparite tra un controllo e l\'altro (possono essere anche ritirate). Il segnale Compra compare solo se se ne vende almeno 1 al giorno.':
+    ': how many units sell per day. With "~" it is an estimate from listings that disappeared between two checks (they may also have been withdrawn). The Buy signal only shows if at least 1 sells per day.',
+  ': nessuno lo sta vendendo nel Market in questo momento.': ': nobody is selling it on the Market right now.', ': meno di 3 controlli, troppo pochi per giudicare il prezzo.': ': fewer than 3 checks, too few to judge the price.',
+  // footer
+  'Prezzi del server': 'Prices of the', '(Europa · Asmodiani), aggiornati ogni ora dai dati pubblici di': 'server (Europe · Asmodians), updated every hour from the public data of',
+  'e dai video del Market in gioco. Non affiliato a NCSOFT.': 'and from in-game Market videos. Not affiliated with NCSOFT.',
+};
+const RLABEL = {'nelle ultime 24 ore': 'in the last 24 hours', 'negli ultimi 7 giorni': 'in the last 7 days', 'negli ultimi 30 giorni': 'in the last 30 days', 'negli ultimi 90 giorni': 'in the last 90 days'};
+const rl = (x) => RLABEL[x] || x;
+const EN_RE = [
+  [/^Preferiti \((\d+)\)$/, 'Favourites ($1)'],
+  [/^Aggiungi ai preferiti: (.+)$/, 'Add to favourites: $1'], [/^Togli dai preferiti: (.+)$/, 'Remove from favourites: $1'],
+  [/^Nessun item contiene "(.*)" con questi filtri\. Prova un altro nome o mostra tutti i gradi\.$/, 'No item contains "$1" with these filters. Try another name or show all grades.'],
+  [/^Nessun oggetto craftabile contiene "(.*)"\.$/, 'No craftable item contains "$1".'],
+  [/^Ancora nessun segnale: ogni item ha bisogno di almeno (\d+) controlli\.$/, 'No signals yet: every item needs at least $1 checks.'],
+  [/^Clicca un oggetto per vedere la ricetta e quanto costa craftarlo adesso\. Prezzi dei materiali aggiornati: (.*)\.$/, 'Click an item to see its recipe and what crafting it costs now. Material prices updated: $1.'],
+  [/^Nessun prezzo (.+): prova un periodo più lungo\.$/, (m, a) => `No price ${rl(a)}: try a longer period.`],
+  [/^Un solo prezzo (.+): prova un periodo più lungo\.$/, (m, a) => `Only one price ${rl(a)}: try a longer period.`],
+  [/^Prezzo più basso (.+), in Kinah\.$/, (m, a) => `Lowest price ${rl(a)}, in Kinah.`],
+  [/^(.+) in vendita$/, '$1 listed'], [/^a ([\d.,]+[KMB]?)$/, 'at $1'], [/^media ([\d.,]+[KMB]?)$/, 'avg $1'],
+  [/^passo (\d) di 3$/, 'tier $1 of 3'], [/^(Vendite al giorno) \((stima|dati del gioco)\)$/, (m, a, b) => `Sales per day (${b === 'stima' ? 'estimate' : 'game data'})`],
+  [/^Scende sotto (.+)$/, 'Drops below $1'], [/^Sale sopra (.+)$/, 'Rises above $1'], [/^(.+) l'uno al Market$/, '$1 each on the Market'],
+  [/^Costo di 1 craft: le quantità della ricetta ai prezzi più bassi di adesso al Market\. (.*)$/, (m, rest) => 'Cost of 1 craft: the recipe quantities at the lowest Market prices right now. ' + rest
+    .replace(/L'oggetto però esce solo con la combo \(25%\) di un craft riuscito \((\d+%)\): in media serve 1 craft su ([\d.]+), quindi il costo stimato è ([\d.]+) volte i materiali/, 'But the item only comes out on the 25% combo of a successful craft ($1): on average 1 craft in $2 gives it, so the estimated cost is $3 times the materials')
+    .replace(/Il craft riesce il (\d+%) delle volte: il costo stimato conta anche i tentativi falliti/, 'The craft succeeds $1 of the time: the estimated cost also counts failed attempts')
+    .replace(/, più ([\d,]+) a tentativo per (.+?) \(il livello prima, al prezzo più basso tra comprarlo e craftarlo\)\./, ', plus $1 per attempt for $2 (the tier before, at the cheaper of buying or crafting it).')
+    .replace(/Ricette: aion2\.exchange \(dai file del gioco\)\./, 'Recipes: aion2.exchange (from the game files).')],
+];
+function tr(text) {
+  const core = text.trim();
+  if (!core || !/[a-zà-ú]/i.test(core)) return text;
+  let out = EN[core];
+  if (out == null) for (const [re, rep] of EN_RE) if (re.test(core)) { out = core.replace(re, rep); break; }
+  if (out == null && core.includes(' · ')) { const parts = core.split(' · '), t = parts.map((p) => tr(p)); if (t.some((x, i) => x !== parts[i])) out = t.join(' · '); }
+  if (out == null) return text;
+  return text.slice(0, text.indexOf(core)) + out + text.slice(text.indexOf(core) + core.length);
+}
+const TR_ATTRS = ['placeholder', 'title', 'aria-label'];
+function translateTree(root) {
+  if (root.nodeType === 3) { const t = tr(root.data); if (t !== root.data) root.data = t; return; }
+  if (root.nodeType !== 1 || root.closest?.('svg, script, style')) return;
+  const els = [root, ...root.querySelectorAll('*')];
+  for (const el of els) for (const a of TR_ATTRS) { const v = el.getAttribute(a); if (v) { const t = tr(v); if (t !== v) el.setAttribute(a, t); } }
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  for (let n = w.nextNode(); n; n = w.nextNode()) { if (n.parentElement?.closest('svg, script, style')) continue; const t = tr(n.data); if (t !== n.data) n.data = t; }
+}
+if (LANG === 'en') {
+  translateTree(document.body);
+  new MutationObserver((recs) => {
+    for (const r of recs) {
+      if (r.type === 'characterData') translateTree(r.target);
+      else if (r.type === 'attributes') { const v = r.target.getAttribute(r.attributeName); if (v) { const t = tr(v); if (t !== v) r.target.setAttribute(r.attributeName, t); } }
+      else r.addedNodes.forEach(translateTree);
+    }
+  }).observe(document.body, {subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: TR_ATTRS});
+}
+document.querySelectorAll('.langs button').forEach((b) => {
+  b.setAttribute('aria-pressed', String(b.dataset.lang === LANG));
+  b.addEventListener('click', () => { if (b.dataset.lang === LANG) return; try { localStorage.setItem('aion-lang', b.dataset.lang); } catch (e) {} location.reload(); });
+});
+
 const fmtK = d3.format(',.0f');
 const fmtC = (v) => Math.abs(v) >= 100000 ? new Intl.NumberFormat('en', {notation: 'compact', maximumSignificantDigits: 3}).format(v) : fmtK(v);
 const fmtP = (v) => d3.format('+.1%')(v).replace('-', '−');
 const fmtPct = d3.format('.0%');
 const fmtSales = (v) => v >= 10 ? fmtK(Math.round(v)) : v < 0.05 ? '0' : d3.format('.1f')(v);
-const fmtDT = (d) => { d = new Date(d); return isNaN(d) ? '—' : d.toLocaleString('it-IT', {day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'}); };
+const fmtDT = (d) => { d = new Date(d); return isNaN(d) ? '—' : d.toLocaleString(LANG === 'en' ? 'en-GB' : 'it-IT', {day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'}); };
 
 /* Market structure: groups and their sub-categories, in the game's order */
 const GROUPS = [
@@ -537,7 +661,7 @@ let VIEW = 'market', DEAL = 'buy', CSEL = {type: 'all'}, COPEN = new Set();
 let OPEN = new Set();   // accordion: only the selected group is open
 
 /* ---------- theme switch ---------- */
-const themeBtns = document.querySelectorAll('.themes button');
+const themeBtns = document.querySelectorAll('.themes button[data-theme]');
 const currentTheme = () => document.documentElement.dataset.theme || 'abyss';
 function paintThemes() { themeBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.theme === currentTheme()))); }
 themeBtns.forEach((b) => b.addEventListener('click', () => {
@@ -816,7 +940,7 @@ function drawChart() {
   const x = d3.scaleTime(tx, [ml, W - 22]);
   // axis labels: dates for long ranges, hours for short ones
   const spanH = (tx[1] - tx[0]) / 36e5;
-  const fmtX = spanH <= 36 ? (d) => d.toLocaleTimeString('it-IT', {hour: '2-digit', minute: '2-digit'}) : (d) => d.toLocaleDateString('it-IT', {day: 'numeric', month: 'short'});
+  const fmtX = spanH <= 36 ? (d) => d.toLocaleTimeString(LANG === 'en' ? 'en-GB' : 'it-IT', {hour: '2-digit', minute: '2-digit'}) : (d) => d.toLocaleDateString(LANG === 'en' ? 'en-GB' : 'it-IT', {day: 'numeric', month: 'short'});
   svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', ml).attr('x2', W - 22).attr('y1', y).attr('y2', y).attr('stroke', C('--faint'));
   svg.append('g').selectAll('text').data(ticks).join('text').attr('x', ml - 8).attr('y', y).attr('dy', '.32em').attr('text-anchor', 'end').attr('font-size', 14).attr('fill', C('--dim')).text(fmtY);
   const xt = pts.length > 1 ? x.ticks(Math.max(2, Math.floor((W - ml) / 80))) : [pts[0].t];
