@@ -291,10 +291,11 @@ details.help[open] summary { margin-bottom: 8px; }
 }
 :root[data-theme="asmodian"] { --bg2: #0e0a12; --panel: #15101b; --panel-solid: #1a1421; --card: #1d1625; --line: #2e2337; --accent: #e879a9; --field: #120d17; }
 :root[data-theme="elyos"] {
-  --bg2: #f4f6fa; --panel: #ffffff; --panel-solid: #ffffff; --card: #ffffff; --line: #e3e7ef; --faint: rgba(15,23,42,.035); --field: #f7f9fc;
-  --accent: #3b6cf5; --text: #172033; --dim: #667085; --kinah: #b7861b; --up: #0f9d6b; --down: #dc3b3b;
-  --g-white: #4b5565; --g-green: #16a34a; --g-blue: #2563eb; --g-gold: #b7791f; --g-orange: #ea580c; --g-teal: #0d9488;
-  --shadow: 0 8px 24px rgba(15,23,42,.08); color-scheme: light;
+  /* warm parchment instead of plain white: easier on the eyes */
+  --bg2: #ece2c8; --panel: #f6eedb; --panel-solid: #f7efdc; --card: #f8f1df; --line: #dccb9f; --faint: rgba(120,90,20,.06); --field: #f1e7cd;
+  --accent: #a26c12; --text: #2b2414; --dim: #6c624b; --kinah: #9a6b0e; --up: #1d7a4a; --down: #b83a2a;
+  --g-white: #4a4537; --g-green: #2b7d3d; --g-blue: #2459b8; --g-gold: #996311; --g-orange: #c2520e; --g-teal: #127a6e;
+  --shadow: 0 8px 24px rgba(90,65,15,.12); color-scheme: light;
 }
 body { font-family: var(--font); font-size: 15px; background: var(--bg2); }
 :root[data-theme="elyos"] body { background: var(--bg2); }
