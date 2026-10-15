@@ -183,6 +183,24 @@ const parsePrice = (v) => {
 const alertText = (a, srv) => `${a.dir === 'above' ? 'sopra' : 'sotto'} **${kin(a.price)}** · ${serverName(srv, a.server)}`;
 const NO_LOGIN = (env) => `Gli avvisi sono per chi ha fatto l'accesso al sito: entra su ${env.SITE} con **Accedi con Discord** (una volta sola), poi riprova.`;
 
+// suggestions for the price box of /avviso aggiungi: what you typed (decoded) + targets around the current price
+function priceChoices(sum, data, q) {
+  const q0 = String(opt(data, 'oggetto')?.value || ''), name = sum[q0] ? q0 : search(Object.entries(sum), q0, 1)[0];
+  const r = name && sum[name], up = opt(data, 'quando')?.value === 'above', out = [];
+  const nice = (v) => { const e = 10 ** Math.max(0, Math.floor(Math.log10(v)) - 2); return Math.round(v / e) * e; };
+  const typed = parsePrice(q);
+  if (typed) out.push([`${kin(typed)} kinah`, typed]);
+  else if (q.trim()) out.push(['Prezzo non valido: scrivi es. 250000, 250k, 1.5m', 0]);
+  if (r) {
+    const base = r.p > 0 ? r.p : r.a;
+    if (base) [5, 10, 20].forEach((p) => out.push([`${up ? '+' : '−'}${p}% dal prezzo attuale → ${kin(nice(base * (1 + (up ? p : -p) / 100)))}`, nice(base * (1 + (up ? p : -p) / 100))]));
+    if (r.a) out.push([`Media 3 giorni → ${kin(r.a)}`, r.a]);
+    if (up ? r.hi : r.lo) out.push([`${up ? 'Massimo' : 'Minimo'} 7 giorni → ${kin(up ? r.hi : r.lo)}`, up ? r.hi : r.lo]);
+    if (r.p > 0) out.push([`Prezzo attuale → ${kin(r.p)}`, r.p]);
+  }
+  return out.filter(([, v], k) => v || k === 0).slice(0, 25).map(([n, v]) => ({name: n.slice(0, 100), value: String(v || q).slice(0, 100)}));
+}
+
 async function avviso(i, env) {
   const uid = userId(i), what = sub(i.data);
   const prof = (await rpc(env, 'alerts_by_discord', {did: uid}))[0];
@@ -274,8 +292,9 @@ export default {
     if (i.type === 1) return Response.json({type: 1});                       // PING from Discord
     try {
       if (i.type === 4) {                                                       // autocomplete
-        const sid = await serverOf(i, env), q = String(flat(i.data).find((o) => o.focused)?.value || '');
+        const sid = await serverOf(i, env), foc = flat(i.data).find((o) => o.focused), q = String(foc?.value || '');
         const sum = await summary(env, sid);
+        if (foc?.name === 'prezzo') return Response.json({type: 8, data: {choices: priceChoices(sum, i.data, q)}});
         const names = q ? search(Object.entries(sum), q) : Object.entries(sum).filter(([, r]) => r.s === 'Compra per rivendere').map(([n]) => n).slice(0, 25);
         return Response.json({type: 8, data: {choices: names.map((n) => ({name: n.slice(0, 100), value: n.slice(0, 100)}))}});
       }

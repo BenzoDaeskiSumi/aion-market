@@ -243,7 +243,12 @@ footer a { color: var(--gold, inherit); }
 .alertbox li button { all: unset; cursor: pointer; color: var(--dim); padding: 0 6px; } .alertbox li button:hover { color: var(--text); }
 .alertbox form { display: flex; gap: 6px; flex-wrap: wrap; } .alertbox select, .alertbox input { font: inherit; color: var(--text); background: var(--card, transparent); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; min-width: 0; }
 .alertbox input { width: 110px; flex: 1; } .alertbox form button { font: inherit; cursor: pointer; border: 0; border-radius: 6px; padding: 5px 12px; background: var(--accent); color: #fff; }
-.alertbox p { margin: 0; color: var(--dim); } .alertbox .err { color: #ff6b6b; margin-top: 6px; }
+.alertbox p { margin: 0; color: var(--dim); }
+.alertbox .prev { flex-basis: 100%; font-size: 12px; margin-top: 2px; }
+.alertbox .chips { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.alertbox .chips button { all: unset; cursor: pointer; display: inline-flex; flex-direction: column; align-items: center; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; font-size: 11px; color: var(--dim); line-height: 1.25; }
+.alertbox .chips button b { font-size: 13px; color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.alertbox .chips button:hover, .alertbox .chips button:focus-visible { border-color: var(--accent); color: var(--text); } .alertbox .err { color: #ff6b6b; margin-top: 6px; }
 .hero div { color: var(--dim); font-size: 15px; } .hero b { display: block; font-size: 28px; font-weight: 500; color: var(--text); line-height: 1.1; font-variant-numeric: tabular-nums; }
 .hero b.up { color: var(--up); } .hero b.down { color: var(--down); }
 .facts { font-size: 15px; } .facts b { font-size: 17px; }
@@ -1065,7 +1070,24 @@ function drawAlerts(r) {
   inp.placeholder = r.latest ? fmtK(Math.round(r.latest * 0.9)) : 'es. 250k';
   const b = document.createElement('button'); b.type = 'submit'; b.textContent = 'Avvisami';
   const err = document.createElement('p'); err.className = 'err'; err.hidden = true;
-  f.append(dir, inp, b);
+  const prev = document.createElement('p'); prev.className = 'prev';
+  const chips = document.createElement('div'); chips.className = 'chips';
+  const showPrev = () => { const v = parsePrice(inp.value); prev.textContent = inp.value.trim() ? (v ? '= ' + fmtK(v) + ' Kinah' : 'Prezzo non valido') : 'Scrivi un prezzo (anche 250k, 1.5m) o scegli qui sotto'; };
+  // one-click targets around the current price (rounded to 3 significant digits)
+  const nice = (v) => { const e = Math.pow(10, Math.max(0, Math.floor(Math.log10(v)) - 2)); return Math.round(v / e) * e; };
+  const week = LOG.filter((x) => x.item === r.item && +x.lowest_price > 0 && r.last_checked - new Date(x.checked_at) <= 7 * 864e5).map((x) => +x.lowest_price);
+  const fillChips = () => {
+    const base = r.latest || r.average, up = dir.value === 'above', opts = [];
+    if (base) (up ? [5, 10, 20] : [5, 10, 20]).forEach((p) => opts.push([(up ? '+' : '−') + p + '%', nice(base * (1 + (up ? p : -p) / 100))]));
+    if (r.average) opts.push(['Media', r.average]);
+    if (week.length) opts.push(up ? ['Max 7g', Math.max(...week)] : ['Min 7g', Math.min(...week)]);
+    chips.replaceChildren(...opts.map(([label, v]) => { const c = document.createElement('button'); c.type = 'button';
+      c.innerHTML = `<span>${label}</span><b>${fmtK(v)}</b>`;
+      c.addEventListener('click', () => { inp.value = fmtK(v); showPrev(); inp.focus(); }); return c; }));
+  };
+  dir.addEventListener('change', fillChips); inp.addEventListener('input', showPrev);
+  fillChips(); showPrev();
+  f.append(dir, inp, b, prev, chips);
   f.addEventListener('submit', async (e) => {
     e.preventDefault();
     const price = parsePrice(inp.value);

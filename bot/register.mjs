@@ -13,7 +13,7 @@ const commands = [
   {name: 'avviso', description: 'Avvisi di prezzo (serve l’accesso al sito con Discord)', options: [
     {type: 1, name: 'aggiungi', description: 'Ti avviso quando un oggetto arriva a un prezzo', options: [
       {type: 3, name: 'oggetto', description: 'Nome dell’oggetto (in inglese)', required: true, autocomplete: true},
-      {type: 3, name: 'prezzo', description: 'Prezzo, es. 250000, 250k, 1.5m', required: true},
+      {type: 3, name: 'prezzo', description: 'Scegli un suggerimento o scrivi il prezzo (250000, 250k, 1.5m)', required: true, autocomplete: true},
       {type: 3, name: 'quando', description: 'Quando avvisarti (predefinito: quando scende sotto)', required: false,
         choices: [{name: 'Scende sotto il prezzo (per comprare)', value: 'below'}, {name: 'Sale sopra il prezzo (per vendere)', value: 'above'}]},
       server]},
