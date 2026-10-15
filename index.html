@@ -1363,10 +1363,9 @@ function paintUpd() {
   const late = Date.now() - SNAP > 2.5 * 36e5;
   el.classList.toggle('late', late);
   const b = document.createElement('b'); b.textContent = fmtDT(SNAP);
-  // aion2.exchange takes a new snapshot every hour; our hourly sync picks it up at its next run (+ ~2 min to publish)
-  let next = SYNCED ? +SYNCED : +SNAP + 36e5;
-  while (next < +SNAP + 36e5 + 3 * 6e4) next += 36e5;
-  el.append('🕒 Prezzi aggiornati: ', b, late ? ' · dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli' : ' · prossimo aggiornamento verso le ' + hm(new Date(next + 2 * 6e4)));
+  // aion2.exchange takes a new snapshot every hour and our sync waits for it, then ~5 min to save and publish
+  const next = new Date(+SNAP + 36e5 + 5 * 6e4);
+  el.append('🕒 Prezzi aggiornati: ', b, late ? ' · dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli' : ' · prossimo aggiornamento verso le ' + hm(next));
 }
 setInterval(() => { if (SNAP) paintUpd(); }, 60000);
 
