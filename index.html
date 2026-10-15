@@ -194,6 +194,8 @@ footer a { color: var(--gold, inherit); }
 .craft .step:not([open]) .schev { transform: rotate(-45deg); margin-bottom: 0; }
 .craft .step:not([open]) .stephead { border-bottom-color: transparent; }
 .craft tr.est td { color: var(--dim); font-size: 14px; }
+.craft .stepinfo { margin: 0; padding: 6px 10px 8px; color: var(--dim); font-size: 13px; }
+.craft .note a { color: var(--accent); }
 .craft .stot { margin-left: auto; color: var(--dim); font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .craft .step[open] .stot { visibility: hidden; }
 .craft .stephead:hover .res { text-decoration: underline; text-underline-offset: 3px; }
@@ -569,6 +571,18 @@ const EN = {
   'Media 3 giorni': '3-day average', 'Min 7g': '7d min', 'Max 7g': '7d max',
   // account
   '🕒 Prezzi aggiornati:': '🕒 Prices updated:',
+  "Altro": "Other",
+  "Esito": "Outcome",
+  "Craft normale": "Normal craft",
+  "Con la combo (Splendent)": "With the combo (Splendent)",
+  "Prezzi mancanti": "Missing prices",
+  "esce con la combo": "comes from the combo",
+  "potenziamento": "upgrade",
+  "Prezzo non disponibile": "Price not available",
+  "Costo di 1 craft: le quantità della ricetta ai prezzi di adesso, per ogni ingrediente il più conveniente tra Market, negozio NPC e craftarlo.": "Cost of 1 craft: the recipe quantities at current prices, each ingredient at the cheapest of the Market, the NPC shop or crafting it.",
+  "Ricette e prezzi NPC:": "Recipes and NPC prices:",
+  "(dai file del gioco).": "(from the game files).",
+  "Costo stimato (con fallimenti), a pezzo": "Estimated cost (with failures), per piece",
   'Accedi con Discord': 'Log in with Discord', 'Esci': 'Log out',
   // help
   'Come leggere i numeri': 'How to read the numbers',
@@ -586,6 +600,12 @@ const RLABEL = {'nelle ultime 24 ore': 'in the last 24 hours', 'negli ultimi 7 g
 const rl = (x) => RLABEL[x] || x;
 const EN_RE = [
   [/^· prossimo aggiornamento verso le (.+)$/, '· next update around $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· data is late, the next update should fix it'],
+  [/^maestria (\d+)$/, 'mastery $1'],
+  [/^Costo stimato \(combo (\d+)%\)$/, 'Estimated cost ($1% combo)'],
+  [/^(.+) l'uno dal negozio NPC$/, '$1 each from the NPC shop'],
+  [/^(.+) l'uno craftandolo \(passo (\d+)\)$/, '$1 each by crafting it (step $2)'],
+  [/^Esce solo con la combo \((\d+)%\) di un craft riuscito \((\d+%)\): in media 1 craft su ([\d.]+)\.$/, 'Only comes out on the $1% combo of a successful craft ($2): on average 1 craft in $3.'],
+  [/^Il craft riesce il (\d+%) delle volte: il costo stimato conta anche i tentativi falliti\.(?: Ogni craft ne produce (\d+)\.)?$/, (m, a, q) => `The craft succeeds ${a} of the time: the estimated cost also counts failed attempts.` + (q ? ` Each craft makes ${q}.` : '')],
   [/^Passo (\d)$/, 'Step $1'],
   [/^versione precedente · conviene comprarla al Market$/, 'previous version · cheaper to buy it on the Market'], [/^versione precedente · conviene craftarla \(passo (\d)\)$/, 'previous version · cheaper to craft it (step $1)'],
   [/^Preferiti \((\d+)\)$/, 'Favourites ($1)'],
@@ -650,6 +670,18 @@ const ES = {
   'Non sono riuscito a salvare, riprova.': 'No he podido guardar, inténtalo de nuevo.', 'Il bot ti scrive nel canale avvisi del server Discord (controllo ogni 15 minuti).': 'El bot te escribe en el canal de avisos del servidor de Discord (comprueba cada 15 minutos).',
   'Media 3 giorni': 'Media 3 días', 'Min 7g': 'Mín 7d', 'Max 7g': 'Máx 7d',
   '🕒 Prezzi aggiornati:': '🕒 Precios actualizados:',
+  "Altro": "Otros",
+  "Esito": "Resultado",
+  "Craft normale": "Craft normal",
+  "Con la combo (Splendent)": "Con el combo (Splendent)",
+  "Prezzi mancanti": "Faltan precios",
+  "esce con la combo": "sale con el combo",
+  "potenziamento": "mejora",
+  "Prezzo non disponibile": "Precio no disponible",
+  "Costo di 1 craft: le quantità della ricetta ai prezzi di adesso, per ogni ingrediente il più conveniente tra Market, negozio NPC e craftarlo.": "Coste de 1 craft: las cantidades de la receta a los precios actuales, cada ingrediente al más barato entre el Market, la tienda NPC o fabricarlo.",
+  "Ricette e prezzi NPC:": "Recetas y precios NPC:",
+  "(dai file del gioco).": "(de los archivos del juego).",
+  "Costo stimato (con fallimenti), a pezzo": "Coste estimado (con fallos), por unidad",
   'Accedi con Discord': 'Entrar con Discord', 'Esci': 'Salir',
   'Come leggere i numeri': 'Cómo leer los números',
   ': quanto guadagni comprando ora al prezzo più basso e rivendendo alla media, tolta la tassa del Market.': ': cuánto ganas comprando ahora al precio más bajo y revendiendo a la media, descontado el impuesto del Market.',
@@ -665,6 +697,12 @@ const RLABEL_ES = {'nelle ultime 24 ore': 'en las últimas 24 horas', 'negli ult
 const rlEs = (x) => RLABEL_ES[x] || x;
 const ES_RE = [
   [/^· prossimo aggiornamento verso le (.+)$/, '· próxima actualización hacia las $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· datos con retraso, la próxima actualización debería arreglarlo'],
+  [/^maestria (\d+)$/, 'maestría $1'],
+  [/^Costo stimato \(combo (\d+)%\)$/, 'Coste estimado (combo $1%)'],
+  [/^(.+) l'uno dal negozio NPC$/, '$1 cada uno en la tienda NPC'],
+  [/^(.+) l'uno craftandolo \(passo (\d+)\)$/, '$1 cada uno fabricándolo (paso $2)'],
+  [/^Esce solo con la combo \((\d+)%\) di un craft riuscito \((\d+%)\): in media 1 craft su ([\d.]+)\.$/, 'Solo sale con el combo del $1% de un craft con éxito ($2): de media 1 de cada $3 crafts.'],
+  [/^Il craft riesce il (\d+%) delle volte: il costo stimato conta anche i tentativi falliti\.(?: Ogni craft ne produce (\d+)\.)?$/, (m, a, q) => `El craft sale bien el ${a} de las veces: el coste estimado cuenta también los intentos fallidos.` + (q ? ` Cada craft produce ${q}.` : '')],
   [/^Passo (\d)$/, 'Paso $1'],
   [/^versione precedente · conviene comprarla al Market$/, 'versión anterior · conviene comprarla en el Market'], [/^versione precedente · conviene craftarla \(passo (\d)\)$/, 'versión anterior · conviene fabricarla (paso $1)'],
   [/^Preferiti \((\d+)\)$/, 'Favoritos ($1)'],
@@ -730,6 +768,18 @@ const FR = {
   'Non sono riuscito a salvare, riprova.': "Impossible d'enregistrer, réessaie.", 'Il bot ti scrive nel canale avvisi del server Discord (controllo ogni 15 minuti).': "Le bot t'écrit dans le salon d'alertes du serveur Discord (vérification toutes les 15 minutes).",
   'Media 3 giorni': 'Moyenne 3 jours', 'Min 7g': 'Min 7j', 'Max 7g': 'Max 7j',
   '🕒 Prezzi aggiornati:': '🕒 Prix mis à jour :',
+  "Altro": "Autres",
+  "Esito": "Résultat",
+  "Craft normale": "Craft normal",
+  "Con la combo (Splendent)": "Avec le combo (éclatant)",
+  "Prezzi mancanti": "Prix manquants",
+  "esce con la combo": "obtenu avec le combo",
+  "potenziamento": "amélioration",
+  "Prezzo non disponibile": "Prix non disponible",
+  "Costo di 1 craft: le quantità della ricetta ai prezzi di adesso, per ogni ingrediente il più conveniente tra Market, negozio NPC e craftarlo.": "Coût de 1 craft : les quantités de la recette aux prix actuels, chaque ingrédient au moins cher entre le Market, la boutique PNJ ou sa fabrication.",
+  "Ricette e prezzi NPC:": "Recettes et prix PNJ :",
+  "(dai file del gioco).": "(fichiers du jeu).",
+  "Costo stimato (con fallimenti), a pezzo": "Coût estimé (avec échecs), par unité",
   'Accedi con Discord': 'Se connecter avec Discord', 'Esci': 'Déconnexion',
   'Come leggere i numeri': 'Comment lire les chiffres',
   ': quanto guadagni comprando ora al prezzo più basso e rivendendo alla media, tolta la tassa del Market.': ' : combien tu gagnes en achetant maintenant au prix le plus bas et en revendant à la moyenne, taxe du Market déduite.',
@@ -745,6 +795,12 @@ const RLABEL_FR = {'nelle ultime 24 ore': 'sur les dernières 24 heures', 'negli
 const rlFr = (x) => RLABEL_FR[x] || x;
 const FR_RE = [
   [/^· prossimo aggiornamento verso le (.+)$/, '· prochaine mise à jour vers $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· données en retard, la prochaine mise à jour devrait corriger cela'],
+  [/^maestria (\d+)$/, 'maîtrise $1'],
+  [/^Costo stimato \(combo (\d+)%\)$/, 'Coût estimé (combo $1 %)'],
+  [/^(.+) l'uno dal negozio NPC$/, "$1 l'unité à la boutique PNJ"],
+  [/^(.+) l'uno craftandolo \(passo (\d+)\)$/, "$1 l'unité en le fabriquant (étape $2)"],
+  [/^Esce solo con la combo \((\d+)%\) di un craft riuscito \((\d+%)\): in media 1 craft su ([\d.]+)\.$/, "N'apparaît qu'avec le combo de $1 % d'un craft réussi ($2) : en moyenne 1 craft sur $3."],
+  [/^Il craft riesce il (\d+%) delle volte: il costo stimato conta anche i tentativi falliti\.(?: Ogni craft ne produce (\d+)\.)?$/, (m, a, q) => `Le craft réussit ${a} du temps : le coût estimé compte aussi les tentatives ratées.` + (q ? ` Chaque craft en produit ${q}.` : '')],
   [/^Passo (\d)$/, 'Étape $1'],
   [/^versione precedente · conviene comprarla al Market$/, 'version précédente · moins cher de l\'acheter au Market'], [/^versione precedente · conviene craftarla \(passo (\d)\)$/, 'version précédente · moins cher de la fabriquer (étape $1)'],
   [/^Preferiti \((\d+)\)$/, 'Favoris ($1)'],
@@ -925,9 +981,9 @@ function drawAll() {
 const inSel = (r) => SEL.type === 'all' || (SEL.type === 'group' && CAT_GROUP[r.category] === SEL.id) || (SEL.type === 'cat' && r.category === SEL.id);
 const selEq = (t, id) => SEL.type === t && (t === 'all' || SEL.id === id);
 const CRAFT_GROUPS = [
-  {id: 'cat', name: 'Tipo', key: (r) => r.target.category, items: [['Weapon', 'Armi'], ['Armor', 'Armature'], ['Accessory', 'Accessori']]},
-  {id: 'tier', name: 'Livello', key: (r) => String(r.tier), items: [['1', 'Splendent'], ['2', "Expert's Splendent"], ['3', "Artisan's Splendent"]]},
-  {id: 'skill', name: 'Professione', key: (r) => r.skill, items: [['Blacksmithing', 'Blacksmithing'], ['Tailoring', 'Tailoring'], ['Jewelcrafting', 'Jewelcrafting'], ['Alchemy', 'Alchemy']]},
+  {id: 'cat', name: 'Tipo', key: (r) => r.group, items: [['weapons', 'Armi'], ['armor', 'Armature'], ['accessories', 'Accessori'], ['consumables', 'Consumabili'], ['materials', 'Materiali'], ['other', 'Altro']]},
+  {id: 'mode', name: 'Esito', key: (r) => r.mode, items: [['normal', 'Craft normale'], ['combo', 'Con la combo (Splendent)']]},
+  {id: 'skill', name: 'Professione', key: (r) => r.skill, items: [['Blacksmithing', 'Blacksmithing'], ['Armorsmithing', 'Armorsmithing'], ['Handicrafting', 'Handicrafting'], ['Alchemy', 'Alchemy'], ['Cooking', 'Cooking']]},
 ];
 const inCSel = (r) => CSEL.type === 'all' || CRAFT_GROUPS.find((g) => g.id === CSEL.type).key(r) === CSEL.id;
 function drawCraftCats() {
@@ -1149,36 +1205,63 @@ document.getElementById('ranges').addEventListener('click', (e) => {
 
 /* ---------- crafting ---------- */
 const TIER_GRADE = ['green', 'blue', 'gold'];
-// price of one material now: our latest Market price on this server, else the one in the crafting data
-function matPrice(m) {
-  const it = ITEMS.find((x) => x.item === m.name);
-  return it?.available ? it.latest : (m.listing_price ?? m.unit_price ?? null);
+// ---------- crafting engine: every recipe (data/recipes.json, from the game files via MetaBot.GG) ----------
+// A normal success gives the recipe's product; a combo (on a successful craft) gives the "Splendent" version when the game
+// has one. Every ingredient is counted at the cheapest way to get it now: the Market, the NPC shop or crafting it.
+let RECIPES = null, CRAFT = null;
+function craftEngine() {
+  const market = new Map(ITEMS.filter((x) => x.available).map((x) => [x.item, x.latest]));
+  const npc = RECIPES?.npc || {}, ways = new Map();
+  for (const r of RECIPES?.recipes || []) {
+    const add = (name, mode, per) => { if (!ways.has(name)) ways.set(name, []); ways.get(name).push({r, mode, per}); };
+    add(r.p, 'normal', r.ok * r.q);
+    if (r.cp && r.c) add(r.cp, 'combo', r.ok * r.c);
+  }
+  const unitMemo = new Map(), bestMemo = new Map(), busy = new Set();
+  function unit(name) {                       // cheapest unit price: {src: market|npc|craft|null, price, way}
+    if (unitMemo.has(name)) return unitMemo.get(name);
+    let best = {src: null, price: Infinity};
+    if (market.has(name)) best = {src: 'market', price: market.get(name)};
+    if (npc[name] != null && npc[name] < best.price) best = {src: 'npc', price: npc[name]};
+    if (ways.has(name) && !busy.has(name)) {
+      const c = craftBest(name);
+      if (c && c.est != null && c.est < best.price) best = {src: 'craft', price: c.est, way: c};
+    }
+    if (!busy.size) unitMemo.set(name, best);
+    return best;
+  }
+  function craftBest(name) {                  // cheapest recipe for one unit of name
+    if (bestMemo.has(name)) return bestMemo.get(name);
+    busy.add(name);
+    let best = null;
+    for (const w of ways.get(name) || []) {
+      const parts = w.r.parts.map(([n, q]) => ({name: n, q, ...unit(n)}));
+      const missing = parts.filter((p) => !isFinite(p.price));
+      const cost = missing.length ? null : d3.sum(parts, (p) => p.q * p.price);
+      const est = cost == null ? null : cost / w.per;
+      const cand = {...w, name, parts, cost, est, missing: missing.map((p) => p.name)};
+      if (!best || (est != null && (best.est == null || est < best.est))) best = cand;
+    }
+    busy.delete(name);
+    if (!busy.size) bestMemo.set(name, best);
+    return best;
+  }
+  return {ways, unit, craftBest, market};
 }
-// exact cost of ONE craft of a tier: its recipe (quantities per craft) at today's prices
-const recipeOf = (t, tier) => t.steps.find((st) => st.step_no === tier) || t.steps.find((st) => st.result_name === t.tiers?.[tier - 1]?.name);
-const recipeCost = (st) => st ? d3.sum(st.materials, (m) => m.per_attempt * (matPrice(m) || 0)) : null;
 function buildCraftRows() {
-  const seen = new Map(), tax = +S.tax_rate;
-  (CRAFTS?.targets || []).forEach((t) => (t.tiers || []).forEach((tr) => {
-    if (seen.has(tr.name)) return;
-    const it = ITEMS.find((x) => x.item === tr.name);
-    const market = it?.available ? it.latest : (tr.market_price ?? null), st = recipeOf(t, tr.tier), mats = recipeCost(st);
-    if (mats == null) return;
-    // expected cost: failed crafts count too; from tier 2 (Expert's, Artisan's) the item only comes out on a combo
-    // (combo_probability, 25%) and each attempt also uses the item of the tier before (cheaper of buying or crafting it)
-    const combo = tr.tier > 1 ? (st.combo_probability || 1) : 1, chance = (st.success_rate || 1) * combo;
-    const prevTr = t.tiers.find((x) => x.tier === tr.tier - 1), prevRow = prevTr && seen.get(prevTr.name);
-    // from tier 2 every craft also uses 1 item of the tier before ("the previous version"): at the cheaper of buying it
-    // on the Market or crafting it (its estimated cost); prevBuy tells which one was used
-    const prevIn = prevRow ? Math.min(prevRow.est, prevRow.market ?? Infinity) : 0;
-    const prevBuy = !!prevRow && prevRow.market != null && prevRow.market <= prevRow.est;
-    const cost = mats + prevIn, est = cost / chance;
-    seen.set(tr.name, { name: tr.name, tier: tr.tier, target: t, skill: t.skill, line: t.profile_label, cost, mats, market, est, chance, combo, prevIn, prevBuy, prevName: prevRow ? prevTr.name : null,
-      grade: it?.grade || TIER_GRADE[tr.tier - 1] || 'white', level: it?.level ?? null,
-      diff: market != null ? market - est : null, sell: market != null ? market * (1 - tax) - est : null,
-      verdict: market == null ? 'Solo crafting' : market > est ? 'Craftalo' : 'Compralo' });
-  }));
-  return [...seen.values()];
+  if (!RECIPES) return [];
+  CRAFT = craftEngine();
+  const tax = +S.tax_rate, rows = [];
+  for (const name of CRAFT.ways.keys()) {
+    const w = CRAFT.craftBest(name); if (!w) continue;
+    const it = ITEMS.find((x) => x.item === name);
+    const market = CRAFT.market.get(name) ?? null, est = w.est;
+    rows.push({name, way: w, skill: w.r.s, mode: w.mode, cost: w.cost, est, market,
+      grade: it?.grade || RECIPES.grades?.[name] || 'white', level: it?.level ?? null, group: it ? CAT_GROUP[it.category] || 'other' : 'other',
+      diff: market != null && est != null ? market - est : null, sell: market != null && est != null ? market * (1 - tax) - est : null,
+      verdict: est == null ? 'Prezzi mancanti' : market == null ? 'Solo crafting' : market > est ? 'Craftalo' : 'Compralo'});
+  }
+  return rows;
 }
 function craftBox(r, noFav) {
   const it = document.createElement('div'); it.className = 'it';
@@ -1186,13 +1269,14 @@ function craftBox(r, noFav) {
   if (ICONS[r.name]) { const img = document.createElement('img'); img.src = ICONS[r.name]; img.alt = ''; img.loading = 'lazy'; img.width = 40; img.height = 40; slot.appendChild(img); }
   const txt = document.createElement('div');
   const nm = document.createElement('span'); nm.className = 'nm g-' + r.grade; nm.textContent = r.name;
-  const ct = document.createElement('span'); ct.className = 'ct'; ct.textContent = r.line + ' · passo ' + r.tier + ' di 3' + (r.level ? ' · Lv ' + r.level : '');
+  const ct = document.createElement('span'); ct.className = 'ct';
+  ct.textContent = [r.skill, r.mode === 'combo' ? 'esce con la combo' : r.way.r.m ? 'maestria ' + r.way.r.m : 'potenziamento', r.level ? 'Lv ' + r.level : null].filter(Boolean).join(' · ');
   txt.append(nm, ct); noFav ? it.append(slot, txt) : it.append(favBtn(r.name), slot, txt); return it;
 }
 const signed = (v) => (v > 0 ? '+' : v < 0 ? '−' : '') + fmtC(Math.abs(Math.round(v)));
 function drawCraft() {
   const term = fold(document.getElementById('q').value.trim());
-  const rows = CROWS.filter((r) => inCSel(r) && (!onlyFav || FAVS.has(r.name))).filter((r) => !term || fold(r.name + ' ' + (NAMES[r.name] || '') + ' ' + r.skill + ' ' + r.line).includes(term)).sort((a, b) => {
+  const rows = CROWS.filter((r) => inCSel(r) && (!onlyFav || FAVS.has(r.name))).filter((r) => !term || fold(r.name + ' ' + (NAMES[r.name] || '') + ' ' + r.skill).includes(term)).sort((a, b) => {
     const x = a[cSortK], y = b[cSortK];
     if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
     return (typeof x === 'string' ? x.localeCompare(y) : x - y) * cSortDir;
@@ -1203,27 +1287,28 @@ function drawCraft() {
     th.querySelector('button').classList.toggle('on', k === cSortK);
   });
   const tb = document.getElementById('crows');
-  if (!rows.length) { const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 7; td.className = 'empty'; td.textContent = onlyFav && !rows.length && !term ? 'Nessun oggetto craftabile tra i preferiti: clicca la stellina accanto a un oggetto per aggiungerlo.' : CROWS.length ? `Nessun oggetto craftabile contiene "${term}".` : 'Dati di crafting non ancora disponibili.'; tr.appendChild(td); tb.replaceChildren(tr); return; }
+  if (!rows.length) { const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 7; td.className = 'empty'; td.textContent = onlyFav && !term ? 'Nessun oggetto craftabile tra i preferiti: clicca la stellina accanto a un oggetto per aggiungerlo.' : CROWS.length ? `Nessun oggetto craftabile contiene "${term}".` : 'Dati di crafting non ancora disponibili.'; tr.appendChild(td); tb.replaceChildren(tr); return; }
+  const coinCell = (tr, v, cls) => { const td = document.createElement('td'); if (cls) td.className = cls; if (v == null) td.textContent = '—'; else { const c = document.createElement('span'); c.className = 'coin'; td.append(c, document.createTextNode(fmtC(Math.round(v)))); } tr.appendChild(td); };
   tb.replaceChildren(...rows.map((r) => {
     const tr = document.createElement('tr'); tr.dataset.craft = r.name; if (r.name === pickedCraft) tr.classList.add('sel');
     const td0 = document.createElement('td'); td0.appendChild(craftBox(r)); tr.appendChild(td0);
     const cell = (t, c) => { const td = document.createElement('td'); if (c) td.className = c; td.textContent = t; tr.appendChild(td); return td; };
     cell(r.skill, 'hn');
-    const tc = cell('', 'dim'); const coin = document.createElement('span'); coin.className = 'coin'; tc.append(coin, document.createTextNode(fmtC(Math.round(r.cost))));
-    const te = cell('', ''); const coin2 = document.createElement('span'); coin2.className = 'coin'; te.append(coin2, document.createTextNode(fmtC(Math.round(r.est))));
-    const tm = cell('', ''); if (r.market != null) { const c2 = document.createElement('span'); c2.className = 'coin'; tm.append(c2, document.createTextNode(fmtC(r.market))); } else tm.textContent = 'Non in vendita';
+    coinCell(tr, r.cost, 'dim'); coinCell(tr, r.est, '');
+    if (r.market != null) coinCell(tr, r.market, ''); else cell('Non in vendita', '');
     cell(r.diff == null ? '—' : signed(r.diff), r.diff == null ? '' : r.diff > 0 ? 'up' : 'down');
     const ts = cell('', 'hn'); const sp = document.createElement('span'); sp.className = 'sig ' + (r.verdict === 'Craftalo' ? 'craftit' : r.verdict === 'Compralo' ? 'buyit' : 'na'); sp.textContent = r.verdict; ts.appendChild(sp);
     return tr;
   }));
 }
+const estLabel = (w) => w.mode === 'combo' ? `Costo stimato (combo ${Math.round(w.r.c * 100)}%)` : 'Costo stimato (con fallimenti)';
 function drawCraftDetail() {
   const cd = document.getElementById('craftdetail'), pick = document.getElementById('pick'), facts = document.getElementById('facts');
   document.getElementById('chart').replaceChildren();
   const r = CROWS.find((x) => x.name === pickedCraft);
   pick.hidden = facts.hidden = cd.hidden = !r;
   document.getElementById('hist-title').textContent = r ? 'Ricetta' : 'Crafting';
-  const when = CRAFTS?.captured_at ? fmtDT(CRAFTS.captured_at) : '—';
+  const when = SNAP ? fmtDT(SNAP) : '—';
   document.getElementById('hist-note').textContent = r ? '' : `Clicca un oggetto per vedere la ricetta e quanto costa craftarlo adesso. Prezzi dei materiali aggiornati: ${when}.`;
   if (!r) return;
   pick.replaceChildren(craftBox(r, true));
@@ -1231,65 +1316,58 @@ function drawCraftDetail() {
   const fb = document.createElement('button'); fb.type = 'button'; fb.className = 'favbig fav'; fb.dataset.fav = r.name;
   fb.innerHTML = (FAVS.has(r.name) ? STAR : STAR_O) + '<span>' + (FAVS.has(r.name) ? 'Nei preferiti — togli' : 'Aggiungi ai preferiti') + '</span>';
   pick.after(fb);
-  const f = [['Costo di 1 craft', fmtK(Math.round(r.cost))], [r.combo < 1 ? 'Costo stimato (combo 25%)' : 'Costo stimato (con fallimenti)', fmtK(Math.round(r.est))],
-    ['Differenza', '+' + fmtK(Math.round(r.est - r.cost)) + ' (×' + d3.format('.1f')(r.est / r.cost) + ')'], ['Prezzo Market', r.market == null ? 'Non in vendita' : fmtK(r.market)],
-    ['Risparmio craftando', r.diff == null ? '—' : signed(r.diff)], ['Profitto se lo rivendi', r.sell == null ? '—' : signed(r.sell)],
-    ['Professione', r.skill], ['Prezzi aggiornati', when]];
+  const f = [['Costo di 1 craft', r.cost == null ? '—' : fmtK(Math.round(r.cost))], [estLabel(r.way), r.est == null ? '—' : fmtK(Math.round(r.est))],
+    ['Prezzo Market', r.market == null ? 'Non in vendita' : fmtK(r.market)], ['Risparmio craftando', r.diff == null ? '—' : signed(r.diff)],
+    ['Profitto se lo rivendi', r.sell == null ? '—' : signed(r.sell)], ['Professione', r.skill], ['Prezzi aggiornati', when]];
   facts.replaceChildren(...f.map(([k, v]) => { const d = document.createElement('div'); d.textContent = k; const b = document.createElement('b'); b.textContent = v; d.appendChild(b); return d; }));
   cd.replaceChildren();
-  const gradeOf = (name, fallback) => ITEMS.find((x) => x.item === name)?.grade || fallback || 'white';
-  const st = recipeOf(r.target, r.tier);
-  // every step up to this tier, as collapsible boxes: the earlier tiers closed, the chosen one open
-  for (let tier = 1; tier <= r.tier; tier++) {
-    const tTier = r.target.tiers.find((x) => x.tier === tier);
-    const row = CROWS.find((x) => x.name === tTier?.name) || (tier === r.tier ? r : null);
-    const sti = recipeOf(r.target, tier);
-    if (!row || !sti) continue;
-    const box = document.createElement('details'); box.className = 'step'; box.open = tier === r.tier;
-    box.style.setProperty('--gc', `var(--g-${row.grade})`);
+  const gradeOf = (name) => ITEMS.find((x) => x.item === name)?.grade || RECIPES.grades?.[name] || 'white';
+  // the chain: ingredients that are cheaper to craft get their own (closed) step before the item itself
+  const steps = [], seen = new Set();
+  (function walk(w) {
+    if (!w || seen.has(w.name)) return; seen.add(w.name);
+    w.parts.forEach((p) => { if (p.src === 'craft') walk(p.way); });
+    steps.push(w);
+  })(r.way);
+  const stepNo = new Map(steps.map((w, k) => [w.name, k + 1]));
+  steps.forEach((w, k) => {
+    const main = k === steps.length - 1;
+    const box = document.createElement('details'); box.className = 'step'; box.open = main;
+    box.style.setProperty('--gc', `var(--g-${gradeOf(w.name)})`);
     const head = document.createElement('summary'); head.className = 'stephead';
     const chev = document.createElement('i'); chev.className = 'schev';
-    const badge = document.createElement('span'); badge.className = 'badge'; badge.textContent = `Passo ${tier}`;
-    const res = document.createElement('span'); res.className = 'res'; res.textContent = '1 × ' + row.name;
-    const sum = document.createElement('span'); sum.className = 'stot'; sum.textContent = fmtC(Math.round(row.cost));
+    const badge = document.createElement('span'); badge.className = 'badge'; badge.textContent = `Passo ${k + 1}`;
+    const res = document.createElement('span'); res.className = 'res'; res.textContent = `${w.mode === 'combo' ? 1 : w.r.q} × ${w.name}`;
+    const sum = document.createElement('span'); sum.className = 'stot'; sum.textContent = w.cost == null ? '—' : fmtC(Math.round(w.cost));
     head.append(chev, badge, res, sum);
     const tbl = document.createElement('table');
-    sti.materials.forEach((m) => {
-      const tr = tbl.insertRow(), price = matPrice(m);
-      const a = tr.insertCell(); const mat = document.createElement('div'); mat.className = 'mat';
-      const mg = gradeOf(m.name);
-      const slot = document.createElement('div'); slot.className = 'slot g-' + mg;
-      if (ICONS[m.name]) { const img = document.createElement('img'); img.src = ICONS[m.name]; img.alt = ''; img.loading = 'lazy'; slot.appendChild(img); }
-      const txt = document.createElement('div');
-      const nm = document.createElement('span'); nm.className = 'nm g-' + mg; nm.textContent = `${m.per_attempt} × ${m.name}`;
-      const v = document.createElement('span'); v.className = 'via'; v.textContent = price ? `${fmtK(price)} l'uno al Market` : 'Non in vendita';
-      txt.append(nm, v); mat.append(slot, txt); a.appendChild(mat);
-      const t = tr.insertCell(); t.className = 'n'; t.textContent = price ? fmtK(Math.round(m.per_attempt * price)) : '—';
-    });
-    if (row.prevName) {
+    w.parts.forEach((p) => {
       const tr = tbl.insertRow();
       const a = tr.insertCell(); const mat = document.createElement('div'); mat.className = 'mat';
-      const pg = gradeOf(row.prevName, TIER_GRADE[tier - 2]);
-      const slot = document.createElement('div'); slot.className = 'slot g-' + pg;
-      if (ICONS[row.prevName]) { const img = document.createElement('img'); img.src = ICONS[row.prevName]; img.alt = ''; img.loading = 'lazy'; slot.appendChild(img); }
+      const mg = gradeOf(p.name);
+      const slot = document.createElement('div'); slot.className = 'slot g-' + mg;
+      if (ICONS[p.name]) { const img = document.createElement('img'); img.src = ICONS[p.name]; img.alt = ''; img.loading = 'lazy'; slot.appendChild(img); }
       const txt = document.createElement('div');
-      const nm = document.createElement('span'); nm.className = 'nm g-' + pg; nm.textContent = `1 × ${row.prevName}`;
-      const v = document.createElement('span'); v.className = 'via'; v.textContent = row.prevBuy ? 'versione precedente · conviene comprarla al Market' : `versione precedente · conviene craftarla (passo ${tier - 1})`;
+      const nm = document.createElement('span'); nm.className = 'nm g-' + mg; nm.textContent = `${p.q} × ${p.name}`;
+      const v = document.createElement('span'); v.className = 'via';
+      v.textContent = !isFinite(p.price) ? 'Prezzo non disponibile' : p.src === 'market' ? `${fmtK(Math.round(p.price))} l'uno al Market`
+        : p.src === 'npc' ? `${fmtK(Math.round(p.price))} l'uno dal negozio NPC` : `${fmtK(Math.round(p.price))} l'uno craftandolo (passo ${stepNo.get(p.name)})`;
       txt.append(nm, v); mat.append(slot, txt); a.appendChild(mat);
-      const t = tr.insertCell(); t.className = 'n'; t.textContent = fmtK(Math.round(row.prevIn));
-    }
-    const tot = tbl.insertRow(); tot.className = 'tot'; const c1 = tot.insertCell(); c1.textContent = 'Totale'; const c2 = tot.insertCell(); c2.className = 'n'; c2.textContent = fmtK(Math.round(row.cost));
-    const est = tbl.insertRow(); est.className = 'est'; const e1 = est.insertCell(); e1.textContent = row.combo < 1 ? 'Costo stimato (combo 25%)' : 'Costo stimato (con fallimenti)'; const e2 = est.insertCell(); e2.className = 'n'; e2.textContent = fmtK(Math.round(row.est));
-    box.append(head, tbl); cd.appendChild(box);
-  }
-  const n = document.createElement('p'); n.className = 'note';
-  const tries = 1 / r.chance;
-  n.textContent = `Costo di 1 craft: le quantità della ricetta ai prezzi più bassi di adesso al Market${r.prevName ? ', più la versione precedente' : ''}. ` +
-    (r.combo < 1 ? `L'oggetto però esce solo con la combo (25%) di un craft riuscito (${fmtPct(st.success_rate)}): in media serve 1 craft su ${d3.format('.1f')(tries)}, quindi il costo stimato è ${d3.format('.1f')(tries)} volte i materiali`
-      : `Il craft riesce il ${fmtPct(st.success_rate)} delle volte: il costo stimato conta anche i tentativi falliti`) +
-    (r.prevName ? `. Ogni craft usa anche 1 ${r.prevName} (la versione precedente), contata a ${fmtK(Math.round(r.prevIn))}: il prezzo più basso tra comprarla e craftarla.` : '.') +
-    ` Ricette: aion2.exchange (dai file del gioco).`;
-  cd.appendChild(n);
+      const t = tr.insertCell(); t.className = 'n'; t.textContent = isFinite(p.price) ? fmtK(Math.round(p.q * p.price)) : '—';
+    });
+    const tot = tbl.insertRow(); tot.className = 'tot'; const c1 = tot.insertCell(); c1.textContent = 'Totale'; const c2 = tot.insertCell(); c2.className = 'n'; c2.textContent = w.cost == null ? '—' : fmtK(Math.round(w.cost));
+    const est = tbl.insertRow(); est.className = 'est'; const e1 = est.insertCell(); e1.textContent = estLabel(w) + (w.mode !== 'combo' && w.r.q > 1 ? ', a pezzo' : ''); const e2 = est.insertCell(); e2.className = 'n'; e2.textContent = w.est == null ? '—' : fmtK(Math.round(w.est));
+    const info = document.createElement('p'); info.className = 'stepinfo';
+    info.textContent = w.mode === 'combo' ? `Esce solo con la combo (${Math.round(w.r.c * 100)}%) di un craft riuscito (${fmtPct(w.r.ok)}): in media 1 craft su ${d3.format('.1f')(1 / w.per)}.`
+      : `Il craft riesce il ${fmtPct(w.r.ok)} delle volte: il costo stimato conta anche i tentativi falliti.` + (w.r.q > 1 ? ` Ogni craft ne produce ${w.r.q}.` : '');
+    box.append(head, tbl, info); cd.appendChild(box);
+  });
+  const n1 = document.createElement('p'); n1.className = 'note';
+  n1.textContent = 'Costo di 1 craft: le quantità della ricetta ai prezzi di adesso, per ogni ingrediente il più conveniente tra Market, negozio NPC e craftarlo.';
+  const n2 = document.createElement('p'); n2.className = 'note';
+  const a = Object.assign(document.createElement('a'), {href: RECIPES.url || 'https://metabot.gg/en/aion-2/crafting', target: '_blank', textContent: 'MetaBot.GG'});
+  n2.append('Ricette e prezzi NPC: ', a, ' (dai file del gioco).');
+  cd.append(n1, n2);
 }
 document.querySelectorAll('#crafttab th button').forEach((b) => b.addEventListener('click', () => {
   const k = b.dataset.c; if (cSortK === k) cSortDir = -cSortDir; else { cSortK = k; cSortDir = (k === 'name' || k === 'skill' || k === 'verdict') ? 1 : -1; } drawCraft();
@@ -1521,9 +1599,9 @@ if (sb) {
 }
 paintAcct();
 Promise.all([get('data/settings.json'), get('data/icons.json').catch(() => ({})), get('data/servers.json').catch(() => [{id: 12305, name: 'Marchutan'}]),
-  LANG === 'fr' ? get('data/names_fr.json').catch(() => ({})) : {}])
-  .then(([settings, icons, servers, names]) => {
-    S = settings[0] || settings; ICONS = icons; NAMES = names || {}; Object.assign(DICT, NAMES);
+  LANG === 'fr' ? get('data/names_fr.json').catch(() => ({})) : {}, get('data/recipes.json').catch(() => null)])
+  .then(([settings, icons, servers, names, recipes]) => {
+    S = settings[0] || settings; ICONS = icons; NAMES = names || {}; Object.assign(DICT, NAMES); RECIPES = recipes;
     if (LANG === 'fr') {      // credit for the French item names (followed link, as MetaBot.GG asks)
       const a = Object.assign(document.createElement('a'), {href: 'https://metabot.gg/fr_FR/aion-2/items', target: '_blank', textContent: 'MetaBot.GG'});
       document.querySelector('footer').append(' Noms des objets en français : ', a, '.');

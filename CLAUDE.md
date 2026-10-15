@@ -13,12 +13,13 @@ Icons: the 'Official icons' workflow (scripts/official_icons.py) maps item name 
 assets.playnccdn.com. Re-run it (gh api -X POST .../actions/workflows/icons.yml/dispatches -f ref=main) when new items appear.
 data/icons_meta.json lists items without an official icon (mostly white materials): those keep video crops cleaned by clean_icon.py.
 Grade/level/category are shared across servers via data/catalog.json (rebuilt each run from all logs; video rows win).
-The same run saves data/s/<id>/crafts.json (Marchutan every run, other servers every 6 h, staggered) (/api/crafts + /api/crafts/{key}, without the heavy 'series'): the Artisan's Splendent lines,
-3 tiers each, with per-step materials (expected quantities, unit price, method buy/craft/morph). The page's "Crafting" view
-(sidebar, SEL.type 'craft') lists every tier with the cost of ONE craft (that tier's recipe: per_attempt quantities × today's lowest Market price,
-from tier 2 every craft also uses 1 item of the tier before ("versione precedente", cheaper of buy/craft, own row in the recipe);
-'Costo stimato' = (materials + previous version) / (success × combo 25% for tiers 2-3);
-not the API's expected-attempts cost) vs Market price, and shows that recipe when clicked. Favourites work there too.
+The same run saves data/s/<id>/crafts.json (aion2.exchange's 19 Splendent lines; no longer used by the page).
+Crafting view: data/recipes.json, from the weekly 'Recipes' workflow (scripts/recipes.py): all 256 Asmodian recipes of MetaBot.GG's
+crafting calculator (game files; recipe id 2nd digit 2 = Asmodian), success at max mastery, combo %, combo product ('Splendent X',
+which is what the next tier needs, e.g. Truth Orb recipe -> combo -> Splendent Truth Orb), and NPC prices of '(Bound)' shop items.
+craftEngine() in index.html: each item's unit price = cheapest of Market / NPC shop / crafting it (recursive); 'Costo 1 craft' =
+recipe parts at those prices; 'Costo stimato' = cost / (success x qty) for the product, / (success x combo) for the combo product.
+The detail shows the chain (ingredients cheaper to craft get their own closed step). MetaBot.GG is credited with a followed link.
 Sales: the sync saves data/s/<id>/sales.json (real 28-day units sold / avg price, only for items the API has stats for — none on
 Marchutan yet). computeItems uses them as reference price and sales/day; otherwise sales/day is estimated from listing drops
 between API rows of the last 3 days ("~" in the table). "Compra" needs >= settings.min_sales_per_day. The top bar is a ticker of
