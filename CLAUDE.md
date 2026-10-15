@@ -96,4 +96,5 @@ or with /avviso aggiungi|lista (select menu removes). An admin runs /avvisi-cana
 The Worker cron (*/15) reads all_alerts() and posts '<@user>' + item card once per crossing (KV alert_state; re-arms when the price
 goes back). SQL functions alerts_by_discord / set_alerts_by_discord / all_alerts are in bot/supabase.sql (service_role only).
 The Worker also has the DISCORD_TOKEN secret (to post messages).
+/chisiamo answers '# LA LEGIONE' (guild joke; the bot can't read plain chat messages, slash commands only).
 To limit the bot to one channel: Discord server settings → Integrations → the bot → channels (no code).

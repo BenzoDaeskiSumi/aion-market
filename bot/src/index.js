@@ -358,6 +358,7 @@ export default {
       if (i.type === 2) {
         if (i.data.name === 'prezzo') return await prezzo(i, env);
         if (i.data.name === 'affari') return await affari(i, env);
+        if (i.data.name === 'chisiamo') return reply({content: '# LA LEGIONE'});
         if (i.data.name === 'server') return await setServer(i, env);
         if (i.data.name === 'avviso') return await avviso(i, env);
         if (i.data.name === 'avvisi-canale') return await alertChannel(i, env);
