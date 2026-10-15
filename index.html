@@ -464,7 +464,7 @@ footer { padding: 6px 16px 24px; font-size: 13px; text-shadow: none; }
           <thead><tr>
             <th><button data-c="name">Oggetto</button></th>
             <th class="hn"><button data-c="skill">Professione</button></th>
-            <th><button data-c="cost">Costo crafting</button></th>
+            <th><button data-c="cost">Costo 1 craft</button></th>
             <th><button data-c="market">Prezzo Market</button></th>
             <th><button data-c="diff">Risparmio</button></th>
             <th class="hn"><button data-c="verdict">Conviene</button></th>
@@ -844,12 +844,21 @@ document.getElementById('ranges').addEventListener('click', (e) => {
 
 /* ---------- crafting ---------- */
 const TIER_GRADE = ['green', 'blue', 'gold'];
+// price of one material now: our latest Market price on this server, else the one in the crafting data
+function matPrice(m) {
+  const it = ITEMS.find((x) => x.item === m.name);
+  return it?.available ? it.latest : (m.listing_price ?? m.unit_price ?? null);
+}
+// exact cost of ONE craft of a tier: its recipe (quantities per craft) at today's prices
+const recipeOf = (t, tier) => t.steps.find((st) => st.step_no === tier) || t.steps.find((st) => st.result_name === t.tiers?.[tier - 1]?.name);
+const recipeCost = (st) => st ? d3.sum(st.materials, (m) => m.per_attempt * (matPrice(m) || 0)) : null;
 function buildCraftRows() {
   const seen = new Map(), tax = +S.tax_rate;
   (CRAFTS?.targets || []).forEach((t) => (t.tiers || []).forEach((tr) => {
     if (seen.has(tr.name)) return;
     const it = ITEMS.find((x) => x.item === tr.name);
-    const market = tr.market_price ?? null, cost = tr.cost;
+    const market = it?.available ? it.latest : (tr.market_price ?? null), st = recipeOf(t, tr.tier), cost = recipeCost(st);
+    if (cost == null) return;
     seen.set(tr.name, { name: tr.name, tier: tr.tier, target: t, skill: t.skill, line: t.profile_label, cost, market,
       grade: it?.grade || TIER_GRADE[tr.tier - 1] || 'white', level: it?.level ?? null,
       diff: market != null ? market - cost : null, sell: market != null ? market * (1 - tax) - cost : null,
@@ -857,19 +866,19 @@ function buildCraftRows() {
   }));
   return [...seen.values()];
 }
-function craftBox(r) {
+function craftBox(r, noFav) {
   const it = document.createElement('div'); it.className = 'it';
   const slot = document.createElement('div'); slot.className = 'slot g-' + r.grade;
   if (ICONS[r.name]) { const img = document.createElement('img'); img.src = ICONS[r.name]; img.alt = ''; img.loading = 'lazy'; img.width = 40; img.height = 40; slot.appendChild(img); }
   const txt = document.createElement('div');
   const nm = document.createElement('span'); nm.className = 'nm g-' + r.grade; nm.textContent = r.name;
   const ct = document.createElement('span'); ct.className = 'ct'; ct.textContent = r.line + ' · passo ' + r.tier + ' di 3' + (r.level ? ' · Lv ' + r.level : '');
-  txt.append(nm, ct); it.append(slot, txt); return it;
+  txt.append(nm, ct); noFav ? it.append(slot, txt) : it.append(favBtn(r.name), slot, txt); return it;
 }
 const signed = (v) => (v > 0 ? '+' : v < 0 ? '−' : '') + fmtC(Math.abs(Math.round(v)));
 function drawCraft() {
   const term = document.getElementById('q').value.trim().toLowerCase();
-  const rows = CROWS.filter((r) => inCSel(r)) .filter((r) => !term || (r.name + ' ' + r.skill + ' ' + r.line).toLowerCase().includes(term)).sort((a, b) => {
+  const rows = CROWS.filter((r) => inCSel(r) && (!onlyFav || FAVS.has(r.name))).filter((r) => !term || (r.name + ' ' + r.skill + ' ' + r.line).toLowerCase().includes(term)).sort((a, b) => {
     const x = a[cSortK], y = b[cSortK];
     if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
     return (typeof x === 'string' ? x.localeCompare(y) : x - y) * cSortDir;
@@ -880,7 +889,7 @@ function drawCraft() {
     th.querySelector('button').classList.toggle('on', k === cSortK);
   });
   const tb = document.getElementById('crows');
-  if (!rows.length) { const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 6; td.className = 'empty'; td.textContent = CROWS.length ? `Nessun oggetto craftabile contiene "${term}".` : 'Dati di crafting non ancora disponibili.'; tr.appendChild(td); tb.replaceChildren(tr); return; }
+  if (!rows.length) { const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 6; td.className = 'empty'; td.textContent = onlyFav && !rows.length && !term ? 'Nessun oggetto craftabile tra i preferiti: clicca la stellina accanto a un oggetto per aggiungerlo.' : CROWS.length ? `Nessun oggetto craftabile contiene "${term}".` : 'Dati di crafting non ancora disponibili.'; tr.appendChild(td); tb.replaceChildren(tr); return; }
   tb.replaceChildren(...rows.map((r) => {
     const tr = document.createElement('tr'); tr.dataset.craft = r.name; if (r.name === pickedCraft) tr.classList.add('sel');
     const td0 = document.createElement('td'); td0.appendChild(craftBox(r)); tr.appendChild(td0);
@@ -900,47 +909,43 @@ function drawCraftDetail() {
   pick.hidden = facts.hidden = cd.hidden = !r;
   document.getElementById('hist-title').textContent = r ? 'Ricetta' : 'Crafting';
   const when = CRAFTS?.captured_at ? fmtDT(CRAFTS.captured_at) : '—';
-  document.getElementById('hist-note').textContent = r ? '' : `Clicca un oggetto per vedere i materiali di ogni passo e quanto costano adesso. Prezzi dei materiali aggiornati: ${when}.`;
+  document.getElementById('hist-note').textContent = r ? '' : `Clicca un oggetto per vedere la ricetta e quanto costa craftarlo adesso. Prezzi dei materiali aggiornati: ${when}.`;
   if (!r) return;
-  pick.replaceChildren(craftBox(r));
-  const f = [['Costo crafting', fmtK(Math.round(r.cost))], ['Prezzo Market', r.market == null ? 'Non in vendita' : fmtK(r.market)],
+  pick.replaceChildren(craftBox(r, true));
+  document.querySelectorAll('.aside .favbig').forEach((x) => x.remove());
+  const fb = document.createElement('button'); fb.type = 'button'; fb.className = 'favbig fav'; fb.dataset.fav = r.name;
+  fb.innerHTML = (FAVS.has(r.name) ? STAR : STAR_O) + '<span>' + (FAVS.has(r.name) ? 'Nei preferiti — togli' : 'Aggiungi ai preferiti') + '</span>';
+  pick.after(fb);
+  const f = [['Costo di 1 craft', fmtK(Math.round(r.cost))], ['Prezzo Market', r.market == null ? 'Non in vendita' : fmtK(r.market)],
     ['Risparmio craftando', r.diff == null ? '—' : signed(r.diff)], ['Profitto se lo rivendi', r.sell == null ? '—' : signed(r.sell)],
     ['Professione', r.skill], ['Prezzi aggiornati', when]];
   facts.replaceChildren(...f.map(([k, v]) => { const d = document.createElement('div'); d.textContent = k; const b = document.createElement('b'); b.textContent = v; d.appendChild(b); return d; }));
-  const METHOD = {buy: 'compralo', craft: 'craftalo da', morph: 'trasmutalo da'};
-  const fmtQ = (q) => q >= 10 ? fmtK(Math.round(q)) : d3.format('.1f')(q);
   cd.replaceChildren();
   const gradeOf = (name, fallback) => ITEMS.find((x) => x.item === name)?.grade || fallback || 'white';
-  r.target.steps.filter((st) => st.step_no <= r.tier).forEach((st) => {
-    const g = gradeOf(st.result_name, TIER_GRADE[st.step_no - 1]);
-    const box = document.createElement('details'); box.className = 'step'; box.open = true; box.style.setProperty('--gc', `var(--g-${g})`);
-    const head = document.createElement('summary'); head.className = 'stephead';
-    const badge = document.createElement('span'); badge.className = 'badge'; badge.textContent = `Passo ${st.step_no}`;
-    const res = document.createElement('span'); res.className = 'res'; res.textContent = st.result_name;
-    const sum = document.createElement('span'); sum.className = 'stot'; sum.textContent = fmtC(Math.round(st.step_cost));
-    const chev = document.createElement('i'); chev.className = 'schev';
-    head.append(chev, badge, res, sum);
-    const info = document.createElement('p'); info.className = 'stepinfo';
-    info.textContent = `Maestria ${st.mastery_level} · successo ${fmtPct(st.success_rate)} · in media ${d3.format('.1f')(st.attempts)} tentativi`;
-    const tbl = document.createElement('table');
-    st.materials.forEach((m) => {
-      const tr = tbl.insertRow();
-      const a = tr.insertCell(); const mat = document.createElement('div'); mat.className = 'mat';
-      const mg = gradeOf(m.name);
-      const slot = document.createElement('div'); slot.className = 'slot g-' + mg;
-      if (ICONS[m.name]) { const img = document.createElement('img'); img.src = ICONS[m.name]; img.alt = ''; img.loading = 'lazy'; slot.appendChild(img); }
-      const txt = document.createElement('div');
-      const nm = document.createElement('span'); nm.className = 'nm g-' + mg; nm.textContent = m.name;
-      const v = document.createElement('span'); v.className = 'via';
-      v.textContent = `× ${fmtQ(m.expected)} da ${fmtK(Math.round(m.unit_price))} · ${m.per_attempt} a tentativo · ${METHOD[m.method] || m.method}` + (m.via?.length ? ' ' + m.via.map((x) => `${d3.format('.1f')(x.per_unit)} ${x.name}`).join(' + ') : '') + (m.method !== 'buy' && m.listing_price ? ` (al Market ${fmtK(m.listing_price)})` : '');
-      txt.append(nm, v); mat.append(slot, txt); a.appendChild(mat);
-      const t = tr.insertCell(); t.className = 'n'; t.textContent = fmtK(Math.round(m.subtotal));
-    });
-    const tot = tbl.insertRow(); tot.className = 'tot'; const c1 = tot.insertCell(); c1.textContent = 'Totale passo'; const c2 = tot.insertCell(); c2.className = 'n'; c2.textContent = fmtK(Math.round(st.step_cost));
-    box.append(head, info, tbl); cd.appendChild(box);
+  const st = recipeOf(r.target, r.tier);
+  const box = document.createElement('div'); box.className = 'step'; box.style.setProperty('--gc', `var(--g-${r.grade})`);
+  const head = document.createElement('div'); head.className = 'stephead';
+  const badge = document.createElement('span'); badge.className = 'badge'; badge.textContent = 'Ricetta';
+  const res = document.createElement('span'); res.className = 'res'; res.textContent = '1 × ' + r.name;
+  const sum = document.createElement('span'); sum.className = 'stot'; sum.textContent = fmtC(Math.round(r.cost));
+  head.append(badge, res, sum);
+  const tbl = document.createElement('table');
+  st.materials.forEach((m) => {
+    const tr = tbl.insertRow(), price = matPrice(m);
+    const a = tr.insertCell(); const mat = document.createElement('div'); mat.className = 'mat';
+    const mg = gradeOf(m.name);
+    const slot = document.createElement('div'); slot.className = 'slot g-' + mg;
+    if (ICONS[m.name]) { const img = document.createElement('img'); img.src = ICONS[m.name]; img.alt = ''; img.loading = 'lazy'; slot.appendChild(img); }
+    const txt = document.createElement('div');
+    const nm = document.createElement('span'); nm.className = 'nm g-' + mg; nm.textContent = `${m.per_attempt} × ${m.name}`;
+    const v = document.createElement('span'); v.className = 'via'; v.textContent = price ? `${fmtK(price)} l'uno al Market` : 'Non in vendita';
+    txt.append(nm, v); mat.append(slot, txt); a.appendChild(mat);
+    const t = tr.insertCell(); t.className = 'n'; t.textContent = price ? fmtK(Math.round(m.per_attempt * price)) : '—';
   });
+  const tot = tbl.insertRow(); tot.className = 'tot'; const c1 = tot.insertCell(); c1.textContent = 'Totale'; const c2 = tot.insertCell(); c2.className = 'n'; c2.textContent = fmtK(Math.round(r.cost));
+  box.append(head, tbl); cd.appendChild(box);
   const n = document.createElement('p'); n.className = 'note';
-  n.textContent = 'Quantità e costi sono medie attese: contano i tentativi falliti, con maestria al massimo. Ogni materiale è al prezzo più conveniente tra comprarlo, craftarlo o trasmutarlo da Odyle. Dati: aion2.exchange (ricette dai file del gioco).';
+  n.textContent = `Costo di un singolo craft: le quantità della ricetta per i prezzi più bassi di adesso al Market. Successo del craft: ${fmtPct(st.success_rate)} (maestria ${st.mastery_level}). Ricette: aion2.exchange (dai file del gioco).`;
   cd.appendChild(n);
 }
 document.querySelectorAll('#crafttab th button').forEach((b) => b.addEventListener('click', () => {
