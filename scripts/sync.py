@@ -151,6 +151,30 @@ def write_summary(server, log, sales, settings, snap=None):
                      't': (snap if snap and last.get('screenshot') == 'aion2.exchange' and snap > lt else lt).isoformat()}
     with open(path(server, 'summary.json'), 'w', encoding='utf-8') as f:
         json.dump(out, f, ensure_ascii=False, separators=(',', ':'))
+    # light price history for the bot's charts: last price every 6 h for 7 days ('w') and every day for 30 days ('m'),
+    # times in hours since the epoch; the last point is extended to the latest check (the price still holds)
+    end = snap or max((rs[-1][0] for rs in by.values()), default=None)
+    hist = {}
+    for item, rs in by.items():
+        sold = [(t, e['lowest_price']) for t, e in rs if e['lowest_price'] > 0]
+        if not sold:
+            continue
+        h = {}
+        for key, days, step in (('w', 7, 6), ('m', 30, 24)):
+            buckets = {}
+            for t, p in sold:
+                if (end - t).total_seconds() <= days * 86400:
+                    hrs = int(t.timestamp() // 3600)
+                    buckets[hrs - hrs % step] = (hrs, p)
+            pts = [list(v) for _, v in sorted(buckets.items())]
+            if pts and rs[-1][1]['lowest_price'] > 0 and int(end.timestamp() // 3600) > pts[-1][0]:
+                pts.append([int(end.timestamp() // 3600), pts[-1][1]])
+            if len(pts) >= 2:
+                h[key] = pts
+        if h:
+            hist[item] = h
+    with open(path(server, 'hist.json'), 'w', encoding='utf-8') as f:
+        json.dump(hist, f, ensure_ascii=False, separators=(',', ':'))
 
 
 def sync_server(server, name, catalog, fam, health):

@@ -21,6 +21,7 @@ async function json(env, file, ttl) {
 }
 const summary = (env, sid) => json(env, `data/s/${sid}/summary.json`, 300);
 const servers = (env) => json(env, 'data/servers.json', 3600).catch(() => [{id: 12305, name: 'Marchutan'}]);
+const hist = (env, sid) => json(env, `data/s/${sid}/hist.json`, 300).catch(() => ({}));
 const icons = (env) => json(env, 'data/icons.json', 3600).catch(() => ({}));
 
 // ---------- request signature (required by Discord) ----------
@@ -84,6 +85,56 @@ function itemEmbed(name, r, sid, sname, ico, env) {
     footer: {text: `${sname} · Asmodian · dati aion2.exchange`}, timestamp: r.t,
   };
 }
+// ---------- price chart (image drawn by QuickChart from the light history in hist.json) ----------
+const VIEWS = {card: '📋 Scheda', w: '📈 7 giorni', m: '📈 30 giorni'};
+const kShort = (v) => v >= 1e6 ? `${(v / 1e6).toLocaleString('it-IT', {maximumFractionDigits: v >= 1e7 ? 0 : 2})}M` : v >= 1e3 ? `${Math.round(v / 1e3)}K` : String(v);
+async function chartUrl(pts, avg, color) {
+  const day = (h) => new Date(h * 36e5).toLocaleDateString('it-IT', {timeZone: 'Europe/Rome', day: '2-digit', month: '2-digit'});
+  // one label per day (the 6-hour points of the 7-day chart would repeat the same date)
+  const labels = pts.map(([h], k) => (k && day(pts[k - 1][0]) === day(h) ? '' : day(h))), vals = pts.map(([, p]) => p);
+  const skip = labels.some((l) => !l) ? 'autoSkip:false,' : '';
+  const line = '#' + color.toString(16).padStart(6, '0');
+  const cfg = `{type:'line',data:{labels:${JSON.stringify(labels)},datasets:[` +
+    `{data:${JSON.stringify(vals)},borderColor:'${line}',backgroundColor:'${line}33',fill:true,borderWidth:3,lineTension:0.25,pointRadius:${vals.length <= 14 ? 3 : 0},pointBackgroundColor:'${line}'}` +
+    (avg ? `,{data:${JSON.stringify(vals.map(() => avg))},borderColor:'#9aa3b5',borderDash:[6,5],borderWidth:1.5,pointRadius:0,fill:false}` : '') +
+    `]},options:{legend:{display:false},layout:{padding:{left:6,right:16,top:14,bottom:4}},scales:{` +
+    `xAxes:[{gridLines:{display:false},ticks:{${skip}fontColor:'#9aa3b5',fontSize:14,maxTicksLimit:7,maxRotation:0,autoSkipPadding:18}}],` +
+    `yAxes:[{gridLines:{color:'rgba(154,163,181,0.18)',zeroLineColor:'rgba(0,0,0,0)',drawBorder:false},ticks:{fontColor:'#9aa3b5',fontSize:14,maxTicksLimit:5,padding:8,` +
+    `callback:(v)=>v>=1e6?(v/1e6).toFixed(v>=1e7?0:2).replace('.',',')+'M':v>=1e3?Math.round(v/1e3)+'K':v}}]}}}`;
+  const url = `https://quickchart.io/chart?w=720&h=320&devicePixelRatio=2&bkg=transparent&c=${encodeURIComponent(cfg)}`;
+  if (url.length <= 2000) return url;
+  const r = await fetch('https://quickchart.io/chart/create', {method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({chart: cfg, width: 720, height: 320, devicePixelRatio: 2, backgroundColor: 'transparent'})});
+  return r.ok ? (await r.json()).url : null;
+}
+async function chartEmbed(name, r, h, view, sid, sname, ico, env) {
+  const pts = h?.[view];
+  const [, color] = GRADE[r?.g] || GRADE.white;
+  const base = {title: name, url: itemUrl(env, sid, name), color, thumbnail: {url: `${env.SITE}/${ico[name] || `icons/${slug(name)}.png`}`},
+    footer: {text: `${sname} · Asmodian · dati aion2.exchange`}, timestamp: r?.t};
+  const span = view === 'w' ? 'ultimi 7 giorni' : 'ultimi 30 giorni';
+  if (!pts || pts.length < 2) return {...base, description: `📈 Non ci sono abbastanza prezzi negli ${span} per un grafico.`};
+  const vals = pts.map(([, p]) => p), lo = Math.min(...vals), hi = Math.max(...vals), first = vals[0], last = vals[vals.length - 1];
+  const url = await chartUrl(pts, r?.a, 0x5b8cff);
+  const ch = first ? (last - first) / first : 0;
+  return {...base, description: `📈 **Prezzo più basso**, ${span}` + (r?.a ? ` · tratteggio = media 3 giorni (${kin(r.a)})` : ''),
+    fields: [
+      {name: 'Adesso', value: r?.p > 0 ? `**${kin(r.p)}**` : 'Non in vendita', inline: true},
+      {name: 'Minimo', value: kin(lo), inline: true},
+      {name: 'Massimo', value: kin(hi), inline: true},
+      {name: 'Variazione', value: `${ch > 0 ? '▲ +' : ch < 0 ? '▼ ' : ''}${pct(ch)}`, inline: true},
+    ], image: url ? {url} : undefined};
+}
+// view buttons under a card: the current one is highlighted and disabled
+const viewRow = (prefix, view) => ({type: 1, components: Object.entries(VIEWS).map(([v, label]) =>
+  ({type: 2, style: v === view ? 1 : 2, label, custom_id: `${prefix}:${v}`, disabled: v === view}))});
+async function itemView(name, sid, view, env) {
+  const [sum, srv, ico, hs] = await Promise.all([summary(env, sid), servers(env), icons(env), view === 'card' ? null : hist(env, sid)]);
+  const r = sum[name], sname = serverName(srv, sid);
+  if (view === 'card' || !hs) return r ? itemEmbed(name, r, sid, sname, ico, env) : {title: name, url: itemUrl(env, sid, name), color: 0x5b8cff, description: `Nessun dato per questo oggetto su ${sname}.`};
+  return chartEmbed(name, r, hs[name], view, sid, sname, ico, env);
+}
+
 const itemUrl = (env, sid, name) => `${env.SITE}/?s=${sid}&item=${encodeURIComponent(name)}`;
 const serverName = (srv, sid) => srv.find((s) => s.id === sid)?.name || String(sid);
 
@@ -93,7 +144,16 @@ async function prezzo(i, env) {
   const [sum, srv, ico] = await Promise.all([summary(env, sid), servers(env), icons(env)]);
   const name = sum[q] ? q : search(Object.entries(sum), q, 1)[0];
   if (!name) return oops(`Non trovo **${q}** sul market. Scegli un nome dai suggerimenti mentre scrivi.`);
-  return reply({embeds: [itemEmbed(name, sum[name], sid, serverName(srv, sid), ico, env)]});
+  return reply({embeds: [itemEmbed(name, sum[name], sid, serverName(srv, sid), ico, env)], components: [viewRow(`pv:${userId(i)}:${sid}`, 'card')]});
+}
+// view buttons of /prezzo: the item is the card's title; only who asked can switch (one message, no spam)
+async function prezzoView(i, env) {
+  const [, owner, sid, view] = i.data.custom_id.split(':');
+  if (userId(i) !== owner) return oops('Usa /prezzo per aprire la tua scheda: questi pulsanti sono di chi ha fatto la richiesta.');
+  const name = i.message?.embeds?.[0]?.title;
+  if (!name) return oops('Non trovo più l\'oggetto di questa scheda: rifai /prezzo.');
+  const embed = await itemView(name, +sid, view, env);
+  return Response.json({type: 7, data: {embeds: [embed], components: [viewRow(`pv:${owner}:${sid}`, view)]}});
 }
 
 // ---------- /preferiti: the favourites saved on the site (Discord login), one card at a time with arrows ----------
@@ -109,22 +169,19 @@ async function rpc(env, fn, args) {
   return r.json();
 }
 const profile = async (env, uid) => (await rpc(env, 'favorites_by_discord', {did: uid}))[0] || null;
-async function favPage(env, uid, sid, idx) {
+async function favPage(env, uid, sid, idx, view = 'card') {
   const prof = await profile(env, uid);
   const favs = (prof?.favorites || []).slice().sort((a, b) => a.localeCompare(b));
   if (!favs.length) return null;
   sid = sid || prof.server_id || +env.DEFAULT_SERVER;
-  const [sum, srv, ico] = await Promise.all([summary(env, sid), servers(env), icons(env)]);
   const n = favs.length, i = ((idx % n) + n) % n, name = favs[i];
-  const r = sum[name];
-  const embed = r ? itemEmbed(name, r, sid, serverName(srv, sid), ico, env)
-    : {title: name, url: itemUrl(env, sid, name), color: 0x5b8cff, description: `Nessun dato per questo oggetto su ${serverName(srv, sid)}.`};
+  const embed = await itemView(name, sid, view, env);
   embed.author = {name: `Preferiti · ${i + 1} di ${n}`};
-  const btn = (to, label, style = 2) => ({type: 2, style, label, custom_id: `fav:${uid}:${sid}:${to}:${label}`, disabled: n < 2});
+  const btn = (to, label) => ({type: 2, style: 2, label, custom_id: `fav:${uid}:${sid}:${to}:${view}:${label}`, disabled: n < 2});
   return {embeds: [embed], components: [{type: 1, components: [
     btn(i - 1, '◀'), {type: 2, style: 2, label: `${i + 1} / ${n}`, custom_id: `fav:noop:${uid}`, disabled: true}, btn(i + 1, '▶'),
     {type: 2, style: 5, label: 'Apri sul sito', url: itemUrl(env, sid, name)},
-  ]}]};
+  ]}, viewRow(`fav:${uid}:${sid}:${i}`, view)]};
 }
 async function preferiti(i, env) {
   const uid = userId(i), srv = opt(i.data, 'server')?.value || await savedServer(i, env);
@@ -133,10 +190,10 @@ async function preferiti(i, env) {
   return reply(page);
 }
 async function favButton(i, env) {
-  const [, owner, sid, idx] = i.data.custom_id.split(':');
+  const [, owner, sid, idx, view] = i.data.custom_id.split(':');
   const uid = userId(i);
   if (uid !== owner) return oops('Questi sono i preferiti di un altro utente: usa /preferiti per vedere i tuoi.');
-  const page = await favPage(env, owner, +sid, +idx);
+  const page = await favPage(env, owner, +sid, +idx, VIEWS[view] ? view : 'card');
   if (!page) return Response.json({type: 7, data: {content: 'Nessun preferito.', embeds: [], components: []}});
   return Response.json({type: 7, data: page});                      // 7 = edit the same message, no new posts
 }
@@ -307,6 +364,7 @@ export default {
         if (i.data.name === 'preferiti') return await preferiti(i, env);
       }
       if (i.type === 3 && i.data.custom_id?.startsWith('fav:')) return await favButton(i, env);
+      if (i.type === 3 && i.data.custom_id?.startsWith('pv:')) return await prezzoView(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('alrm:')) return await alertRemove(i, env);
       return oops('Comando sconosciuto.');
     } catch (e) {

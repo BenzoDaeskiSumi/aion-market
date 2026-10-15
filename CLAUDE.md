@@ -83,6 +83,10 @@ namespace 'aion-market-bot-users' created by bot.yml; precedence: command option
 edit the same message, only the owner can press them). /preferiti reads Supabase through the SQL function in bot/supabase.sql
 (favorites_by_discord, Discord id -> favourites via auth.identities; only service_role may execute it). It reads data/s/<id>/summary.json (per-item snapshot written by sync.py's
 write_summary, same rules as computeItems — keep the two in sync) plus data/icons.json / data/servers.json from GitHub Pages.
+Charts: /prezzo and /preferiti cards have view buttons '📋 Scheda / 📈 7 giorni / 📈 30 giorni' (custom_id pv:<uid>:<sid>:<view>,
+item = the embed title; fav:<uid>:<sid>:<idx>:<view>) that edit the same message. Chart images are drawn by QuickChart.io (Chart.js v2 config
+in the URL, or /chart/create when too long) from data/s/<id>/hist.json (written by write_summary: 6-hour points for 7 days 'w',
+daily for 30 days 'm', [hours since epoch, price], last point extended to the latest check).
 Embed links open the page at ?s=<server>&item=<name> (deep link handled at page start-up).
 .github/workflows/bot.yml deploys it (wrangler-action) and registers the commands (bot/register.mjs) on every push to bot/**.
 Repo secrets (set by the user, never in chat): CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, DISCORD_PUBLIC_KEY, DISCORD_APP_ID, DISCORD_TOKEN, SUPABASE_SERVICE_KEY.
