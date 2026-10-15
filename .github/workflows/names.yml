@@ -1,0 +1,27 @@
+name: French names
+on:
+  workflow_dispatch:
+    inputs:
+      args:
+        description: 'Extra arguments (--limit=10 to test, --all to redo)'
+        default: ''
+permissions:
+  contents: write
+jobs:
+  names:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python scripts/names_fr.py ${{ inputs.args }}
+      - name: Commit
+        if: ${{ !contains(inputs.args, '--limit') }}
+        run: |
+          git config user.name "BenzoDaeskiSumi"
+          git config user.email "173538282+BenzoDaeskiSumi@users.noreply.github.com"
+          git add data/names_fr.json
+          git diff --cached --quiet && exit 0
+          git commit -qm "Nomi francesi degli oggetti (MetaBot.GG)"
+          for i in 1 2 3 4 5; do git pull -q --rebase && git push -q && exit 0; sleep 20; done; exit 1
