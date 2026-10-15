@@ -410,7 +410,7 @@ footer { padding: 6px 16px 24px; font-size: 13px; text-shadow: none; }
         <button type="button" data-theme="asmodian"><i style="background:#ff7ab0"></i>Asmodian</button>
       </div>
       <div class="themes langs" role="group" aria-label="Lingua">
-        <button type="button" data-lang="it" title="Italiano">IT</button><button type="button" data-lang="en" title="English">EN</button>
+        <button type="button" data-lang="it" title="Italiano">IT</button><button type="button" data-lang="en" title="English">EN</button><button type="button" data-lang="es" title="Español">ES</button>
       </div>
     </div>
   </div>
@@ -509,7 +509,8 @@ footer { padding: 6px 16px 24px; font-size: 13px; text-shadow: none; }
 <script>
 /* ---------- language: the page is written in Italian; with English chosen, a translator rewrites every text node
    and label as it appears (exact phrases, ' · ' separated parts, and patterns for sentences with numbers/names) ---------- */
-const LANG = (() => { try { return localStorage.getItem('aion-lang') === 'en' ? 'en' : 'it'; } catch (e) { return 'it'; } })();
+const LANG = (() => { try { const l = localStorage.getItem('aion-lang'); return l === 'en' || l === 'es' ? l : 'it'; } catch (e) { return 'it'; } })();
+const LOCALE = {it: 'it-IT', en: 'en-GB', es: 'es-ES'}[LANG];
 document.documentElement.lang = LANG;
 const EN = {
   // header, KPIs, tabs, tools
@@ -595,11 +596,88 @@ const EN_RE = [
     .replace(/, più ([\d,]+) a tentativo per (.+?) \(il livello prima, al prezzo più basso tra comprarlo e craftarlo\)\./, ', plus $1 per attempt for $2 (the tier before, at the cheaper of buying or crafting it).')
     .replace(/Ricette: aion2\.exchange \(dai file del gioco\)\./, 'Recipes: aion2.exchange (from the game files).')],
 ];
+const ES = {
+  'Tassa': 'Impuesto', 'Tema': 'Tema', 'Lingua': 'Idioma', 'Oggetti': 'Objetos', 'In vendita': 'En venta', 'Da comprare': 'Para comprar', 'Da vendere': 'Para vender',
+  'Ultimo aggiornamento': 'Última actualización', 'Caricamento…': 'Cargando…', 'Sezioni': 'Secciones', 'Affari': 'Chollos', 'Tipo di affare': 'Tipo de chollo',
+  'Categorie': 'Categorías', 'Cerca un item…': 'Busca un objeto…', 'Cerca un item': 'Busca un objeto', 'Cerca un oggetto craftabile…': 'Busca un objeto fabricable…',
+  'Filtra per grado': 'Filtrar por grado', 'Grado': 'Grado', 'Mostra tutti': 'Mostrar todos', 'Item': 'Objeto', 'Vendite/g': 'Ventas/día',
+  'Unità vendute al giorno: dati del gioco quando ci sono, altrimenti stima dalle inserzioni sparite': 'Unidades vendidas al día: datos del juego cuando los hay, si no, estimación por los anuncios desaparecidos',
+  'Prezzo più basso': 'Precio más bajo', 'Media': 'Media', 'Profitto flip': 'Beneficio flip', 'Segnale': 'Señal', 'Oggetto': 'Objeto', 'Professione': 'Profesión',
+  'Costo 1 craft': 'Coste de 1 craft', 'Costo stimato': 'Coste estimado', "Expert's e Artisan's: escono solo con la combo del 25%": "Expert's y Artisan's: solo salen con el combo del 25%",
+  'Prezzo Market': 'Precio en el Market', 'Risparmio': 'Ahorro', 'Conviene': 'Conviene', 'Storico prezzi': 'Historial de precios', 'Periodo del grafico': 'Periodo del gráfico',
+  '24 ore': '24 horas', '7 giorni': '7 días', '30 giorni': '30 días', '90 giorni': '90 días',
+  'Clicca un item per vedere i dettagli e come è cambiato il suo prezzo.': 'Haz clic en un objeto para ver sus detalles y cómo ha cambiado su precio.',
+  'Mostra categorie': 'Mostrar categorías', 'Nascondi categorie': 'Ocultar categorías', 'Mostra la barra delle categorie': 'Mostrar la barra de categorías', 'Nascondi la barra delle categorie': 'Ocultar la barra de categorías',
+  'Mostra non disponibili': 'Mostrar no disponibles', 'Nascondi non disponibili': 'Ocultar no disponibles', 'Mostra gli item non disponibili': 'Mostrar los objetos no disponibles', 'Nascondi gli item non disponibili': 'Ocultar los objetos no disponibles',
+  'Mostra solo i preferiti': 'Mostrar solo favoritos', 'Mostra tutti gli oggetti': 'Mostrar todos los objetos', 'Preferiti': 'Favoritos',
+  'Aggiungi ai preferiti': 'Añadir a favoritos', 'Togli dai preferiti': 'Quitar de favoritos', 'Nei preferiti — togli': 'En favoritos — quitar',
+  'Tutte': 'Todas', 'Tutti': 'Todos', 'Tipo': 'Tipo', 'Livello': 'Nivel',
+  'Armi': 'Armas', 'Armature': 'Armaduras', 'Accessori': 'Accesorios', 'Consumabili': 'Consumibles', 'Aspetto': 'Apariencia', 'Materiali': 'Materiales',
+  'Elmo': 'Casco', 'Spallacci': 'Hombreras', 'Corazza': 'Coraza', 'Gambali': 'Grebas', 'Guanti': 'Guantes', 'Stivali': 'Botas', 'Mantello': 'Capa',
+  'Collana': 'Collar', 'Orecchini': 'Pendientes', 'Anello': 'Anillo', 'Bracciale': 'Brazalete', 'Pozioni': 'Pociones', 'Cibo': 'Comida', 'Pergamene': 'Pergaminos',
+  'Caramelle': 'Caramelos', 'Manastone e Soulstone': 'Manastones y Soulstones', 'Ali': 'Alas', 'Biglietti a tempo': 'Tickets de duración', 'Forzieri': 'Cofres',
+  'Consumabili vari': 'Consumibles varios', 'Aspetto armature': 'Apariencia de armaduras', 'Aspetto accessori': 'Apariencia de accesorios', 'Raccolta': 'Recolección',
+  'Trasmutazione': 'Transmutación', 'Materiali speciali': 'Materiales especiales', 'Materiali vari': 'Materiales varios',
+  'Speciale': 'Especial', 'Non rare': 'Poco común', 'Common': 'Común', 'Rare': 'Raro', 'Legendary': 'Legendario', 'Mythic': 'Mítico',
+  'Compra per rivendere': 'Comprar para revender', 'Vendi ora': 'Vender ya', 'Tieni': 'Mantener', 'Compra': 'Comprar', 'Vendi': 'Vender', 'Servono più dati': 'Faltan datos',
+  'Non disponibile': 'No disponible', 'Craftalo': 'Fabrícalo', 'Compralo': 'Cómpralo', 'Solo crafting': 'Solo fabricación', 'Non in vendita': 'No está a la venta',
+  'Affari ora': 'Chollos ahora', 'Affari migliori adesso': 'Mejores chollos ahora', 'Per ora nessun item è abbastanza sotto la media da valere un flip.': 'Por ahora ningún objeto está lo bastante por debajo de la media como para merecer un flip.',
+  'Non riesco a caricare i dati di questo server. Riprova tra qualche minuto.': 'No puedo cargar los datos de este servidor. Inténtalo de nuevo en unos minutos.',
+  'Non riesco a caricare i dati. Ricarica la pagina tra qualche secondo.': 'No puedo cargar los datos. Recarga la página en unos segundos.',
+  'Nessun grado selezionato. Clicca un grado per mostrarlo.': 'Ningún grado seleccionado. Haz clic en un grado para mostrarlo.', 'Nessun item con questi filtri.': 'Ningún objeto con estos filtros.',
+  'Non hai ancora preferiti: clicca la stellina accanto a un oggetto per aggiungerlo.': 'Aún no tienes favoritos: haz clic en la estrella junto a un objeto para añadirlo.',
+  'Nessun oggetto craftabile tra i preferiti: clicca la stellina accanto a un oggetto per aggiungerlo.': 'Ningún objeto fabricable en favoritos: haz clic en la estrella junto a un objeto para añadirlo.',
+  'Dati di crafting non ancora disponibili.': 'Datos de fabricación aún no disponibles.',
+  "Mai visto in vendita finora, quindi non c'è uno storico dei prezzi.": 'Nunca visto a la venta hasta ahora, así que no hay historial de precios.',
+  'Dettagli': 'Detalles', 'Ricetta': 'Receta', 'Crafting': 'Fabricación', 'Totale': 'Total', 'Controlli': 'Comprobaciones', 'Ultimo controllo': 'Última comprobación',
+  'Vendite al giorno': 'Ventas al día', 'Ancora pochi dati': 'Aún pocos datos', 'Media = prezzo di vendita reale': 'Media = precio de venta real', '28 giorni': '28 días',
+  'Costo di 1 craft': 'Coste de 1 craft', 'Costo stimato (combo 25%)': 'Coste estimado (combo 25%)', 'Costo stimato (con fallimenti)': 'Coste estimado (con fallos)',
+  'Differenza': 'Diferencia', 'Risparmio craftando': 'Ahorro fabricando', 'Profitto se lo rivendi': 'Beneficio si lo revendes', 'Prezzi aggiornati': 'Precios actualizados',
+  '🔔 Avviso di prezzo': '🔔 Aviso de precio', 'Accedi con Discord per ricevere un messaggio dal bot quando questo oggetto arriva al prezzo che vuoi.': 'Inicia sesión con Discord para recibir un mensaje del bot cuando este objeto llegue al precio que quieras.',
+  'Scende sotto': 'Baja de', 'Sale sopra': 'Sube de', 'Avvisami': 'Avísame', 'Quando': 'Cuándo', 'Prezzo': 'Precio', 'Togli avviso': 'Quitar aviso',
+  'Scrivi un prezzo (anche 250k, 1.5m) o scegli qui sotto': 'Escribe un precio (también 250k, 1.5m) o elige abajo', 'Prezzo non valido': 'Precio no válido',
+  'Scrivi un prezzo, es. 250000, 250k o 1.5m.': 'Escribe un precio, p. ej. 250000, 250k o 1.5m.', 'Hai già 25 avvisi: togline qualcuno.': 'Ya tienes 25 avisos: quita alguno.',
+  'Non sono riuscito a salvare, riprova.': 'No he podido guardar, inténtalo de nuevo.', 'Il bot ti scrive nel canale avvisi del server Discord (controllo ogni 15 minuti).': 'El bot te escribe en el canal de avisos del servidor de Discord (comprueba cada 15 minutos).',
+  'Media 3 giorni': 'Media 3 días', 'Min 7g': 'Mín 7d', 'Max 7g': 'Máx 7d',
+  'Accedi con Discord': 'Entrar con Discord', 'Esci': 'Salir',
+  'Come leggere i numeri': 'Cómo leer los números',
+  ': quanto guadagni comprando ora al prezzo più basso e rivendendo alla media, tolta la tassa del Market.': ': cuánto ganas comprando ahora al precio más bajo y revendiendo a la media, descontado el impuesto del Market.',
+  ': prezzo tipico (mediana) degli ultimi 3 giorni.': ': precio típico (mediana) de los últimos 3 días.',
+  ': prezzo abbastanza sotto la media da guadagnarci.': ': precio lo bastante por debajo de la media como para ganar.', ': prezzo molto sopra la media.': ': precio muy por encima de la media.',
+  ': quanti pezzi si vendono al giorno. Con "~" è una stima dalle inserzioni sparite tra un controllo e l\'altro (possono essere anche ritirate). Il segnale Compra compare solo se se ne vende almeno 1 al giorno.':
+    ': cuántas unidades se venden al día. Con "~" es una estimación por los anuncios que desaparecieron entre dos comprobaciones (también pueden haberse retirado). La señal Comprar solo aparece si se vende al menos 1 al día.',
+  ': nessuno lo sta vendendo nel Market in questo momento.': ': nadie lo está vendiendo en el Market ahora mismo.', ': meno di 3 controlli, troppo pochi per giudicare il prezzo.': ': menos de 3 comprobaciones, demasiado pocas para juzgar el precio.',
+  'Prezzi del server': 'Precios del servidor', '(Europa · Asmodiani), aggiornati ogni ora dai dati pubblici di': '(Europa · Asmodianos), actualizados cada hora con los datos públicos de',
+  'e dai video del Market in gioco. Non affiliato a NCSOFT.': 'y con vídeos del Market en el juego. No afiliado a NCSOFT.',
+};
+const RLABEL_ES = {'nelle ultime 24 ore': 'en las últimas 24 horas', 'negli ultimi 7 giorni': 'en los últimos 7 días', 'negli ultimi 30 giorni': 'en los últimos 30 días', 'negli ultimi 90 giorni': 'en los últimos 90 días'};
+const rlEs = (x) => RLABEL_ES[x] || x;
+const ES_RE = [
+  [/^Preferiti \((\d+)\)$/, 'Favoritos ($1)'],
+  [/^Aggiungi ai preferiti: (.+)$/, 'Añadir a favoritos: $1'], [/^Togli dai preferiti: (.+)$/, 'Quitar de favoritos: $1'],
+  [/^Nessun item contiene "(.*)" con questi filtri\. Prova un altro nome o mostra tutti i gradi\.$/, 'Ningún objeto contiene "$1" con estos filtros. Prueba otro nombre o muestra todos los grados.'],
+  [/^Nessun oggetto craftabile contiene "(.*)"\.$/, 'Ningún objeto fabricable contiene "$1".'],
+  [/^Ancora nessun segnale: ogni item ha bisogno di almeno (\d+) controlli\.$/, 'Aún no hay señales: cada objeto necesita al menos $1 comprobaciones.'],
+  [/^Clicca un oggetto per vedere la ricetta e quanto costa craftarlo adesso\. Prezzi dei materiali aggiornati: (.*)\.$/, 'Haz clic en un objeto para ver su receta y cuánto cuesta fabricarlo ahora. Precios de materiales actualizados: $1.'],
+  [/^Nessun prezzo (.+): prova un periodo più lungo\.$/, (m, a) => `Ningún precio ${rlEs(a)}: prueba un periodo más largo.`],
+  [/^Un solo prezzo (.+): prova un periodo più lungo\.$/, (m, a) => `Un solo precio ${rlEs(a)}: prueba un periodo más largo.`],
+  [/^Prezzo più basso (.+), in Kinah\.$/, (m, a) => `Precio más bajo ${rlEs(a)}, en Kinah.`],
+  [/^(.+) in vendita$/, '$1 en venta'], [/^a ([\d.,]+[KMB]?)$/, 'a $1'], [/^media ([\d.,]+[KMB]?)$/, 'media $1'],
+  [/^passo (\d) di 3$/, 'nivel $1 de 3'], [/^(Vendite al giorno) \((stima|dati del gioco)\)$/, (m, a, b) => `Ventas al día (${b === 'stima' ? 'estimación' : 'datos del juego'})`],
+  [/^Scende sotto (.+)$/, 'Baja de $1'], [/^Sale sopra (.+)$/, 'Sube de $1'], [/^(.+) l'uno al Market$/, '$1 cada uno en el Market'],
+  [/^Costo di 1 craft: le quantità della ricetta ai prezzi più bassi di adesso al Market\. (.*)$/, (m, rest) => 'Coste de 1 craft: las cantidades de la receta a los precios más bajos actuales del Market. ' + rest
+    .replace(/L'oggetto però esce solo con la combo \(25%\) di un craft riuscito \((\d+%)\): in media serve 1 craft su ([\d.]+), quindi il costo stimato è ([\d.]+) volte i materiali/, 'Pero el objeto solo sale con el combo del 25% de un craft con éxito ($1): de media sale 1 de cada $2 crafts, así que el coste estimado es $3 veces los materiales')
+    .replace(/Il craft riesce il (\d+%) delle volte: il costo stimato conta anche i tentativi falliti/, 'El craft sale bien el $1 de las veces: el coste estimado cuenta también los intentos fallidos')
+    .replace(/, più ([\d,]+) a tentativo per (.+?) \(il livello prima, al prezzo più basso tra comprarlo e craftarlo\)\./, ', más $1 por intento por $2 (el nivel anterior, al precio más bajo entre comprarlo y fabricarlo).')
+    .replace(/Ricette: aion2\.exchange \(dai file del gioco\)\./, 'Recetas: aion2.exchange (de los archivos del juego).')],
+];
+
+const DICT = {en: EN, es: ES}[LANG] || {}, RE = {en: EN_RE, es: ES_RE}[LANG] || [];
 function tr(text) {
   const core = text.trim();
   if (!core || !/[a-zà-ú]/i.test(core)) return text;
-  let out = EN[core];
-  if (out == null) for (const [re, rep] of EN_RE) if (re.test(core)) { out = core.replace(re, rep); break; }
+  let out = DICT[core];
+  if (out == null) for (const [re, rep] of RE) if (re.test(core)) { out = core.replace(re, rep); break; }
   if (out == null && core.includes(' · ')) { const parts = core.split(' · '), t = parts.map((p) => tr(p)); if (t.some((x, i) => x !== parts[i])) out = t.join(' · '); }
   if (out == null) return text;
   return text.slice(0, text.indexOf(core)) + out + text.slice(text.indexOf(core) + core.length);
@@ -613,7 +691,7 @@ function translateTree(root) {
   const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   for (let n = w.nextNode(); n; n = w.nextNode()) { if (n.parentElement?.closest('svg, script, style')) continue; const t = tr(n.data); if (t !== n.data) n.data = t; }
 }
-if (LANG === 'en') {
+if (LANG !== 'it') {
   translateTree(document.body);
   new MutationObserver((recs) => {
     for (const r of recs) {
@@ -633,7 +711,7 @@ const fmtC = (v) => Math.abs(v) >= 100000 ? new Intl.NumberFormat('en', {notatio
 const fmtP = (v) => d3.format('+.1%')(v).replace('-', '−');
 const fmtPct = d3.format('.0%');
 const fmtSales = (v) => v >= 10 ? fmtK(Math.round(v)) : v < 0.05 ? '0' : d3.format('.1f')(v);
-const fmtDT = (d) => { d = new Date(d); return isNaN(d) ? '—' : d.toLocaleString(LANG === 'en' ? 'en-GB' : 'it-IT', {day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'}); };
+const fmtDT = (d) => { d = new Date(d); return isNaN(d) ? '—' : d.toLocaleString(LOCALE, {day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'}); };
 
 /* Market structure: groups and their sub-categories, in the game's order */
 const GROUPS = [
@@ -940,7 +1018,7 @@ function drawChart() {
   const x = d3.scaleTime(tx, [ml, W - 22]);
   // axis labels: dates for long ranges, hours for short ones
   const spanH = (tx[1] - tx[0]) / 36e5;
-  const fmtX = spanH <= 36 ? (d) => d.toLocaleTimeString(LANG === 'en' ? 'en-GB' : 'it-IT', {hour: '2-digit', minute: '2-digit'}) : (d) => d.toLocaleDateString(LANG === 'en' ? 'en-GB' : 'it-IT', {day: 'numeric', month: 'short'});
+  const fmtX = spanH <= 36 ? (d) => d.toLocaleTimeString(LOCALE, {hour: '2-digit', minute: '2-digit'}) : (d) => d.toLocaleDateString(LOCALE, {day: 'numeric', month: 'short'});
   svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', ml).attr('x2', W - 22).attr('y1', y).attr('y2', y).attr('stroke', C('--faint'));
   svg.append('g').selectAll('text').data(ticks).join('text').attr('x', ml - 8).attr('y', y).attr('dy', '.32em').attr('text-anchor', 'end').attr('font-size', 14).attr('fill', C('--dim')).text(fmtY);
   const xt = pts.length > 1 ? x.ticks(Math.max(2, Math.floor((W - ml) / 80))) : [pts[0].t];

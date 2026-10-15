@@ -63,9 +63,9 @@ Chaos, Luminous, Vagabond, Splendent X, Expert's X, Tempest, Ethereal, Comet, Ra
 (X = Orichalcum for swords/daggers/maces/guards, Asvata for bows/staves, Truth for spellbooks/orbs). Append new rows in that order.
 Views: tabs Market / Affari (VIEW 'deals': only Compra or Vendi rows, DEAL 'buy'|'sell', also opened by the header counters) / Crafting (VIEW 'craft', sidebar hidden). Sidebar accordion keeps only the selected group open; unavailable items hidden by default ('aion-na'). Detail pane: hero (price + flip), facts, chart ranges ('aion-range'), help collapsed behind '?'.
 Accounts: 'Accedi con Discord' via Supabase (project xmtenkcpocwwqcpfhkgr, anon key in index.html is public by design). Table public.profiles (id = auth uid, discord_name, server_id, favorites text[], alerts jsonb) with RLS: each user only their own row. Favourites (star next to each item, 'Preferiti' filter) work without login in localStorage 'aion-favs' and merge into the profile on login; server choice 'aion-server' too.
-Language: IT/EN buttons in the header (localStorage 'aion-lang', page reloads). The page is written in Italian; in English a
-MutationObserver translator (EN dictionary + EN_RE patterns + ' · ' parts, near the top of the script) rewrites text nodes and
-placeholder/title/aria-label. Any new Italian UI text needs an EN entry (or pattern). Logic keys (signals etc.) stay Italian.
+Language: IT/EN/ES buttons in the header (localStorage 'aion-lang', page reloads). The page is written in Italian; in EN/ES a
+MutationObserver translator (EN/ES dictionaries + EN_RE/ES_RE patterns + ' · ' parts, near the top of the script) rewrites text nodes and
+placeholder/title/aria-label. Any new Italian UI text needs an EN and ES entry (or pattern). Logic keys (signals etc.) stay Italian.
 Look: modern dark app skin (Inter font, rounded cards, KPI row, pill tabs) — the '/* modern dark app skin */' block at the end of <style> overrides the older game-window CSS. Themes: Abyss (default, blue accent), Elyos (light), Asmodian (pink accent); chosen theme is remembered in localStorage ('aion-theme'). Sidebar shown/hidden is remembered as 'aion-side'. Grade filter buttons (#grades) toggle grades; Shift-click shows one grade only. Default sort = grade (Mythic first), ties keep in-game order (category, then order of first appearance in price_log.json) — so append new items in the order they appear in the Market.
 
 ## Discord bot
