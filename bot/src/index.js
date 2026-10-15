@@ -48,7 +48,9 @@ function search(names, q, limit = 25) {
   return hits.slice(0, limit).map((h) => h[1]);
 }
 
-const opt = (data, name) => data.options?.find((o) => o.name === name);
+const flat = (data) => { const o = data.options || []; return o.length && o[0].type === 1 ? o[0].options || [] : o; };
+const opt = (data, name) => flat(data).find((o) => o.name === name);
+const sub = (data) => (data.options?.[0]?.type === 1 ? data.options[0].name : null);
 const userId = (i) => i.member?.user?.id || i.user?.id;
 // server registered with /server (Cloudflare KV), null when the user never set one
 async function savedServer(i, env) {
@@ -95,17 +97,18 @@ async function prezzo(i, env) {
 }
 
 // ---------- /preferiti: the favourites saved on the site (Discord login), one card at a time with arrows ----------
-async function profile(env, uid) {
+// Supabase SQL functions (bot/supabase.sql), callable only with the secret key
+async function rpc(env, fn, args) {
   if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_KEY) throw new Error('supabase not configured');
-  // SQL function favorites_by_discord (see bot/supabase.sql): only the service key may call it
-  const r = await fetch(`${env.SUPABASE_URL}/rest/v1/rpc/favorites_by_discord`, {method: 'POST',
+  const r = await fetch(`${env.SUPABASE_URL}/rest/v1/rpc/${fn}`, {method: 'POST',
     headers: {apikey: env.SUPABASE_SERVICE_KEY, 'Content-Type': 'application/json',
       // legacy service_role keys are JWTs and go in Authorization too; new sb_secret_ keys only in apikey
       ...(env.SUPABASE_SERVICE_KEY.startsWith('eyJ') ? {Authorization: `Bearer ${env.SUPABASE_SERVICE_KEY}`} : {})},
-    body: JSON.stringify({did: uid})});
-  if (!r.ok) throw new Error(`supabase ${r.status}`);
-  return (await r.json())[0] || null;
+    body: JSON.stringify(args)});
+  if (!r.ok) throw new Error(`supabase ${fn} ${r.status}`);
+  return r.json();
 }
+const profile = async (env, uid) => (await rpc(env, 'favorites_by_discord', {did: uid}))[0] || null;
 async function favPage(env, uid, sid, idx) {
   const prof = await profile(env, uid);
   const favs = (prof?.favorites || []).slice().sort((a, b) => a.localeCompare(b));
@@ -167,8 +170,102 @@ async function setServer(i, env) {
   return oops(`✅ Server registrato: **${serverName(srv, sid)}**. Da ora /prezzo, /affari e /preferiti useranno questo server; per cambiarlo rifai /server.`);
 }
 
+// ---------- price alerts: stored in profiles.alerts (site login), checked every 15 min by the cron below ----------
+// alert = {item, server, price, dir: 'below' | 'above'}
+const MAX_ALERTS = 25;
+const parsePrice = (v) => {
+  const m = String(v || '').trim().toLowerCase().replace(/\s/g, '').match(/^([\d.,]+)(k|m|b)?$/);
+  if (!m) return null;
+  let n = m[2] ? +m[1].replace(',', '.') : +m[1].replace(/[.,]/g, '');
+  n *= {k: 1e3, m: 1e6, b: 1e9}[m[2]] || 1;
+  return Number.isFinite(n) && n > 0 ? Math.round(n) : null;
+};
+const alertText = (a, srv) => `${a.dir === 'above' ? 'sopra' : 'sotto'} **${kin(a.price)}** · ${serverName(srv, a.server)}`;
+const NO_LOGIN = (env) => `Gli avvisi sono per chi ha fatto l'accesso al sito: entra su ${env.SITE} con **Accedi con Discord** (una volta sola), poi riprova.`;
+
+async function avviso(i, env) {
+  const uid = userId(i), what = sub(i.data);
+  const prof = (await rpc(env, 'alerts_by_discord', {did: uid}))[0];
+  if (!prof) return oops(NO_LOGIN(env));
+  const alerts = Array.isArray(prof.alerts) ? prof.alerts : [], srv = await servers(env);
+  if (what === 'aggiungi') {
+    const sid = await serverOf(i, env), q = String(opt(i.data, 'oggetto')?.value || '').trim();
+    const sum = await summary(env, sid), name = sum[q] ? q : search(Object.entries(sum), q, 1)[0];
+    if (!name) return oops(`Non trovo **${q}** sul market. Scegli un nome dai suggerimenti.`);
+    const price = parsePrice(opt(i.data, 'prezzo')?.value);
+    if (!price) return oops('Prezzo non valido: scrivi un numero, es. `250000`, `250k` o `1.5m`.');
+    const dir = opt(i.data, 'quando')?.value === 'above' ? 'above' : 'below';
+    const rest = alerts.filter((a) => !(a.item === name && a.server === sid && a.dir === dir));
+    if (rest.length >= MAX_ALERTS) return oops(`Hai già ${MAX_ALERTS} avvisi: togline qualcuno con \`/avviso lista\`.`);
+    const a = {item: name, server: sid, price, dir};
+    await rpc(env, 'set_alerts_by_discord', {did: uid, a: [...rest, a]});
+    const now = sum[name]?.p > 0 ? `ora è a **${kin(sum[name].p)}**` : 'ora non è in vendita';
+    const ch = env.USERS ? await env.USERS.get('cfg:alert_channel') : null;
+    return oops(`🔔 Avviso salvato: **${name}** ${alertText(a, srv)} (${now}).\n` +
+      (ch ? `Ti scrivo in <#${ch}> quando ci arriva.` : 'Nessun canale avvisi impostato: un admin deve usare `/avvisi-canale`.'));
+  }
+  // lista
+  if (!alerts.length) return oops('Non hai avvisi. Aggiungine uno con `/avviso aggiungi` o dal sito (scheda dell\'oggetto).');
+  const sums = {};
+  for (const a of alerts) sums[a.server] ||= await summary(env, a.server).catch(() => ({}));
+  const lines = alerts.map((a, k) => { const p = sums[a.server][a.item]?.p;
+    return `**${k + 1}. ${a.item}** — ${alertText(a, srv)} · ora ${p > 0 ? kin(p) : 'non in vendita'}`; });
+  return reply({flags: 64, embeds: [{title: `I tuoi avvisi (${alerts.length}/${MAX_ALERTS})`, color: 0x5b8cff, description: lines.join('\n')}],
+    components: [{type: 1, components: [{type: 3, custom_id: `alrm:${uid}`, placeholder: 'Togli avvisi…', min_values: 1, max_values: alerts.length,
+      options: alerts.map((a, k) => ({label: `${k + 1}. ${a.item}`.slice(0, 100), value: String(k),
+        description: `${a.dir === 'above' ? 'sopra' : 'sotto'} ${kin(a.price)} · ${serverName(srv, a.server)}`.slice(0, 100)}))}]}]});
+}
+async function alertRemove(i, env) {
+  const uid = userId(i);
+  if (i.data.custom_id !== `alrm:${uid}`) return oops('Non sono i tuoi avvisi.');
+  const prof = (await rpc(env, 'alerts_by_discord', {did: uid}))[0];
+  const drop = new Set((i.data.values || []).map(Number));
+  const keep = (prof?.alerts || []).filter((_, k) => !drop.has(k));
+  await rpc(env, 'set_alerts_by_discord', {did: uid, a: keep});
+  return Response.json({type: 7, data: {content: `🗑️ Tolti ${drop.size} avvisi, ne restano ${keep.length}.`, embeds: [], components: []}});
+}
+async function alertChannel(i, env) {
+  const ch = i.channel_id || i.channel?.id;
+  const test = await discord(env, `/channels/${ch}/messages`, {content: '🔔 Da ora gli avvisi di prezzo arriveranno in questo canale.'});
+  if (!test.ok) return oops(`Non riesco a scrivere in questo canale (errore ${test.status}): dai al bot il permesso **Invia messaggi** qui e riprova.`);
+  await env.USERS.put('cfg:alert_channel', ch);
+  return oops('✅ Canale avvisi impostato.');
+}
+const discord = (env, path, body) => fetch(`https://discord.com/api/v10${path}`, {method: 'POST',
+  headers: {Authorization: `Bot ${env.DISCORD_TOKEN}`, 'Content-Type': 'application/json'}, body: JSON.stringify(body)});
+
+// cron: every 15 minutes. An alert fires once when the price crosses the target, and re-arms when it goes back.
+async function checkAlerts(env) {
+  const ch = await env.USERS.get('cfg:alert_channel');
+  if (!ch) return;
+  const rows = await rpc(env, 'all_alerts', {});
+  const state = JSON.parse(await env.USERS.get('alert_state') || '{}'), next = {};
+  const sums = {}, [srv, ico] = await Promise.all([servers(env), icons(env)]);
+  let sent = 0;
+  for (const {discord_id: uid, alerts} of rows) {
+    for (const a of alerts || []) {
+      if (!(a.server in sums)) sums[a.server] = await summary(env, a.server).catch(() => null);
+      const r = sums[a.server]?.[a.item];
+      if (!r) continue;
+      const key = `${uid}|${a.server}|${a.item}|${a.dir}|${a.price}`;
+      const hit = r.p > 0 && (a.dir === 'above' ? r.p >= a.price : r.p <= a.price);
+      if (!hit) continue;                                  // not hit: dropped from the state, so it re-arms
+      next[key] = state[key] || Date.now();
+      if (state[key] || sent >= 30) continue;              // already told / stay under the per-run request limit
+      const res = await discord(env, `/channels/${ch}/messages`, {
+        content: `<@${uid}> 🔔 **${a.item}** è ${a.dir === 'above' ? 'salito a' : 'sceso a'} **${kin(r.p)}** kinah su ${serverName(srv, a.server)} (il tuo avviso: ${a.dir === 'above' ? 'sopra' : 'sotto'} ${kin(a.price)}).`,
+        embeds: [itemEmbed(a.item, r, a.server, serverName(srv, a.server), ico, env)],
+        allowed_mentions: {users: [uid]}});
+      if (res.ok) sent++; else delete next[key];          // retry next run
+    }
+  }
+  const out = JSON.stringify(next);
+  if (out !== JSON.stringify(state)) await env.USERS.put('alert_state', out);
+}
+
 // ---------- entry point ----------
 export default {
+  async scheduled(event, env, ctx) { ctx.waitUntil(checkAlerts(env)); },
   async fetch(req, env) {
     if (req.method !== 'POST') return new Response('Aion 2 Market bot: ok');
     const body = await req.text();
@@ -177,7 +274,7 @@ export default {
     if (i.type === 1) return Response.json({type: 1});                       // PING from Discord
     try {
       if (i.type === 4) {                                                       // autocomplete
-        const sid = await serverOf(i, env), q = String(i.data.options?.find((o) => o.focused)?.value || '');
+        const sid = await serverOf(i, env), q = String(flat(i.data).find((o) => o.focused)?.value || '');
         const sum = await summary(env, sid);
         const names = q ? search(Object.entries(sum), q) : Object.entries(sum).filter(([, r]) => r.s === 'Compra per rivendere').map(([n]) => n).slice(0, 25);
         return Response.json({type: 8, data: {choices: names.map((n) => ({name: n.slice(0, 100), value: n.slice(0, 100)}))}});
@@ -186,9 +283,12 @@ export default {
         if (i.data.name === 'prezzo') return await prezzo(i, env);
         if (i.data.name === 'affari') return await affari(i, env);
         if (i.data.name === 'server') return await setServer(i, env);
+        if (i.data.name === 'avviso') return await avviso(i, env);
+        if (i.data.name === 'avvisi-canale') return await alertChannel(i, env);
         if (i.data.name === 'preferiti') return await preferiti(i, env);
       }
       if (i.type === 3 && i.data.custom_id?.startsWith('fav:')) return await favButton(i, env);
+      if (i.type === 3 && i.data.custom_id?.startsWith('alrm:')) return await alertRemove(i, env);
       return oops('Comando sconosciuto.');
     } catch (e) {
       return oops('Non riesco a leggere i dati del market in questo momento, riprova tra un minuto.');

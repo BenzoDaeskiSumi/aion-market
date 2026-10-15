@@ -236,7 +236,14 @@ footer a { color: var(--gold, inherit); }
 .dealfilter button[aria-pressed="true"] { color: var(--text); background: color-mix(in srgb, var(--accent) 22%, transparent); }
 .pv { display: block; font-size: 13px; line-height: 1; }
 .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; margin: 2px 0 10px; padding: 10px 12px; border: 1px solid var(--line); background: var(--faint); }
-.hero[hidden], .ranges[hidden], .facts[hidden], .pick[hidden] { display: none; }
+.hero[hidden], .ranges[hidden], .facts[hidden], .pick[hidden], .alertbox[hidden] { display: none; }
+.alertbox { margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r-sm, 8px); background: var(--field); font-size: 14px; }
+.alertbox h3 { margin: 0 0 6px; font-size: 14px; font-weight: 600; }
+.alertbox ul { list-style: none; margin: 0 0 8px; padding: 0; } .alertbox li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 3px 0; }
+.alertbox li button { all: unset; cursor: pointer; color: var(--dim); padding: 0 6px; } .alertbox li button:hover { color: var(--text); }
+.alertbox form { display: flex; gap: 6px; flex-wrap: wrap; } .alertbox select, .alertbox input { font: inherit; color: var(--text); background: var(--card, transparent); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; min-width: 0; }
+.alertbox input { width: 110px; flex: 1; } .alertbox form button { font: inherit; cursor: pointer; border: 0; border-radius: 6px; padding: 5px 12px; background: var(--accent); color: #fff; }
+.alertbox p { margin: 0; color: var(--dim); } .alertbox .err { color: #ff6b6b; margin-top: 6px; }
 .hero div { color: var(--dim); font-size: 15px; } .hero b { display: block; font-size: 28px; font-weight: 500; color: var(--text); line-height: 1.1; font-variant-numeric: tabular-nums; }
 .hero b.up { color: var(--up); } .hero b.down { color: var(--down); }
 .facts { font-size: 15px; } .facts b { font-size: 17px; }
@@ -468,6 +475,7 @@ footer { padding: 6px 16px 24px; font-size: 13px; text-shadow: none; }
         <div class="pick" id="pick" hidden></div>
         <div class="hero" id="hero" hidden></div>
         <div class="facts" id="facts" hidden></div>
+        <div class="alertbox" id="alertbox" hidden></div>
         <p id="hist-note">Clicca un item per vedere i dettagli e come è cambiato il suo prezzo.</p>
         <div class="ranges" id="ranges" role="group" aria-label="Periodo del grafico" hidden>
           <button type="button" data-r="1">24 ore</button><button type="button" data-r="7">7 giorni</button><button type="button" data-r="30">30 giorni</button><button type="button" data-r="90">90 giorni</button>
@@ -757,13 +765,14 @@ document.addEventListener('click', (e) => { const b = e.target.closest('.fav[dat
 function drawChart() {
   const cd = document.getElementById('craftdetail'), help = document.querySelector('.aside .help');
   const chartBox = document.getElementById('chart');
-  if (VIEW === 'craft') { document.querySelectorAll('.aside .favbig').forEach((x) => x.remove()); document.getElementById('hero').hidden = true; help.hidden = true; chartBox.style.display = 'none'; document.getElementById('ranges').hidden = true; return drawCraftDetail(); }
+  if (VIEW === 'craft') { document.getElementById('alertbox').hidden = true; document.querySelectorAll('.aside .favbig').forEach((x) => x.remove()); document.getElementById('hero').hidden = true; help.hidden = true; chartBox.style.display = 'none'; document.getElementById('ranges').hidden = true; return drawCraftDetail(); }
   cd.hidden = true; help.hidden = false; chartBox.style.display = '';
   const box = document.getElementById('chart'); box.replaceChildren();
   const r = ITEMS.find((x) => x.item === picked);
   const pick = document.getElementById('pick'), facts = document.getElementById('facts');
   pick.hidden = facts.hidden = !r; document.getElementById('hero').hidden = true; document.querySelectorAll('.aside .favbig').forEach((x) => x.remove());
   document.getElementById('hist-title').textContent = r ? 'Dettagli' : 'Storico prezzi';
+  drawAlerts(r);
   if (!r) { document.getElementById('hist-note').textContent = 'Clicca un item per vedere i dettagli e come è cambiato il suo prezzo.'; return; }
   pick.replaceChildren(itemBox(r, true));
   const fb = document.createElement('button'); fb.type = 'button'; fb.className = 'favbig fav'; fb.dataset.fav = r.item;
@@ -1022,6 +1031,57 @@ function loadServer() {
 }
 srvSel.addEventListener('change', () => { SERVER = +srvSel.value; store.set('aion-server', String(SERVER)); saveProfile(); loadServer(); });
 
+/* ---------- price alerts (logged-in users): saved in profiles.alerts, the Discord bot posts when they hit ---------- */
+let ALERTS = [];
+const parsePrice = (v) => {
+  const m = String(v || '').trim().toLowerCase().replace(/\s/g, '').match(/^([\d.,]+)(k|m|b)?$/);
+  if (!m) return null;
+  let n = m[2] ? +m[1].replace(',', '.') : +m[1].replace(/[.,]/g, '');
+  n *= {k: 1e3, m: 1e6, b: 1e9}[m[2]] || 1;
+  return Number.isFinite(n) && n > 0 ? Math.round(n) : null;
+};
+function saveAlerts() { if (sb && USER) return sb.from('profiles').update({alerts: ALERTS, updated_at: new Date().toISOString()}).eq('id', USER.id); }
+function drawAlerts(r) {
+  const box = document.getElementById('alertbox'); box.hidden = !r || !sb; box.replaceChildren();
+  if (box.hidden) return;
+  const h = document.createElement('h3'); h.textContent = '🔔 Avviso di prezzo'; box.appendChild(h);
+  if (!USER) { const p = document.createElement('p'); p.textContent = 'Accedi con Discord per ricevere un messaggio dal bot quando questo oggetto arriva al prezzo che vuoi.'; box.appendChild(p); return; }
+  const mine = ALERTS.map((a, k) => [a, k]).filter(([a]) => a.item === r.item && a.server === SERVER);
+  if (mine.length) {
+    const ul = document.createElement('ul');
+    mine.forEach(([a, k]) => {
+      const li = document.createElement('li'); const t = document.createElement('span');
+      t.textContent = (a.dir === 'above' ? 'Sale sopra ' : 'Scende sotto ') + fmtK(a.price);
+      const x = document.createElement('button'); x.type = 'button'; x.textContent = '✕'; x.title = 'Togli avviso'; x.setAttribute('aria-label', 'Togli avviso');
+      x.addEventListener('click', async () => { ALERTS.splice(k, 1); await saveAlerts(); drawAlerts(r); });
+      li.append(t, x); ul.appendChild(li);
+    });
+    box.appendChild(ul);
+  }
+  const f = document.createElement('form');
+  const dir = document.createElement('select'); dir.setAttribute('aria-label', 'Quando');
+  dir.append(new Option('Scende sotto', 'below'), new Option('Sale sopra', 'above'));
+  const inp = document.createElement('input'); inp.inputMode = 'numeric'; inp.setAttribute('aria-label', 'Prezzo');
+  inp.placeholder = r.latest ? fmtK(Math.round(r.latest * 0.9)) : 'es. 250k';
+  const b = document.createElement('button'); b.type = 'submit'; b.textContent = 'Avvisami';
+  const err = document.createElement('p'); err.className = 'err'; err.hidden = true;
+  f.append(dir, inp, b);
+  f.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const price = parsePrice(inp.value);
+    if (!price) { err.textContent = 'Scrivi un prezzo, es. 250000, 250k o 1.5m.'; err.hidden = false; return; }
+    if (ALERTS.length >= 25) { err.textContent = 'Hai già 25 avvisi: togline qualcuno.'; err.hidden = false; return; }
+    ALERTS = ALERTS.filter((a) => !(a.item === r.item && a.server === SERVER && a.dir === dir.value));
+    ALERTS.push({item: r.item, server: SERVER, price, dir: dir.value});
+    const res = await saveAlerts();
+    if (res?.error) { err.textContent = 'Non sono riuscito a salvare, riprova.'; err.hidden = false; return; }
+    drawAlerts(r);
+  });
+  const note = document.createElement('p'); note.style.marginTop = '6px'; note.style.fontSize = '12px';
+  note.textContent = 'Il bot ti scrive nel canale avvisi del server Discord (controllo ogni 15 minuti).';
+  box.append(f, err, note);
+}
+
 /* ---------- Discord login (Supabase): favourites + server saved in the user's profile ---------- */
 const SB_URL = 'https://xmtenkcpocwwqcpfhkgr.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtdGVua2Nwb2N3d3FjcGZoa2dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5NTkxNTcsImV4cCI6MjEwNzUzNTE1N30.OyMn5OjdXWPf38L5qPDGePKOk1eFmsPJY8Dr4cYSnmk';
@@ -1051,10 +1111,11 @@ function saveProfile() {
 async function loadProfile() {
   profileReady = false;
   const m = USER.user_metadata || {};
-  const {data, error} = await sb.from('profiles').select('server_id,favorites').eq('id', USER.id).maybeSingle();
+  const {data, error} = await sb.from('profiles').select('server_id,favorites,alerts').eq('id', USER.id).maybeSingle();
   if (error) { console.warn('profile', error.message); return; }
   if (data) {
-    (data.favorites || []).forEach((f) => FAVS.add(f));          // keep favourites added before logging in
+    (data.favorites || []).forEach((f) => FAVS.add(f));
+    ALERTS = Array.isArray(data.alerts) ? data.alerts : [];          // keep favourites added before logging in
     if (data.server_id && data.server_id !== SERVER && [...srvSel.options].some((o) => +o.value === data.server_id)) {
       SERVER = data.server_id; srvSel.value = String(SERVER); store.set('aion-server', String(SERVER)); await loadServer();
     }
@@ -1067,7 +1128,8 @@ if (sb) {
   sb.auth.onAuthStateChange((event, session) => {
     const was = USER?.id; USER = session?.user || null; paintAcct();
     if (USER && USER.id !== was) setTimeout(loadProfile, 0);       // after the auth callback returns
-    if (!USER) profileReady = false;
+    if (!USER) { profileReady = false; ALERTS = []; }
+    if (ITEMS.length) drawChart();
   });
 }
 paintAcct();

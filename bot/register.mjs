@@ -10,6 +10,15 @@ const commands = [
     {type: 3, name: 'tipo', description: 'Cosa cerchi', required: false, choices: [{name: 'Da comprare (flip)', value: 'compra'}, {name: 'Da vendere ora', value: 'vendi'}]}, server]},
   {name: 'server', description: 'Registra il tuo server: gli altri comandi lo useranno in automatico', options: [
     {...server, description: 'Il tuo server Asmodian', required: true}]},
+  {name: 'avviso', description: 'Avvisi di prezzo (serve l’accesso al sito con Discord)', options: [
+    {type: 1, name: 'aggiungi', description: 'Ti avviso quando un oggetto arriva a un prezzo', options: [
+      {type: 3, name: 'oggetto', description: 'Nome dell’oggetto (in inglese)', required: true, autocomplete: true},
+      {type: 3, name: 'prezzo', description: 'Prezzo, es. 250000, 250k, 1.5m', required: true},
+      {type: 3, name: 'quando', description: 'Quando avvisarti (predefinito: quando scende sotto)', required: false,
+        choices: [{name: 'Scende sotto il prezzo (per comprare)', value: 'below'}, {name: 'Sale sopra il prezzo (per vendere)', value: 'above'}]},
+      server]},
+    {type: 1, name: 'lista', description: 'I tuoi avvisi, con la possibilità di toglierli'}]},
+  {name: 'avvisi-canale', description: 'Admin: gli avvisi di prezzo arriveranno in questo canale', default_member_permissions: '32', dm_permission: false},
   {name: 'preferiti', description: 'I tuoi preferiti del sito (accedi con Discord), uno alla volta con le frecce', options: [
     {...server, description: 'Server (predefinito: /server, poi quello scelto sul sito)'}]},
 ];

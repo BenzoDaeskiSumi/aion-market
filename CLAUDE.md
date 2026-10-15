@@ -74,4 +74,9 @@ Embed links open the page at ?s=<server>&item=<name> (deep link handled at page 
 .github/workflows/bot.yml deploys it (wrangler-action) and registers the commands (bot/register.mjs) on every push to bot/**.
 Repo secrets (set by the user, never in chat): CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, DISCORD_PUBLIC_KEY, DISCORD_APP_ID, DISCORD_TOKEN, SUPABASE_SERVICE_KEY.
 Worker URL: https://aion-market-bot.aion2-market.workers.dev (Discord Interactions Endpoint URL). Deploy errors are printed as run annotations.
+Price alerts: profiles.alerts = [{item, server, price, dir below|above}] (max 25), set on the site (detail pane '#alertbox', logged in)
+or with /avviso aggiungi|lista (select menu removes). An admin runs /avvisi-canale in the channel that gets them (KV cfg:alert_channel).
+The Worker cron (*/15) reads all_alerts() and posts '<@user>' + item card once per crossing (KV alert_state; re-arms when the price
+goes back). SQL functions alerts_by_discord / set_alerts_by_discord / all_alerts are in bot/supabase.sql (service_role only).
+The Worker also has the DISCORD_TOKEN secret (to post messages).
 To limit the bot to one channel: Discord server settings → Integrations → the bot → channels (no code).

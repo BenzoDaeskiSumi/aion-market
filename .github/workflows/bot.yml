@@ -18,6 +18,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           DISCORD_PUBLIC_KEY: ${{ secrets.DISCORD_PUBLIC_KEY }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
         run: |
           # wrangler's output goes into annotations so it can be read without the raw logs
           report() { tail -n 25 "$1" | sed 's/\x1b\[[0-9;]*m//g' | grep -v '^\s*$' | while IFS= read -r l; do echo "::$2::$l"; done; }
@@ -44,6 +45,7 @@ jobs:
           if ! grep -q 'workers.dev' deploy.txt || grep -q 'ERROR\|register a workers.dev' deploy.txt; then report deploy.txt error; exit 1; fi
           grep -o 'https://[^ ]*workers.dev' deploy.txt | head -1 | sed 's/^/::notice::Worker URL /'
           if ! printf '%s' "$DISCORD_PUBLIC_KEY" | npx -y wrangler@4 secret put DISCORD_PUBLIC_KEY > secret.txt 2>&1; then report secret.txt error; exit 1; fi
+          if ! printf '%s' "$DISCORD_TOKEN" | npx -y wrangler@4 secret put DISCORD_TOKEN > secret.txt 2>&1; then report secret.txt error; exit 1; fi
           if [ -n "$SUPABASE_SERVICE_KEY" ]; then
             if ! printf '%s' "$SUPABASE_SERVICE_KEY" | npx -y wrangler@4 secret put SUPABASE_SERVICE_KEY > secret.txt 2>&1; then report secret.txt error; exit 1; fi
           else echo "::warning::secret SUPABASE_SERVICE_KEY missing: /preferiti will not work"; fi
