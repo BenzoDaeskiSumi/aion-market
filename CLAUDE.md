@@ -16,7 +16,8 @@ Grade/level/category are shared across servers via data/catalog.json (rebuilt ea
 The same run saves data/s/<id>/crafts.json (Marchutan every run, other servers every 6 h, staggered) (/api/crafts + /api/crafts/{key}, without the heavy 'series'): the Artisan's Splendent lines,
 3 tiers each, with per-step materials (expected quantities, unit price, method buy/craft/morph). The page's "Crafting" view
 (sidebar, SEL.type 'craft') lists every tier with the cost of ONE craft (that tier's recipe: per_attempt quantities × today's lowest Market price,
-plus 'Costo stimato' = (recipe + previous tier item, cheaper of buy/craft) / (success × combo 25% for tiers 2-3);
+from tier 2 every craft also uses 1 item of the tier before ("versione precedente", cheaper of buy/craft, own row in the recipe);
+'Costo stimato' = (materials + previous version) / (success × combo 25% for tiers 2-3);
 not the API's expected-attempts cost) vs Market price, and shows that recipe when clicked. Favourites work there too.
 Sales: the sync saves data/s/<id>/sales.json (real 28-day units sold / avg price, only for items the API has stats for — none on
 Marchutan yet). computeItems uses them as reference price and sales/day; otherwise sales/day is estimated from listing drops

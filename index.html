@@ -587,6 +587,7 @@ const rl = (x) => RLABEL[x] || x;
 const EN_RE = [
   [/^· prossimo aggiornamento verso le (.+)$/, '· next update around $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· data is late, the next update should fix it'],
   [/^Passo (\d)$/, 'Step $1'],
+  [/^versione precedente · conviene comprarla al Market$/, 'previous version · cheaper to buy it on the Market'], [/^versione precedente · conviene craftarla \(passo (\d)\)$/, 'previous version · cheaper to craft it (step $1)'],
   [/^Preferiti \((\d+)\)$/, 'Favourites ($1)'],
   [/^Aggiungi ai preferiti: (.+)$/, 'Add to favourites: $1'], [/^Togli dai preferiti: (.+)$/, 'Remove from favourites: $1'],
   [/^Nessun item contiene "(.*)" con questi filtri\. Prova un altro nome o mostra tutti i gradi\.$/, 'No item contains "$1" with these filters. Try another name or show all grades.'],
@@ -599,10 +600,10 @@ const EN_RE = [
   [/^(.+) in vendita$/, '$1 listed'], [/^a ([\d.,]+[KMB]?)$/, 'at $1'], [/^media ([\d.,]+[KMB]?)$/, 'avg $1'],
   [/^passo (\d) di 3$/, 'tier $1 of 3'], [/^(Vendite al giorno) \((stima|dati del gioco)\)$/, (m, a, b) => `Sales per day (${b === 'stima' ? 'estimate' : 'game data'})`],
   [/^Scende sotto (.+)$/, 'Drops below $1'], [/^Sale sopra (.+)$/, 'Rises above $1'], [/^(.+) l'uno al Market$/, '$1 each on the Market'],
-  [/^Costo di 1 craft: le quantità della ricetta ai prezzi più bassi di adesso al Market\. (.*)$/, (m, rest) => 'Cost of 1 craft: the recipe quantities at the lowest Market prices right now. ' + rest
+  [/^Costo di 1 craft: le quantità della ricetta ai prezzi più bassi di adesso al Market(, più la versione precedente)?\. (.*)$/, (m, pv, rest) => 'Cost of 1 craft: the recipe quantities at the lowest Market prices right now' + (pv ? ', plus the previous version' : '') + '. ' + rest
     .replace(/L'oggetto però esce solo con la combo \(25%\) di un craft riuscito \((\d+%)\): in media serve 1 craft su ([\d.]+), quindi il costo stimato è ([\d.]+) volte i materiali/, 'But the item only comes out on the 25% combo of a successful craft ($1): on average 1 craft in $2 gives it, so the estimated cost is $3 times the materials')
     .replace(/Il craft riesce il (\d+%) delle volte: il costo stimato conta anche i tentativi falliti/, 'The craft succeeds $1 of the time: the estimated cost also counts failed attempts')
-    .replace(/, più ([\d,]+) a tentativo per (.+?) \(il livello prima, al prezzo più basso tra comprarlo e craftarlo\)\./, ', plus $1 per attempt for $2 (the tier before, at the cheaper of buying or crafting it).')
+    .replace(/\. Ogni craft usa anche 1 (.+?) \(la versione precedente\), contata a ([\d,]+): il prezzo più basso tra comprarla e craftarla\./, (x, n, v) => `. Every craft also uses 1 ${iname(n)} (the previous version), counted at ${v}: the cheaper of buying or crafting it.`)
     .replace(/Ricette: aion2\.exchange \(dai file del gioco\)\./, 'Recipes: aion2.exchange (from the game files).')],
 ];
 const ES = {
@@ -665,6 +666,7 @@ const rlEs = (x) => RLABEL_ES[x] || x;
 const ES_RE = [
   [/^· prossimo aggiornamento verso le (.+)$/, '· próxima actualización hacia las $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· datos con retraso, la próxima actualización debería arreglarlo'],
   [/^Passo (\d)$/, 'Paso $1'],
+  [/^versione precedente · conviene comprarla al Market$/, 'versión anterior · conviene comprarla en el Market'], [/^versione precedente · conviene craftarla \(passo (\d)\)$/, 'versión anterior · conviene fabricarla (paso $1)'],
   [/^Preferiti \((\d+)\)$/, 'Favoritos ($1)'],
   [/^Aggiungi ai preferiti: (.+)$/, 'Añadir a favoritos: $1'], [/^Togli dai preferiti: (.+)$/, 'Quitar de favoritos: $1'],
   [/^Nessun item contiene "(.*)" con questi filtri\. Prova un altro nome o mostra tutti i gradi\.$/, 'Ningún objeto contiene "$1" con estos filtros. Prueba otro nombre o muestra todos los grados.'],
@@ -677,10 +679,10 @@ const ES_RE = [
   [/^(.+) in vendita$/, '$1 en venta'], [/^a ([\d.,]+[KMB]?)$/, 'a $1'], [/^media ([\d.,]+[KMB]?)$/, 'media $1'],
   [/^passo (\d) di 3$/, 'nivel $1 de 3'], [/^(Vendite al giorno) \((stima|dati del gioco)\)$/, (m, a, b) => `Ventas al día (${b === 'stima' ? 'estimación' : 'datos del juego'})`],
   [/^Scende sotto (.+)$/, 'Baja de $1'], [/^Sale sopra (.+)$/, 'Sube de $1'], [/^(.+) l'uno al Market$/, '$1 cada uno en el Market'],
-  [/^Costo di 1 craft: le quantità della ricetta ai prezzi più bassi di adesso al Market\. (.*)$/, (m, rest) => 'Coste de 1 craft: las cantidades de la receta a los precios más bajos actuales del Market. ' + rest
+  [/^Costo di 1 craft: le quantità della ricetta ai prezzi più bassi di adesso al Market(, più la versione precedente)?\. (.*)$/, (m, pv, rest) => 'Coste de 1 craft: las cantidades de la receta a los precios más bajos actuales del Market' + (pv ? ', más la versión anterior' : '') + '. ' + rest
     .replace(/L'oggetto però esce solo con la combo \(25%\) di un craft riuscito \((\d+%)\): in media serve 1 craft su ([\d.]+), quindi il costo stimato è ([\d.]+) volte i materiali/, 'Pero el objeto solo sale con el combo del 25% de un craft con éxito ($1): de media sale 1 de cada $2 crafts, así que el coste estimado es $3 veces los materiales')
     .replace(/Il craft riesce il (\d+%) delle volte: il costo stimato conta anche i tentativi falliti/, 'El craft sale bien el $1 de las veces: el coste estimado cuenta también los intentos fallidos')
-    .replace(/, più ([\d,]+) a tentativo per (.+?) \(il livello prima, al prezzo più basso tra comprarlo e craftarlo\)\./, ', más $1 por intento por $2 (el nivel anterior, al precio más bajo entre comprarlo y fabricarlo).')
+    .replace(/\. Ogni craft usa anche 1 (.+?) \(la versione precedente\), contata a ([\d,]+): il prezzo più basso tra comprarla e craftarla\./, (x, n, v) => `. Cada craft usa también 1 ${iname(n)} (la versión anterior), contada a ${v}: lo más barato entre comprarla y fabricarla.`)
     .replace(/Ricette: aion2\.exchange \(dai file del gioco\)\./, 'Recetas: aion2.exchange (de los archivos del juego).')],
 ];
 
@@ -744,6 +746,7 @@ const rlFr = (x) => RLABEL_FR[x] || x;
 const FR_RE = [
   [/^· prossimo aggiornamento verso le (.+)$/, '· prochaine mise à jour vers $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· données en retard, la prochaine mise à jour devrait corriger cela'],
   [/^Passo (\d)$/, 'Étape $1'],
+  [/^versione precedente · conviene comprarla al Market$/, 'version précédente · moins cher de l\'acheter au Market'], [/^versione precedente · conviene craftarla \(passo (\d)\)$/, 'version précédente · moins cher de la fabriquer (étape $1)'],
   [/^Preferiti \((\d+)\)$/, 'Favoris ($1)'],
   [/^Aggiungi ai preferiti: (.+)$/, (m, n) => 'Ajouter aux favoris : ' + iname(n)], [/^Togli dai preferiti: (.+)$/, (m, n) => 'Retirer des favoris : ' + iname(n)],
   [/^Nessun item contiene "(.*)" con questi filtri\. Prova un altro nome o mostra tutti i gradi\.$/, 'Aucun objet ne contient « $1 » avec ces filtres. Essaie un autre nom ou affiche tous les rangs.'],
@@ -756,10 +759,10 @@ const FR_RE = [
   [/^(.+) in vendita$/, '$1 en vente'], [/^a ([\d.,]+[KMB]?)$/, 'à $1'], [/^media ([\d.,]+[KMB]?)$/, 'moy. $1'],
   [/^passo (\d) di 3$/, 'niveau $1 sur 3'], [/^(Vendite al giorno) \((stima|dati del gioco)\)$/, (m, a, b) => `Ventes par jour (${b === 'stima' ? 'estimation' : 'données du jeu'})`],
   [/^Scende sotto (.+)$/, 'Descend sous $1'], [/^Sale sopra (.+)$/, 'Monte au-dessus de $1'], [/^(.+) l'uno al Market$/, "$1 l'unité au Market"],
-  [/^Costo di 1 craft: le quantità della ricetta ai prezzi più bassi di adesso al Market\. (.*)$/, (m, rest) => 'Coût de 1 craft : les quantités de la recette aux prix les plus bas actuels du Market. ' + rest
+  [/^Costo di 1 craft: le quantità della ricetta ai prezzi più bassi di adesso al Market(, più la versione precedente)?\. (.*)$/, (m, pv, rest) => 'Coût de 1 craft : les quantités de la recette aux prix les plus bas actuels du Market' + (pv ? ', plus la version précédente' : '') + '. ' + rest
     .replace(/L'oggetto però esce solo con la combo \(25%\) di un craft riuscito \((\d+%)\): in media serve 1 craft su ([\d.]+), quindi il costo stimato è ([\d.]+) volte i materiali/, "Mais l'objet n'apparaît qu'avec le combo de 25 % d'un craft réussi ($1) : en moyenne 1 craft sur $2 le donne, donc le coût estimé vaut $3 fois les matériaux")
     .replace(/Il craft riesce il (\d+%) delle volte: il costo stimato conta anche i tentativi falliti/, 'Le craft réussit $1 du temps : le coût estimé compte aussi les tentatives ratées')
-    .replace(/, più ([\d,]+) a tentativo per (.+?) \(il livello prima, al prezzo più basso tra comprarlo e craftarlo\)\./, (x, a, n) => `, plus ${a} par tentative pour ${iname(n)} (le niveau précédent, au moins cher entre l'acheter et le fabriquer).`)
+    .replace(/\. Ogni craft usa anche 1 (.+?) \(la versione precedente\), contata a ([\d,]+): il prezzo più basso tra comprarla e craftarla\./, (x, n, v) => `. Chaque craft utilise aussi 1 ${iname(n)} (la version précédente), comptée à ${v} : le moins cher entre l'acheter et la fabriquer.`)
     .replace(/Ricette: aion2\.exchange \(dai file del gioco\)\./, 'Recettes : aion2.exchange (fichiers du jeu).')],
 ];
 
@@ -1159,15 +1162,18 @@ function buildCraftRows() {
   (CRAFTS?.targets || []).forEach((t) => (t.tiers || []).forEach((tr) => {
     if (seen.has(tr.name)) return;
     const it = ITEMS.find((x) => x.item === tr.name);
-    const market = it?.available ? it.latest : (tr.market_price ?? null), st = recipeOf(t, tr.tier), cost = recipeCost(st);
-    if (cost == null) return;
+    const market = it?.available ? it.latest : (tr.market_price ?? null), st = recipeOf(t, tr.tier), mats = recipeCost(st);
+    if (mats == null) return;
     // expected cost: failed crafts count too; from tier 2 (Expert's, Artisan's) the item only comes out on a combo
     // (combo_probability, 25%) and each attempt also uses the item of the tier before (cheaper of buying or crafting it)
     const combo = tr.tier > 1 ? (st.combo_probability || 1) : 1, chance = (st.success_rate || 1) * combo;
     const prevTr = t.tiers.find((x) => x.tier === tr.tier - 1), prevRow = prevTr && seen.get(prevTr.name);
+    // from tier 2 every craft also uses 1 item of the tier before ("the previous version"): at the cheaper of buying it
+    // on the Market or crafting it (its estimated cost); prevBuy tells which one was used
     const prevIn = prevRow ? Math.min(prevRow.est, prevRow.market ?? Infinity) : 0;
-    const est = (cost + prevIn) / chance;
-    seen.set(tr.name, { name: tr.name, tier: tr.tier, target: t, skill: t.skill, line: t.profile_label, cost, market, est, chance, combo, prevIn, prevName: prevTr?.name,
+    const prevBuy = !!prevRow && prevRow.market != null && prevRow.market <= prevRow.est;
+    const cost = mats + prevIn, est = cost / chance;
+    seen.set(tr.name, { name: tr.name, tier: tr.tier, target: t, skill: t.skill, line: t.profile_label, cost, mats, market, est, chance, combo, prevIn, prevBuy, prevName: prevRow ? prevTr.name : null,
       grade: it?.grade || TIER_GRADE[tr.tier - 1] || 'white', level: it?.level ?? null,
       diff: market != null ? market - est : null, sell: market != null ? market * (1 - tax) - est : null,
       verdict: market == null ? 'Solo crafting' : market > est ? 'Craftalo' : 'Compralo' });
@@ -1260,16 +1266,28 @@ function drawCraftDetail() {
       txt.append(nm, v); mat.append(slot, txt); a.appendChild(mat);
       const t = tr.insertCell(); t.className = 'n'; t.textContent = price ? fmtK(Math.round(m.per_attempt * price)) : '—';
     });
+    if (row.prevName) {
+      const tr = tbl.insertRow();
+      const a = tr.insertCell(); const mat = document.createElement('div'); mat.className = 'mat';
+      const pg = gradeOf(row.prevName, TIER_GRADE[tier - 2]);
+      const slot = document.createElement('div'); slot.className = 'slot g-' + pg;
+      if (ICONS[row.prevName]) { const img = document.createElement('img'); img.src = ICONS[row.prevName]; img.alt = ''; img.loading = 'lazy'; slot.appendChild(img); }
+      const txt = document.createElement('div');
+      const nm = document.createElement('span'); nm.className = 'nm g-' + pg; nm.textContent = `1 × ${row.prevName}`;
+      const v = document.createElement('span'); v.className = 'via'; v.textContent = row.prevBuy ? 'versione precedente · conviene comprarla al Market' : `versione precedente · conviene craftarla (passo ${tier - 1})`;
+      txt.append(nm, v); mat.append(slot, txt); a.appendChild(mat);
+      const t = tr.insertCell(); t.className = 'n'; t.textContent = fmtK(Math.round(row.prevIn));
+    }
     const tot = tbl.insertRow(); tot.className = 'tot'; const c1 = tot.insertCell(); c1.textContent = 'Totale'; const c2 = tot.insertCell(); c2.className = 'n'; c2.textContent = fmtK(Math.round(row.cost));
     const est = tbl.insertRow(); est.className = 'est'; const e1 = est.insertCell(); e1.textContent = row.combo < 1 ? 'Costo stimato (combo 25%)' : 'Costo stimato (con fallimenti)'; const e2 = est.insertCell(); e2.className = 'n'; e2.textContent = fmtK(Math.round(row.est));
     box.append(head, tbl); cd.appendChild(box);
   }
   const n = document.createElement('p'); n.className = 'note';
   const tries = 1 / r.chance;
-  n.textContent = `Costo di 1 craft: le quantità della ricetta ai prezzi più bassi di adesso al Market. ` +
+  n.textContent = `Costo di 1 craft: le quantità della ricetta ai prezzi più bassi di adesso al Market${r.prevName ? ', più la versione precedente' : ''}. ` +
     (r.combo < 1 ? `L'oggetto però esce solo con la combo (25%) di un craft riuscito (${fmtPct(st.success_rate)}): in media serve 1 craft su ${d3.format('.1f')(tries)}, quindi il costo stimato è ${d3.format('.1f')(tries)} volte i materiali`
       : `Il craft riesce il ${fmtPct(st.success_rate)} delle volte: il costo stimato conta anche i tentativi falliti`) +
-    (r.prevName ? `, più ${fmtK(Math.round(r.prevIn))} a tentativo per ${r.prevName} (il livello prima, al prezzo più basso tra comprarlo e craftarlo).` : '.') +
+    (r.prevName ? `. Ogni craft usa anche 1 ${r.prevName} (la versione precedente), contata a ${fmtK(Math.round(r.prevIn))}: il prezzo più basso tra comprarla e craftarla.` : '.') +
     ` Ricette: aion2.exchange (dai file del gioco).`;
   cd.appendChild(n);
 }
