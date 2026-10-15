@@ -1,6 +1,9 @@
 // Registers the slash commands. Run by .github/workflows/bot.yml with DISCORD_TOKEN and DISCORD_APP_ID.
 import {readFileSync} from 'node:fs';
-const servers = JSON.parse(readFileSync(new URL('../data/servers.json', import.meta.url)));
+// the market data lives on the 'data' branch, published with the site
+let servers;
+try { servers = JSON.parse(readFileSync(new URL('../data/servers.json', import.meta.url))); }
+catch { servers = await (await fetch('https://benzodaeskisumi.github.io/aion-market/data/servers.json')).json(); }
 const server = {type: 3, name: 'server', description: 'Server Asmodian (predefinito: quello registrato con /server)', required: false,
   choices: servers.slice(0, 25).map((s) => ({name: s.name, value: String(s.id)}))};
 const commands = [
