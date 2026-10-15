@@ -1,0 +1,24 @@
+name: Recipes
+on:
+  schedule:
+    - cron: '41 4 * * 1'   # weekly (recipes change only with game patches)
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  recipes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python scripts/recipes.py
+      - name: Commit
+        run: |
+          git config user.name "BenzoDaeskiSumi"
+          git config user.email "173538282+BenzoDaeskiSumi@users.noreply.github.com"
+          git add data/recipes.json
+          git diff --cached --quiet && exit 0
+          git commit -qm "Ricette di crafting (MetaBot.GG)"
+          for i in 1 2 3 4 5; do git pull -q --rebase && git push -q && exit 0; sleep 20; done; exit 1
