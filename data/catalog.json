@@ -592,6 +592,10 @@
 "grade": "blue",
 "level": 40
 },
+"Aullamu Gloves": {
+"category": "Gloves",
+"grade": "blue"
+},
 "Aullamu Greaves": {
 "category": "Legs",
 "grade": "blue",
@@ -4710,6 +4714,10 @@
 "category": "Legs",
 "grade": "blue",
 "level": 40
+},
+"Shylak Helm": {
+"category": "Helm",
+"grade": "blue"
 },
 "Shylak Pauldrons": {
 "category": "Pauldrons",
