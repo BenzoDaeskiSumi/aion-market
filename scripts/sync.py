@@ -174,12 +174,31 @@ def item_stats(rs, real, settings, snap=None):
     if avg:                                  # 7-day range without troll listings either
         week = [p for p in week if avg / 3 <= p <= avg * 3] or week
     prev = sold[-2][1]['lowest_price'] if avail and len(sold) > 1 else None
+    # market metrics: 7-day trend, volatility, liquidity score, position in the 30-day range (troll prices ignored)
+    ok = (lambda p: avg / 3 <= p <= avg * 3) if avg else (lambda p: True)
+    trend = vol = liq = pos = lo30 = hi30 = None
+    if avail:
+        before = [e['lowest_price'] for t, e in sold if (lt - t).total_seconds() >= 7 * 86400 and ok(e['lowest_price'])]
+        first7 = [e['lowest_price'] for t, e in sold if (lt - t).total_seconds() < 7 * 86400 and ok(e['lowest_price'])]
+        ref = before[-1] if before else (first7[0] if len(first7) > 1 else None)
+        trend = (price - ref) / ref if ref else None
+        if len(week) >= 3:
+            m7 = statistics.median(week)
+            vol = statistics.median(abs(math.log(p / m7)) for p in week) if m7 else None
+        m30 = [e['lowest_price'] for t, e in sold if (lt - t).days < 30 and ok(e['lowest_price'])]
+        if m30:
+            lo30, hi30 = min(m30), max(m30)
+            pos = (price - lo30) / (hi30 - lo30) if hi30 > lo30 else None
+    if per_day is not None:
+        liq = round(100 * (1 - math.exp(-per_day / 3)))
     return {'c': last['category'], 'g': last.get('grade') or 'white', 'l': last.get('level'), 'p': price, 'n': n_now,
             'a': round(avg) if avg is not None else None, 'd': round(per_day, 2) if per_day is not None else None, 'k': kind,
             'f': round(flip) if flip is not None else None, 'm': round(margin, 4) if margin is not None else None, 's': sig,
             'ch': price - prev if prev else None, 'cp': round((price - prev) / prev, 4) if prev else None,
             'ov': round((price - avg) / avg, 4) if avail and avg else None, 'ar': bool(real and real.get('avg')),
             'q': conf, 'x': anomaly, 'cc': len(rs), 'lo': min(week) if week else None, 'hi': max(week) if week else None,
+            't7': round(trend, 4) if trend is not None else None, 'v': round(vol, 4) if vol is not None else None, 'lq': liq,
+            'rp': round(min(1, max(0, pos)), 3) if pos is not None else None, 'lo30': lo30, 'hi30': hi30,
             't': (snap if snap and last.get('screenshot') == 'aion2.exchange' and snap > lt else lt).isoformat()}
 
 

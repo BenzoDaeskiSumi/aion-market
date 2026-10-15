@@ -17,6 +17,13 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 - Per-item history for the page chart: data/s/<id>/h/<slug>.json [[minutes, price, listings]], loaded only when an item is opened.
 - Watchdog: the bot's 15-minute cron posts in the alerts channel if Marchutan's meta.json snapshot is older than 3 h (and when it recovers).
 - Privacy: privacy.html (IT+EN), 'Elimina account' in the header calls Supabase RPC delete_my_account (bot/supabase.sql).
+- Metrics in item_stats: t7 (7-day trend), v (volatility), lq (liquidity 0-100 from sales/day), rp/lo30/hi30 (position in the
+  30-day range); table columns '7 giorni' and 'ROI' (flip_margin), detail facts, bot card fields.
+- Shareable links (js/url.js): the URL mirrors s, v, d, c (category), q, g (grades), fav, item/craft; pushState for big moves,
+  Back/Forward via popstate; drawTable/drawChart are wrapped to call writeURL().
+- Link preview: Open Graph/Twitter meta in index.html, image img/og.png (1200x630, drawn with PIL from the logo).
+- Visit stats: js/main.js countVisit() sends one beacon per session to the bot's /hit (language, server, phone) -> KV daily
+  counters st:YYYY-MM-DD (no cookies, no IP); admins read them with /statistiche. Described in privacy.html.
 - Phone layout (<= 760 px): menu button for header controls, bottom tab bar, details as a bottom sheet (showDetail/closeSheet in js/ui.js).
 
 ## Automatic sync

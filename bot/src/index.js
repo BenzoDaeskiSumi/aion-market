@@ -75,6 +75,8 @@ function itemEmbed(name, r, sid, sname, ico, env) {
     {name: 'Annunci', value: kin(r.n), inline: true},
     {name: 'Vendite al giorno', value: r.d == null ? '—' : `${r.k === 'stima' ? '~' : ''}${r.d.toLocaleString('it-IT')}`, inline: true},
     {name: 'Min – max 7 giorni', value: r.lo == null ? '—' : `${kin(r.lo)} – ${kin(r.hi)}`, inline: true},
+    {name: 'Trend 7 giorni', value: r.t7 == null ? '—' : `${r.t7 > 0 ? '▲ +' : r.t7 < 0 ? '▼ ' : ''}${pct(r.t7)}`, inline: true},
+    {name: 'Liquidità', value: r.lq == null ? '—' : `${r.lq}/100`, inline: true},
     {name: 'Flip (dopo tasse)', value: r.f == null ? '—' : `${r.f > 0 ? '+' : ''}${kin(r.f)} (${pct(r.m)})`, inline: true},
     {name: 'Segnale', value: (SIGNAL[r.s] || r.s) + (r.q && r.p > 0 ? ` · affidabilità ${CONF[r.q] || r.q}` : ''), inline: false},
   ];
@@ -357,10 +359,41 @@ async function checkStale(env) {
   }
 }
 
+// ---------- site visits: anonymous daily counters, no cookies, nothing about the person (not even the IP) ----------
+// The page sends one beacon per browser session: {l: language, s: server, m: 1 on phones}. Admins read them with /statistiche.
+async function hit(req, env) {
+  const cors = {'Access-Control-Allow-Origin': '*'};
+  if (req.method !== 'POST' || !env.USERS) return new Response(null, {status: 204, headers: cors});
+  try {
+    const b = JSON.parse((await req.text()).slice(0, 200) || '{}');
+    const day = new Date().toISOString().slice(0, 10), key = `st:${day}`;
+    const st = JSON.parse(await env.USERS.get(key) || '{"v":0,"m":0,"l":{},"s":{}}');
+    const lang = ['it', 'en', 'es', 'fr'].includes(b.l) ? b.l : 'altro', srv = /^\d{5}$/.test(String(b.s)) ? String(b.s) : 'altro';
+    st.v++; if (b.m) st.m++;
+    st.l[lang] = (st.l[lang] || 0) + 1; st.s[srv] = (st.s[srv] || 0) + 1;
+    await env.USERS.put(key, JSON.stringify(st), {expirationTtl: 400 * 86400});
+  } catch (e) { /* over the free write limit or bad input: the visit is simply not counted */ }
+  return new Response(null, {status: 204, headers: cors});
+}
+async function stats(env) {
+  const [srv, days] = [await servers(env), []];
+  for (let k = 0; k < 7; k++) {
+    const day = new Date(Date.now() - k * 864e5).toISOString().slice(0, 10);
+    days.push([day, JSON.parse(await env.USERS.get(`st:${day}`) || 'null')]);
+  }
+  const tot = {v: 0, m: 0, l: {}, s: {}};
+  for (const [, st] of days) if (st) { tot.v += st.v; tot.m += st.m; for (const k in st.l) tot.l[k] = (tot.l[k] || 0) + st.l[k]; for (const k in st.s) tot.s[k] = (tot.s[k] || 0) + st.s[k]; }
+  const top = (o, name) => Object.entries(o).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([k, n]) => `${name(k)} ${n}`).join(' · ') || '—';
+  const lines = days.map(([d, st]) => `\`${d.slice(8)}/${d.slice(5, 7)}\` ${'▇'.repeat(Math.min(20, Math.ceil((st?.v || 0) / Math.max(1, ...days.map(([, x]) => x?.v || 0)) * 20)))} ${st?.v || 0}`);
+  return oops(`📊 **Visite al sito, ultimi 7 giorni: ${tot.v}** (da telefono ${tot.v ? Math.round(tot.m / tot.v * 100) : 0}%)\n${lines.join('\n')}\n` +
+    `Lingue: ${top(tot.l, (k) => k.toUpperCase())}\nServer: ${top(tot.s, (k) => (k === 'altro' ? 'altro' : serverName(srv, +k)))}\n-# Conteggio anonimo: niente cookie, nessun dato personale.`);
+}
+
 // ---------- entry point ----------
 export default {
   async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env)])); },
   async fetch(req, env) {
+    if (new URL(req.url).pathname === '/hit') return hit(req, env);
     if (req.method !== 'POST') return new Response('Aion 2 Market bot: ok');
     const body = await req.text();
     if (!(await verified(req, body, env))) return new Response('bad signature', {status: 401});
@@ -377,6 +410,7 @@ export default {
       if (i.type === 2) {
         if (i.data.name === 'prezzo') return await prezzo(i, env);
         if (i.data.name === 'affari') return await affari(i, env);
+        if (i.data.name === 'statistiche') return await stats(env);
         if (i.data.name === 'chisiamo') return reply({content: '# LA LEGIONE'});
         if (i.data.name === 'server') return await setServer(i, env);
         if (i.data.name === 'avviso') return await avviso(i, env);

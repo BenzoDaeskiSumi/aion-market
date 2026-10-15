@@ -63,5 +63,15 @@ class Signals(unittest.TestCase):
         self.assertEqual(r['q'], 'alta')
 
 
+    def test_trend_and_range(self):
+        r = item_stats(rows([100000] * 30 + [120000], hours=8), None, S)     # 10 days of 100k, now 120k
+        self.assertAlmostEqual(r['t7'], 0.2)
+        self.assertEqual(r['rp'], 1.0)
+        self.assertEqual((r['lo30'], r['hi30']), (100000, 120000))
+
+    def test_liquidity_score(self):
+        self.assertGreater(item_stats(rows([100000] * 9), None, S)['lq'], 90)            # ~8 sold a day
+        self.assertEqual(item_stats(rows([100000] * 9, listings=[10] * 9), None, S)['lq'], 0)
+
 if __name__ == '__main__':
     unittest.main()

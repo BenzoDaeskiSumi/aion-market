@@ -53,6 +53,7 @@ function itemsFrom(sum) {
       latest: available ? r.p : null, listings: r.n, change: r.ch ?? null, change_pct: r.cp ?? null,
       average: r.a ?? null, over_avg: r.ov ?? null, avg_real: !!r.ar, sales_day: r.d ?? null, sales_kind: r.k ?? null, checks: r.cc,
       flip_profit: r.f ?? null, flip_margin: r.m ?? null, signal: r.s, confidence: r.q, anomaly: !!r.x, lo7: r.lo ?? null, hi7: r.hi ?? null,
+      trend7: r.t7 ?? null, vol: r.v ?? null, liq: r.lq ?? null, rpos: r.rp ?? null, lo30: r.lo30 ?? null, hi30: r.hi30 ?? null,
       grade_rank: GRADE_RANK[r.g] || 0, cat_rank: CAT_ORDER[r.c] ?? 999, game_order: r.o ?? 0};
   });
 }

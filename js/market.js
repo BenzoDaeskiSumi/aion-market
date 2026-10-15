@@ -101,7 +101,7 @@ function drawTable() {
   });
   const tbody = document.getElementById('rows');
   if (!rows.length) {
-    const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 7; td.className = 'empty';
+    const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 9; td.className = 'empty';
     td.textContent = onlyFav && !FAVS.size ? 'Non hai ancora preferiti: clicca la stellina accanto a un oggetto per aggiungerlo.' : term ? `Nessun item contiene "${term}" con questi filtri. Prova un altro nome o mostra tutti i gradi.` : GRADES_ON.size === 0 ? 'Nessun grado selezionato. Clicca un grado per mostrarlo.' : 'Nessun item con questi filtri.';
     tr.appendChild(td); tbody.replaceChildren(tr); return;
   }
@@ -117,7 +117,9 @@ function drawTable() {
       if (r.change_pct != null && Math.abs(r.change_pct) >= 0.0005) { const pv = document.createElement('span'); pv.className = 'pv ' + (r.change > 0 ? 'up' : 'down'); pv.textContent = fmtP(r.change_pct); tdP.appendChild(pv); } }
     else tdP.textContent = '—';
     cell(r.average == null ? '—' : fmtC(r.average), 'hn hm');
+    cell(r.trend7 == null ? '—' : fmtP(r.trend7), 'hn hm ' + (r.trend7 > 0.005 ? 'up' : r.trend7 < -0.005 ? 'down' : ''));
     cell(r.flip_profit == null ? '—' : (r.flip_profit > 0 ? '+' : r.flip_profit < 0 ? '−' : '') + fmtC(Math.abs(r.flip_profit)), r.flip_profit == null ? '' : r.flip_profit > 0 ? 'up' : 'down');
+    cell(r.flip_margin == null ? '—' : fmtP(r.flip_margin), 'hn hm ' + (r.flip_margin > 0 ? 'up' : r.flip_margin < 0 ? 'down' : ''));
     const tdS = cell('', 'hn'); const sp = document.createElement('span');
     sp.className = 'sig ' + ({'Compra per rivendere': 'buy', 'Vendi ora': 'sell', 'Non disponibile': 'na', 'Prezzo anomalo': 'warn'}[r.signal] || '');
     sp.textContent = SIG_SHORT[r.signal]; tdS.appendChild(sp);
@@ -170,9 +172,15 @@ function drawChart() {
   hero.replaceChildren(...hv.map(([k, v, c]) => { const d = document.createElement('div'); d.textContent = k; const b = document.createElement('b'); b.textContent = v; if (c) b.className = c; d.appendChild(b); return d; }));
   const f = [['In vendita', fmtK(r.listings)], ['Media', r.average == null ? '—' : fmtK(r.average)],
     ['Vendite al giorno' + (r.sales_kind === 'reali' ? ' (dati del gioco)' : r.sales_kind === 'stima' ? ' (stima)' : ''), r.sales_day == null ? 'Ancora pochi dati' : fmtSales(r.sales_day)],
-    [r.avg_real ? 'Media = prezzo di vendita reale' : 'Controlli', r.avg_real ? '28 giorni' : fmtK(r.checks)], ['Ultimo controllo', fmtDT(r.last_checked)], ['Affidabilità', r.available ? r.confidence : '—']];
+    [r.avg_real ? 'Media = prezzo di vendita reale' : 'Controlli', r.avg_real ? '28 giorni' : fmtK(r.checks)], ['Ultimo controllo', fmtDT(r.last_checked)], ['Affidabilità', r.available ? r.confidence : '—'],
+    ['Trend 7 giorni', r.trend7 == null ? '—' : fmtP(r.trend7)], ['Volatilità', r.vol == null ? '—' : r.vol < 0.05 ? 'bassa' : r.vol < 0.15 ? 'media' : 'alta'],
+    ['Liquidità', r.liq == null ? '—' : r.liq + '/100'], ['Posizione nel mese', r.rpos == null ? '—' : r.rpos <= 0.2 ? 'vicino al minimo' : r.rpos >= 0.8 ? 'vicino al massimo' : 'a metà']];
   facts.replaceChildren(...f.map(([k, v]) => { const d = document.createElement('div'); d.textContent = k; const b = document.createElement('b'); b.textContent = v;
     if (k === 'Affidabilità' && r.available) { const dot = document.createElement('i'); dot.className = 'conf ' + r.confidence; b.prepend(dot); }
+    if (k === 'Trend 7 giorni' && r.trend7 != null) b.className = r.trend7 > 0.005 ? 'up' : r.trend7 < -0.005 ? 'down' : '';
+    if (k === 'Liquidità' && r.liq != null) { const bar = document.createElement('span'); bar.className = 'meter'; bar.style.setProperty('--v', r.liq + '%'); b.appendChild(bar); }
+    if (k === 'Posizione nel mese' && r.rpos != null) { const bar = document.createElement('span'); bar.className = 'range'; bar.style.setProperty('--v', Math.round(r.rpos * 100) + '%'); bar.title = `${fmtK(r.lo30)} – ${fmtK(r.hi30)}`; b.appendChild(bar);
+      const lh = document.createElement('small'); lh.className = 'rlh'; lh.textContent = `${fmtC(r.lo30)} – ${fmtC(r.hi30)}`; b.appendChild(lh); }
     d.appendChild(b); return d; }));
   const hist = itemHist(picked);
   if (!hist) { document.getElementById('hist-note').textContent = 'Caricamento…'; return; }

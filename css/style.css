@@ -424,3 +424,12 @@ footer { padding: 6px 16px 24px; font-size: 13px; text-shadow: none; }
   #maintab .slot, #crafttab .slot { width: 34px; height: 34px; } #maintab .fav, #crafttab .fav { width: 22px; }
 }
 @media (max-width: 760px) and (prefers-reduced-motion: reduce) { .aside { transition: none; } }
+
+/* market metrics in the details: liquidity meter and position in the 30-day range */
+.facts b.up { color: var(--up); } .facts b.down { color: var(--down); }
+.facts .meter, .facts .range { display: block; height: 6px; margin-top: 5px; border-radius: 3px; background: var(--line); position: relative; overflow: hidden; }
+.facts .meter::after { content: ''; position: absolute; inset: 0 auto 0 0; width: var(--v); background: var(--accent); border-radius: 3px; }
+.facts .range { overflow: visible; background: linear-gradient(90deg, var(--up), var(--line) 50%, var(--kinah)); opacity: .9; }
+.facts .range::after { content: ''; position: absolute; top: -3px; left: calc(var(--v) - 2px); width: 4px; height: 12px; border-radius: 2px; background: var(--text); }
+.facts .rlh { display: block; margin-top: 4px; font-size: 12px; font-weight: 400; color: var(--dim); }
+td.up { color: var(--up); } td.down { color: var(--down); }
