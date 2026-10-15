@@ -12,7 +12,8 @@ jobs:
           mkdir -p probe
           UA='aion-market-tracker (+https://benzodaeskisumi.github.io/aion-market)'
           curl -sL -A "$UA" https://metabot.gg/en/aion-2/crafting -o probe/crafting.html
-          curl -sL -A "$UA" https://metabot.gg/en/aion-2/conversion -o probe/conversion.html
+          curl -sL -A "$UA" https://metabot.gg/en/aion-2/shops -o probe/shops.html
+          curl -sL -A "$UA" https://metabot.gg/en/aion-2/items/catalyst-bound -o probe/catalyst.html
           curl -s -A "$UA" -X POST https://metabot.gg/api/mcp -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' \
             -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' -o probe/mcp_tools.txt
           ls -la probe
