@@ -6,7 +6,7 @@ or its last row is older than KEEPALIVE hours. Grade / level / category of an it
 every server, so they come from data/catalog.json (built from all logs; videos of Marchutan fill it).
 Data source: https://aion2.exchange/api/docs (credited on the page).
 """
-import json, os, re, statistics, sys, time, urllib.request
+import json, math, os, re, statistics, sys, time, urllib.request
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
@@ -30,10 +30,18 @@ CAT = {'Greatswords': 'Greatsword', 'Longswords': 'Longsword', 'Daggers': 'Dagge
        'Amplify stones': 'Special Material', 'Other': 'Miscellaneous'}
 
 
-def get(path):
-    req = urllib.request.Request(API + path, headers={'User-Agent': UA, 'Accept': 'application/json'})
-    with urllib.request.urlopen(req, timeout=60) as r:
-        return json.load(r)
+def get(path, tries=4):
+    """GET from the API, retrying a few times (the API sometimes answers 5xx or times out for a moment)."""
+    for k in range(tries):
+        try:
+            req = urllib.request.Request(API + path, headers={'User-Agent': UA, 'Accept': 'application/json'})
+            with urllib.request.urlopen(req, timeout=60) as r:
+                return json.load(r)
+        except Exception as ex:
+            if k == tries - 1:
+                raise
+            print(f'{path}: {ex}, retrying')
+            time.sleep(15 * (k + 1))
 
 
 def rome(iso):
@@ -60,6 +68,11 @@ def compact(log, now):
     for i in last_in_bucket.values():
         keep[i] = True
     return [e for e, k in zip(log, keep) if k]
+
+
+def slug(name):
+    """Same as slug() in the page and the bot: file names for icons and per-item history."""
+    return re.sub(r'[^a-z0-9]+', '-', name.lower().replace("'", '').replace('’', '')).strip('-')
 
 
 def path(server, name):
@@ -105,50 +118,96 @@ def load_catalog():
     return cat
 
 
-def write_summary(server, log, sales, settings, snap=None):
-    """Small per-item snapshot for the Discord bot (same rules as computeItems in index.html)."""
+SIGNALS = ('Compra per rivendere', 'Vendi ora', 'Tieni', 'Servono più dati', 'Non disponibile', 'Prezzo anomalo')
+
+
+def item_stats(rs, real, settings, snap=None):
+    """Everything the page and the bot show for one item, computed in ONE place (both read summary.json).
+    rs: [(datetime, row)] sorted by time; real: 28-day sales stats from the game or None.
+    Reference price = median of the last days' lowest prices after dropping outliers (more than 3x away from the
+    raw median: troll listings, typos). Confidence (alta/media/bassa) from how many checks, listings and how steady
+    the price is; Buy/Sell need at least 'media'. A price 3x away from the average with 1-2 listings is 'Prezzo anomalo'."""
     tax, minP, minM = float(settings['tax_rate']), float(settings['min_flip_profit']), float(settings['min_flip_margin'])
     sellA, minC, days = float(settings['sell_above_avg']), int(settings['min_checks']), float(settings.get('avg_days', 3))
     minS = float(settings.get('min_sales_per_day', 1))
-    by = {}
-    for e in log:
+    lt, last = rs[-1]
+    price, n_now, avail = last['lowest_price'], last['listings'], last['lowest_price'] > 0
+    sold = [(t, e) for t, e in rs if e['lowest_price'] > 0]
+    recent = [(t, e) for t, e in sold if (lt - t).total_seconds() <= days * 86400]
+    base = [e['lowest_price'] for _, e in (recent or sold)]
+    per_day = kind = None
+    if real:
+        per_day, kind = real['units_sold'] / (real.get('window_days') or 28), 'reali'
+    else:
+        win = [(t, e) for t, e in rs if (lt - t).total_seconds() <= days * 86400 and e.get('screenshot') == 'aion2.exchange']
+        span = (win[-1][0] - win[0][0]).total_seconds() / 86400 if len(win) > 1 else 0
+        if span >= 0.5:
+            gone = sum(max(0, win[k - 1][1]['listings'] - win[k][1]['listings']) for k in range(1, len(win)))
+            per_day, kind = gone / span, 'stima'
+    kept, disp, avg = [], None, None
+    if base:
+        med0 = statistics.median(base)
+        kept = [p for p in base if med0 / 3 <= p <= med0 * 3] or base
+        avg = statistics.median(kept)
+        disp = statistics.median(abs(math.log(p / avg)) for p in kept) if avg else None
+    if real and real.get('avg'):
+        avg = real['avg']
+    flip = avg * (1 - tax) - price if avail and avg else None
+    margin = flip / price if flip is not None else None
+    liquid = per_day is None or per_day >= minS
+    anomaly = bool(avail and avg and (price > avg * 3 or price < avg / 3) and n_now <= 2)
+    if real:
+        conf = 'alta'
+    elif len(kept) >= 6 and n_now >= 3 and (per_day is None or per_day >= 1) and (disp or 0) < 0.25:
+        conf = 'alta'
+    elif len(kept) >= minC and n_now >= 2:
+        conf = 'media'
+    else:
+        conf = 'bassa'
+    if not avail: sig = 'Non disponibile'
+    elif len(base) < minC and not real: sig = 'Servono più dati'
+    elif anomaly: sig = 'Prezzo anomalo'
+    elif conf != 'bassa' and flip >= minP and margin >= minM and liquid: sig = 'Compra per rivendere'
+    elif conf != 'bassa' and price >= avg * (1 + sellA): sig = 'Vendi ora'
+    else: sig = 'Tieni'
+    week = [e['lowest_price'] for t, e in sold if (lt - t).days < 7]
+    if avg:                                  # 7-day range without troll listings either
+        week = [p for p in week if avg / 3 <= p <= avg * 3] or week
+    prev = sold[-2][1]['lowest_price'] if avail and len(sold) > 1 else None
+    return {'c': last['category'], 'g': last.get('grade') or 'white', 'l': last.get('level'), 'p': price, 'n': n_now,
+            'a': round(avg) if avg is not None else None, 'd': round(per_day, 2) if per_day is not None else None, 'k': kind,
+            'f': round(flip) if flip is not None else None, 'm': round(margin, 4) if margin is not None else None, 's': sig,
+            'ch': price - prev if prev else None, 'cp': round((price - prev) / prev, 4) if prev else None,
+            'ov': round((price - avg) / avg, 4) if avail and avg else None, 'ar': bool(real and real.get('avg')),
+            'q': conf, 'x': anomaly, 'cc': len(rs), 'lo': min(week) if week else None, 'hi': max(week) if week else None,
+            't': (snap if snap and last.get('screenshot') == 'aion2.exchange' and snap > lt else lt).isoformat()}
+
+
+def write_summary(server, log, sales, settings, snap=None):
+    """data/s/<id>/summary.json: per-item numbers for the page and the bot (item_stats); 'o' = order of first
+    appearance in the log (the in-game order). Also hist.json (bot charts) and h/<slug>.json (one item's full history,
+    loaded by the page only when the item is opened)."""
+    by, order = {}, {}
+    for i, e in enumerate(log):
         by.setdefault(e['item'], []).append((datetime.fromisoformat(e['checked_at']), e))
+        order.setdefault(e['item'], i)
     api = [t for rs in by.values() for t, e in rs if e.get('screenshot') == 'aion2.exchange']
     snap = max([x for x in [snap, max(api) if api else None] if x], default=None)
     out = {}
     for item, rs in by.items():
         rs.sort(key=lambda x: x[0])
-        lt, last = rs[-1]
-        price, avail = last['lowest_price'], last['lowest_price'] > 0
-        sold = [(t, e) for t, e in rs if e['lowest_price'] > 0]
-        recent = [(t, e) for t, e in sold if (lt - t).total_seconds() <= days * 86400]
-        base = recent or sold
         real = sales.get(item) if sales.get(item, {}).get('units_sold') is not None else None
-        per_day = kind = None
-        if real:
-            per_day, kind = real['units_sold'] / (real.get('window_days') or 28), 'reali'
-        else:
-            win = [(t, e) for t, e in rs if (lt - t).total_seconds() <= days * 86400 and e.get('screenshot') == 'aion2.exchange']
-            span = (win[-1][0] - win[0][0]).total_seconds() / 86400 if len(win) > 1 else 0
-            if span >= 0.5:
-                gone = sum(max(0, win[k - 1][1]['listings'] - win[k][1]['listings']) for k in range(1, len(win)))
-                per_day, kind = gone / span, 'stima'
-        avg = real['avg'] if real and real.get('avg') else statistics.median(e['lowest_price'] for _, e in base) if base else None
-        flip = avg * (1 - tax) - price if avail and avg is not None else None
-        margin = flip / price if flip is not None else None
-        liquid = per_day is None or per_day >= minS
-        if not avail: sig = 'Non disponibile'
-        elif len(base) < minC and not real: sig = 'Servono più dati'
-        elif flip >= minP and margin >= minM and liquid: sig = 'Compra per rivendere'
-        elif price >= avg * (1 + sellA): sig = 'Vendi ora'
-        else: sig = 'Tieni'
-        week = [e['lowest_price'] for t, e in sold if (lt - t).days < 7]
-        prev = sold[-2][1]['lowest_price'] if avail and len(sold) > 1 else None
-        out[item] = {'c': last['category'], 'g': last.get('grade') or 'white', 'l': last.get('level'), 'p': price, 'n': last['listings'],
-                     'a': round(avg) if avg is not None else None, 'd': round(per_day, 1) if per_day is not None else None, 'k': kind,
-                     'f': round(flip) if flip is not None else None, 'm': round(margin, 3) if margin is not None else None, 's': sig,
-                     'ch': price - prev if prev else None, 'lo': min(week) if week else None, 'hi': max(week) if week else None,
-                     't': (snap if snap and last.get('screenshot') == 'aion2.exchange' and snap > lt else lt).isoformat()}
+        out[item] = {**item_stats(rs, real, settings, snap), 'o': order[item]}
+    hdir = path(server, 'h')
+    os.makedirs(hdir, exist_ok=True)
+    keep = set()
+    for item, rs in by.items():
+        f = slug(item) + '.json'; keep.add(f)
+        with open(os.path.join(hdir, f), 'w', encoding='utf-8') as fh:
+            json.dump([[int(t.timestamp() // 60), e['lowest_price'], e['listings']] for t, e in rs], fh, separators=(',', ':'))
+    for f in os.listdir(hdir):
+        if f not in keep:
+            os.remove(os.path.join(hdir, f))
     with open(path(server, 'summary.json'), 'w', encoding='utf-8') as f:
         json.dump(out, f, ensure_ascii=False, separators=(',', ':'))
     # light price history for the bot's charts: last price every 6 h for 7 days ('w') and every day for 30 days ('m'),

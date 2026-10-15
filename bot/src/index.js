@@ -7,8 +7,9 @@ const GRADE = {
 };
 const SIGNAL = {
   'Compra per rivendere': '🟢 Compra per rivendere', 'Vendi ora': '🔴 Vendi ora', 'Tieni': '⚪ Tieni',
-  'Servono più dati': '⏳ Servono più dati', 'Non disponibile': '⛔ Non disponibile',
+  'Servono più dati': '⏳ Servono più dati', 'Non disponibile': '⛔ Non disponibile', 'Prezzo anomalo': '⚠️ Prezzo anomalo (1-2 inserzioni fuori scala)',
 };
+const CONF = {alta: '🟢 alta', media: '🟡 media', bassa: '🔴 bassa'};
 const nf = new Intl.NumberFormat('it-IT');
 const kin = (v) => (v == null ? '—' : nf.format(Math.round(v)));
 const pct = (v) => (v == null ? '' : `${(v * 100).toLocaleString('it-IT', {maximumFractionDigits: 1})}%`);
@@ -75,7 +76,7 @@ function itemEmbed(name, r, sid, sname, ico, env) {
     {name: 'Vendite al giorno', value: r.d == null ? '—' : `${r.k === 'stima' ? '~' : ''}${r.d.toLocaleString('it-IT')}`, inline: true},
     {name: 'Min – max 7 giorni', value: r.lo == null ? '—' : `${kin(r.lo)} – ${kin(r.hi)}`, inline: true},
     {name: 'Flip (dopo tasse)', value: r.f == null ? '—' : `${r.f > 0 ? '+' : ''}${kin(r.f)} (${pct(r.m)})`, inline: true},
-    {name: 'Segnale', value: SIGNAL[r.s] || r.s, inline: false},
+    {name: 'Segnale', value: (SIGNAL[r.s] || r.s) + (r.q && r.p > 0 ? ` · affidabilità ${CONF[r.q] || r.q}` : ''), inline: false},
   ];
   const icon = ico[name] || `icons/${slug(name)}.png`;
   return {
@@ -338,9 +339,27 @@ async function checkAlerts(env) {
   if (out !== JSON.stringify(state)) await env.USERS.put('alert_state', out);
 }
 
+// ---------- watchdog: if the site's prices stop updating, say it in the alerts channel (once), and when they resume ----------
+async function checkStale(env) {
+  const ch = await env.USERS.get('cfg:alert_channel');
+  if (!ch) return;
+  const r = await fetch(`${env.SITE}/data/s/${env.DEFAULT_SERVER || 12305}/meta.json`, {cf: {cacheTtl: 60}});
+  if (!r.ok) return;
+  const meta = await r.json(), age = (Date.now() - Date.parse(meta.snapshot)) / 36e5;
+  const flagged = await env.USERS.get('stale_alert');
+  const when = new Date(meta.snapshot).toLocaleString('it-IT', {timeZone: 'Europe/Rome', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'});
+  if (age > 3 && !flagged) {
+    const res = await discord(env, `/channels/${ch}/messages`, {content: `⚠️ I prezzi del sito sono fermi da **${Math.floor(age)} ore** (ultimo aggiornamento: ${when}). Controllare GitHub Actions (Sync prices) o aion2.exchange.`});
+    if (res.ok) await env.USERS.put('stale_alert', String(Date.now()));
+  } else if (age <= 2 && flagged) {
+    await discord(env, `/channels/${ch}/messages`, {content: `✅ Gli aggiornamenti dei prezzi sono ripartiti (ultimo: ${when}).`});
+    await env.USERS.delete('stale_alert');
+  }
+}
+
 // ---------- entry point ----------
 export default {
-  async scheduled(event, env, ctx) { ctx.waitUntil(checkAlerts(env)); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env)])); },
   async fetch(req, env) {
     if (req.method !== 'POST') return new Response('Aion 2 Market bot: ok');
     const body = await req.text();

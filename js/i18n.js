@@ -1,0 +1,387 @@
+/* Aion 2 Market — Language switch and translator (IT -> EN/ES/FR). Classic script: shares globals with the others, loaded in order by index.html. */
+/* ---------- language: the page is written in Italian; with English chosen, a translator rewrites every text node
+   and label as it appears (exact phrases, ' · ' separated parts, and patterns for sentences with numbers/names) ---------- */
+const LANG = (() => { try { const l = localStorage.getItem('aion-lang'); return ['en', 'es', 'fr'].includes(l) ? l : 'it'; } catch (e) { return 'it'; } })();
+const LOCALE = {it: 'it-IT', en: 'en-GB', es: 'es-ES', fr: 'fr-FR'}[LANG];
+document.documentElement.lang = LANG;
+const EN = {
+  // header, KPIs, tabs, tools
+  'Tassa': 'Tax', 'Tema': 'Theme', 'Lingua': 'Language', 'Oggetti': 'Items', 'In vendita': 'Listed', 'Da comprare': 'To buy', 'Da vendere': 'To sell',
+  'Ultimo aggiornamento': 'Last update', 'Caricamento…': 'Loading…', 'Sezioni': 'Sections', 'Affari': 'Deals', 'Tipo di affare': 'Deal type',
+  'Categorie': 'Categories', 'Cerca un item…': 'Search an item…', 'Cerca un item': 'Search an item', 'Cerca un oggetto craftabile…': 'Search a craftable item…',
+  'Filtra per grado': 'Filter by grade', 'Grado': 'Grade', 'Mostra tutti': 'Show all', 'Item': 'Item', 'Vendite/g': 'Sales/day',
+  'Unità vendute al giorno: dati del gioco quando ci sono, altrimenti stima dalle inserzioni sparite': 'Units sold per day: game data when available, otherwise estimated from listings that disappeared',
+  'Prezzo più basso': 'Lowest price', 'Media': 'Average', 'Profitto flip': 'Flip profit', 'Segnale': 'Signal', 'Oggetto': 'Item', 'Professione': 'Profession',
+  'Costo 1 craft': 'Cost of 1 craft', 'Costo stimato': 'Estimated cost', "Expert's e Artisan's: escono solo con la combo del 25%": "Expert's and Artisan's: only come out on the 25% combo",
+  'Prezzo Market': 'Market price', 'Risparmio': 'Savings', 'Conviene': 'Best choice', 'Storico prezzi': 'Price history', 'Periodo del grafico': 'Chart period',
+  '24 ore': '24 hours', '7 giorni': '7 days', '30 giorni': '30 days', '90 giorni': '90 days',
+  'Clicca un item per vedere i dettagli e come è cambiato il suo prezzo.': 'Click an item to see its details and how its price changed.',
+  'Mostra categorie': 'Show categories', 'Nascondi categorie': 'Hide categories', 'Mostra la barra delle categorie': 'Show the category bar', 'Nascondi la barra delle categorie': 'Hide the category bar',
+  'Mostra non disponibili': 'Show unavailable', 'Nascondi non disponibili': 'Hide unavailable', 'Mostra gli item non disponibili': 'Show unavailable items', 'Nascondi gli item non disponibili': 'Hide unavailable items',
+  'Mostra solo i preferiti': 'Show favourites only', 'Mostra tutti gli oggetti': 'Show all items', 'Preferiti': 'Favourites',
+  'Aggiungi ai preferiti': 'Add to favourites', 'Togli dai preferiti': 'Remove from favourites', 'Nei preferiti — togli': 'In favourites — remove',
+  'Tutte': 'All', 'Tutti': 'All', 'Tipo': 'Type', 'Livello': 'Tier',
+  // groups and categories
+  'Armi': 'Weapons', 'Armature': 'Armor', 'Accessori': 'Accessories', 'Consumabili': 'Consumables', 'Aspetto': 'Skins', 'Materiali': 'Materials',
+  'Elmo': 'Helm', 'Spallacci': 'Pauldrons', 'Corazza': 'Breastplate', 'Gambali': 'Greaves', 'Guanti': 'Gloves', 'Stivali': 'Boots', 'Mantello': 'Cloak',
+  'Collana': 'Necklace', 'Orecchini': 'Earrings', 'Anello': 'Ring', 'Bracciale': 'Bracelet', 'Pozioni': 'Potions', 'Cibo': 'Food', 'Pergamene': 'Scrolls',
+  'Caramelle': 'Candy', 'Manastone e Soulstone': 'Manastones & Soulstones', 'Ali': 'Wings', 'Biglietti a tempo': 'Duration tickets', 'Forzieri': 'Chests',
+  'Consumabili vari': 'Other consumables', 'Aspetto armature': 'Armor skins', 'Aspetto accessori': 'Accessory skins', 'Raccolta': 'Gathering',
+  'Trasmutazione': 'Substance morph', 'Materiali speciali': 'Special materials', 'Materiali vari': 'Other materials',
+  'Speciale': 'Special', 'Non rare': 'Uncommon',
+  // signals and verdicts
+  'Compra per rivendere': 'Buy to resell', 'Vendi ora': 'Sell now', 'Tieni': 'Hold', 'Compra': 'Buy', 'Vendi': 'Sell', 'Servono più dati': 'Needs more data',
+  'Non disponibile': 'Unavailable', 'Craftalo': 'Craft it', 'Compralo': 'Buy it', 'Solo crafting': 'Craft only', 'Non in vendita': 'Not on sale',
+  // ticker, messages
+  'Affari ora': 'Deals now', 'Affari migliori adesso': 'Best deals right now', 'Per ora nessun item è abbastanza sotto la media da valere un flip.': 'No item is far enough below its average to be worth a flip right now.',
+  'Non riesco a caricare i dati di questo server. Riprova tra qualche minuto.': "Can't load this server's data. Try again in a few minutes.",
+  'Non riesco a caricare i dati. Ricarica la pagina tra qualche secondo.': "Can't load the data. Reload the page in a few seconds.",
+  'Nessun grado selezionato. Clicca un grado per mostrarlo.': 'No grade selected. Click a grade to show it.', 'Nessun item con questi filtri.': 'No items with these filters.',
+  'Non hai ancora preferiti: clicca la stellina accanto a un oggetto per aggiungerlo.': "You don't have favourites yet: click the star next to an item to add it.",
+  'Nessun oggetto craftabile tra i preferiti: clicca la stellina accanto a un oggetto per aggiungerlo.': 'No craftable item in your favourites: click the star next to an item to add it.',
+  'Dati di crafting non ancora disponibili.': 'Crafting data not available yet.',
+  "Mai visto in vendita finora, quindi non c'è uno storico dei prezzi.": 'Never seen on sale so far, so there is no price history.',
+  // detail pane
+  'Dettagli': 'Details', 'Ricetta': 'Recipe', 'Crafting': 'Crafting', 'Totale': 'Total', 'Controlli': 'Checks', 'Ultimo controllo': 'Last check',
+  'Vendite al giorno': 'Sales per day', 'Ancora pochi dati': 'Not enough data yet', 'Media = prezzo di vendita reale': 'Average = real sale price', '28 giorni': '28 days',
+  'Costo di 1 craft': 'Cost of 1 craft', 'Costo stimato (combo 25%)': 'Estimated cost (25% combo)', 'Costo stimato (con fallimenti)': 'Estimated cost (with failures)',
+  'Differenza': 'Difference', 'Risparmio craftando': 'Saved by crafting', 'Profitto se lo rivendi': 'Profit if you resell it', 'Prezzi aggiornati': 'Prices updated',
+  // alerts
+  '🔔 Avviso di prezzo': '🔔 Price alert', 'Accedi con Discord per ricevere un messaggio dal bot quando questo oggetto arriva al prezzo che vuoi.': 'Log in with Discord to get a message from the bot when this item reaches the price you want.',
+  'Scende sotto': 'Drops below', 'Sale sopra': 'Rises above', 'Avvisami': 'Alert me', 'Quando': 'When', 'Prezzo': 'Price', 'Togli avviso': 'Remove alert',
+  'Scrivi un prezzo (anche 250k, 1.5m) o scegli qui sotto': 'Type a price (also 250k, 1.5m) or pick one below', 'Prezzo non valido': 'Invalid price',
+  'Scrivi un prezzo, es. 250000, 250k o 1.5m.': 'Type a price, e.g. 250000, 250k or 1.5m.', 'Hai già 25 avvisi: togline qualcuno.': 'You already have 25 alerts: remove some.',
+  'Non sono riuscito a salvare, riprova.': "Couldn't save, try again.", 'Il bot ti scrive nel canale avvisi del server Discord (controllo ogni 15 minuti).': 'The bot writes to you in the alerts channel of the Discord server (checked every 15 minutes).',
+  'Media 3 giorni': '3-day average', 'Min 7g': '7d min', 'Max 7g': '7d max',
+  // account
+  '🕒 Prezzi aggiornati:': '🕒 Prices updated:',
+  "Altro": "Other",
+  "Esito": "Outcome",
+  "Craft normale": "Normal craft",
+  "Con la combo (Splendent)": "With the combo (Splendent)",
+  "Prezzi mancanti": "Missing prices",
+  "esce con la combo": "comes from the combo",
+  "potenziamento": "upgrade",
+  "Prezzo non disponibile": "Price not available",
+  "Costo di 1 craft: le quantità della ricetta ai prezzi di adesso, per ogni ingrediente il più conveniente tra Market, negozio NPC e craftarlo.": "Cost of 1 craft: the recipe quantities at current prices, each ingredient at the cheapest of the Market, the NPC shop or crafting it.",
+  "Ricette e prezzi NPC:": "Recipes and NPC prices:",
+  "(dai file del gioco).": "(from the game files).",
+  "Costo stimato (con fallimenti), a pezzo": "Estimated cost (with failures), per piece",
+  "Prezzo anomalo": "Odd price",
+  "Anomalo": "Odd",
+  "Affidabilità": "Reliability",
+  "alta": "high",
+  "media": "medium",
+  "bassa": "low",
+  ": il prezzo è più di 3 volte lontano dalla media e ci sono solo 1-2 inserzioni: probabilmente un errore o un'inserzione \"troll\", da non prendere come segnale.": ": the price is more than 3 times away from the average with only 1-2 listings: probably a mistake or a \"troll\" listing, not a real signal.",
+  ": quanto fidarsi del segnale (alta, media, bassa), in base a quanti controlli ci sono, quante inserzioni e quanto è stabile il prezzo. Con affidabilità bassa non diamo Compra/Vendi. La media ignora i prezzi assurdi.": ": how much to trust the signal (high, medium, low), based on the number of checks, listings and how steady the price is. With low reliability there is no Buy/Sell. The average ignores absurd prices.",
+  "Elimina account": "Delete account",
+  "Sicuro? Clicca di nuovo": "Sure? Click again",
+  "Errore, riprova": "Error, try again",
+  "Elimina il tuo account e i dati salvati (preferiti, server, avvisi)": "Delete your account and saved data (favourites, server, alerts)",
+  'Impostazioni': 'Settings', 'Chiudi': 'Close',
+  'Accedi con Discord': 'Log in with Discord', 'Esci': 'Log out',
+  // help
+  'Come leggere i numeri': 'How to read the numbers',
+  ': quanto guadagni comprando ora al prezzo più basso e rivendendo alla media, tolta la tassa del Market.': ': how much you earn buying now at the lowest price and reselling at the average, after the Market tax.',
+  ': prezzo tipico (mediana) degli ultimi 3 giorni.': ': typical price (median) of the last 3 days.',
+  ': prezzo abbastanza sotto la media da guadagnarci.': ': price far enough below the average to make a profit.', ': prezzo molto sopra la media.': ': price well above the average.',
+  ': quanti pezzi si vendono al giorno. Con "~" è una stima dalle inserzioni sparite tra un controllo e l\'altro (possono essere anche ritirate). Il segnale Compra compare solo se se ne vende almeno 1 al giorno.':
+    ': how many units sell per day. With "~" it is an estimate from listings that disappeared between two checks (they may also have been withdrawn). The Buy signal only shows if at least 1 sells per day.',
+  ': nessuno lo sta vendendo nel Market in questo momento.': ': nobody is selling it on the Market right now.', ': meno di 3 controlli, troppo pochi per giudicare il prezzo.': ': fewer than 3 checks, too few to judge the price.',
+  // footer
+  'Prezzi del server': 'Prices of the', '(Europa · Asmodiani), aggiornati ogni ora dai dati pubblici di': 'server (Europe · Asmodians), updated every hour from the public data of',
+  'e dai video del Market in gioco. Non affiliato a NCSOFT.': 'and from in-game Market videos. Not affiliated with NCSOFT.',
+};
+const RLABEL = {'nelle ultime 24 ore': 'in the last 24 hours', 'negli ultimi 7 giorni': 'in the last 7 days', 'negli ultimi 30 giorni': 'in the last 30 days', 'negli ultimi 90 giorni': 'in the last 90 days'};
+const rl = (x) => RLABEL[x] || x;
+const EN_RE = [
+  [/^· prossimo aggiornamento verso le (.+)$/, '· next update around $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· data is late, the next update should fix it'],
+  [/^maestria (\d+)$/, 'mastery $1'],
+  [/^Costo stimato \(combo (\d+)%\)$/, 'Estimated cost ($1% combo)'],
+  [/^(.+) l'uno dal negozio NPC$/, '$1 each from the NPC shop'],
+  [/^(.+) l'uno craftandolo \(passo (\d+)\)$/, '$1 each by crafting it (step $2)'],
+  [/^Esce solo con la combo \((\d+)%\) di un craft riuscito \((\d+%)\): in media 1 craft su ([\d.]+)\.$/, 'Only comes out on the $1% combo of a successful craft ($2): on average 1 craft in $3.'],
+  [/^Il craft riesce il (\d+%) delle volte: il costo stimato conta anche i tentativi falliti\.(?: Ogni craft ne produce (\d+)\.)?$/, (m, a, q) => `The craft succeeds ${a} of the time: the estimated cost also counts failed attempts.` + (q ? ` Each craft makes ${q}.` : '')],
+  [/^Passo (\d)$/, 'Step $1'],
+  [/^versione precedente · conviene comprarla al Market$/, 'previous version · cheaper to buy it on the Market'], [/^versione precedente · conviene craftarla \(passo (\d)\)$/, 'previous version · cheaper to craft it (step $1)'],
+  [/^Preferiti \((\d+)\)$/, 'Favourites ($1)'],
+  [/^Aggiungi ai preferiti: (.+)$/, 'Add to favourites: $1'], [/^Togli dai preferiti: (.+)$/, 'Remove from favourites: $1'],
+  [/^Nessun item contiene "(.*)" con questi filtri\. Prova un altro nome o mostra tutti i gradi\.$/, 'No item contains "$1" with these filters. Try another name or show all grades.'],
+  [/^Nessun oggetto craftabile contiene "(.*)"\.$/, 'No craftable item contains "$1".'],
+  [/^Ancora nessun segnale: ogni item ha bisogno di almeno (\d+) controlli\.$/, 'No signals yet: every item needs at least $1 checks.'],
+  [/^Clicca un oggetto per vedere la ricetta e quanto costa craftarlo adesso\. Prezzi dei materiali aggiornati: (.*)\.$/, 'Click an item to see its recipe and what crafting it costs now. Material prices updated: $1.'],
+  [/^Nessun prezzo (.+): prova un periodo più lungo\.$/, (m, a) => `No price ${rl(a)}: try a longer period.`],
+  [/^Un solo prezzo (.+): prova un periodo più lungo\.$/, (m, a) => `Only one price ${rl(a)}: try a longer period.`],
+  [/^Prezzo più basso (.+), in Kinah\.$/, (m, a) => `Lowest price ${rl(a)}, in Kinah.`],
+  [/^(.+) in vendita$/, '$1 listed'], [/^a ([\d.,]+[KMB]?)$/, 'at $1'], [/^media ([\d.,]+[KMB]?)$/, 'avg $1'],
+  [/^passo (\d) di 3$/, 'tier $1 of 3'], [/^(Vendite al giorno) \((stima|dati del gioco)\)$/, (m, a, b) => `Sales per day (${b === 'stima' ? 'estimate' : 'game data'})`],
+  [/^Scende sotto (.+)$/, 'Drops below $1'], [/^Sale sopra (.+)$/, 'Rises above $1'], [/^(.+) l'uno al Market$/, '$1 each on the Market'],
+  [/^Costo di 1 craft: le quantità della ricetta ai prezzi più bassi di adesso al Market(, più la versione precedente)?\. (.*)$/, (m, pv, rest) => 'Cost of 1 craft: the recipe quantities at the lowest Market prices right now' + (pv ? ', plus the previous version' : '') + '. ' + rest
+    .replace(/L'oggetto però esce solo con la combo \(25%\) di un craft riuscito \((\d+%)\): in media serve 1 craft su ([\d.]+), quindi il costo stimato è ([\d.]+) volte i materiali/, 'But the item only comes out on the 25% combo of a successful craft ($1): on average 1 craft in $2 gives it, so the estimated cost is $3 times the materials')
+    .replace(/Il craft riesce il (\d+%) delle volte: il costo stimato conta anche i tentativi falliti/, 'The craft succeeds $1 of the time: the estimated cost also counts failed attempts')
+    .replace(/\. Ogni craft usa anche 1 (.+?) \(la versione precedente\), contata a ([\d,]+): il prezzo più basso tra comprarla e craftarla\./, (x, n, v) => `. Every craft also uses 1 ${iname(n)} (the previous version), counted at ${v}: the cheaper of buying or crafting it.`)
+    .replace(/Ricette: aion2\.exchange \(dai file del gioco\)\./, 'Recipes: aion2.exchange (from the game files).')],
+];
+const ES = {
+  'Tassa': 'Impuesto', 'Tema': 'Tema', 'Lingua': 'Idioma', 'Oggetti': 'Objetos', 'In vendita': 'En venta', 'Da comprare': 'Para comprar', 'Da vendere': 'Para vender',
+  'Ultimo aggiornamento': 'Última actualización', 'Caricamento…': 'Cargando…', 'Sezioni': 'Secciones', 'Affari': 'Chollos', 'Tipo di affare': 'Tipo de chollo',
+  'Categorie': 'Categorías', 'Cerca un item…': 'Busca un objeto…', 'Cerca un item': 'Busca un objeto', 'Cerca un oggetto craftabile…': 'Busca un objeto fabricable…',
+  'Filtra per grado': 'Filtrar por grado', 'Grado': 'Grado', 'Mostra tutti': 'Mostrar todos', 'Item': 'Objeto', 'Vendite/g': 'Ventas/día',
+  'Unità vendute al giorno: dati del gioco quando ci sono, altrimenti stima dalle inserzioni sparite': 'Unidades vendidas al día: datos del juego cuando los hay, si no, estimación por los anuncios desaparecidos',
+  'Prezzo più basso': 'Precio más bajo', 'Media': 'Media', 'Profitto flip': 'Beneficio flip', 'Segnale': 'Señal', 'Oggetto': 'Objeto', 'Professione': 'Profesión',
+  'Costo 1 craft': 'Coste de 1 craft', 'Costo stimato': 'Coste estimado', "Expert's e Artisan's: escono solo con la combo del 25%": "Expert's y Artisan's: solo salen con el combo del 25%",
+  'Prezzo Market': 'Precio en el Market', 'Risparmio': 'Ahorro', 'Conviene': 'Conviene', 'Storico prezzi': 'Historial de precios', 'Periodo del grafico': 'Periodo del gráfico',
+  '24 ore': '24 horas', '7 giorni': '7 días', '30 giorni': '30 días', '90 giorni': '90 días',
+  'Clicca un item per vedere i dettagli e come è cambiato il suo prezzo.': 'Haz clic en un objeto para ver sus detalles y cómo ha cambiado su precio.',
+  'Mostra categorie': 'Mostrar categorías', 'Nascondi categorie': 'Ocultar categorías', 'Mostra la barra delle categorie': 'Mostrar la barra de categorías', 'Nascondi la barra delle categorie': 'Ocultar la barra de categorías',
+  'Mostra non disponibili': 'Mostrar no disponibles', 'Nascondi non disponibili': 'Ocultar no disponibles', 'Mostra gli item non disponibili': 'Mostrar los objetos no disponibles', 'Nascondi gli item non disponibili': 'Ocultar los objetos no disponibles',
+  'Mostra solo i preferiti': 'Mostrar solo favoritos', 'Mostra tutti gli oggetti': 'Mostrar todos los objetos', 'Preferiti': 'Favoritos',
+  'Aggiungi ai preferiti': 'Añadir a favoritos', 'Togli dai preferiti': 'Quitar de favoritos', 'Nei preferiti — togli': 'En favoritos — quitar',
+  'Tutte': 'Todas', 'Tutti': 'Todos', 'Tipo': 'Tipo', 'Livello': 'Nivel',
+  'Armi': 'Armas', 'Armature': 'Armaduras', 'Accessori': 'Accesorios', 'Consumabili': 'Consumibles', 'Aspetto': 'Apariencia', 'Materiali': 'Materiales',
+  'Elmo': 'Casco', 'Spallacci': 'Hombreras', 'Corazza': 'Coraza', 'Gambali': 'Grebas', 'Guanti': 'Guantes', 'Stivali': 'Botas', 'Mantello': 'Capa',
+  'Collana': 'Collar', 'Orecchini': 'Pendientes', 'Anello': 'Anillo', 'Bracciale': 'Brazalete', 'Pozioni': 'Pociones', 'Cibo': 'Comida', 'Pergamene': 'Pergaminos',
+  'Caramelle': 'Caramelos', 'Manastone e Soulstone': 'Manastones y Soulstones', 'Ali': 'Alas', 'Biglietti a tempo': 'Tickets de duración', 'Forzieri': 'Cofres',
+  'Consumabili vari': 'Consumibles varios', 'Aspetto armature': 'Apariencia de armaduras', 'Aspetto accessori': 'Apariencia de accesorios', 'Raccolta': 'Recolección',
+  'Trasmutazione': 'Transmutación', 'Materiali speciali': 'Materiales especiales', 'Materiali vari': 'Materiales varios',
+  'Speciale': 'Especial', 'Non rare': 'Poco común', 'Common': 'Común', 'Rare': 'Raro', 'Legendary': 'Legendario', 'Mythic': 'Mítico',
+  'Compra per rivendere': 'Comprar para revender', 'Vendi ora': 'Vender ya', 'Tieni': 'Mantener', 'Compra': 'Comprar', 'Vendi': 'Vender', 'Servono più dati': 'Faltan datos',
+  'Non disponibile': 'No disponible', 'Craftalo': 'Fabrícalo', 'Compralo': 'Cómpralo', 'Solo crafting': 'Solo fabricación', 'Non in vendita': 'No está a la venta',
+  'Affari ora': 'Chollos ahora', 'Affari migliori adesso': 'Mejores chollos ahora', 'Per ora nessun item è abbastanza sotto la media da valere un flip.': 'Por ahora ningún objeto está lo bastante por debajo de la media como para merecer un flip.',
+  'Non riesco a caricare i dati di questo server. Riprova tra qualche minuto.': 'No puedo cargar los datos de este servidor. Inténtalo de nuevo en unos minutos.',
+  'Non riesco a caricare i dati. Ricarica la pagina tra qualche secondo.': 'No puedo cargar los datos. Recarga la página en unos segundos.',
+  'Nessun grado selezionato. Clicca un grado per mostrarlo.': 'Ningún grado seleccionado. Haz clic en un grado para mostrarlo.', 'Nessun item con questi filtri.': 'Ningún objeto con estos filtros.',
+  'Non hai ancora preferiti: clicca la stellina accanto a un oggetto per aggiungerlo.': 'Aún no tienes favoritos: haz clic en la estrella junto a un objeto para añadirlo.',
+  'Nessun oggetto craftabile tra i preferiti: clicca la stellina accanto a un oggetto per aggiungerlo.': 'Ningún objeto fabricable en favoritos: haz clic en la estrella junto a un objeto para añadirlo.',
+  'Dati di crafting non ancora disponibili.': 'Datos de fabricación aún no disponibles.',
+  "Mai visto in vendita finora, quindi non c'è uno storico dei prezzi.": 'Nunca visto a la venta hasta ahora, así que no hay historial de precios.',
+  'Dettagli': 'Detalles', 'Ricetta': 'Receta', 'Crafting': 'Fabricación', 'Totale': 'Total', 'Controlli': 'Comprobaciones', 'Ultimo controllo': 'Última comprobación',
+  'Vendite al giorno': 'Ventas al día', 'Ancora pochi dati': 'Aún pocos datos', 'Media = prezzo di vendita reale': 'Media = precio de venta real', '28 giorni': '28 días',
+  'Costo di 1 craft': 'Coste de 1 craft', 'Costo stimato (combo 25%)': 'Coste estimado (combo 25%)', 'Costo stimato (con fallimenti)': 'Coste estimado (con fallos)',
+  'Differenza': 'Diferencia', 'Risparmio craftando': 'Ahorro fabricando', 'Profitto se lo rivendi': 'Beneficio si lo revendes', 'Prezzi aggiornati': 'Precios actualizados',
+  '🔔 Avviso di prezzo': '🔔 Aviso de precio', 'Accedi con Discord per ricevere un messaggio dal bot quando questo oggetto arriva al prezzo che vuoi.': 'Inicia sesión con Discord para recibir un mensaje del bot cuando este objeto llegue al precio que quieras.',
+  'Scende sotto': 'Baja de', 'Sale sopra': 'Sube de', 'Avvisami': 'Avísame', 'Quando': 'Cuándo', 'Prezzo': 'Precio', 'Togli avviso': 'Quitar aviso',
+  'Scrivi un prezzo (anche 250k, 1.5m) o scegli qui sotto': 'Escribe un precio (también 250k, 1.5m) o elige abajo', 'Prezzo non valido': 'Precio no válido',
+  'Scrivi un prezzo, es. 250000, 250k o 1.5m.': 'Escribe un precio, p. ej. 250000, 250k o 1.5m.', 'Hai già 25 avvisi: togline qualcuno.': 'Ya tienes 25 avisos: quita alguno.',
+  'Non sono riuscito a salvare, riprova.': 'No he podido guardar, inténtalo de nuevo.', 'Il bot ti scrive nel canale avvisi del server Discord (controllo ogni 15 minuti).': 'El bot te escribe en el canal de avisos del servidor de Discord (comprueba cada 15 minutos).',
+  'Media 3 giorni': 'Media 3 días', 'Min 7g': 'Mín 7d', 'Max 7g': 'Máx 7d',
+  '🕒 Prezzi aggiornati:': '🕒 Precios actualizados:',
+  "Altro": "Otros",
+  "Esito": "Resultado",
+  "Craft normale": "Craft normal",
+  "Con la combo (Splendent)": "Con el combo (Splendent)",
+  "Prezzi mancanti": "Faltan precios",
+  "esce con la combo": "sale con el combo",
+  "potenziamento": "mejora",
+  "Prezzo non disponibile": "Precio no disponible",
+  "Costo di 1 craft: le quantità della ricetta ai prezzi di adesso, per ogni ingrediente il più conveniente tra Market, negozio NPC e craftarlo.": "Coste de 1 craft: las cantidades de la receta a los precios actuales, cada ingrediente al más barato entre el Market, la tienda NPC o fabricarlo.",
+  "Ricette e prezzi NPC:": "Recetas y precios NPC:",
+  "(dai file del gioco).": "(de los archivos del juego).",
+  "Costo stimato (con fallimenti), a pezzo": "Coste estimado (con fallos), por unidad",
+  "Prezzo anomalo": "Precio anómalo",
+  "Anomalo": "Anómalo",
+  "Affidabilità": "Fiabilidad",
+  "alta": "alta",
+  "media": "media",
+  "bassa": "baja",
+  ": il prezzo è più di 3 volte lontano dalla media e ci sono solo 1-2 inserzioni: probabilmente un errore o un'inserzione \"troll\", da non prendere come segnale.": ": el precio está a más de 3 veces de la media y solo hay 1-2 anuncios: probablemente un error o un anuncio \"troll\", no es una señal real.",
+  ": quanto fidarsi del segnale (alta, media, bassa), in base a quanti controlli ci sono, quante inserzioni e quanto è stabile il prezzo. Con affidabilità bassa non diamo Compra/Vendi. La media ignora i prezzi assurdi.": ": cuánto fiarse de la señal (alta, media, baja), según el número de comprobaciones, de anuncios y lo estable que es el precio. Con fiabilidad baja no damos Comprar/Vender. La media ignora los precios absurdos.",
+  "Elimina account": "Eliminar cuenta",
+  "Sicuro? Clicca di nuovo": "¿Seguro? Haz clic otra vez",
+  "Errore, riprova": "Error, inténtalo de nuevo",
+  "Elimina il tuo account e i dati salvati (preferiti, server, avvisi)": "Elimina tu cuenta y los datos guardados (favoritos, servidor, avisos)",
+  'Privacy': 'Privacidad',
+  'Impostazioni': 'Ajustes', 'Chiudi': 'Cerrar',
+  'Accedi con Discord': 'Entrar con Discord', 'Esci': 'Salir',
+  'Come leggere i numeri': 'Cómo leer los números',
+  ': quanto guadagni comprando ora al prezzo più basso e rivendendo alla media, tolta la tassa del Market.': ': cuánto ganas comprando ahora al precio más bajo y revendiendo a la media, descontado el impuesto del Market.',
+  ': prezzo tipico (mediana) degli ultimi 3 giorni.': ': precio típico (mediana) de los últimos 3 días.',
+  ': prezzo abbastanza sotto la media da guadagnarci.': ': precio lo bastante por debajo de la media como para ganar.', ': prezzo molto sopra la media.': ': precio muy por encima de la media.',
+  ': quanti pezzi si vendono al giorno. Con "~" è una stima dalle inserzioni sparite tra un controllo e l\'altro (possono essere anche ritirate). Il segnale Compra compare solo se se ne vende almeno 1 al giorno.':
+    ': cuántas unidades se venden al día. Con "~" es una estimación por los anuncios que desaparecieron entre dos comprobaciones (también pueden haberse retirado). La señal Comprar solo aparece si se vende al menos 1 al día.',
+  ': nessuno lo sta vendendo nel Market in questo momento.': ': nadie lo está vendiendo en el Market ahora mismo.', ': meno di 3 controlli, troppo pochi per giudicare il prezzo.': ': menos de 3 comprobaciones, demasiado pocas para juzgar el precio.',
+  'Prezzi del server': 'Precios del servidor', '(Europa · Asmodiani), aggiornati ogni ora dai dati pubblici di': '(Europa · Asmodianos), actualizados cada hora con los datos públicos de',
+  'e dai video del Market in gioco. Non affiliato a NCSOFT.': 'y con vídeos del Market en el juego. No afiliado a NCSOFT.',
+};
+const RLABEL_ES = {'nelle ultime 24 ore': 'en las últimas 24 horas', 'negli ultimi 7 giorni': 'en los últimos 7 días', 'negli ultimi 30 giorni': 'en los últimos 30 días', 'negli ultimi 90 giorni': 'en los últimos 90 días'};
+const rlEs = (x) => RLABEL_ES[x] || x;
+const ES_RE = [
+  [/^· prossimo aggiornamento verso le (.+)$/, '· próxima actualización hacia las $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· datos con retraso, la próxima actualización debería arreglarlo'],
+  [/^maestria (\d+)$/, 'maestría $1'],
+  [/^Costo stimato \(combo (\d+)%\)$/, 'Coste estimado (combo $1%)'],
+  [/^(.+) l'uno dal negozio NPC$/, '$1 cada uno en la tienda NPC'],
+  [/^(.+) l'uno craftandolo \(passo (\d+)\)$/, '$1 cada uno fabricándolo (paso $2)'],
+  [/^Esce solo con la combo \((\d+)%\) di un craft riuscito \((\d+%)\): in media 1 craft su ([\d.]+)\.$/, 'Solo sale con el combo del $1% de un craft con éxito ($2): de media 1 de cada $3 crafts.'],
+  [/^Il craft riesce il (\d+%) delle volte: il costo stimato conta anche i tentativi falliti\.(?: Ogni craft ne produce (\d+)\.)?$/, (m, a, q) => `El craft sale bien el ${a} de las veces: el coste estimado cuenta también los intentos fallidos.` + (q ? ` Cada craft produce ${q}.` : '')],
+  [/^Passo (\d)$/, 'Paso $1'],
+  [/^versione precedente · conviene comprarla al Market$/, 'versión anterior · conviene comprarla en el Market'], [/^versione precedente · conviene craftarla \(passo (\d)\)$/, 'versión anterior · conviene fabricarla (paso $1)'],
+  [/^Preferiti \((\d+)\)$/, 'Favoritos ($1)'],
+  [/^Aggiungi ai preferiti: (.+)$/, 'Añadir a favoritos: $1'], [/^Togli dai preferiti: (.+)$/, 'Quitar de favoritos: $1'],
+  [/^Nessun item contiene "(.*)" con questi filtri\. Prova un altro nome o mostra tutti i gradi\.$/, 'Ningún objeto contiene "$1" con estos filtros. Prueba otro nombre o muestra todos los grados.'],
+  [/^Nessun oggetto craftabile contiene "(.*)"\.$/, 'Ningún objeto fabricable contiene "$1".'],
+  [/^Ancora nessun segnale: ogni item ha bisogno di almeno (\d+) controlli\.$/, 'Aún no hay señales: cada objeto necesita al menos $1 comprobaciones.'],
+  [/^Clicca un oggetto per vedere la ricetta e quanto costa craftarlo adesso\. Prezzi dei materiali aggiornati: (.*)\.$/, 'Haz clic en un objeto para ver su receta y cuánto cuesta fabricarlo ahora. Precios de materiales actualizados: $1.'],
+  [/^Nessun prezzo (.+): prova un periodo più lungo\.$/, (m, a) => `Ningún precio ${rlEs(a)}: prueba un periodo más largo.`],
+  [/^Un solo prezzo (.+): prova un periodo più lungo\.$/, (m, a) => `Un solo precio ${rlEs(a)}: prueba un periodo más largo.`],
+  [/^Prezzo più basso (.+), in Kinah\.$/, (m, a) => `Precio más bajo ${rlEs(a)}, en Kinah.`],
+  [/^(.+) in vendita$/, '$1 en venta'], [/^a ([\d.,]+[KMB]?)$/, 'a $1'], [/^media ([\d.,]+[KMB]?)$/, 'media $1'],
+  [/^passo (\d) di 3$/, 'nivel $1 de 3'], [/^(Vendite al giorno) \((stima|dati del gioco)\)$/, (m, a, b) => `Ventas al día (${b === 'stima' ? 'estimación' : 'datos del juego'})`],
+  [/^Scende sotto (.+)$/, 'Baja de $1'], [/^Sale sopra (.+)$/, 'Sube de $1'], [/^(.+) l'uno al Market$/, '$1 cada uno en el Market'],
+  [/^Costo di 1 craft: le quantità della ricetta ai prezzi più bassi di adesso al Market(, più la versione precedente)?\. (.*)$/, (m, pv, rest) => 'Coste de 1 craft: las cantidades de la receta a los precios más bajos actuales del Market' + (pv ? ', más la versión anterior' : '') + '. ' + rest
+    .replace(/L'oggetto però esce solo con la combo \(25%\) di un craft riuscito \((\d+%)\): in media serve 1 craft su ([\d.]+), quindi il costo stimato è ([\d.]+) volte i materiali/, 'Pero el objeto solo sale con el combo del 25% de un craft con éxito ($1): de media sale 1 de cada $2 crafts, así que el coste estimado es $3 veces los materiales')
+    .replace(/Il craft riesce il (\d+%) delle volte: il costo stimato conta anche i tentativi falliti/, 'El craft sale bien el $1 de las veces: el coste estimado cuenta también los intentos fallidos')
+    .replace(/\. Ogni craft usa anche 1 (.+?) \(la versione precedente\), contata a ([\d,]+): il prezzo più basso tra comprarla e craftarla\./, (x, n, v) => `. Cada craft usa también 1 ${iname(n)} (la versión anterior), contada a ${v}: lo más barato entre comprarla y fabricarla.`)
+    .replace(/Ricette: aion2\.exchange \(dai file del gioco\)\./, 'Recetas: aion2.exchange (de los archivos del juego).')],
+];
+
+const FR = {
+  'Tassa': 'Taxe', 'Tema': 'Thème', 'Lingua': 'Langue', 'Oggetti': 'Objets', 'In vendita': 'En vente', 'Da comprare': 'À acheter', 'Da vendere': 'À vendre',
+  'Ultimo aggiornamento': 'Dernière mise à jour', 'Caricamento…': 'Chargement…', 'Sezioni': 'Sections', 'Affari': 'Bonnes affaires', 'Tipo di affare': "Type d'affaire",
+  'Categorie': 'Catégories', 'Cerca un item…': 'Chercher un objet…', 'Cerca un item': 'Chercher un objet', 'Cerca un oggetto craftabile…': 'Chercher un objet fabricable…',
+  'Filtra per grado': 'Filtrer par rang', 'Grado': 'Rang', 'Mostra tutti': 'Tout afficher', 'Item': 'Objet', 'Vendite/g': 'Ventes/j',
+  'Unità vendute al giorno: dati del gioco quando ci sono, altrimenti stima dalle inserzioni sparite': 'Unités vendues par jour : données du jeu quand elles existent, sinon estimation à partir des annonces disparues',
+  'Prezzo più basso': 'Prix le plus bas', 'Media': 'Moyenne', 'Profitto flip': 'Profit flip', 'Segnale': 'Signal', 'Oggetto': 'Objet', 'Professione': 'Métier',
+  'Costo 1 craft': 'Coût de 1 craft', 'Costo stimato': 'Coût estimé', "Expert's e Artisan's: escono solo con la combo del 25%": "Expert's et Artisan's : n'apparaissent qu'avec le combo de 25 %",
+  'Prezzo Market': 'Prix au Market', 'Risparmio': 'Économie', 'Conviene': 'Conseil', 'Storico prezzi': 'Historique des prix', 'Periodo del grafico': 'Période du graphique',
+  '24 ore': '24 heures', '7 giorni': '7 jours', '30 giorni': '30 jours', '90 giorni': '90 jours',
+  'Clicca un item per vedere i dettagli e come è cambiato il suo prezzo.': "Clique sur un objet pour voir ses détails et l'évolution de son prix.",
+  'Mostra categorie': 'Afficher les catégories', 'Nascondi categorie': 'Masquer les catégories', 'Mostra la barra delle categorie': 'Afficher la barre des catégories', 'Nascondi la barra delle categorie': 'Masquer la barre des catégories',
+  'Mostra non disponibili': 'Afficher les indisponibles', 'Nascondi non disponibili': 'Masquer les indisponibles', 'Mostra gli item non disponibili': 'Afficher les objets indisponibles', 'Nascondi gli item non disponibili': 'Masquer les objets indisponibles',
+  'Mostra solo i preferiti': 'Afficher seulement les favoris', 'Mostra tutti gli oggetti': 'Afficher tous les objets', 'Preferiti': 'Favoris',
+  'Aggiungi ai preferiti': 'Ajouter aux favoris', 'Togli dai preferiti': 'Retirer des favoris', 'Nei preferiti — togli': 'Dans les favoris — retirer',
+  'Tutte': 'Toutes', 'Tutti': 'Tous', 'Tipo': 'Type', 'Livello': 'Niveau',
+  'Armi': 'Armes', 'Armature': 'Armures', 'Accessori': 'Accessoires', 'Consumabili': 'Consommables', 'Aspetto': 'Apparence', 'Materiali': 'Matériaux',
+  'Elmo': 'Casque', 'Spallacci': 'Épaulettes', 'Corazza': 'Cuirasse', 'Gambali': 'Grèves', 'Guanti': 'Gants', 'Stivali': 'Bottes', 'Mantello': 'Cape',
+  'Collana': 'Collier', 'Orecchini': "Boucles d'oreilles", 'Anello': 'Anneau', 'Bracciale': 'Bracelet', 'Pozioni': 'Potions', 'Cibo': 'Nourriture', 'Pergamene': 'Parchemins',
+  'Caramelle': 'Bonbons', 'Manastone e Soulstone': 'Manastones et Soulstones', 'Ali': 'Ailes', 'Biglietti a tempo': 'Tickets à durée', 'Forzieri': 'Coffres',
+  'Consumabili vari': 'Consommables divers', 'Aspetto armature': "Apparence d'armures", 'Aspetto accessori': "Apparence d'accessoires", 'Raccolta': 'Matériaux de collecte',
+  'Trasmutazione': 'Transmutation', 'Materiali speciali': 'Matériaux spéciaux', 'Materiali vari': 'Matériaux divers',
+  'Speciale': 'Spécial', 'Non rare': 'Peu commun', 'Common': 'Commun', 'Rare': 'Rare', 'Legendary': 'Légendaire', 'Mythic': 'Mythique',
+  'Compra per rivendere': 'Acheter pour revendre', 'Vendi ora': 'Vendre maintenant', 'Tieni': 'Garder', 'Compra': 'Acheter', 'Vendi': 'Vendre', 'Servono più dati': 'Pas assez de données',
+  'Non disponibile': 'Indisponible', 'Craftalo': 'Fabrique-le', 'Compralo': 'Achète-le', 'Solo crafting': 'Fabrication uniquement', 'Non in vendita': "Pas en vente",
+  'Affari ora': 'Affaires du moment', 'Affari migliori adesso': 'Meilleures affaires du moment', 'Per ora nessun item è abbastanza sotto la media da valere un flip.': "Pour l'instant, aucun objet n'est assez sous la moyenne pour valoir un flip.",
+  'Non riesco a caricare i dati di questo server. Riprova tra qualche minuto.': 'Impossible de charger les données de ce serveur. Réessaie dans quelques minutes.',
+  'Non riesco a caricare i dati. Ricarica la pagina tra qualche secondo.': 'Impossible de charger les données. Recharge la page dans quelques secondes.',
+  'Nessun grado selezionato. Clicca un grado per mostrarlo.': 'Aucun rang sélectionné. Clique sur un rang pour l\'afficher.', 'Nessun item con questi filtri.': 'Aucun objet avec ces filtres.',
+  'Non hai ancora preferiti: clicca la stellina accanto a un oggetto per aggiungerlo.': "Tu n'as pas encore de favoris : clique sur l'étoile à côté d'un objet pour l'ajouter.",
+  'Nessun oggetto craftabile tra i preferiti: clicca la stellina accanto a un oggetto per aggiungerlo.': "Aucun objet fabricable dans tes favoris : clique sur l'étoile à côté d'un objet pour l'ajouter.",
+  'Dati di crafting non ancora disponibili.': 'Données de fabrication pas encore disponibles.',
+  "Mai visto in vendita finora, quindi non c'è uno storico dei prezzi.": "Jamais vu en vente jusqu'ici, donc pas d'historique des prix.",
+  'Dettagli': 'Détails', 'Ricetta': 'Recette', 'Crafting': 'Fabrication', 'Totale': 'Total', 'Controlli': 'Relevés', 'Ultimo controllo': 'Dernier relevé',
+  'Vendite al giorno': 'Ventes par jour', 'Ancora pochi dati': 'Encore trop peu de données', 'Media = prezzo di vendita reale': 'Moyenne = prix de vente réel', '28 giorni': '28 jours',
+  'Costo di 1 craft': 'Coût de 1 craft', 'Costo stimato (combo 25%)': 'Coût estimé (combo 25 %)', 'Costo stimato (con fallimenti)': 'Coût estimé (avec échecs)',
+  'Differenza': 'Différence', 'Risparmio craftando': 'Économie en fabriquant', 'Profitto se lo rivendi': 'Profit si tu le revends', 'Prezzi aggiornati': 'Prix mis à jour',
+  '🔔 Avviso di prezzo': '🔔 Alerte de prix', 'Accedi con Discord per ricevere un messaggio dal bot quando questo oggetto arriva al prezzo che vuoi.': 'Connecte-toi avec Discord pour recevoir un message du bot quand cet objet atteint le prix que tu veux.',
+  'Scende sotto': 'Descend sous', 'Sale sopra': 'Monte au-dessus de', 'Avvisami': 'Préviens-moi', 'Quando': 'Quand', 'Prezzo': 'Prix', 'Togli avviso': "Retirer l'alerte",
+  'Scrivi un prezzo (anche 250k, 1.5m) o scegli qui sotto': 'Écris un prix (aussi 250k, 1.5m) ou choisis ci-dessous', 'Prezzo non valido': 'Prix non valide',
+  'Scrivi un prezzo, es. 250000, 250k o 1.5m.': 'Écris un prix, par ex. 250000, 250k ou 1.5m.', 'Hai già 25 avvisi: togline qualcuno.': 'Tu as déjà 25 alertes : retires-en quelques-unes.',
+  'Non sono riuscito a salvare, riprova.': "Impossible d'enregistrer, réessaie.", 'Il bot ti scrive nel canale avvisi del server Discord (controllo ogni 15 minuti).': "Le bot t'écrit dans le salon d'alertes du serveur Discord (vérification toutes les 15 minutes).",
+  'Media 3 giorni': 'Moyenne 3 jours', 'Min 7g': 'Min 7j', 'Max 7g': 'Max 7j',
+  '🕒 Prezzi aggiornati:': '🕒 Prix mis à jour :',
+  "Altro": "Autres",
+  "Esito": "Résultat",
+  "Craft normale": "Craft normal",
+  "Con la combo (Splendent)": "Avec le combo (éclatant)",
+  "Prezzi mancanti": "Prix manquants",
+  "esce con la combo": "obtenu avec le combo",
+  "potenziamento": "amélioration",
+  "Prezzo non disponibile": "Prix non disponible",
+  "Costo di 1 craft: le quantità della ricetta ai prezzi di adesso, per ogni ingrediente il più conveniente tra Market, negozio NPC e craftarlo.": "Coût de 1 craft : les quantités de la recette aux prix actuels, chaque ingrédient au moins cher entre le Market, la boutique PNJ ou sa fabrication.",
+  "Ricette e prezzi NPC:": "Recettes et prix PNJ :",
+  "(dai file del gioco).": "(fichiers du jeu).",
+  "Costo stimato (con fallimenti), a pezzo": "Coût estimé (avec échecs), par unité",
+  "Prezzo anomalo": "Prix anormal",
+  "Anomalo": "Anormal",
+  "Affidabilità": "Fiabilité",
+  "alta": "haute",
+  "media": "moyenne",
+  "bassa": "faible",
+  ": il prezzo è più di 3 volte lontano dalla media e ci sono solo 1-2 inserzioni: probabilmente un errore o un'inserzione \"troll\", da non prendere come segnale.": " : le prix est à plus de 3 fois la moyenne avec seulement 1-2 annonces : sans doute une erreur ou une annonce « troll », pas un vrai signal.",
+  ": quanto fidarsi del segnale (alta, media, bassa), in base a quanti controlli ci sono, quante inserzioni e quanto è stabile il prezzo. Con affidabilità bassa non diamo Compra/Vendi. La media ignora i prezzi assurdi.": " : à quel point se fier au signal (haute, moyenne, faible), selon le nombre de relevés, d'annonces et la stabilité du prix. Avec une fiabilité faible, pas d'Acheter/Vendre. La moyenne ignore les prix absurdes.",
+  "Elimina account": "Supprimer le compte",
+  "Sicuro? Clicca di nuovo": "Sûr ? Clique encore",
+  "Errore, riprova": "Erreur, réessaie",
+  "Elimina il tuo account e i dati salvati (preferiti, server, avvisi)": "Supprime ton compte et les données enregistrées (favoris, serveur, alertes)",
+  'Privacy': 'Confidentialité',
+  'Impostazioni': 'Réglages', 'Chiudi': 'Fermer',
+  'Accedi con Discord': 'Se connecter avec Discord', 'Esci': 'Déconnexion',
+  'Come leggere i numeri': 'Comment lire les chiffres',
+  ': quanto guadagni comprando ora al prezzo più basso e rivendendo alla media, tolta la tassa del Market.': ' : combien tu gagnes en achetant maintenant au prix le plus bas et en revendant à la moyenne, taxe du Market déduite.',
+  ': prezzo tipico (mediana) degli ultimi 3 giorni.': ' : prix typique (médiane) des 3 derniers jours.',
+  ': prezzo abbastanza sotto la media da guadagnarci.': ' : prix assez sous la moyenne pour faire un bénéfice.', ': prezzo molto sopra la media.': ' : prix bien au-dessus de la moyenne.',
+  ': quanti pezzi si vendono al giorno. Con "~" è una stima dalle inserzioni sparite tra un controllo e l\'altro (possono essere anche ritirate). Il segnale Compra compare solo se se ne vende almeno 1 al giorno.':
+    ' : combien d\'unités se vendent par jour. Avec « ~ », c\'est une estimation à partir des annonces disparues entre deux relevés (elles peuvent aussi avoir été retirées). Le signal Acheter n\'apparaît que s\'il s\'en vend au moins 1 par jour.',
+  ': nessuno lo sta vendendo nel Market in questo momento.': " : personne ne le vend au Market en ce moment.", ': meno di 3 controlli, troppo pochi per giudicare il prezzo.': ' : moins de 3 relevés, trop peu pour juger le prix.',
+  'Prezzi del server': 'Prix du serveur', '(Europa · Asmodiani), aggiornati ogni ora dai dati pubblici di': '(Europe · Asmodiens), mis à jour chaque heure avec les données publiques de',
+  'e dai video del Market in gioco. Non affiliato a NCSOFT.': 'et des vidéos du Market en jeu. Non affilié à NCSOFT.',
+};
+const RLABEL_FR = {'nelle ultime 24 ore': 'sur les dernières 24 heures', 'negli ultimi 7 giorni': 'sur les 7 derniers jours', 'negli ultimi 30 giorni': 'sur les 30 derniers jours', 'negli ultimi 90 giorni': 'sur les 90 derniers jours'};
+const rlFr = (x) => RLABEL_FR[x] || x;
+const FR_RE = [
+  [/^· prossimo aggiornamento verso le (.+)$/, '· prochaine mise à jour vers $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· données en retard, la prochaine mise à jour devrait corriger cela'],
+  [/^maestria (\d+)$/, 'maîtrise $1'],
+  [/^Costo stimato \(combo (\d+)%\)$/, 'Coût estimé (combo $1 %)'],
+  [/^(.+) l'uno dal negozio NPC$/, "$1 l'unité à la boutique PNJ"],
+  [/^(.+) l'uno craftandolo \(passo (\d+)\)$/, "$1 l'unité en le fabriquant (étape $2)"],
+  [/^Esce solo con la combo \((\d+)%\) di un craft riuscito \((\d+%)\): in media 1 craft su ([\d.]+)\.$/, "N'apparaît qu'avec le combo de $1 % d'un craft réussi ($2) : en moyenne 1 craft sur $3."],
+  [/^Il craft riesce il (\d+%) delle volte: il costo stimato conta anche i tentativi falliti\.(?: Ogni craft ne produce (\d+)\.)?$/, (m, a, q) => `Le craft réussit ${a} du temps : le coût estimé compte aussi les tentatives ratées.` + (q ? ` Chaque craft en produit ${q}.` : '')],
+  [/^Passo (\d)$/, 'Étape $1'],
+  [/^versione precedente · conviene comprarla al Market$/, 'version précédente · moins cher de l\'acheter au Market'], [/^versione precedente · conviene craftarla \(passo (\d)\)$/, 'version précédente · moins cher de la fabriquer (étape $1)'],
+  [/^Preferiti \((\d+)\)$/, 'Favoris ($1)'],
+  [/^Aggiungi ai preferiti: (.+)$/, (m, n) => 'Ajouter aux favoris : ' + iname(n)], [/^Togli dai preferiti: (.+)$/, (m, n) => 'Retirer des favoris : ' + iname(n)],
+  [/^Nessun item contiene "(.*)" con questi filtri\. Prova un altro nome o mostra tutti i gradi\.$/, 'Aucun objet ne contient « $1 » avec ces filtres. Essaie un autre nom ou affiche tous les rangs.'],
+  [/^Nessun oggetto craftabile contiene "(.*)"\.$/, 'Aucun objet fabricable ne contient « $1 ».'],
+  [/^Ancora nessun segnale: ogni item ha bisogno di almeno (\d+) controlli\.$/, "Pas encore de signal : chaque objet a besoin d'au moins $1 relevés."],
+  [/^Clicca un oggetto per vedere la ricetta e quanto costa craftarlo adesso\. Prezzi dei materiali aggiornati: (.*)\.$/, 'Clique sur un objet pour voir sa recette et ce que coûte sa fabrication maintenant. Prix des matériaux mis à jour : $1.'],
+  [/^Nessun prezzo (.+): prova un periodo più lungo\.$/, (m, a) => `Aucun prix ${rlFr(a)} : essaie une période plus longue.`],
+  [/^Un solo prezzo (.+): prova un periodo più lungo\.$/, (m, a) => `Un seul prix ${rlFr(a)} : essaie une période plus longue.`],
+  [/^Prezzo più basso (.+), in Kinah\.$/, (m, a) => `Prix le plus bas ${rlFr(a)}, en Kinah.`],
+  [/^(.+) in vendita$/, '$1 en vente'], [/^a ([\d.,]+[KMB]?)$/, 'à $1'], [/^media ([\d.,]+[KMB]?)$/, 'moy. $1'],
+  [/^passo (\d) di 3$/, 'niveau $1 sur 3'], [/^(Vendite al giorno) \((stima|dati del gioco)\)$/, (m, a, b) => `Ventes par jour (${b === 'stima' ? 'estimation' : 'données du jeu'})`],
+  [/^Scende sotto (.+)$/, 'Descend sous $1'], [/^Sale sopra (.+)$/, 'Monte au-dessus de $1'], [/^(.+) l'uno al Market$/, "$1 l'unité au Market"],
+  [/^Costo di 1 craft: le quantità della ricetta ai prezzi più bassi di adesso al Market(, più la versione precedente)?\. (.*)$/, (m, pv, rest) => 'Coût de 1 craft : les quantités de la recette aux prix les plus bas actuels du Market' + (pv ? ', plus la version précédente' : '') + '. ' + rest
+    .replace(/L'oggetto però esce solo con la combo \(25%\) di un craft riuscito \((\d+%)\): in media serve 1 craft su ([\d.]+), quindi il costo stimato è ([\d.]+) volte i materiali/, "Mais l'objet n'apparaît qu'avec le combo de 25 % d'un craft réussi ($1) : en moyenne 1 craft sur $2 le donne, donc le coût estimé vaut $3 fois les matériaux")
+    .replace(/Il craft riesce il (\d+%) delle volte: il costo stimato conta anche i tentativi falliti/, 'Le craft réussit $1 du temps : le coût estimé compte aussi les tentatives ratées')
+    .replace(/\. Ogni craft usa anche 1 (.+?) \(la versione precedente\), contata a ([\d,]+): il prezzo più basso tra comprarla e craftarla\./, (x, n, v) => `. Chaque craft utilise aussi 1 ${iname(n)} (la version précédente), comptée à ${v} : le moins cher entre l'acheter et la fabriquer.`)
+    .replace(/Ricette: aion2\.exchange \(dai file del gioco\)\./, 'Recettes : aion2.exchange (fichiers du jeu).')],
+];
+
+const DICT = {en: EN, es: ES, fr: FR}[LANG] || {}, RE = {en: EN_RE, es: ES_RE, fr: FR_RE}[LANG] || [];
+// in-game item names exist in French: with LANG fr they are shown instead of the English ones (data/names_fr.json)
+let NAMES = {};
+const iname = (n) => NAMES[n] || n;
+const fold = (t) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+if (LANG === 'fr') RE.unshift([/^(\d+) × (.+)$/, (m, q, n) => `${q} × ${iname(n)}`]);
+function tr(text) {
+  const core = text.trim();
+  if (!core || !/[a-zà-ú]/i.test(core)) return text;
+  let out = DICT[core];
+  if (out == null) for (const [re, rep] of RE) if (re.test(core)) { out = core.replace(re, rep); break; }
+  if (out == null && core.includes(' · ')) { const parts = core.split(' · '), t = parts.map((p) => tr(p)); if (t.some((x, i) => x !== parts[i])) out = t.join(' · '); }
+  if (out == null) return text;
+  return text.slice(0, text.indexOf(core)) + out + text.slice(text.indexOf(core) + core.length);
+}
+const TR_ATTRS = ['placeholder', 'title', 'aria-label'];
+function translateTree(root) {
+  if (root.nodeType === 3) { const t = tr(root.data); if (t !== root.data) root.data = t; return; }
+  if (root.nodeType !== 1 || root.closest?.('svg, script, style')) return;
+  const els = [root, ...root.querySelectorAll('*')];
+  for (const el of els) for (const a of TR_ATTRS) { const v = el.getAttribute(a); if (v) { const t = tr(v); if (t !== v) el.setAttribute(a, t); } }
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  for (let n = w.nextNode(); n; n = w.nextNode()) { if (n.parentElement?.closest('svg, script, style')) continue; const t = tr(n.data); if (t !== n.data) n.data = t; }
+}
+if (LANG !== 'it') {
+  translateTree(document.body);
+  new MutationObserver((recs) => {
+    for (const r of recs) {
+      if (r.type === 'characterData') translateTree(r.target);
+      else if (r.type === 'attributes') { const v = r.target.getAttribute(r.attributeName); if (v) { const t = tr(v); if (t !== v) r.target.setAttribute(r.attributeName, t); } }
+      else r.addedNodes.forEach(translateTree);
+    }
+  }).observe(document.body, {subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: TR_ATTRS});
+}
+document.querySelectorAll('.langs button').forEach((b) => {
+  b.setAttribute('aria-pressed', String(b.dataset.lang === LANG));
+  b.addEventListener('click', () => { if (b.dataset.lang === LANG) return; try { localStorage.setItem('aion-lang', b.dataset.lang); } catch (e) {} location.reload(); });
+});

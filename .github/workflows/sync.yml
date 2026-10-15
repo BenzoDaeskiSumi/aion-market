@@ -1,7 +1,7 @@
 name: Sync prices
 on:
   schedule:
-    - cron: '17 * * * *'   # every hour at :17
+    - cron: '17 * * * *'   # every hour at :17 (backup; cron-job.org triggers it at :00)
   workflow_dispatch: {}
 permissions:
   contents: write
@@ -14,13 +14,22 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/checkout@v4      # the data lives on the 'data' branch, as one commit
+        with: {ref: data, path: _data}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - run: cp -r _data/data/. data/
+      - run: python -m unittest scripts/test_summary.py
       - run: python scripts/sync.py
-      - name: Commit if changed
+      - name: Save the data (replaces the single commit of the data branch; Publish site runs after this)
         run: |
+          rsync -a --delete data/s/ _data/data/s/
+          cp data/catalog.json data/servers.json _data/data/
+          cd _data
           git config user.name "BenzoDaeskiSumi"
           git config user.email "173538282+BenzoDaeskiSumi@users.noreply.github.com"
-          git add data/s data/servers.json data/catalog.json
-          git diff --cached --quiet || (git commit -m "Prezzi aggiornati da aion2.exchange" && git pull --rebase && git push)
+          git checkout -q --orphan fresh
+          git add -A
+          git commit -qm "Dati del Market $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -q -f origin fresh:data

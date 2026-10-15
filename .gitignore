@@ -1,1 +1,6 @@
 __pycache__/
+
+# Market data lives on the "data" branch (one commit, replaced every hour) and is merged in by "Publish site"
+data/s/
+data/catalog.json
+data/servers.json

@@ -2,6 +2,23 @@
 
 Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 
+## Layout (read first)
+- Code on main: index.html (markup only) + css/style.css + js/{i18n,core,market,craft,ui,alerts,account,main}.js (classic scripts,
+  shared globals, loaded in that order) + privacy.html. Bot in bot/. Scripts in scripts/.
+- Market data is NOT on main: it lives on the 'data' branch as ONE commit that every writer replaces (git checkout --orphan +
+  push -f), so the repository does not grow every hour: data/s/<id>/*, data/catalog.json, data/servers.json (ignored on main).
+  Small hand-made data (settings, icons, recipes, names_fr) stays on main.
+- 'Publish site' (pages.yml, Pages source = GitHub Actions) = main + data branch, runs on every push to main and after each sync;
+  it also self-hosts Google Fonts and the supabase-js CDN script (scripts/selfhost.py) so visitors never contact Google/jsDelivr.
+- To work on data locally: git fetch origin data && git worktree add ../aion-data data (or git show data:path).
+- Computed numbers come from ONE place: scripts/sync.py item_stats() -> data/s/<id>/summary.json, read by the page (itemsFrom) and
+  the bot. Outlier filter (prices >3x from the raw median ignored), confidence q alta/media/bassa (Buy/Sell need >= media),
+  'Prezzo anomalo' (price >3x from average with <= 2 listings). Tests: scripts/test_summary.py (Tests workflow + before each sync).
+- Per-item history for the page chart: data/s/<id>/h/<slug>.json [[minutes, price, listings]], loaded only when an item is opened.
+- Watchdog: the bot's 15-minute cron posts in the alerts channel if Marchutan's meta.json snapshot is older than 3 h (and when it recovers).
+- Privacy: privacy.html (IT+EN), 'Elimina account' in the header calls Supabase RPC delete_my_account (bot/supabase.sql).
+- Phone layout (<= 760 px): menu button for header controls, bottom tab bar, details as a bottom sheet (showDetail/closeSheet in js/ui.js).
+
 ## Automatic sync
 `.github/workflows/sync.yml` runs `scripts/sync.py` every hour (triggered at :00 by cron-job.org; sync.py first waits, up to 25 min,
 for aion2.exchange's new hourly snapshot (~:07) so the site gets this hour's prices): it reads the public API https://aion2.exchange/api (docs at /api/docs,
@@ -47,7 +64,8 @@ the chart extends the last price to it, and the status line '#upd' at the top sh
    - Screenshots (F12): C:\Program Files (x86)\Steam\userdata\1171700832\760\remote\3393110\screenshots
    - Greyed rows (0 listings, price 0) ARE recorded with lowest_price 0 and listings 0: the page shows them as 'Non disponibile'.
    - Weapons, armor and accessories also get `level` (the 'Item Level' under the name).
-2. For each item row, append to data/s/12305/price_log.json (Marchutan; videos are only for that server):
+2. For each item row, append to data/s/12305/price_log.json ON THE DATA BRANCH (Marchutan; videos are only for that server; then re-run
+   write_summary for 12305 and replace the data branch commit as sync.yml does):
    {checked_at (ISO, Europe/Rome offset, from the screenshot file name), item, category, grade, lowest_price, listings, screenshot}
    - grade = name color in game: white (Common) | green (Non rare) | blue (Rare) | gold (Legendary) | orange (Mythic) | teal (shown as 'Speciale'; game lists it after Common)
    - category = the Market sub-category (sidebar entry selected in game). Weapons tab: "Longsword", "Greatsword", "Dagger" (incl. "... Knife"), "Bow", "Spellbook", "Orb", "Mace", "Staff", "Guard".
@@ -59,9 +77,9 @@ the chart extends the last price to it, and the status line '#upd' at the top sh
    - Flag rows only half visible at the bottom of a screenshot that never appear fully in the next one.
 3. For every new item, crop its icon (then run scripts/clean_icon.py's clean() on it: it inpaints the in-game overlays — red 'book' marker, '?' scroll badge bottom-left, white dash top-left) from the screenshot or video frame (icon box ≈ x 446–528 px on a 2560×1440 frame, centred on the row), save 96×96 PNG to icons/<slug>.png and add it to data/icons.json.
 4. If the in-game "Current Tax Rate" changed, update data/settings.json.
-5. Commit and push to main. Pages redeploys in about a minute.
+5. Push the data branch (single commit) and run 'Publish site'. Pages redeploys in about a minute.
 
-Page logic lives in index.html (computeItems). d3 is vendored in lib/. Wallpapers in bg/ (hand-made SVGs, one per theme).
+Page logic lives in js/*.js (items from summary.json, see Layout). d3 is vendored in lib/. Wallpapers in bg/ (hand-made SVGs, one per theme).
 In-game order: items on sale first, then by grade (Mythic → Common → teal), then a fixed series. For weapons the series is:
 Holy Spirit, Wisdom, Fantasy, Spectral, Courage, Fallen Ancient God, Artisan's Splendent X, Star Dragon Lord, Splendent Star Dragon Lord, Tranquility,
 Dark Dragon Lord, Splendent Dark Dragon Lord, Ebony Dragon Lord, Splendent Ebony Dragon Lord | Relic Collector, Destruction, Bloodthirsty,

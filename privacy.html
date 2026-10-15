@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy · Aion 2 Market</title>
+<link rel="icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #0b0f18; --card: #121826; --line: #233047; --text: #dce6f5; --dim: #8b9cbc; --accent: #5b8cff; }
+@media (prefers-color-scheme: light) { :root { --bg: #f4f6fa; --card: #fff; --line: #d9dfeb; --text: #1e2a3a; --dim: #5d6878; --accent: #2f5fd0; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 Inter, system-ui, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+header img { width: 40px; height: 40px; border-radius: 10px; }
+h1 { font-size: 26px; margin: 0; } h2 { font-size: 19px; margin: 28px 0 8px; } h3 { font-size: 16px; margin: 18px 0 6px; }
+a { color: var(--accent); } .dim { color: var(--dim); font-size: 14px; }
+section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 4px 22px 18px; margin-top: 18px; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; } td, th { text-align: left; vertical-align: top; padding: 7px 8px 7px 0; border-bottom: 1px solid var(--line); }
+th { color: var(--dim); font-weight: 500; }
+nav { margin: 14px 0 0; display: flex; gap: 14px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<main>
+<header><img src="img/favicon-256.png" alt=""><h1>Privacy</h1></header>
+<p class="dim">Ultimo aggiornamento: 15 ottobre 2026 · <a href="#en">English below</a> · <a href="./">← Torna al sito</a></p>
+
+<section id="it">
+<h2>In breve</h2>
+<p>Il sito si usa <b>senza account</b>: in quel caso non raccogliamo nessun dato personale. Se fai <b>"Accedi con Discord"</b> salviamo solo quello che serve per ritrovare i tuoi preferiti, il server e gli avvisi di prezzo, e per farli usare al bot Discord. Puoi cancellare tutto quando vuoi con <b>"Elimina account"</b>, in alto sul sito dopo il login.</p>
+
+<h2>Chi gestisce il sito</h2>
+<p>Aion 2 Market è un progetto amatoriale e gratuito di una gilda, non affiliato a NCSOFT. Per domande o richieste sulla privacy: <a href="https://github.com/BenzoDaeskiSumi/aion-market/issues">github.com/BenzoDaeskiSumi/aion-market/issues</a> oppure in privato su Discord a Benzodaeskisumi.</p>
+
+<h2>Cosa salviamo, e perché</h2>
+<table>
+<tr><th>Dato</th><th>Perché</th><th>Dove</th></tr>
+<tr><td>ID, nome e immagine del profilo Discord, email dell'account Discord</td><td>Login con Discord (Discord li fornisce quando accetti)</td><td>Supabase (database del sito)</td></tr>
+<tr><td>Preferiti, server scelto, avvisi di prezzo</td><td>Ritrovarli su ogni dispositivo; il bot li usa per /preferiti e per gli avvisi</td><td>Supabase</td></tr>
+<tr><td>Server registrato con <code>/server</code> sul bot (insieme al tuo ID Discord)</td><td>Usarlo come predefinito nei comandi</td><td>Cloudflare (dove gira il bot)</td></tr>
+<tr><td>Tema, lingua, preferiti senza login, filtri</td><td>Ricordare le tue scelte</td><td>Solo nel tuo browser (localStorage), non ci arrivano</td></tr>
+</table>
+<p>Non usiamo cookie di profilazione, pubblicità o statistiche di terze parti, e non vendiamo né cediamo dati a nessuno. La base giuridica è l'esecuzione del servizio che chiedi facendo login (art. 6.1.b GDPR).</p>
+
+<h2>Fornitori tecnici</h2>
+<p><b>GitHub Pages</b> (ospita il sito), <b>Supabase</b> (login e database), <b>Cloudflare</b> (bot Discord), <b>Discord</b> (login e bot). Come ogni sito web, i server che ospitano le pagine registrano tecnicamente l'indirizzo IP delle visite. I grafici del bot sono disegnati da <b>QuickChart</b>, che riceve solo i prezzi, nessun dato tuo. I prezzi vengono da aion2.exchange; ricette e nomi francesi da MetaBot.GG: a loro non mandiamo nessun dato degli utenti.</p>
+
+<h2>Per quanto tempo</h2>
+<p>Finché tieni l'account. Con <b>"Elimina account"</b> cancelliamo subito il tuo profilo, i preferiti e gli avvisi. Il server registrato con <code>/server</code> si sovrascrive rifacendo il comando; per cancellarlo del tutto scrivici. Puoi anche revocare l'accesso del sito da Discord: Impostazioni → App autorizzate.</p>
+
+<h2>I tuoi diritti</h2>
+<p>Puoi chiedere di vedere, correggere o cancellare i tuoi dati, e di riceverne una copia, ai contatti sopra. Se pensi che non li trattiamo correttamente puoi rivolgerti al Garante per la protezione dei dati personali (<a href="https://www.garanteprivacy.it">garanteprivacy.it</a>) o all'autorità del tuo paese.</p>
+</section>
+
+<section id="en" lang="en">
+<h2>Privacy — English</h2>
+<p>The site works <b>without an account</b>, and then we collect no personal data. If you use <b>"Log in with Discord"</b> we store only what is needed to keep your favourites, server and price alerts, and to let the Discord bot use them. You can delete everything at any time with <b>"Delete account"</b>, at the top of the site once logged in.</p>
+<h3>Who runs it</h3>
+<p>Aion 2 Market is a free hobby project of a guild, not affiliated with NCSOFT. Privacy questions: <a href="https://github.com/BenzoDaeskiSumi/aion-market/issues">github.com/BenzoDaeskiSumi/aion-market/issues</a> or a Discord DM to Benzodaeskisumi.</p>
+<h3>What we store and why</h3>
+<p>Discord ID, name, avatar and account email (login, via Supabase); favourites, chosen server and price alerts (to sync them and for the bot, in Supabase); the server set with the bot's <code>/server</code> command with your Discord ID (Cloudflare); theme, language and filters only in your browser. No tracking cookies, ads or third-party analytics; we never sell or share data. Legal basis: providing the service you ask for by logging in (GDPR art. 6.1.b).</p>
+<h3>Providers</h3>
+<p>GitHub Pages (hosting), Supabase (login and database), Cloudflare (bot), Discord (login and bot). Hosting servers log visitors' IP addresses for technical reasons. QuickChart draws the bot's charts from prices only.</p>
+<h3>Retention and rights</h3>
+<p>Data is kept until you delete your account ("Delete account" removes profile, favourites and alerts immediately; re-run <code>/server</code> to overwrite the bot setting or ask us to remove it). You can also revoke access in Discord: Settings → Authorized Apps. You may ask to access, correct, delete or export your data, and complain to your data protection authority.</p>
+</section>
+<nav><a href="./">← Torna al sito / Back to the site</a></nav>
+</main>
+</body>
+</html>
