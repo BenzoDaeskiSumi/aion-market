@@ -812,6 +812,7 @@ const SIG_SHORT = {'Compra per rivendere': 'Compra', 'Vendi ora': 'Vendi', 'Tien
 const GRADES_ON = new Set(Object.keys(GRADE));
 const store = {get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }};
 let RANGE = +(store.get('aion-range') || 7);
+let SNAP = null;   // time of the latest aion2.exchange snapshot of this server (meta.json)
 let SALES = {}, CRAFTS = null, CROWS = [], cSortK = 'diff', cSortDir = -1, pickedCraft = null;
 let LOG = [], ITEMS = [], S = {}, ICONS = {}, SEL = {type: 'all'}, sortK = 'grade_rank', sortDir = -1, picked = null;
 let showNA = store.get('aion-na') === 'show';
@@ -858,7 +859,7 @@ function computeItems(log, s) {
     const liquid = perDay == null || perDay >= +(s.min_sales_per_day ?? 1);
     const signal = !available ? 'Non disponibile' : base.length < minC && !real ? 'Servono più dati' : (flip >= minP && margin >= minM && liquid) ? 'Compra per rivendere' : last.price >= avg * (1 + sellA) ? 'Vendi ora' : 'Tieni';
     return { item, category: last.category, grade: last.grade || 'white', level: last.level ?? null, available,
-      last_checked: last.t, latest: available ? last.price : null, listings: last.n,
+      last_checked: SNAP && last.screenshot === 'aion2.exchange' && SNAP > last.t ? SNAP : last.t, latest: available ? last.price : null, listings: last.n,
       change: prevSold ? last.price - prevSold.price : null, change_pct: prevSold && prevSold.price ? (last.price - prevSold.price) / prevSold.price : null,
       average: avg != null ? Math.round(avg) : null, over_avg: available && avg ? (last.price - avg) / avg : null, avg_real: !!(real && real.avg), sales_day: perDay, sales_kind: salesKind, checks: rs.length, flip_profit: flip != null ? Math.round(flip) : null, flip_margin: margin, signal,
       grade_rank: GRADE_RANK[last.grade] || 0, cat_rank: CAT_ORDER[last.category] ?? 999, game_order: d3.min(rs, (r) => r.i) };
@@ -1076,6 +1077,7 @@ function drawChart() {
     [r.avg_real ? 'Media = prezzo di vendita reale' : 'Controlli', r.avg_real ? '28 giorni' : fmtK(r.checks)], ['Ultimo controllo', fmtDT(r.last_checked)]];
   facts.replaceChildren(...f.map(([k, v]) => { const d = document.createElement('div'); d.textContent = k; const b = document.createElement('b'); b.textContent = v; d.appendChild(b); return d; }));
   const all = LOG.filter((x) => x.item === picked && +x.lowest_price > 0).map((x) => ({t: new Date(x.checked_at), v: +x.lowest_price, n: +x.listings})).sort((a, b) => a.t - b.t);
+  if (all.length && r.available && r.last_checked > all[all.length - 1].t) all.push({...all[all.length - 1], t: r.last_checked});
   const rangesEl = document.getElementById('ranges'); rangesEl.hidden = !all.length;
   rangesEl.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.r === RANGE)));
   const end = all.length ? all[all.length - 1].t : null;
@@ -1329,8 +1331,10 @@ const srvSel = document.getElementById('server');
 function loadServer() {
   const t = document.getElementById('takeaway'); t.classList.remove('err');
   const base = `data/s/${SERVER}/`;
-  return Promise.all([get(base + 'price_log.json'), get(base + 'crafts.json').catch(() => null), get(base + 'sales.json').catch(() => ({}))])
-    .then(([log, crafts, sales]) => {
+  return Promise.all([get(base + 'price_log.json'), get(base + 'crafts.json').catch(() => null), get(base + 'sales.json').catch(() => ({})), get(base + 'meta.json').catch(() => null)])
+    .then(([log, crafts, sales, meta]) => {
+      // latest check through the API: the newest API row (items are captured a minute or two after the snapshot)
+      SNAP = d3.max([meta?.snapshot ? new Date(meta.snapshot) : null, d3.max(log, (x) => x.screenshot === 'aion2.exchange' ? new Date(x.checked_at) : null)].filter(Boolean)) || null;
       LOG = log; CRAFTS = crafts; SALES = sales || {}; picked = null; pickedCraft = null;
       ITEMS = computeItems(LOG, S); CROWS = buildCraftRows(); drawAll();
       document.getElementById('f-server').textContent = srvSel.selectedOptions[0]?.textContent || '';

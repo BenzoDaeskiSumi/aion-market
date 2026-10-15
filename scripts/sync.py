@@ -105,7 +105,7 @@ def load_catalog():
     return cat
 
 
-def write_summary(server, log, sales, settings):
+def write_summary(server, log, sales, settings, snap=None):
     """Small per-item snapshot for the Discord bot (same rules as computeItems in index.html)."""
     tax, minP, minM = float(settings['tax_rate']), float(settings['min_flip_profit']), float(settings['min_flip_margin'])
     sellA, minC, days = float(settings['sell_above_avg']), int(settings['min_checks']), float(settings.get('avg_days', 3))
@@ -113,6 +113,8 @@ def write_summary(server, log, sales, settings):
     by = {}
     for e in log:
         by.setdefault(e['item'], []).append((datetime.fromisoformat(e['checked_at']), e))
+    api = [t for rs in by.values() for t, e in rs if e.get('screenshot') == 'aion2.exchange']
+    snap = max([x for x in [snap, max(api) if api else None] if x], default=None)
     out = {}
     for item, rs in by.items():
         rs.sort(key=lambda x: x[0])
@@ -146,7 +148,7 @@ def write_summary(server, log, sales, settings):
                      'a': round(avg) if avg is not None else None, 'd': round(per_day, 1) if per_day is not None else None, 'k': kind,
                      'f': round(flip) if flip is not None else None, 'm': round(margin, 3) if margin is not None else None, 's': sig,
                      'ch': price - prev if prev else None, 'lo': min(week) if week else None, 'hi': max(week) if week else None,
-                     't': lt.isoformat()}
+                     't': (snap if snap and last.get('screenshot') == 'aion2.exchange' and snap > lt else lt).isoformat()}
     with open(path(server, 'summary.json'), 'w', encoding='utf-8') as f:
         json.dump(out, f, ensure_ascii=False, separators=(',', ':'))
 
@@ -195,7 +197,7 @@ def sync_server(server, name, catalog, fam, health):
     write_log(log, logf)
     try:
         st = json.load(open('data/settings.json', encoding='utf-8'))
-        write_summary(server, log, sales, st[0] if isinstance(st, list) else st)
+        write_summary(server, log, sales, st[0] if isinstance(st, list) else st, snap)
     except Exception as ex:
         print(f'{name}: summary failed: {ex}')
     json.dump({'source': 'aion2.exchange', 'server': f'{name} · Europe · Asmodian', 'server_id': server, 'snapshot': snap.isoformat(),
