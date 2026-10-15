@@ -31,6 +31,10 @@ def french_name(page):
     return None
 
 
+def save(out):
+    json.dump(dict(sorted(out.items())), open(OUT, 'w', encoding='utf-8'), ensure_ascii=False, indent=0)
+
+
 def main():
     names = set()
     for d in os.listdir('data/s'):
@@ -44,8 +48,10 @@ def main():
     if limit:
         todo = todo[:limit]
     print(f'{len(names)} items, {len(todo)} to look up', flush=True)
-    miss = []
+    miss, start = [], time.time()
     for k, name in enumerate(todo):
+        if time.time() - start > 45 * 60:      # stay inside the job limit; the next run continues from here
+            print(f'::notice::time budget reached, {len(todo) - k} items left for the next run'); break
         try:
             fr = french_name(fetch(URL.format(slug(name))))
             if fr and fr.lower() != 'page introuvable':
@@ -62,8 +68,8 @@ def main():
             print(f'::notice::{name} -> {out.get(name)}')
         if k % 100 == 0:
             print(k, 'done', flush=True)
-        time.sleep(1.5)
-    json.dump(dict(sorted(out.items())), open(OUT, 'w', encoding='utf-8'), ensure_ascii=False, indent=0)
+        time.sleep(1.2)
+    save(out)
     print(f'{len(out)} French names, {len(miss)} not found')
     if miss:
         print('::notice::not found: ' + ', '.join(miss[:40]))
