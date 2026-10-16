@@ -1,36 +1,30 @@
-// Read-only probe: render NCSOFT's official AION 2 pages and list the API calls they make + the dictionary's filter params.
-import {chromium} from 'playwright';
+// Read-only probe of NCSOFT's official AION 2 web APIs (character info page) and the item dictionary's filters.
 import {writeFileSync} from 'node:fs';
-const out = [];
-const log = (...a) => { out.push(a.join(' ')); console.log(...a); };
-const b = await chromium.launch();
-const p = await b.newPage({userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36'});
-const seen = [];
-p.on('request', (r) => { const u = r.url(); if (!/\.(png|jpe?g|webp|svg|woff2?|css|gif|ico)(\?|$)/.test(u) && !/google|clarity|facebook|doubleclick|gtag/.test(u)) seen.push(`${r.method()} ${u}`); });
-const resp = {};
-p.on('response', async (r) => { const u = r.url(); if (/api|json|v\d\.\d/i.test(u) && !/google|clarity/.test(u)) { try { resp[u] = (await r.text()).slice(0, 1500); } catch {} } });
-for (const url of ['https://aion2.plaync.com/en-us/characters/index', 'https://aion2.plaync.com/en-us/index', 'https://developers.plaync.com/board/notice/list?locale=ko-KR', 'https://developers.plaync.com/']) {
-  seen.length = 0;
-  try { await p.goto(url, {waitUntil: 'networkidle', timeout: 45000}); } catch (e) { log('goto fail', url, e.message); }
-  await p.waitForTimeout(3000);
-  log('\n===== PAGE', url, '\n--- text:\n' + (await p.evaluate(() => document.body?.innerText || '')).slice(0, 4000));
-  log('--- links:', JSON.stringify(await p.evaluate(() => [...document.querySelectorAll('a')].map((a) => a.href).filter((h) => h && !h.startsWith('javascript')).slice(0, 120))));
-  log('--- requests:\n' + [...new Set(seen)].slice(0, 120).join('\n'));
-  // try a character search on the character page
-  if (url.includes('characters')) {
-    const inp = await p.$('input[type="text"], input[type="search"], input');
-    if (inp) { seen.length = 0; await inp.fill('Benzo'); await inp.press('Enter'); await p.waitForTimeout(6000);
-      log('--- after search requests:\n' + [...new Set(seen)].join('\n'));
-      log('--- after search text:\n' + (await p.evaluate(() => document.body.innerText)).slice(0, 2500)); }
-  }
+const out = []; const log = (...a) => { out.push(a.join(' ')); };
+const UA = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36', Accept: 'application/json, text/plain, */*'};
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+async function grab(u, n = 1500) {
+  try { const r = await fetch(u, {headers: UA}); const t = await r.text(); await sleep(400); return `${r.status} ${t.slice(0, n)}`; } catch (e) { return 'ERR ' + e.message; }
 }
-log('\n===== API responses');
-for (const [u, t] of Object.entries(resp)) log(u, '\n', t, '\n');
-// dictionary filter params: does any of them change the first result?
+try {
+  const js = await (await fetch('https://assets.playnccdn.com/static-aion2/characters/js/index.js', {headers: UA})).text();
+  log('index.js length', js.length);
+  const paths = [...new Set(js.match(/["'`][^"'`\s]*api\/[^"'`\s]{2,120}["'`]/g) || [])];
+  log('API paths in index.js:\n' + paths.join('\n'));
+  const regions = [...new Set(js.match(/region[^,;]{0,80}/gi) || [])].slice(0, 30); log('region mentions:\n' + regions.join('\n'));
+  for (const m of js.matchAll(/api\/[a-zA-Z0-9_\/${}.-]+/g)) {}
+  // context around each api path
+  for (const p of paths.slice(0, 40)) { const i = js.indexOf(p.slice(1, -1)); log('\n--- ctx', p, '\n', js.slice(Math.max(0, i - 300), i + 300)); }
+} catch (e) { log('index.js ERR', e.message); }
+for (const reg of ['naw', 'nae', 'eu', 'euw', 'eue', 'na', 'oce', 'sea']) {
+  log(`\n===== servers ${reg}:`, await grab(`https://aion2.plaync.com/en-us/api/gameinfo/servers?lang=en-US&region=${reg}`, 2500));
+}
+log('\n===== classes:', await grab('https://aion2.plaync.com/en-us/api/gameinfo/classes?lang=en-US&region=naw', 2500));
+log('\n===== pcdata:', await grab('https://aion2.plaync.com/en-us/api/gameinfo/pcdata?lang=en-US&region=naw', 4000));
 const D = 'https://tw.ncsoft.com/aion2_tw/v2.0/dict/search/item?page=1&size=3&locale=en-US';
-const first = async (q) => { try { const r = await fetch(D + q); const j = await r.json(); return `${r.status} total=${j.pagination?.total} ` + (j.contents || []).map((c) => `${c.id}:${c.grade}:${c.categoryName}`).join(' | '); } catch (e) { return 'ERR ' + e.message; } };
+const first = async (q) => { try { const r = await fetch(D + q); const j = await r.json(); await sleep(300); return `${r.status} total=${j.pagination?.total} ` + (j.contents || []).map((c) => `${c.id}:${c.grade}:${c.categoryName}`).join(' | '); } catch (e) { return 'ERR ' + e.message; } };
 log('\n===== dict filters');
-for (const q of ['', '&grade=Common', '&grade=Rare', '&grades=Common', '&itemGrade=Common', '&sort=id,desc', '&sort=desc', '&order=asc', '&orderBy=id', '&sortType=ASC', '&direction=desc', '&categoryName=Ring', '&category=Ring', '&categoryId=1', '&keyword=Odyle', '&keyword=Ring', '&tradable=false', '&tradable=true', '&grade=Legend', '&page=201&size=50'])
+for (const q of ['', '&grade=Common', '&grade=Rare', '&grades=Common', '&itemGrade=Common', '&sort=id,desc', '&sort=desc', '&order=asc', '&sortType=ASC', '&direction=desc', '&categoryName=Ring', '&category=Ring', '&keyword=Odyle', '&keyword=Ring', '&tradable=false', '&grade=Legend', '&page=201&size=50', '&page=200&size=50'])
   log(q || '(none)', '=>', await first(q));
 writeFileSync('/tmp/probe.txt', out.join('\n'));
-await b.close();
+console.log(out.join('\n'));

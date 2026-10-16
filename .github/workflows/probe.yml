@@ -12,7 +12,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm i playwright@1.47.2 && npx playwright install --with-deps chromium
       - run: node scripts/probe_api.mjs > /tmp/run.txt 2>&1 || true
       - name: Save the output on the temporary 'probe' branch
         run: |
