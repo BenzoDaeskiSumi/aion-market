@@ -33,6 +33,9 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
   Grades map Epic=orange, Unique=gold, Legend=blue, Rare=green, Common=white (checked against the Market's grades). Icons hotlinked from
   assets.playnccdn.com (mentioned in privacy.html); local icons/ win when they exist. URL: v=db, c=<group|cat>, id=<item id>.
   Sidebar groups DB_GROUPS in js/db.js; unknown dictionary categories fall into 'Altro'. Market price + 'Apri nel Market' when the name is on the Market.
+- Tab 'Personaggi' (VIEW 'char', js/chars.js) and bot /personaggio <nome> [server] (autocomplete searches live, value 'server:id'; deferred
+  answer type 5 + PATCH @original): live official character data through the Worker routes /char/meta|search|info (bot/src/index.js charApi,
+  CORS *, Cloudflare cache only, nothing stored). URL: v=char, q, cs=<server filter>, ch=<serverId>:<characterId>. Gear names open the Database.
 - Official web API behind aion2.plaync.com Character Info (undocumented, may change): /en-us/api/gameinfo/servers|classes|pcdata?lang=en-US&region=eu,
   /api/character/info|equipment|daevanion/detail?characterId&serverId, search on api-search.plaync.com .../search/v2/character. No public developer API for the global yet.
 

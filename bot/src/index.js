@@ -491,6 +491,7 @@ function aiuto(env) {
     '`/info <oggetto>` — prezzo, media, vendite, trend e segnale. Sotto la scheda: 📋/📈 per scheda e grafici, ⭐ preferito, 🔔 avviso, 🔨 costo craft.',
     '`/affari [compra|vendi]` — i migliori affari del momento: da comprare per rivendere o da vendere ora.',
     '`/craft <oggetto>` — quanto costa craftarlo adesso, ingrediente per ingrediente, e se conviene rispetto a comprarlo.',
+    '`/personaggio <nome>` — scheda di un personaggio (server EU): Combat Power, equipaggiamento, Daevanion. Dati ufficiali NCSOFT.',
     '',
     '**I tuoi dati** (serve l\'accesso al sito con Discord, una volta sola)',
     '`/preferiti` — i tuoi preferiti, uno alla volta con ◀ ▶.',
@@ -553,11 +554,128 @@ async function stats(env) {
     `Lingue: ${top(tot.l, (k) => k.toUpperCase())}\nServer: ${top(tot.s, (k) => (k === 'altro' ? 'altro' : serverName(srv, +k)))}\n-# Conteggio anonimo: niente cookie, nessun dato personale.`);
 }
 
+// ---------- characters: the official AION 2 character pages (aion2.plaync.com, global EU) ----------
+// The official site only answers its own pages (CORS), so the Worker relays the public data for our page and the bot.
+// Nothing is stored: answers are only kept in Cloudflare's cache for a few minutes.
+const NC_HEAD = {'User-Agent': 'aion-market-tracker (+https://benzodaeskisumi.github.io/aion-market)', Accept: 'application/json',
+  Origin: 'https://aion2.plaync.com', Referer: 'https://aion2.plaync.com/en-us/characters/index'};
+async function nc(url, ttl) {
+  const r = await fetch(url, {headers: NC_HEAD, cf: {cacheTtl: ttl, cacheEverything: true}});
+  if (!r.ok) throw new Error(`nc ${r.status}`);
+  return r.json();
+}
+const plain = (t) => String(t || '').replace(/<[^>]+>/g, '');
+const avatar = (u) => (!u ? null : u.startsWith('http') ? u : `https://profileimg.plaync.com${u}`);
+async function charMeta() {
+  const [s, p] = await Promise.all([nc('https://aion2.plaync.com/en-us/api/gameinfo/servers?lang=en-US&region=eu', 86400),
+    nc('https://aion2.plaync.com/en-us/api/gameinfo/pcdata?lang=en-US&region=eu', 86400)]);
+  return {servers: (s.serverList || []).map((x) => ({id: x.serverId, name: x.serverName, race: x.raceId})),
+    classes: Object.fromEntries((p.pcDataList || []).map((x) => [x.id, x.classText]))};
+}
+async function charSearch(q, server, page = 1, size = 20) {
+  const u = new URL('https://api-search.plaync.com/aion2global/search/v2/character');
+  u.search = new URLSearchParams({keyword: q, page: String(page), size: String(size), region: 'eu', localeInfo: 'en-US', ...(server ? {serverId: String(server)} : {})});
+  const d = await nc(u.toString(), 300);
+  return {total: d.pagination?.total || 0, pages: d.pagination?.endPage || 1, list: (d.list || []).map((c) => ({
+    id: decodeURIComponent(c.characterId), name: plain(c.name), level: c.level, pcId: c.pcId, race: c.race, server: c.serverId, serverName: c.serverName, img: avatar(c.profileImageUrl)}))};
+}
+async function charInfo(id, server) {
+  const q = `lang=en-US&characterId=${encodeURIComponent(id)}&serverId=${server}&region=eu`;
+  const [info, eq] = await Promise.all([nc(`https://aion2.plaync.com/api/character/info?${q}`, 600), nc(`https://aion2.plaync.com/api/character/equipment?${q}`, 600)]);
+  const seen = new Set(), gear = (eq?.equipment?.equipmentList || []).filter((x) => !seen.has(x.slotPosName) && seen.add(x.slotPosName));   // one item per slot
+  return {...info, equipment: gear, extra: Object.fromEntries(Object.entries(eq?.equipment || {}).filter(([k]) => k !== 'equipmentList'))};
+}
+async function charApi(req, env) {
+  const url = new URL(req.url), p = url.searchParams;
+  const out = (data, status = 200, ttl = 0) => new Response(JSON.stringify(data), {status, headers: {'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*', 'Cache-Control': ttl ? `public, max-age=${ttl}` : 'no-store'}});
+  try {
+    if (url.pathname === '/char/meta') return out(await charMeta(), 200, 3600);
+    const server = /^\d{4}$/.test(p.get('s') || '') ? +p.get('s') : null;
+    if (url.pathname === '/char/search') {
+      const q = (p.get('q') || '').trim();
+      if (q.length < 1 || q.length > 30) return out({error: 'bad name'}, 400);
+      return out(await charSearch(q, server, Math.min(50, Math.max(1, +p.get('p') || 1))), 200, 120);
+    }
+    if (url.pathname === '/char/info') {
+      const id = p.get('id') || '';
+      if (!server || !/^[A-Za-z0-9_\-=]{10,80}$/.test(id)) return out({error: 'bad id'}, 400);
+      return out(await charInfo(id, server), 200, 300);
+    }
+    return out({error: 'not found'}, 404);
+  } catch (e) {
+    return out({error: 'official site unavailable'}, 502);
+  }
+}
+
+// ---------- /personaggio: a character card (deferred answer: the official site can take a moment) ----------
+const NC_GRADE = {Epic: 0xff8a3d, Unique: 0xf0c43f, Legend: 0x4ea6ff, Rare: 0x62e07a, Common: 0xe9eef7, Special: 0x3fe0c8};
+const SLOT_IT = {MainHand: 'Arma', SubHand: 'Seconda mano', Helmet: 'Elmo', Shoulder: 'Spallacci', Torso: 'Corazza', Pants: 'Gambali', Gloves: 'Guanti', Boots: 'Stivali', Cape: 'Mantello'};
+async function charEmbed(server, id, env) {
+  const [d, meta] = await Promise.all([charInfo(id, server), charMeta().catch(() => ({classes: {}}))]);
+  const pr = d.profile || {}, stats = d.stat?.statList || [];
+  const il = stats.find((x) => x.type === 'ItemLevel')?.value;
+  const gear = (d.equipment || []).filter((x) => SLOT_IT[x.slotPosName]).sort((a, b) => a.slotPos - b.slotPos)
+    .map((x) => `${SLOT_IT[x.slotPosName]}: **${x.name}**${x.enchantLevel ? ` +${x.enchantLevel}` : ''}${x.exceedLevel ? ` ✦${x.exceedLevel}` : ''}`);
+  const boards = (d.daevanion?.boardList || []).filter((b) => b.open).map((b) => `${b.name} ${b.openPercent}%`);
+  const main = stats.filter((x) => ['STR', 'DEX', 'INT', 'CON', 'AGI', 'WIS'].includes(x.type)).map((x) => `${x.name} ${x.value}`);
+  const top = (d.equipment || []).find((x) => x.slotPosName === 'MainHand');
+  return {
+    title: pr.characterName || 'Personaggio', url: `${env.SITE}/?v=char&ch=${server}:${encodeURIComponent(id)}`, color: NC_GRADE[top?.grade] || 0x5b8cff,
+    thumbnail: pr.profileImage ? {url: pr.profileImage} : undefined,
+    description: [pr.className, pr.characterLevel ? `Lv ${pr.characterLevel}` : null, pr.raceName === 'Elyos' ? 'Elyos' : pr.raceName === 'Asmodian' ? 'Asmodian' : pr.raceName, pr.serverName].filter(Boolean).join(' · ')
+      + (pr.titleName ? `\n*${pr.titleName}*` : ''),
+    fields: [
+      {name: 'Combat Power', value: pr.combatPower ? `**${kin(pr.combatPower)}**` : '—', inline: true},
+      {name: 'Item Level', value: il ? kin(il) : '—', inline: true},
+      {name: 'Titoli', value: d.title?.ownedCount != null ? `${d.title.ownedCount} / ${d.title.totalCount}` : '—', inline: true},
+      ...(gear.length ? [{name: 'Equipaggiamento', value: gear.join('\n').slice(0, 1024), inline: false}] : []),
+      ...(boards.length ? [{name: 'Daevanion', value: boards.join(' · ').slice(0, 1024), inline: false}] : []),
+      ...(main.length ? [{name: 'Statistiche', value: main.join(' · ').slice(0, 1024), inline: false}] : []),
+    ],
+    footer: {text: 'Dati ufficiali NCSOFT · aion2.plaync.com'},
+  };
+}
+async function personaggio(i, env, ctx) {
+  const raw = String(opt(i.data, 'nome')?.value || '').trim(), srv0 = String(opt(i.data, 'server')?.value || ''), srv = /^\d{4}$/.test(srv0) ? srv0 : null;
+  const followup = (data) => fetch(`https://discord.com/api/v10/webhooks/${i.application_id || env.DISCORD_APP_ID}/${i.token}/messages/@original`,
+    {method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({allowed_mentions: {parse: []}, ...data})});
+  ctx.waitUntil((async () => {
+    try {
+      let server, id;
+      const m = raw.match(/^(\d{4}):([A-Za-z0-9_\-=]{10,80})$/);          // picked from the suggestions
+      if (m) [server, id] = [+m[1], m[2]];
+      else {
+        const r = await charSearch(raw, srv ? +srv : null, 1, 25);
+        const exact = r.list.filter((c) => c.name.toLowerCase() === raw.toLowerCase());
+        const pick = exact.length === 1 ? exact[0] : r.list.length === 1 ? r.list[0] : null;
+        if (!pick) {
+          await followup({content: r.list.length ? `Ho trovato ${r.total} personaggi per **${raw}**: sceglilo dai suggerimenti mentre scrivi il nome (mostrano server e classe).`
+            : `Nessun personaggio trovato con il nome **${raw}** sui server EU.`});
+          return;
+        }
+        [server, id] = [pick.server, pick.id];
+      }
+      const embed = await charEmbed(server, id, env);
+      await followup({embeds: [embed], components: [{type: 1, components: [{type: 2, style: 5, label: 'Scheda completa sul sito', url: embed.url}]}]});
+    } catch (e) {
+      await followup({content: 'Il sito ufficiale di NCSOFT non risponde in questo momento, riprova tra poco.'});
+    }
+  })());
+  return Response.json({type: 5});                                     // "thinking…", replaced by the card
+}
+async function charChoices(q, srv) {
+  if (q.length < 2) return [{name: 'Scrivi almeno 2 lettere del nome', value: q || '-'}];
+  const [r, meta] = await Promise.all([charSearch(q, srv ? +srv : null, 1, 25), charMeta().catch(() => ({classes: {}}))]);
+  return r.list.map((c) => ({name: `${c.name} · ${c.serverName} · ${meta.classes[c.pcId] || ''} Lv ${c.level}`.slice(0, 100), value: `${c.server}:${c.id}`.slice(0, 100)}));
+}
+
 // ---------- entry point ----------
 export default {
   async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env)])); },
-  async fetch(req, env) {
+  async fetch(req, env, ctx) {
     if (new URL(req.url).pathname === '/hit') return hit(req, env);
+    if (new URL(req.url).pathname.startsWith('/char/')) return charApi(req, env);
     if (req.method !== 'POST') return new Response('Aion 2 Market bot: ok');
     const body = await req.text();
     if (!(await verified(req, body, env))) return new Response('bad signature', {status: 401});
@@ -566,6 +684,15 @@ export default {
     try {
       if (i.type === 4) {                                                       // autocomplete
         const sid = await serverOf(i, env), foc = flat(i.data).find((o) => o.focused), q = String(foc?.value || '');
+        if (i.data.name === 'personaggio' && foc?.name === 'server') {
+          const {servers: list} = await charMeta(), q2 = String(foc.value || '').toLowerCase();
+          return Response.json({type: 8, data: {choices: list.filter((x) => x.name.toLowerCase().includes(q2)).slice(0, 25)
+            .map((x) => ({name: `${x.name} · ${x.race === 1 ? 'Elyos' : 'Asmodian'}`, value: String(x.id)}))}});
+        }
+        if (i.data.name === 'personaggio') {
+          const srv = /^\d{4}$/.test(String(opt(i.data, 'server')?.value || '')) ? opt(i.data, 'server').value : null;
+          return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), srv)}});
+        }
         if (i.data.name === 'craft') {
           const names = [...crafts(await recipes(env))].map((n) => [n, {p: 1}]);
           const hits = q ? search(names, q) : names.map(([n]) => n).sort().slice(0, 25);
@@ -587,6 +714,7 @@ export default {
         if (i.data.name === 'preferiti') return await preferiti(i, env);
         if (i.data.name === 'craft') return await craft(i, env);
         if (i.data.name === 'aiuto') return aiuto(env);
+        if (i.data.name === 'personaggio') return await personaggio(i, env, ctx);
       }
       if (i.type === 3 && i.data.custom_id?.startsWith('fav:')) return await favButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('pv:')) return await prezzoView(i, env);

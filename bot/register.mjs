@@ -27,6 +27,9 @@ const commands = [
   {name: 'craft', description: 'Quanto costa craftare un oggetto adesso e se conviene', options: [
     {type: 3, name: 'oggetto', description: 'Oggetto da craftare (in inglese)', required: true, autocomplete: true}, server]},
   {name: 'aiuto', description: 'Tutti i comandi del bot spiegati'},
+  {name: 'personaggio', description: 'Scheda di un personaggio EU: Combat Power, equipaggiamento, Daevanion (dati ufficiali NCSOFT)', options: [
+    {type: 3, name: 'nome', description: 'Nome del personaggio: scegli dai suggerimenti (mostrano server e classe)', required: true, autocomplete: true},
+    {type: 3, name: 'server', description: 'Server EU, per restringere la ricerca', required: false, autocomplete: true}]},
   {name: 'preferiti', description: 'I tuoi preferiti del sito (accedi con Discord), uno alla volta con le frecce', options: [
     {...server, description: 'Server (predefinito: /server, poi quello scelto sul sito)'}]},
 ];

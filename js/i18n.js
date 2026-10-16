@@ -5,6 +5,30 @@ const LANG = (() => { try { const l = localStorage.getItem('aion-lang'); return 
 const LOCALE = {it: 'it-IT', en: 'en-GB', es: 'es-ES', fr: 'fr-FR'}[LANG];
 document.documentElement.lang = LANG;
 const EN = {
+  // characters view
+  "Personaggi": "Characters",
+  "Personaggio": "Character",
+  "Classe": "Class",
+  "Livello": "Level",
+  "Nome del personaggio…": "Character name…",
+  "Server del personaggio": "Character's server",
+  "Tutti i server EU": "All EU servers",
+  "Cerco…": "Searching…",
+  "Titoli": "Titles",
+  "Titolo attivo": "Active title",
+  "Equipaggiamento": "Equipment",
+  "Apri nel Database": "Open in the Database",
+  "Arma": "Weapon",
+  "Seconda mano": "Off-hand",
+  "Cintura": "Belt",
+  "Orecchino": "Earring",
+  "Runa": "Rune",
+  "Amuleto": "Amulet",
+  "Scrivi il nome di un personaggio (almeno 2 lettere) per cercarlo su tutti i server EU, Elyos e Asmodian. Dati ufficiali NCSOFT.": "Type a character name (at least 2 letters) to search every EU server, Elyos and Asmodian. Official NCSOFT data.",
+  "Il sito ufficiale di NCSOFT non risponde in questo momento. Riprova tra poco.": "NCSOFT's official site is not answering right now. Try again shortly.",
+  "Cerca un personaggio e cliccalo per vedere Combat Power, equipaggiamento, Daevanion e statistiche.": "Search a character and click it to see Combat Power, equipment, Daevanion and stats.",
+  "Non riesco a leggere questo personaggio dal sito ufficiale. Riprova tra poco.": "Can't read this character from the official site. Try again shortly.",
+  "Dati ufficiali NCSOFT (aion2.plaync.com), letti al momento: niente viene salvato.": "Official NCSOFT data (aion2.plaync.com), read live: nothing is saved.",
   // database view
   "Cerca tra tutti gli oggetti del gioco…": "Search every item in the game…",
   "Statistiche": "Stats",
@@ -126,6 +150,7 @@ const EN = {
 const RLABEL = {'nelle ultime 24 ore': 'in the last 24 hours', 'negli ultimi 7 giorni': 'in the last 7 days', 'negli ultimi 30 giorni': 'in the last 30 days', 'negli ultimi 90 giorni': 'in the last 90 days'};
 const rl = (x) => RLABEL[x] || x;
 const EN_RE = [
+  [/^Nessun personaggio trovato con "(.*)"\.$/, "No character found with \"$1\"."], [/^(.+) · Market (.+)$/, '$1 · Market $2'],
   [/^Nessun oggetto contiene "(.*)" con questi filtri\.$/, 'No item contains "$1" with these filters.'], [/^Mostra altri \((.+) di (.+)\)$/, 'Show more ($1 of $2)'],
   [/^· prossimo aggiornamento verso le (.+)$/, '· next update around $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· data is late, the next update should fix it'],
   [/^maestria (\d+)$/, 'mastery $1'],
@@ -155,6 +180,30 @@ const EN_RE = [
     .replace(/Ricette: aion2\.exchange \(dai file del gioco\)\./, 'Recipes: aion2.exchange (from the game files).')],
 ];
 const ES = {
+  // characters view
+  "Personaggi": "Personajes",
+  "Personaggio": "Personaje",
+  "Classe": "Clase",
+  "Livello": "Nivel",
+  "Nome del personaggio…": "Nombre del personaje…",
+  "Server del personaggio": "Servidor del personaje",
+  "Tutti i server EU": "Todos los servidores EU",
+  "Cerco…": "Buscando…",
+  "Titoli": "Títulos",
+  "Titolo attivo": "Título activo",
+  "Equipaggiamento": "Equipo",
+  "Apri nel Database": "Abrir en la base de datos",
+  "Arma": "Arma",
+  "Seconda mano": "Mano secundaria",
+  "Cintura": "Cinturón",
+  "Orecchino": "Pendiente",
+  "Runa": "Runa",
+  "Amuleto": "Amuleto",
+  "Scrivi il nome di un personaggio (almeno 2 lettere) per cercarlo su tutti i server EU, Elyos e Asmodian. Dati ufficiali NCSOFT.": "Escribe el nombre de un personaje (al menos 2 letras) para buscarlo en todos los servidores EU, Elyos y Asmodian. Datos oficiales de NCSOFT.",
+  "Il sito ufficiale di NCSOFT non risponde in questo momento. Riprova tra poco.": "El sitio oficial de NCSOFT no responde ahora mismo. Inténtalo en un rato.",
+  "Cerca un personaggio e cliccalo per vedere Combat Power, equipaggiamento, Daevanion e statistiche.": "Busca un personaje y haz clic para ver Combat Power, equipo, Daevanion y estadísticas.",
+  "Non riesco a leggere questo personaggio dal sito ufficiale. Riprova tra poco.": "No puedo leer este personaje del sitio oficial. Inténtalo en un rato.",
+  "Dati ufficiali NCSOFT (aion2.plaync.com), letti al momento: niente viene salvato.": "Datos oficiales de NCSOFT (aion2.plaync.com), leídos al momento: no se guarda nada.",
   // database view
   "Cerca tra tutti gli oggetti del gioco…": "Busca entre todos los objetos del juego…",
   "Statistiche": "Estadísticas",
@@ -266,6 +315,7 @@ const ES = {
 const RLABEL_ES = {'nelle ultime 24 ore': 'en las últimas 24 horas', 'negli ultimi 7 giorni': 'en los últimos 7 días', 'negli ultimi 30 giorni': 'en los últimos 30 días', 'negli ultimi 90 giorni': 'en los últimos 90 días'};
 const rlEs = (x) => RLABEL_ES[x] || x;
 const ES_RE = [
+  [/^Nessun personaggio trovato con "(.*)"\.$/, "Ningún personaje encontrado con \"$1\"."], [/^(.+) · Market (.+)$/, '$1 · Market $2'],
   [/^Nessun oggetto contiene "(.*)" con questi filtri\.$/, 'Ningún objeto contiene "$1" con estos filtros.'], [/^Mostra altri \((.+) di (.+)\)$/, 'Mostrar más ($1 de $2)'],
   [/^· prossimo aggiornamento verso le (.+)$/, '· próxima actualización hacia las $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· datos con retraso, la próxima actualización debería arreglarlo'],
   [/^maestria (\d+)$/, 'maestría $1'],
@@ -296,6 +346,30 @@ const ES_RE = [
 ];
 
 const FR = {
+  // characters view
+  "Personaggi": "Personnages",
+  "Personaggio": "Personnage",
+  "Classe": "Classe",
+  "Livello": "Niveau",
+  "Nome del personaggio…": "Nom du personnage…",
+  "Server del personaggio": "Serveur du personnage",
+  "Tutti i server EU": "Tous les serveurs EU",
+  "Cerco…": "Recherche…",
+  "Titoli": "Titres",
+  "Titolo attivo": "Titre actif",
+  "Equipaggiamento": "Équipement",
+  "Apri nel Database": "Ouvrir dans la base de données",
+  "Arma": "Arme",
+  "Seconda mano": "Main secondaire",
+  "Cintura": "Ceinture",
+  "Orecchino": "Boucle d'oreille",
+  "Runa": "Rune",
+  "Amuleto": "Amulette",
+  "Scrivi il nome di un personaggio (almeno 2 lettere) per cercarlo su tutti i server EU, Elyos e Asmodian. Dati ufficiali NCSOFT.": "Tapez le nom d'un personnage (au moins 2 lettres) pour le chercher sur tous les serveurs EU, Elyos et Asmodian. Données officielles NCSOFT.",
+  "Il sito ufficiale di NCSOFT non risponde in questo momento. Riprova tra poco.": "Le site officiel de NCSOFT ne répond pas pour le moment. Réessayez bientôt.",
+  "Cerca un personaggio e cliccalo per vedere Combat Power, equipaggiamento, Daevanion e statistiche.": "Cherchez un personnage et cliquez dessus pour voir Combat Power, équipement, Daevanion et statistiques.",
+  "Non riesco a leggere questo personaggio dal sito ufficiale. Riprova tra poco.": "Impossible de lire ce personnage sur le site officiel. Réessayez bientôt.",
+  "Dati ufficiali NCSOFT (aion2.plaync.com), letti al momento: niente viene salvato.": "Données officielles NCSOFT (aion2.plaync.com), lues en direct : rien n’est enregistré.",
   // database view
   "Cerca tra tutti gli oggetti del gioco…": "Chercher parmi tous les objets du jeu…",
   "Statistiche": "Statistiques",
@@ -408,6 +482,7 @@ const FR = {
 const RLABEL_FR = {'nelle ultime 24 ore': 'sur les dernières 24 heures', 'negli ultimi 7 giorni': 'sur les 7 derniers jours', 'negli ultimi 30 giorni': 'sur les 30 derniers jours', 'negli ultimi 90 giorni': 'sur les 90 derniers jours'};
 const rlFr = (x) => RLABEL_FR[x] || x;
 const FR_RE = [
+  [/^Nessun personaggio trovato con "(.*)"\.$/, "Aucun personnage trouvé avec « $1 »."], [/^(.+) · Market (.+)$/, '$1 · Market $2'],
   [/^Nessun oggetto contiene "(.*)" con questi filtri\.$/, 'Aucun objet ne contient « $1 » avec ces filtres.'], [/^Mostra altri \((.+) di (.+)\)$/, 'Afficher plus ($1 sur $2)'],
   [/^· prossimo aggiornamento verso le (.+)$/, '· prochaine mise à jour vers $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· données en retard, la prochaine mise à jour devrait corriger cela'],
   [/^maestria (\d+)$/, 'maîtrise $1'],
