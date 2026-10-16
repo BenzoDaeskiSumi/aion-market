@@ -16,13 +16,13 @@ concurrency:
 jobs:
   map:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-node@v4
         with:
-          python-version: '3.12'
-      - run: python scripts/map_import.py ${{ inputs.tiles == 'yes' && '--tiles' || '' }}
+          node-version: '20'
+      - run: node scripts/map_import.mjs ${{ inputs.tiles == 'yes' && '--tiles' || '' }}
       - name: Commit data and icons
         run: |
           git config user.name "BenzoDaeskiSumi"
@@ -33,6 +33,7 @@ jobs:
       - name: Tiles branch
         if: ${{ inputs.tiles == 'yes' }}
         run: |
+          test -d /tmp/map/tiles || { echo 'no tiles downloaded'; exit 1; }
           du -sh /tmp/map/tiles; find /tmp/map/tiles -type f | wc -l
           git checkout --orphan tiles && git rm -rfq . && rm -rf data img && mkdir -p map && cp -r /tmp/map/tiles map/
           git add map && git commit -qm "Map tiles (MetaBot.GG, reused with permission)" && git push -f origin tiles
