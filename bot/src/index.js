@@ -590,6 +590,7 @@ async function charApi(req, env) {
   const out = (data, status = 200, ttl = 0) => new Response(JSON.stringify(data), {status, headers: {'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*', 'Cache-Control': ttl ? `public, max-age=${ttl}` : 'no-store'}});
   try {
+    if (url.pathname.startsWith('/char/img/')) return charImg(url.pathname);
     if (url.pathname === '/char/meta') return out(await charMeta(), 200, 3600);
     const server = /^\d{4}$/.test(p.get('s') || '') ? +p.get('s') : null;
     if (url.pathname === '/char/search') {
@@ -610,31 +611,83 @@ async function charApi(req, env) {
 
 // ---------- /personaggio: a character card (deferred answer: the official site can take a moment) ----------
 const NC_GRADE = {Epic: 0xff8a3d, Unique: 0xf0c43f, Legend: 0x4ea6ff, Rare: 0x62e07a, Common: 0xe9eef7, Special: 0x3fe0c8};
-const SLOT_IT = {MainHand: 'Arma', SubHand: 'Seconda mano', Helmet: 'Elmo', Shoulder: 'Spallacci', Torso: 'Corazza', Pants: 'Gambali', Gloves: 'Guanti', Boots: 'Stivali', Cape: 'Mantello'};
-async function charEmbed(server, id, env) {
+const NC_DOT = {Epic: '🟧', Unique: '🟨', Legend: '🟦', Rare: '🟩', Common: '⬜', Special: '🟪'};
+const ARMOR = [['MainHand', 'Arma'], ['SubHand', 'Seconda mano'], ['Helmet', 'Elmo'], ['Shoulder', 'Spallacci'], ['Torso', 'Corazza'], ['Pants', 'Gambali'],
+  ['Gloves', 'Guanti'], ['Boots', 'Stivali'], ['Cape', 'Mantello']];
+const ACCS = [['Necklace', 'Collana'], ['Earring1', 'Orecchino'], ['Earring2', 'Orecchino'], ['Ring1', 'Anello'], ['Ring2', 'Anello'], ['Bracelet1', 'Bracciale'],
+  ['Bracelet2', 'Bracciale'], ['Belt', 'Cintura'], ['Amulet', 'Amuleto'], ['Rune1', 'Runa'], ['Rune2', 'Runa']];
+const CHAR_VIEWS = {card: '📋 Scheda', gear: '🧩 Equipaggiamento', stats: '📊 Statistiche'};
+const classIcon = (name) => name ? `https://assets.playnccdn.com/static-aion2/characters/img/class/class_icon_${String(name).toLowerCase().replace(/[^a-z]/g, '')}.png` : undefined;
+// Discord can't load the official profile pictures directly: the Worker relays them (/char/img)
+const avatarProxy = (u, env) => { const m = String(u || '').match(/gameServerKey=(\d+)&charKey=(\d+)/); return m ? `${env.WORKER_URL || 'https://aion-market-bot.aion2-market.workers.dev'}/char/img/${m[1]}-${m[2]}.jpg` : null; };
+const bar = (pct, n = 10) => '▰'.repeat(Math.round(pct / 100 * n)) + '▱'.repeat(n - Math.round(pct / 100 * n));
+const gearLine = (x, label) => `${NC_DOT[x.grade] || '▫️'} **${x.name}**${x.enchantLevel ? ` \`+${x.enchantLevel}\`` : ''}${x.exceedLevel ? ` ✦${x.exceedLevel}` : ''}` + (label ? `\n-# ${label}` : '');
+// Daevanion boards as a radar picture (QuickChart, Chart.js v2): only names and percentages leave the Worker
+function radarUrl(boards, color) {
+  const cfg = `{type:'radar',data:{labels:${JSON.stringify(boards.map((b) => b.name))},datasets:[{data:${JSON.stringify(boards.map((b) => b.openPercent || 0))},` +
+    `backgroundColor:'${color}55',borderColor:'${color}',borderWidth:3,pointRadius:4,pointBackgroundColor:'${color}'}]},options:{legend:{display:false},` +
+    `scale:{ticks:{min:0,max:100,stepSize:25,display:false},gridLines:{color:'rgba(154,163,181,0.35)'},angleLines:{color:'rgba(154,163,181,0.35)'},pointLabels:{fontColor:'#c9d1e0',fontSize:16}}}}`;
+  return `https://quickchart.io/chart?w=520&h=360&devicePixelRatio=2&bkg=transparent&c=${encodeURIComponent(cfg)}`;
+}
+async function charView(server, id, view, uid, env) {
   const [d, meta] = await Promise.all([charInfo(id, server), charMeta().catch(() => ({classes: {}}))]);
-  const pr = d.profile || {}, stats = d.stat?.statList || [];
+  const pr = d.profile || {}, stats = d.stat?.statList || [], gear = d.equipment || [];
+  const by = Object.fromEntries(gear.map((x) => [x.slotPosName, x]));
   const il = stats.find((x) => x.type === 'ItemLevel')?.value;
-  const gear = (d.equipment || []).filter((x) => SLOT_IT[x.slotPosName]).sort((a, b) => a.slotPos - b.slotPos)
-    .map((x) => `${SLOT_IT[x.slotPosName]}: **${x.name}**${x.enchantLevel ? ` +${x.enchantLevel}` : ''}${x.exceedLevel ? ` ✦${x.exceedLevel}` : ''}`);
-  const boards = (d.daevanion?.boardList || []).filter((b) => b.open).map((b) => `${b.name} ${b.openPercent}%`);
-  const main = stats.filter((x) => ['STR', 'DEX', 'INT', 'CON', 'AGI', 'WIS'].includes(x.type)).map((x) => `${x.name} ${x.value}`);
-  const top = (d.equipment || []).find((x) => x.slotPosName === 'MainHand');
-  return {
-    title: pr.characterName || 'Personaggio', url: `${env.SITE}/?v=char&ch=${server}:${encodeURIComponent(id)}`, color: NC_GRADE[top?.grade] || 0x5b8cff,
-    thumbnail: pr.profileImage ? {url: pr.profileImage} : undefined,
-    description: [pr.className, pr.characterLevel ? `Lv ${pr.characterLevel}` : null, pr.raceName === 'Elyos' ? 'Elyos' : pr.raceName === 'Asmodian' ? 'Asmodian' : pr.raceName, pr.serverName].filter(Boolean).join(' · ')
-      + (pr.titleName ? `\n*${pr.titleName}*` : ''),
-    fields: [
-      {name: 'Combat Power', value: pr.combatPower ? `**${kin(pr.combatPower)}**` : '—', inline: true},
-      {name: 'Item Level', value: il ? kin(il) : '—', inline: true},
-      {name: 'Titoli', value: d.title?.ownedCount != null ? `${d.title.ownedCount} / ${d.title.totalCount}` : '—', inline: true},
-      ...(gear.length ? [{name: 'Equipaggiamento', value: gear.join('\n').slice(0, 1024), inline: false}] : []),
-      ...(boards.length ? [{name: 'Daevanion', value: boards.join(' · ').slice(0, 1024), inline: false}] : []),
-      ...(main.length ? [{name: 'Statistiche', value: main.join(' · ').slice(0, 1024), inline: false}] : []),
-    ],
-    footer: {text: 'Dati ufficiali NCSOFT · aion2.plaync.com'},
+  const race = pr.raceName === 'Elyos' ? 'Elyos' : pr.raceName === 'Asmodian' || pr.raceId === 2 ? 'Asmodian' : pr.raceName;
+  const url = `${env.SITE}/?v=char&ch=${server}:${encodeURIComponent(id)}`;
+  const base = {
+    author: {name: `${pr.className || ''} · Lv ${pr.characterLevel ?? '?'}`, icon_url: classIcon(pr.className)},
+    title: pr.characterName || 'Personaggio', url, color: pr.raceId === 2 ? 0xb06cff : 0xf0c43f,
+    thumbnail: avatarProxy(pr.profileImage, env) ? {url: avatarProxy(pr.profileImage, env)} : undefined,
+    footer: {text: `${pr.serverName || ''} · ${race} · dati ufficiali NCSOFT`}, timestamp: new Date().toISOString(),
   };
+  const head = [
+    {name: '⚔️ Combat Power', value: pr.combatPower ? `**${kin(pr.combatPower)}**` : '—', inline: true},
+    {name: '🛡️ Item Level', value: il ? `**${kin(il)}**` : '—', inline: true},
+    {name: '🏅 Titoli', value: d.title?.ownedCount != null ? `**${d.title.ownedCount}** / ${d.title.totalCount}` : '—', inline: true},
+  ];
+  let embed;
+  if (view === 'gear') {
+    const list = (slots) => slots.map(([k]) => by[k] && gearLine(by[k])).filter(Boolean).join('\n') || '—';
+    const arc = gear.filter((x) => /^Arcana/.test(x.slotPosName)).map((x) => `${NC_DOT[x.grade] || '▫️'} ${x.name}`).join('\n');
+    const skins = (d.extra?.skinList || []).map((x) => x.name).slice(0, 12).join(' · ');
+    embed = {...base, description: `🧩 **Equipaggiamento**${pr.titleName ? ` · *${pr.titleName}*` : ''}`,
+      thumbnail: by.MainHand?.icon ? {url: by.MainHand.icon} : base.thumbnail,
+      fields: [{name: '🗡️ Armi e armature', value: list(ARMOR).slice(0, 1024), inline: true}, {name: '💍 Accessori', value: list(ACCS).slice(0, 1024), inline: true},
+        ...(arc ? [{name: '🃏 Arcana', value: arc.slice(0, 1024), inline: false}] : []),
+        ...(skins ? [{name: '👗 Aspetto', value: skins.slice(0, 1024), inline: false}] : [])]};
+  } else if (view === 'stats') {
+    const main = stats.filter((x) => ['STR', 'DEX', 'INT', 'CON', 'AGI', 'WIS'].includes(x.type));
+    const gods = stats.filter((x) => x.type !== 'ItemLevel' && !main.includes(x));
+    const cols = (rows) => '```\n' + rows.map((x) => `${x.name.replace(/ \[.*\]/, '').padEnd(14)}${String(x.value).padStart(4)}`).join('\n') + '\n```';
+    embed = {...base, description: `📊 **Statistiche**`, fields: [...head,
+      ...(main.length ? [{name: 'Principali', value: cols(main), inline: true}] : []),
+      ...(gods.length ? [{name: 'Divinità', value: cols(gods).slice(0, 1024), inline: true}] : [])]};
+  } else {
+    const boards = (d.daevanion?.boardList || []).filter((b) => b.totalNodeCount);
+    const wpn = by.MainHand;
+    embed = {...base, description: [pr.titleName ? `🏷️ *${pr.titleName}*` : null, wpn ? `${NC_DOT[wpn.grade] || ''} ${wpn.name}${wpn.enchantLevel ? ` \`+${wpn.enchantLevel}\`` : ''}` : null].filter(Boolean).join('\n') || undefined,
+      fields: [...head,
+        ...(boards.length ? [{name: '✨ Daevanion', value: '```\n' + boards.map((b) => `${b.name.padEnd(9)} ${bar(b.openPercent)} ${String(b.openPercent).padStart(3)}%`).join('\n') + '\n```', inline: false}] : [])],
+      image: boards.length >= 3 ? {url: radarUrl(boards, pr.raceId === 2 ? '#b06cff' : '#f0c43f')} : undefined};
+  }
+  const views = {type: 1, components: Object.entries(CHAR_VIEWS).map(([v, label]) => ({type: 2, style: v === view ? 1 : 2, label, disabled: v === view,
+    custom_id: `pc:${uid}:${v}:${server}:${id}`.slice(0, 100)}))};
+  return {embeds: [embed], components: [views, {type: 1, components: [{type: 2, style: 5, label: 'Scheda completa sul sito', url}]}]};
+}
+async function charButton(i, env) {
+  const [, owner, view, server, ...rest] = i.data.custom_id.split(':');
+  if (userId(i) !== owner) return oops('Usa /personaggio per aprire la tua scheda: questi pulsanti sono di chi ha fatto la richiesta.');
+  try { return Response.json({type: 7, data: await charView(+server, rest.join(':'), CHAR_VIEWS[view] ? view : 'card', owner, env)}); }
+  catch { return oops('Il sito ufficiale di NCSOFT non risponde in questo momento, riprova tra poco.'); }
+}
+async function charImg(path) {
+  const m = path.match(/^\/char\/img\/(\d+)-(\d+)\.jpg$/);
+  if (!m) return new Response('bad', {status: 400});
+  const r = await fetch(`https://profileimg.plaync.com/game_profile_images/aion2global/images?gameServerKey=${m[1]}&charKey=${m[2]}`, {headers: NC_HEAD, cf: {cacheTtl: 86400, cacheEverything: true}});
+  if (!r.ok) return new Response('not found', {status: 404});
+  return new Response(r.body, {headers: {'Content-Type': r.headers.get('content-type') || 'image/jpeg', 'Cache-Control': 'public, max-age=86400', 'Access-Control-Allow-Origin': '*'}});
 }
 async function personaggio(i, env, ctx) {
   const raw = String(opt(i.data, 'nome')?.value || '').trim(), srv0 = String(opt(i.data, 'server')?.value || ''), srv = /^\d{4}$/.test(srv0) ? srv0 : null;
@@ -656,8 +709,7 @@ async function personaggio(i, env, ctx) {
         }
         [server, id] = [pick.server, pick.id];
       }
-      const embed = await charEmbed(server, id, env);
-      await followup({embeds: [embed], components: [{type: 1, components: [{type: 2, style: 5, label: 'Scheda completa sul sito', url: embed.url}]}]});
+      await followup(await charView(server, id, 'card', userId(i), env));
     } catch (e) {
       await followup({content: 'Il sito ufficiale di NCSOFT non risponde in questo momento, riprova tra poco.'});
     }
@@ -722,6 +774,7 @@ export default {
       if (i.type === 3 && i.data.custom_id?.startsWith('fa:')) return await favToggle(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('al:')) return await alertForm(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('cr:')) return await craftButton(i, env);
+      if (i.type === 3 && i.data.custom_id?.startsWith('pc:')) return await charButton(i, env);
       if (i.type === 5 && i.data.custom_id?.startsWith('alm:')) return await alertSubmit(i, env);
       return oops('Comando sconosciuto.');
     } catch (e) {
