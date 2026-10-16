@@ -22,11 +22,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: node scripts/odds_import.mjs ${{ inputs.force == 'yes' && '--force' || '' }}
-      - name: Commit
+      # the tables are big: they live on the 'odds' branch (one commit, replaced), merged in by 'Publish site'
+      - run: |
+          git fetch -q origin odds && git show origin/odds:data/odds/index.json > /tmp/old.json 2>/dev/null && mkdir -p data/odds && cp /tmp/old.json data/odds/index.json || true
+      - run: node scripts/odds_import.mjs ${{ inputs.force == 'yes' && '--force' || '' }} | tee /tmp/odds.log
+      - name: Replace the odds branch
         run: |
+          grep -q 'same version' /tmp/odds.log && exit 0
           git config user.name "BenzoDaeskiSumi"
           git config user.email "173538282+BenzoDaeskiSumi@users.noreply.github.com"
-          du -sh data/odds || true
-          git add data/odds
-          git diff --cached --quiet || (git commit -m "Probabilità ufficiali (server coreano)" && git pull --rebase && git push)
+          du -sh data/odds
+          mv data/odds /tmp/odds-out
+          git checkout --orphan odds-new && git rm -rfq . && mkdir -p data && mv /tmp/odds-out data/odds
+          git add data/odds && git commit -qm "Probabilità ufficiali (server coreano)" && git push -f origin odds-new:odds
+

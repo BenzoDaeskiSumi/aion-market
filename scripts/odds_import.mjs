@@ -1,7 +1,8 @@
 // Official AION 2 probability tables published by NCSOFT for the KOREAN service (probability.plaync.com/aion2).
 // The global service has not published its own tables: values may differ. Output (only when NCSOFT's version changes):
 //   data/odds/index.json  {version, updated, source, tree:[{name, children:[...]|id}]}
-//   data/odds/<id>.json   {id, path, tables:[{title, notes, fields, rows}]}   rows = flattened @entries, values in field order
+//   data/odds/<id>.json   {id, path, tables:[{title, notes, fields, s, rows}]}   rows = flattened @entries, each value an index into the table's
+//                         string list s (the tables repeat the same values a lot: this keeps big tables a few MB)
 //   data/odds/ko_en.json  Korean -> English item names (NCSOFT dictionary), for the names that appear in the tables
 import {mkdirSync, writeFileSync, readFileSync, existsSync} from 'node:fs';
 const B = 'https://probability.plaync.com/api/aion2', H = {Accept: 'application/json', 'User-Agent': 'aion-market-tracker (+https://benzodaeskisumi.github.io/aion-market)',
@@ -48,7 +49,8 @@ async function visit(node, path, outList) {
     const rows = flatten(records, fields);
     const nameCols = fields.map((f, i) => (/이름|아이템명|명$/.test(f) ? i : -1)).filter((i) => i >= 0);
     for (const r of rows) for (const i of nameCols) if (typeof r[i] === 'string') names.add(r[i]);
-    tables.push({title: c.title, notes: strip(c.description), fields, rows});
+    const strs = [], at = new Map(), id = (v) => { const k = v == null ? '' : String(v); if (!at.has(k)) { at.set(k, strs.length); strs.push(k); } return at.get(k); };
+    tables.push({title: c.title, notes: strip(c.description), fields, s: strs, rows: rows.map((r) => r.map(id))});
     nTables++; nRows += rows.length;
   }
   writeFileSync(`data/odds/${node.id}.json`, JSON.stringify({id: node.id, path: [...path, node.name], tables}));
