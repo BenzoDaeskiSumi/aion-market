@@ -1,0 +1,32 @@
+name: Official odds (KR)
+# NCSOFT's probability disclosure for the Korean service -> data/odds (only when NCSOFT publishes a new version)
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'rifai anche se la versione è la stessa (yes/no)'
+        default: 'no'
+  schedule:
+    - cron: '23 5 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: odds
+  cancel-in-progress: false
+jobs:
+  odds:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node scripts/odds_import.mjs ${{ inputs.force == 'yes' && '--force' || '' }}
+      - name: Commit
+        run: |
+          git config user.name "BenzoDaeskiSumi"
+          git config user.email "173538282+BenzoDaeskiSumi@users.noreply.github.com"
+          du -sh data/odds || true
+          git add data/odds
+          git diff --cached --quiet || (git commit -m "Probabilità ufficiali (server coreano)" && git pull --rebase && git push)
