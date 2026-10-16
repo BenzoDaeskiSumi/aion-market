@@ -75,6 +75,8 @@ for c in channels:
     want = NAMES.get(base(c['name']))
     if c['type'] != 4 and want and c['name'] != want:
         act(f"#{c['name']} → {want}", lambda c=c, want=want: api('PATCH', f"/channels/{c['id']}", {'name': want}))
+left = [c['name'] for c in channels if c['type'] != 4 and base(c['name']) not in NAMES]
+if left: say('  senza emoji (nomi non riconosciuti):', ', '.join(left))
 if APPLY:
     channels = api('GET', f'/guilds/{G}/channels')
 cid = {base(c['name']): c['id'] for c in channels if c['type'] != 4}
