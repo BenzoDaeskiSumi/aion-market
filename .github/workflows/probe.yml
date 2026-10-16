@@ -1,0 +1,19 @@
+name: Probe NCSOFT pages
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install pillow && python3 scripts/probe_api.py > /tmp/run.txt 2>&1 || true
+      - name: Save the output on the temporary 'probe' branch
+        run: |
+          git config user.name "BenzoDaeskiSumi"
+          git config user.email "173538282+BenzoDaeskiSumi@users.noreply.github.com"
+          mkdir -p /tmp/o && cp /tmp/run.txt /tmp/o/probe.txt && cp /tmp/icon_*.png /tmp/o/ 2>/dev/null || true
+          git checkout --orphan probe && git rm -rfq . && cp /tmp/o/* .
+          git add -A && git commit -qm "probe output" && git push -f origin probe
