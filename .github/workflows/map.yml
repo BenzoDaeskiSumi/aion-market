@@ -1,0 +1,38 @@
+name: Map data
+# Interactive map from MetaBot.GG (reuse allowed with a dofollow credit). Data + icons on main; tiles on the 'tiles' branch.
+on:
+  workflow_dispatch:
+    inputs:
+      tiles:
+        description: 'scarica anche le immagini della mappa (yes/no)'
+        default: 'no'
+  schedule:
+    - cron: '37 4 * * 3'        # weekly data refresh (no tiles)
+permissions:
+  contents: write
+concurrency:
+  group: map-data
+  cancel-in-progress: false
+jobs:
+  map:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/map_import.py ${{ inputs.tiles == 'yes' && '--tiles' || '' }}
+      - name: Commit data and icons
+        run: |
+          git config user.name "BenzoDaeskiSumi"
+          git config user.email "173538282+BenzoDaeskiSumi@users.noreply.github.com"
+          mv map /tmp/map 2>/dev/null || true
+          git add data/map img/mapicons
+          git diff --cached --quiet || (git commit -m "Mappa: dati da MetaBot.GG" && git pull --rebase && git push)
+      - name: Tiles branch
+        if: ${{ inputs.tiles == 'yes' }}
+        run: |
+          du -sh /tmp/map/tiles; find /tmp/map/tiles -type f | wc -l
+          git checkout --orphan tiles && git rm -rfq . && rm -rf data img && mkdir -p map && cp -r /tmp/map/tiles map/
+          git add map && git commit -qm "Map tiles (MetaBot.GG, reused with permission)" && git push -f origin tiles
