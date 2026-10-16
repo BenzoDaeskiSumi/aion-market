@@ -15,4 +15,4 @@ out.push(`\nHTML ${html.length} chars`);
 for (const k of ['gather', 'Gather', 'kibelisk', 'Kibelisk', 'cube', 'Cube', 'spawn', '"x":', '"lat"', '"pos"', 'markers', 'trace']) {
   const i = html.indexOf(k); out.push(`-- ${k}: count=${html.split(k).length - 1} ${i >= 0 ? html.slice(Math.max(0, i - 300), i + 400).replace(/\s+/g, ' ') : ''}`);
 }
-writeFileSync('/tmp/probe.txt', out.join('\n')); await b.close();
+writeFileSync('/tmp/probe.txt', out.join('\n')); console.log(out.join('\n')); await b.close();
