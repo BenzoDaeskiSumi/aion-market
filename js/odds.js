@@ -236,6 +236,9 @@ function open(id, push = true) {
   SEL = id;
   document.querySelectorAll('#tree button[data-id]').forEach((b) => { const on = b.dataset.id === id; b.setAttribute('aria-current', String(on)); if (on) b.closest('details')?.setAttribute('open', ''); });
   if (push) history.replaceState(null, '', '?c=' + id);
+  const cur = document.querySelector(`#tree button[data-id="${id}"]`), menu = document.querySelector('#tree .menu');
+  if (menu && cur) menu.replaceChildren('☰ ', Object.assign(document.createElement('span'), {textContent: cur.textContent}));
+  if (push && MOB.matches) { $('tree').classList.remove('open'); $('title').scrollIntoView({block: 'start', behavior: 'smooth'}); }
   $('tables').replaceChildren(Object.assign(document.createElement('p'), {className: 'empty', textContent: 'Caricamento…'}));
   getJSON(`data/odds/${id}.json`).then((d) => { if (SEL !== id) return; CUR = d; draw(); })
     .catch(() => $('tables').replaceChildren(Object.assign(document.createElement('p'), {className: 'empty', textContent: 'Non riesco a caricare questa tabella.'})));
@@ -248,22 +251,53 @@ function draw() {
   $('tables').replaceChildren(...d.tables.map(tableBox));
 }
 const PAGE = 200;
+// phones: each table row becomes a small card (text on top, numbers as chips, the chance on the right); repeated cells are left out
+const MOB = matchMedia('(max-width: 760px)');
+const shortPct = (v) => (/^\d+\.\d{3,}%$/.test(v) ? +parseFloat(v).toFixed(parseFloat(v) >= 1 ? 2 : 4) + '%' : v);
+function cards(table) {
+  const heads = [...table.tHead.rows[0].cells].map((c) => c.textContent);
+  const list = document.createElement('div'); list.className = 'cards';
+  for (const tr of table.tBodies[0].rows) {
+    const c = document.createElement('div'); c.className = 'rc' + (tr.className ? ' grp' : '');
+    const top = document.createElement('div'); top.className = 'rt';
+    const chips = document.createElement('div'); chips.className = 'rn';
+    const cells = [...tr.cells], pi = cells.findIndex((td) => td.classList.contains('pm') && !td.classList.contains('rep'));
+    cells.forEach((td, i) => {
+      if (td.classList.contains('rep') || !td.textContent.trim() || (i === pi && pi >= 0)) return;
+      if (td.classList.contains('n')) {
+        const k = document.createElement('span'); k.className = 'chip' + (td.classList.contains('p') ? ' p' : '');
+        const v = td.firstChild.textContent; k.title = v; k.append(Object.assign(document.createElement('small'), {textContent: heads[i]}), ' ' + shortPct(v)); chips.appendChild(k);
+      } else {
+        const v = document.createElement('span'); v.className = td.querySelector('.ko') ? 'it' : 'tx'; v.title = heads[i];
+        v.append(...[...td.childNodes].map((n) => n.cloneNode(true))); top.appendChild(v);
+      }
+    });
+    if (chips.children.length > 6) chips.classList.add('many');
+    if (top.childNodes.length) c.appendChild(top);
+    const row = document.createElement('div'); row.className = 'rb'; row.append(chips);
+    if (pi >= 0 && /\d/.test(cells[pi].textContent)) row.appendChild(Object.assign(document.createElement('b'), {className: 'pc', textContent: shortPct(cells[pi].textContent), title: heads[pi] + ': ' + cells[pi].textContent}));
+    c.appendChild(row); list.appendChild(c);
+  }
+  return list;
+}
 function tableBox(tb) {
   const box = document.createElement('section'); box.className = 'tbl';
   const h = document.createElement('h2'); h.textContent = t(tb.title); h.title = tb.title;
+  const nd = document.createElement('details'); nd.className = 'nd'; nd.open = !MOB.matches;
   const notes = document.createElement('ul'); notes.className = 'notes';
   // NCSOFT's notes stay in Korean when we have no translation; the generic ones are summarised
   const GENERIC = /Ctrl\+F|반올림|페이지 전환/;
   const keep = tb.notes.filter((n) => !GENERIC.test(n));
   notes.append(Object.assign(document.createElement('li'), {textContent: EN_UI ? 'Chances are rounded, so totals may not be exactly 100%.' : 'Le probabilità sono arrotondate: i totali possono non fare esattamente 100%.'}),
     ...keep.map((n) => NOTES[n] ? Object.assign(document.createElement('li'), {textContent: NOTES[n][EN_UI ? 1 : 0], title: n}) : Object.assign(document.createElement('li'), {textContent: n, lang: 'ko'})));
+  nd.append(Object.assign(document.createElement('summary'), {textContent: (EN_UI ? 'How it works' : 'Come funziona') + ` (${notes.children.length})`}), notes);
   const bar = document.createElement('div'); bar.className = 'bar';
   const q = document.createElement('input'); q.type = 'search'; q.placeholder = EN_UI ? 'Filter rows…' : 'Filtra le righe…';
   const count = document.createElement('span'); count.className = 'count'; bar.append(q, count);
   const sc = document.createElement('div'); sc.className = 'scroll';
   const pager = document.createElement('div'); pager.className = 'pager';
   const S = tb.s, F = tb.fields;
-  const pct = F.map((f) => /확률/.test(f)), num = F.map((_, i) => tb.rows.slice(0, 50).every((r) => S[r[i]] === '' || !isNaN(+String(S[r[i]]).replace(/[%,]/g, ''))));
+  const pct = F.map((f) => /확률/.test(f) && !/수량/.test(f)), main = F.reduce((m, f, i) => (pct[i] && !/보정|그룹|묶음|패키지|합|최대|추가|대성공|실패 시|행운/.test(f) ? i : m), -1), num = F.map((_, i) => tb.rows.slice(0, 50).every((r) => S[r[i]] === '' || !isNaN(+String(S[r[i]]).replace(/[%,]/g, ''))));
   const text = tb.rows.map((r) => r.map((v) => S[v] + ' ' + t(S[v])).join(' ').toLowerCase());
   let page = 0, rows = tb.rows.map((_, i) => i);
   const render = () => {
@@ -280,14 +314,14 @@ function tableBox(tb) {
         const same = prev && lead && prev[i] === v && i < F.length - 1;
         if (!same) lead = false;
         if (i === 0 && !same && prev) tr.className = 'grp';
-        const shown = t(raw);
+        let shown = t(raw); if (pct[i] && /\.\d*%$/.test(shown)) shown = shown.replace(/0+%$/, '%').replace(/\.%$/, '%');
         td.textContent = shown;
         if (shown !== raw && raw && isKo(raw) && NAMES_KO[raw]) { const k = document.createElement('span'); k.className = 'ko'; k.textContent = raw; td.appendChild(k); }
-        if (num[i]) td.classList.add('n'); if (pct[i] && raw) td.classList.add('p'); if (same) td.classList.add('rep');
+        if (num[i]) td.classList.add('n'); if (pct[i] && raw) td.classList.add('p'); if (same) td.classList.add('rep'); if (i === main) td.classList.add('pm');
       });
       prev = r;
     });
-    sc.replaceChildren(table);
+    sc.replaceChildren(MOB.matches ? cards(table) : table);
     const pages = Math.ceil(rows.length / PAGE) || 1;
     count.textContent = `${rows.length.toLocaleString(LOCALE)} ${EN_UI ? 'rows' : 'righe'}`;
     const btn = (label, to, dis) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = label; b.disabled = dis; b.addEventListener('click', () => { page = to; render(); box.scrollIntoView({block: 'start'}); }); return b; };
@@ -296,8 +330,8 @@ function tableBox(tb) {
   let timer;
   q.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(() => { const w = q.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
     rows = tb.rows.map((_, i) => i).filter((i) => w.every((x) => text[i].includes(x))); page = 0; render(); }, 200); });
-  render();
-  box.append(h, notes, bar, sc, pager); return box;
+  render(); MOB.addEventListener('change', render);
+  box.append(h, nd, bar, sc, pager); return box;
 }
 
 Promise.all([getJSON('data/odds/index.json'), getJSON('data/odds/ko_en.json').catch(() => ({}))]).then(([idx, names]) => {

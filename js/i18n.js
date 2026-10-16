@@ -603,6 +603,9 @@ const FR_RE = [
 ];
 
 // odds page (odds.html)
+Object.assign(EN, {"Il global (EU) potrebbe avere valori diversi.": "Global (EU) values may differ.", "Come funziona": "How it works"});
+Object.assign(ES, {"Il global (EU) potrebbe avere valori diversi.": "El global (EU) puede tener valores distintos."});
+Object.assign(FR, {"Il global (EU) potrebbe avere valori diversi.": "Le global (EU) peut avoir des valeurs différentes."});
 Object.assign(EN, {"Probabilità ufficiali (server coreano)": "Official chances (Korean server)"});
 Object.assign(ES, {"Probabilità ufficiali (server coreano)": "Probabilidades oficiales (servidor coreano)"});
 Object.assign(FR, {"Probabilità ufficiali (server coreano)": "Probabilités officielles (serveur coréen)"});
