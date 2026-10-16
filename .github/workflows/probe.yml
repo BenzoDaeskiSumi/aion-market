@@ -2,11 +2,17 @@ name: Probe NCSOFT dictionary
 on:
   workflow_dispatch: {}
 permissions:
-  contents: read
+  contents: write
 jobs:
   probe:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - run: python3 scripts/probe_ncsoft.py
+      - run: python3 scripts/probe_ncsoft.py > /tmp/probe.txt 2>&1 || true
+      - name: Save the output on a temporary 'probe' branch
+        run: |
+          git config user.name "BenzoDaeskiSumi"
+          git config user.email "173538282+BenzoDaeskiSumi@users.noreply.github.com"
+          git checkout --orphan probe && git rm -rfq . && cp /tmp/probe.txt probe.txt
+          git add probe.txt && git commit -qm "probe output" && git push -f origin probe
