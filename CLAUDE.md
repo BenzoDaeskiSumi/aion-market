@@ -40,6 +40,15 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 - Official web API behind aion2.plaync.com Character Info (undocumented, may change): /en-us/api/gameinfo/servers|classes|pcdata?lang=en-US&region=eu,
   /api/character/info|equipment|daevanion/detail?characterId&serverId, search on api-search.plaync.com .../search/v2/character. No public developer API for the global yet.
 
+## Official odds (Korean service)
+- odds.html + css/odds.css + js/odds.js: NCSOFT's legally required probability disclosure for KOREAN AION 2 (probability.plaync.com), with a big
+  yellow 'Dati del server COREANO' banner (global hasn't published its own). Linked as a dashed tab 'Probabilità 🇰🇷' and in the footer.
+- scripts/odds_import.mjs + 'Official odds (KR)' workflow (daily + dispatch, input force): API /api/aion2/versions|categories|contents/<leaf>|resources
+  (header resource-token) -> 'odds' orphan branch, data/odds/ (index.json tree, <leafId>.json string tables, ko_en.json item names); ignored on main,
+  merged by 'Publish site'. Locally: git worktree of origin/odds at ../aion-odds, data/odds symlinked to it.
+- js/odds.js translates client-side: KO dictionary [it, en] (columns, values, table titles), PATTERNS, NOTES (NCSOFT's notes), then ko_en names;
+  ES/FR get the English text. Untranslated strings (mostly skill names) stay Korean.
+
 ## Overlay + installable app
 - overlay.html + css/overlay.css + js/overlay.js: compact page for Steam's in-game browser (Shift+Tab, pin the window) and phones:
   tabs Prezzi / Affari / Craft (own copy of craftEngine — keep in sync with js/craft.js) / Personaggio (Worker /char routes). Uses js/i18n.js.

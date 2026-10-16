@@ -469,3 +469,8 @@ td.up { color: var(--up); } td.down { color: var(--down); }
 .boards .bbar::after { content: ''; position: absolute; inset: 0 auto 0 0; width: var(--v); background: var(--accent); border-radius: 3px; }
 .linkbtn { background: none; border: 0; padding: 0; font: inherit; color: inherit; text-decoration: underline; cursor: pointer; }
 .linkbtn[hidden] { display: none; }
+
+/* link to the odds page, looks like a tab */
+.tabs .tablink { font-family: var(--font); font-size: 14px; font-weight: 600; padding: 8px 16px; border-radius: 999px; border: 1px dashed var(--line); background: var(--panel); color: var(--dim); text-decoration: none; }
+.tabs .tablink:hover { color: var(--text); border-color: var(--accent); }
+.tabs .tablink span { margin-left: 4px; }

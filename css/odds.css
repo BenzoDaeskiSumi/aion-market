@@ -44,7 +44,7 @@ th { position: sticky; top: 0; background: var(--field); text-align: left; font-
 th, td { padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
 td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 td.p { font-weight: 600; color: var(--accent); }
-td.rep { color: transparent; }                       /* same value as the row above: grouped */
+td.rep, td.rep .ko { color: transparent; }                       /* same value as the row above: grouped */
 tr.grp td { border-top: 2px solid var(--line); }
 td .ko { display: block; color: var(--dim); font-size: 11.5px; }
 .pager { display: flex; gap: 6px; align-items: center; justify-content: center; margin-top: 10px; }

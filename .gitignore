@@ -4,4 +4,4 @@ __pycache__/
 data/s/
 data/catalog.json
 data/servers.json
-data/odds/
+data/odds
