@@ -24,6 +24,9 @@ const commands = [
   {name: 'avvisi-canale', description: 'Admin: gli avvisi di prezzo arriveranno in questo canale', default_member_permissions: '32', dm_permission: false},
   {name: 'statistiche', description: 'Admin: visite al sito negli ultimi 7 giorni (anonime)', default_member_permissions: '32', dm_permission: false},
   {name: 'chisiamo', description: 'Mauro, chi siamo?'},
+  {name: 'craft', description: 'Quanto costa craftare un oggetto adesso e se conviene', options: [
+    {type: 3, name: 'oggetto', description: 'Oggetto da craftare (in inglese)', required: true, autocomplete: true}, server]},
+  {name: 'aiuto', description: 'Tutti i comandi del bot spiegati'},
   {name: 'preferiti', description: 'I tuoi preferiti del sito (accedi con Discord), uno alla volta con le frecce', options: [
     {...server, description: 'Server (predefinito: /server, poi quello scelto sul sito)'}]},
 ];

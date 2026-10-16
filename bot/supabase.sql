@@ -12,6 +12,19 @@ $$;
 revoke all on function public.favorites_by_discord(text) from public, anon, authenticated;
 grant execute on function public.favorites_by_discord(text) to service_role;
 
+-- Lets the bot's ⭐ button add/remove a favourite (same table the site writes).
+create or replace function public.set_favorites_by_discord(did text, f text[])
+returns boolean
+language plpgsql security definer set search_path = public, auth
+as $$
+begin
+  update public.profiles p set favorites = f, updated_at = now()
+  from auth.identities i where i.user_id = p.id and i.provider = 'discord' and i.provider_id = did;
+  return found;
+end $$;
+revoke all on function public.set_favorites_by_discord(text, text[]) from public, anon, authenticated;
+grant execute on function public.set_favorites_by_discord(text, text[]) to service_role;
+
 -- Price alerts (profiles.alerts = [{item, server, price, dir}]), used by /avviso and the 15-minute check.
 create or replace function public.alerts_by_discord(did text)
 returns table (alerts jsonb)

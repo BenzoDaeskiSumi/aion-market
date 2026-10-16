@@ -24,6 +24,8 @@ const summary = (env, sid) => json(env, `data/s/${sid}/summary.json`, 300);
 const servers = (env) => json(env, 'data/servers.json', 3600).catch(() => [{id: 12305, name: 'Marchutan'}]);
 const hist = (env, sid) => json(env, `data/s/${sid}/hist.json`, 300).catch(() => ({}));
 const icons = (env) => json(env, 'data/icons.json', 3600).catch(() => ({}));
+const recipes = (env) => json(env, 'data/recipes.json', 3600).catch(() => ({recipes: [], npc: {}}));
+const settings = (env) => json(env, 'data/settings.json', 3600).catch(() => ({tax_rate: 0.1}));
 
 // ---------- request signature (required by Discord) ----------
 const hex = (h) => new Uint8Array(h.match(/../g).map((b) => parseInt(b, 16)));
@@ -128,6 +130,14 @@ async function chartEmbed(name, r, h, view, sid, sname, ico, env) {
       {name: 'Variazione', value: `${ch > 0 ? '▲ +' : ch < 0 ? '▼ ' : ''}${pct(ch)}`, inline: true},
     ], image: url ? {url} : undefined};
 }
+// action buttons under a card: anyone can press them (each for themselves)
+const crafts = (rec) => new Set((rec.recipes || []).flatMap((r) => [r.p, r.c && r.cp].filter(Boolean)));
+const actionRow = (env, sid, name, craftable) => ({type: 1, components: [
+  {type: 2, style: 2, emoji: {name: '⭐'}, label: 'Preferito', custom_id: `fa:${sid}`},
+  {type: 2, style: 2, emoji: {name: '🔔'}, label: 'Avviso', custom_id: `al:${sid}`},
+  ...(craftable ? [{type: 2, style: 2, emoji: {name: '🔨'}, label: 'Craft', custom_id: `cr:${sid}`}] : []),
+  {type: 2, style: 5, label: 'Apri sul sito', url: itemUrl(env, sid, name)},
+]});
 // view buttons under a card: the current one is highlighted and disabled
 const viewRow = (prefix, view) => ({type: 1, components: Object.entries(VIEWS).map(([v, label]) =>
   ({type: 2, style: v === view ? 1 : 2, label, custom_id: `${prefix}:${v}`, disabled: v === view}))});
@@ -144,10 +154,11 @@ const serverName = (srv, sid) => srv.find((s) => s.id === sid)?.name || String(s
 // ---------- /prezzo ----------
 async function prezzo(i, env) {
   const data = i.data, sid = await serverOf(i, env), q = String(opt(data, 'oggetto')?.value || '').trim();
-  const [sum, srv, ico] = await Promise.all([summary(env, sid), servers(env), icons(env)]);
+  const [sum, srv, ico, rec] = await Promise.all([summary(env, sid), servers(env), icons(env), recipes(env)]);
   const name = sum[q] ? q : search(Object.entries(sum), q, 1)[0];
   if (!name) return oops(`Non trovo **${q}** sul market. Scegli un nome dai suggerimenti mentre scrivi.`);
-  return reply({embeds: [itemEmbed(name, sum[name], sid, serverName(srv, sid), ico, env)], components: [viewRow(`pv:${userId(i)}:${sid}`, 'card')]});
+  return reply({embeds: [itemEmbed(name, sum[name], sid, serverName(srv, sid), ico, env)],
+    components: [viewRow(`pv:${userId(i)}:${sid}`, 'card'), actionRow(env, sid, name, crafts(rec).has(name))]});
 }
 // view buttons of /prezzo: the item is the card's title; only who asked can switch (one message, no spam)
 async function prezzoView(i, env) {
@@ -155,8 +166,8 @@ async function prezzoView(i, env) {
   if (userId(i) !== owner) return oops('Usa /prezzo per aprire la tua scheda: questi pulsanti sono di chi ha fatto la richiesta.');
   const name = i.message?.embeds?.[0]?.title;
   if (!name) return oops('Non trovo più l\'oggetto di questa scheda: rifai /prezzo.');
-  const embed = await itemView(name, +sid, view, env);
-  return Response.json({type: 7, data: {embeds: [embed], components: [viewRow(`pv:${owner}:${sid}`, view)]}});
+  const [embed, rec] = await Promise.all([itemView(name, +sid, view, env), recipes(env)]);
+  return Response.json({type: 7, data: {embeds: [embed], components: [viewRow(`pv:${owner}:${sid}`, view), actionRow(env, +sid, name, crafts(rec).has(name))]}});
 }
 
 // ---------- /preferiti: the favourites saved on the site (Discord login), one card at a time with arrows ----------
@@ -183,6 +194,7 @@ async function favPage(env, uid, sid, idx, view = 'card') {
   const btn = (to, label) => ({type: 2, style: 2, label, custom_id: `fav:${uid}:${sid}:${to}:${view}:${label}`, disabled: n < 2});
   return {embeds: [embed], components: [{type: 1, components: [
     btn(i - 1, '◀'), {type: 2, style: 2, label: `${i + 1} / ${n}`, custom_id: `fav:noop:${uid}`, disabled: true}, btn(i + 1, '▶'),
+    {type: 2, style: 2, emoji: {name: '🔔'}, custom_id: `al:${sid}`},
     {type: 2, style: 5, label: 'Apri sul sito', url: itemUrl(env, sid, name)},
   ]}, viewRow(`fav:${uid}:${sid}:${i}`, view)]};
 }
@@ -341,6 +353,158 @@ async function checkAlerts(env) {
   if (out !== JSON.stringify(state)) await env.USERS.put('alert_state', out);
 }
 
+// ---------- buttons on the item card: ⭐ favourite, 🔔 alert (small form), 🔨 craft ----------
+const cardItem = (i) => i.message?.embeds?.[0]?.title;
+async function favToggle(i, env) {
+  const uid = userId(i), name = cardItem(i);
+  if (!name) return oops('Non trovo più l\'oggetto di questa scheda: rifai /prezzo.');
+  const prof = await profile(env, uid);
+  if (!prof) return oops(`I preferiti sono per chi ha fatto l'accesso al sito: entra su ${env.SITE} con **Accedi con Discord** (una volta sola), poi riprova.`);
+  const favs = new Set(prof.favorites || []), had = favs.has(name);
+  had ? favs.delete(name) : favs.add(name);
+  try { await rpc(env, 'set_favorites_by_discord', {did: uid, f: [...favs]}); }
+  catch { return oops('Il pulsante ⭐ non è ancora attivo (manca una funzione nel database): per ora aggiungi i preferiti dal sito.'); }
+  return oops(had ? `☆ **${name}** tolto dai preferiti (${favs.size}).` : `⭐ **${name}** aggiunto ai preferiti (${favs.size}). Li vedi con /preferiti e sul sito.`);
+}
+async function alertForm(i, env) {
+  const sid = +i.data.custom_id.split(':')[1], name = cardItem(i);
+  if (!name) return oops('Non trovo più l\'oggetto di questa scheda: rifai /prezzo.');
+  const prof = (await rpc(env, 'alerts_by_discord', {did: userId(i)}))[0];
+  if (!prof) return oops(NO_LOGIN(env));
+  const r = (await summary(env, sid))[name];
+  const now = r?.p > 0 ? `Ora ${kShort(r.p)}. ` : '';
+  return Response.json({type: 9, data: {custom_id: `alm:${sid}:${name}`.slice(0, 100), title: '🔔 Avviso di prezzo', components: [{type: 1, components: [{
+    type: 4, custom_id: 'price', style: 1, required: true, max_length: 20, label: `${name}`.slice(0, 45),
+    placeholder: `${now}Prezzo: 250000, 250k, 1.5m`.slice(0, 100)}]}]}});
+}
+async function alertSubmit(i, env) {
+  const [, sid0, ...rest] = i.data.custom_id.split(':'), sid = +sid0;
+  const name = rest.join(':') || cardItem(i), uid = userId(i);
+  const price = parsePrice(i.data.components?.[0]?.components?.[0]?.value);
+  if (!price) return oops('Prezzo non valido: scrivi un numero, es. `250000`, `250k` o `1.5m`.');
+  const prof = (await rpc(env, 'alerts_by_discord', {did: uid}))[0];
+  if (!prof) return oops(NO_LOGIN(env));
+  const [sum, srv] = await Promise.all([summary(env, sid), servers(env)]), r = sum[name];
+  // under the current price = wait for it to drop (to buy); above = wait for it to rise (to sell)
+  const dir = r?.p > 0 && price > r.p ? 'above' : 'below';
+  const alerts = Array.isArray(prof.alerts) ? prof.alerts : [];
+  const rest2 = alerts.filter((a) => !(a.item === name && a.server === sid && a.dir === dir));
+  if (rest2.length >= MAX_ALERTS) return oops(`Hai già ${MAX_ALERTS} avvisi: togline qualcuno con \`/avviso lista\`.`);
+  const a = {item: name, server: sid, price, dir};
+  await rpc(env, 'set_alerts_by_discord', {did: uid, a: [...rest2, a]});
+  const ch = env.USERS ? await env.USERS.get('cfg:alert_channel') : null;
+  return oops(`🔔 Avviso salvato: **${name}** ${alertText(a, srv)} (${r?.p > 0 ? `ora è a **${kin(r.p)}**` : 'ora non è in vendita'}).\n` +
+    (ch ? `Ti scrivo in <#${ch}> quando ci arriva. I tuoi avvisi: \`/avviso lista\`.` : 'Nessun canale avvisi impostato: un admin deve usare `/avvisi-canale`.'));
+}
+
+// ---------- /craft: same engine as the site's Crafting view (js/craft.js craftEngine) ----------
+// unit price of anything = cheapest of Market / NPC shop / crafting it (recursive); a combo gives the 'Splendent' product
+function craftEngine(sum, rec) {
+  const market = new Map(Object.entries(sum).filter(([, r]) => r.p > 0).map(([n, r]) => [n, r.p]));
+  const npc = rec.npc || {}, ways = new Map();
+  for (const r of rec.recipes || []) {
+    const add = (name, mode, per) => { if (!ways.has(name)) ways.set(name, []); ways.get(name).push({r, mode, per}); };
+    add(r.p, 'normal', r.ok * r.q);
+    if (r.cp && r.c) add(r.cp, 'combo', r.ok * r.c);
+  }
+  const unitMemo = new Map(), bestMemo = new Map(), busy = new Set();
+  function unit(name) {
+    if (unitMemo.has(name)) return unitMemo.get(name);
+    let best = {src: null, price: Infinity};
+    if (market.has(name)) best = {src: 'market', price: market.get(name)};
+    if (npc[name] != null && npc[name] < best.price) best = {src: 'npc', price: npc[name]};
+    if (ways.has(name) && !busy.has(name)) {
+      const c = craftBest(name);
+      if (c && c.est != null && c.est < best.price) best = {src: 'craft', price: c.est, way: c};
+    }
+    if (!busy.size) unitMemo.set(name, best);
+    return best;
+  }
+  function craftBest(name) {
+    if (bestMemo.has(name)) return bestMemo.get(name);
+    busy.add(name);
+    let best = null;
+    for (const w of ways.get(name) || []) {
+      const parts = w.r.parts.map(([n, q]) => ({name: n, q, ...unit(n)}));
+      const missing = parts.filter((p) => !isFinite(p.price));
+      const cost = missing.length ? null : parts.reduce((t, p) => t + p.q * p.price, 0);
+      const est = cost == null ? null : cost / w.per;
+      const cand = {...w, name, parts, cost, est, missing: missing.map((p) => p.name)};
+      if (!best || (est != null && (best.est == null || est < best.est))) best = cand;
+    }
+    busy.delete(name);
+    if (!busy.size) bestMemo.set(name, best);
+    return best;
+  }
+  return {ways, unit, craftBest, market};
+}
+const fmtPct = (v) => `${Math.round(v * 1000) / 10}%`.replace('.', ',');
+async function craftEmbed(name, sid, env) {
+  const [sum, rec, srv, ico, st] = await Promise.all([summary(env, sid), recipes(env), servers(env), icons(env), settings(env)]);
+  const E = craftEngine(sum, rec), w = E.craftBest(name);
+  if (!w) return null;
+  const market = E.market.get(name) ?? null, tax = +st.tax_rate || 0;
+  const verdict = w.est == null ? '⏳ Mancano dei prezzi' : market == null ? '🔨 Solo crafting (non è in vendita)'
+    : market > w.est ? `🔨 **Craftalo**: risparmi ${kin(market - w.est)}` : `🛒 **Compralo**: costa ${kin(w.est - market)} in meno che craftarlo`;
+  // the chain: ingredients cheaper to craft get their own step before the item itself
+  const steps = [], seen = new Set();
+  (function walk(x) { if (!x || seen.has(x.name)) return; seen.add(x.name); x.parts.forEach((p) => { if (p.src === 'craft') walk(p.way); }); steps.push(x); })(w);
+  const no = new Map(steps.map((x, k) => [x.name, k + 1]));
+  const via = (p) => !isFinite(p.price) ? 'prezzo non disponibile' : p.src === 'market' ? 'Market' : p.src === 'npc' ? 'negozio NPC' : `craftalo (passo ${no.get(p.name)})`;
+  const lines = (x) => x.parts.map((p) => `${p.q} × ${p.name} — ${isFinite(p.price) ? `**${kin(p.q * p.price)}**` : '—'} · ${via(p)}`).join('\n');
+  const estLabel = (x) => x.mode === 'combo' ? `stimato con la combo ${Math.round(x.r.c * 100)}%` : 'stimato con i fallimenti';
+  const fields = steps.slice(-4).map((x) => ({
+    name: `${steps.length > 1 ? `Passo ${no.get(x.name)} · ` : ''}${x.mode === 'combo' ? 1 : x.r.q} × ${x.name}`.slice(0, 256),
+    value: `${lines(x)}\nTotale **${x.cost == null ? '—' : kin(x.cost)}** · ${estLabel(x)} **${x.est == null ? '—' : kin(x.est)}**${x.mode !== 'combo' && x.r.q > 1 ? ' a pezzo' : ''}`.slice(0, 1024)}));
+  const [gname, color] = GRADE[rec.grades?.[name] || sum[name]?.g] || GRADE.white;
+  const how = w.mode === 'combo' ? `esce solo con la combo (${Math.round(w.r.c * 100)}%) di un craft riuscito (${fmtPct(w.r.ok)})`
+    : `riesce il ${fmtPct(w.r.ok)} delle volte${w.r.q > 1 ? `, ne fa ${w.r.q}` : ''}`;
+  return {
+    title: `🔨 ${name}`, url: itemUrl(env, sid, name), color, thumbnail: {url: `${env.SITE}/${ico[name] || `icons/${slug(name)}.png`}`},
+    description: [`${gname} · ${w.r.s}${w.r.m ? ` · maestria ${w.r.m}` : ''} · ${how}`, '',
+      `Costo di 1 craft: **${w.cost == null ? '—' : kin(w.cost)}**`,
+      `Costo ${estLabel(w)}: **${w.est == null ? '—' : kin(w.est)}**`,
+      `Prezzo Market: **${market == null ? 'non in vendita' : kin(market)}**` + (market != null && w.est != null ? ` · se lo rivendi ${market * (1 - tax) - w.est >= 0 ? '+' : '−'}${kin(Math.abs(market * (1 - tax) - w.est))} (dopo tasse)` : ''),
+      verdict].join('\n'),
+    fields: [...(steps.length > 4 ? [{name: '…', value: `${steps.length - 4} passi precedenti: vedili sul sito (Crafting).`}] : []), ...fields],
+    footer: {text: `${serverName(srv, sid)} · ingredienti al prezzo più basso tra Market, NPC e craft · ricette MetaBot.GG`},
+  };
+}
+async function craft(i, env) {
+  const sid = await serverOf(i, env), q = String(opt(i.data, 'oggetto')?.value || '').trim();
+  const rec = await recipes(env), names = crafts(rec);
+  const name = names.has(q) ? q : search([...names].map((n) => [n, {p: 1}]), q, 1)[0];
+  if (!name) return oops(`**${q}** non si può craftare (o non lo trovo). Scegli un nome dai suggerimenti.`);
+  const embed = await craftEmbed(name, sid, env);
+  return embed ? reply({embeds: [embed]}) : oops('Ricetta non disponibile.');
+}
+async function craftButton(i, env) {
+  const sid = +i.data.custom_id.split(':')[1], name = cardItem(i);
+  const embed = name && await craftEmbed(name, sid, env);
+  return embed ? reply({flags: 64, embeds: [embed]}) : oops('Ricetta non disponibile per questo oggetto.');
+}
+
+// ---------- /aiuto ----------
+function aiuto(env) {
+  return reply({flags: 64, embeds: [{title: '📖 Comandi del bot Aion 2 Market', url: env.SITE, color: 0x5b8cff, description: [
+    '**Prezzi**',
+    '`/prezzo <oggetto>` — prezzo, media, vendite, trend e segnale. Sotto la scheda: 📋/📈 per scheda e grafici, ⭐ preferito, 🔔 avviso, 🔨 costo craft.',
+    '`/affari [compra|vendi]` — i migliori affari del momento: da comprare per rivendere o da vendere ora.',
+    '`/craft <oggetto>` — quanto costa craftarlo adesso, ingrediente per ingrediente, e se conviene rispetto a comprarlo.',
+    '',
+    '**I tuoi dati** (serve l\'accesso al sito con Discord, una volta sola)',
+    '`/preferiti` — i tuoi preferiti, uno alla volta con ◀ ▶.',
+    '`/avviso aggiungi` · `/avviso lista` — ti avviso quando un oggetto scende o sale a un prezzo (anche 250k, 1.5m).',
+    '`/server <server>` — registra il tuo server: gli altri comandi lo useranno in automatico.',
+    '',
+    '**Altro**',
+    '`/chisiamo` — Mauro, chi siamo?',
+    '`/aiuto` — questa guida.',
+    '',
+    `Sito: ${env.SITE} · prezzi aggiornati ogni ora da aion2.exchange.`,
+  ].join('\n')}]});
+}
+
 // ---------- watchdog: if the site's prices stop updating, say it in the alerts channel (once), and when they resume ----------
 async function checkStale(env) {
   const ch = await env.USERS.get('cfg:alert_channel');
@@ -402,6 +566,11 @@ export default {
     try {
       if (i.type === 4) {                                                       // autocomplete
         const sid = await serverOf(i, env), foc = flat(i.data).find((o) => o.focused), q = String(foc?.value || '');
+        if (i.data.name === 'craft') {
+          const names = [...crafts(await recipes(env))].map((n) => [n, {p: 1}]);
+          const hits = q ? search(names, q) : names.map(([n]) => n).sort().slice(0, 25);
+          return Response.json({type: 8, data: {choices: hits.map((n) => ({name: n.slice(0, 100), value: n.slice(0, 100)}))}});
+        }
         const sum = await summary(env, sid);
         if (foc?.name === 'prezzo') return Response.json({type: 8, data: {choices: priceChoices(sum, i.data, q)}});
         const names = q ? search(Object.entries(sum), q) : Object.entries(sum).filter(([, r]) => r.s === 'Compra per rivendere').map(([n]) => n).slice(0, 25);
@@ -416,10 +585,16 @@ export default {
         if (i.data.name === 'avviso') return await avviso(i, env);
         if (i.data.name === 'avvisi-canale') return await alertChannel(i, env);
         if (i.data.name === 'preferiti') return await preferiti(i, env);
+        if (i.data.name === 'craft') return await craft(i, env);
+        if (i.data.name === 'aiuto') return aiuto(env);
       }
       if (i.type === 3 && i.data.custom_id?.startsWith('fav:')) return await favButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('pv:')) return await prezzoView(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('alrm:')) return await alertRemove(i, env);
+      if (i.type === 3 && i.data.custom_id?.startsWith('fa:')) return await favToggle(i, env);
+      if (i.type === 3 && i.data.custom_id?.startsWith('al:')) return await alertForm(i, env);
+      if (i.type === 3 && i.data.custom_id?.startsWith('cr:')) return await craftButton(i, env);
+      if (i.type === 5 && i.data.custom_id?.startsWith('alm:')) return await alertSubmit(i, env);
       return oops('Comando sconosciuto.');
     } catch (e) {
       return oops('Non riesco a leggere i dati del market in questo momento, riprova tra un minuto.');

@@ -123,5 +123,9 @@ or with /avviso aggiungi|lista (select menu removes). An admin runs /avvisi-cana
 The Worker cron (*/15) reads all_alerts() and posts '<@user>' + item card once per crossing (KV alert_state; re-arms when the price
 goes back). SQL functions alerts_by_discord / set_alerts_by_discord / all_alerts are in bot/supabase.sql (service_role only).
 The Worker also has the DISCORD_TOKEN secret (to post messages).
+Card buttons (row under /prezzo and its chart views): ⭐ Preferito (fa:<sid>, toggles via set_favorites_by_discord), 🔔 Avviso (al:<sid> opens a modal
+alm:<sid>:<item>; direction is automatic: target above the current price = 'above', else 'below'), 🔨 Craft (cr:<sid>, only for craftable items),
+Apri sul sito. Anyone can press them, each for their own account; the item is the embed title. /preferiti has a 🔔 button too.
+/craft <oggetto> (autocomplete from data/recipes.json products) ports craftEngine() from js/craft.js — keep the two in sync. /aiuto lists all commands.
 /chisiamo answers '# LA LEGIONE' (guild joke; the bot can't read plain chat messages, slash commands only).
 To limit the bot to one channel: Discord server settings → Integrations → the bot → channels (no code).
