@@ -5,6 +5,32 @@ const LANG = (() => { try { const l = localStorage.getItem('aion-lang'); return 
 const LOCALE = {it: 'it-IT', en: 'en-GB', es: 'es-ES', fr: 'fr-FR'}[LANG];
 document.documentElement.lang = LANG;
 const EN = {
+  'In gioco:': "In game:", '→ browser web di Steam → apri questa pagina e fissala con la puntina.': "→ Steam web browser → open this page and pin it.",
+  // overlay page
+  "Modalità overlay (Steam)": "Overlay mode (Steam)",
+  "Installa l'app": "Install the app",
+  "Prezzi": "Prices",
+  "Craft": "Craft",
+  "Cerca un oggetto…": "Search an item…",
+  "Cerca": "Search",
+  "Filtra gli affari…": "Filter deals…",
+  "Sito completo": "Full site",
+  "Apri sul sito completo →": "Open on the full site →",
+  "Pochi dati": "Few data",
+  "Anomalo": "Anomalous",
+  "Scrivi il nome di un oggetto per vedere prezzo, media e andamento.": "Type an item name to see its price, average and trend.",
+  "Per ora nessun affare da comprare e rivendere.": "No deal to buy and resell right now.",
+  "Media 3 giorni": "3-day average",
+  "Se lo rivendi": "If you resell it",
+  "Prezzo più basso, ultimi 7 giorni": "Lowest price, last 7 days",
+  "Ricette non disponibili.": "Recipes not available.",
+  "Prezzi mancanti": "Missing prices",
+  "Scrivi il nome di un oggetto craftabile per vedere quanto costa craftarlo adesso.": "Type a craftable item to see what crafting it costs now.",
+  "Scrivi il nome di un personaggio (almeno 2 lettere): tutti i server EU, dati ufficiali NCSOFT.": "Type a character name (at least 2 letters): every EU server, official NCSOFT data.",
+  "Non riesco a leggere questo personaggio. Riprova tra poco.": "Can't read this character. Try again shortly.",
+  "Non riesco a caricare i prezzi. Riprova tra poco.": "Can't load prices. Try again shortly.",
+  "Costo stimato (con fallimenti)": "Estimated cost (with failures)",
+  "Personaggio": "Character",
   'Classifiche': "Rankings",
   // characters view
   "Personaggi": "Characters",
@@ -151,6 +177,9 @@ const EN = {
 const RLABEL = {'nelle ultime 24 ore': 'in the last 24 hours', 'negli ultimi 7 giorni': 'in the last 7 days', 'negli ultimi 30 giorni': 'in the last 30 days', 'negli ultimi 90 giorni': 'in the last 90 days'};
 const rl = (x) => RLABEL[x] || x;
 const EN_RE = [
+  [/^Prezzi: (.+)$/, "Prices: $1"],
+  [/^media (.+)$/, "avg $1"],
+  [/^Daevanion: (.+)$/, "Daevanion: $1"],
   [/^Nessun personaggio trovato con "(.*)"\.$/, "No character found with \"$1\"."], [/^(.+) · Market (.+)$/, '$1 · Market $2'],
   [/^Nessun oggetto contiene "(.*)" con questi filtri\.$/, 'No item contains "$1" with these filters.'], [/^Mostra altri \((.+) di (.+)\)$/, 'Show more ($1 of $2)'],
   [/^· prossimo aggiornamento verso le (.+)$/, '· next update around $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· data is late, the next update should fix it'],
@@ -181,6 +210,32 @@ const EN_RE = [
     .replace(/Ricette: aion2\.exchange \(dai file del gioco\)\./, 'Recipes: aion2.exchange (from the game files).')],
 ];
 const ES = {
+  'In gioco:': "En el juego:", '→ browser web di Steam → apri questa pagina e fissala con la puntina.': "→ navegador web de Steam → abre esta página y fíjala con la chincheta.",
+  // overlay page
+  "Modalità overlay (Steam)": "Modo overlay (Steam)",
+  "Installa l'app": "Instalar la app",
+  "Prezzi": "Precios",
+  "Craft": "Fabricar",
+  "Cerca un oggetto…": "Busca un objeto…",
+  "Cerca": "Buscar",
+  "Filtra gli affari…": "Filtra las ofertas…",
+  "Sito completo": "Sitio completo",
+  "Apri sul sito completo →": "Abrir en el sitio completo →",
+  "Pochi dati": "Pocos datos",
+  "Anomalo": "Anómalo",
+  "Scrivi il nome di un oggetto per vedere prezzo, media e andamento.": "Escribe el nombre de un objeto para ver precio, media y tendencia.",
+  "Per ora nessun affare da comprare e rivendere.": "Por ahora ninguna oferta para comprar y revender.",
+  "Media 3 giorni": "Media de 3 días",
+  "Se lo rivendi": "Si lo revendes",
+  "Prezzo più basso, ultimi 7 giorni": "Precio más bajo, últimos 7 días",
+  "Ricette non disponibili.": "Recetas no disponibles.",
+  "Prezzi mancanti": "Faltan precios",
+  "Scrivi il nome di un oggetto craftabile per vedere quanto costa craftarlo adesso.": "Escribe un objeto fabricable para ver cuánto cuesta fabricarlo ahora.",
+  "Scrivi il nome di un personaggio (almeno 2 lettere): tutti i server EU, dati ufficiali NCSOFT.": "Escribe el nombre de un personaje (al menos 2 letras): todos los servidores EU, datos oficiales de NCSOFT.",
+  "Non riesco a leggere questo personaggio. Riprova tra poco.": "No puedo leer este personaje. Inténtalo en un rato.",
+  "Non riesco a caricare i prezzi. Riprova tra poco.": "No puedo cargar los precios. Inténtalo en un rato.",
+  "Costo stimato (con fallimenti)": "Coste estimado (con fallos)",
+  "Personaggio": "Personaje",
   'Classifiche': "Clasificaciones",
   // characters view
   "Personaggi": "Personajes",
@@ -317,6 +372,9 @@ const ES = {
 const RLABEL_ES = {'nelle ultime 24 ore': 'en las últimas 24 horas', 'negli ultimi 7 giorni': 'en los últimos 7 días', 'negli ultimi 30 giorni': 'en los últimos 30 días', 'negli ultimi 90 giorni': 'en los últimos 90 días'};
 const rlEs = (x) => RLABEL_ES[x] || x;
 const ES_RE = [
+  [/^Prezzi: (.+)$/, "Precios: $1"],
+  [/^media (.+)$/, "media $1"],
+  [/^Daevanion: (.+)$/, "Daevanion: $1"],
   [/^Nessun personaggio trovato con "(.*)"\.$/, "Ningún personaje encontrado con \"$1\"."], [/^(.+) · Market (.+)$/, '$1 · Market $2'],
   [/^Nessun oggetto contiene "(.*)" con questi filtri\.$/, 'Ningún objeto contiene "$1" con estos filtros.'], [/^Mostra altri \((.+) di (.+)\)$/, 'Mostrar más ($1 de $2)'],
   [/^· prossimo aggiornamento verso le (.+)$/, '· próxima actualización hacia las $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· datos con retraso, la próxima actualización debería arreglarlo'],
@@ -348,6 +406,32 @@ const ES_RE = [
 ];
 
 const FR = {
+  'In gioco:': "En jeu :", '→ browser web di Steam → apri questa pagina e fissala con la puntina.': "→ navigateur web de Steam → ouvrez cette page et épinglez-la.",
+  // overlay page
+  "Modalità overlay (Steam)": "Mode overlay (Steam)",
+  "Installa l'app": "Installer l'appli",
+  "Prezzi": "Prix",
+  "Craft": "Craft",
+  "Cerca un oggetto…": "Chercher un objet…",
+  "Cerca": "Chercher",
+  "Filtra gli affari…": "Filtrer les affaires…",
+  "Sito completo": "Site complet",
+  "Apri sul sito completo →": "Ouvrir sur le site complet →",
+  "Pochi dati": "Peu de données",
+  "Anomalo": "Anormal",
+  "Scrivi il nome di un oggetto per vedere prezzo, media e andamento.": "Tapez le nom d'un objet pour voir son prix, sa moyenne et sa tendance.",
+  "Per ora nessun affare da comprare e rivendere.": "Aucune affaire à acheter et revendre pour le moment.",
+  "Media 3 giorni": "Moyenne sur 3 jours",
+  "Se lo rivendi": "Si vous le revendez",
+  "Prezzo più basso, ultimi 7 giorni": "Prix le plus bas, 7 derniers jours",
+  "Ricette non disponibili.": "Recettes indisponibles.",
+  "Prezzi mancanti": "Prix manquants",
+  "Scrivi il nome di un oggetto craftabile per vedere quanto costa craftarlo adesso.": "Tapez un objet fabricable pour voir combien coûte sa fabrication maintenant.",
+  "Scrivi il nome di un personaggio (almeno 2 lettere): tutti i server EU, dati ufficiali NCSOFT.": "Tapez le nom d'un personnage (au moins 2 lettres) : tous les serveurs EU, données officielles NCSOFT.",
+  "Non riesco a leggere questo personaggio. Riprova tra poco.": "Impossible de lire ce personnage. Réessayez bientôt.",
+  "Non riesco a caricare i prezzi. Riprova tra poco.": "Impossible de charger les prix. Réessayez bientôt.",
+  "Costo stimato (con fallimenti)": "Coût estimé (avec échecs)",
+  "Personaggio": "Personnage",
   'Classifiche': "Classements",
   // characters view
   "Personaggi": "Personnages",
@@ -485,6 +569,9 @@ const FR = {
 const RLABEL_FR = {'nelle ultime 24 ore': 'sur les dernières 24 heures', 'negli ultimi 7 giorni': 'sur les 7 derniers jours', 'negli ultimi 30 giorni': 'sur les 30 derniers jours', 'negli ultimi 90 giorni': 'sur les 90 derniers jours'};
 const rlFr = (x) => RLABEL_FR[x] || x;
 const FR_RE = [
+  [/^Prezzi: (.+)$/, "Prix : $1"],
+  [/^media (.+)$/, "moy. $1"],
+  [/^Daevanion: (.+)$/, "Daevanion : $1"],
   [/^Nessun personaggio trovato con "(.*)"\.$/, "Aucun personnage trouvé avec « $1 »."], [/^(.+) · Market (.+)$/, '$1 · Market $2'],
   [/^Nessun oggetto contiene "(.*)" con questi filtri\.$/, 'Aucun objet ne contient « $1 » avec ces filtres.'], [/^Mostra altri \((.+) di (.+)\)$/, 'Afficher plus ($1 sur $2)'],
   [/^· prossimo aggiornamento verso le (.+)$/, '· prochaine mise à jour vers $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· données en retard, la prochaine mise à jour devrait corriger cela'],

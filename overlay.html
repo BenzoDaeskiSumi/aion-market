@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Overlay · Aion 2 Market</title>
+<meta name="description" content="Aion 2 Market in formato compatto, da tenere aperto nell'overlay di Steam mentre giochi.">
+<meta name="theme-color" content="#0b0f18">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="img/favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  try { const t = localStorage.getItem('aion-theme'); if (['abyss', 'elyos', 'asmodian'].includes(t)) document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<link rel="stylesheet" href="css/overlay.css">
+</head>
+<body>
+<header>
+  <a class="brand" href="./" target="_blank" rel="noopener"><img src="img/favicon-48.png" alt="" width="22" height="22">Aion 2 Market</a>
+  <select id="srv" aria-label="Server"><option value="12305">Marchutan</option></select>
+</header>
+<nav class="tabs" role="tablist" aria-label="Sezioni">
+  <button role="tab" data-t="price" aria-selected="true">Prezzi</button>
+  <button role="tab" data-t="deals">Affari</button>
+  <button role="tab" data-t="craft">Craft</button>
+  <button role="tab" data-t="char">Personaggio</button>
+</nav>
+<div class="searchbar"><input id="q" type="search" autocomplete="off" placeholder="Cerca un oggetto…" aria-label="Cerca"></div>
+<main id="list" aria-live="polite"></main>
+<p class="hint" id="hint">In gioco: <b>Shift+Tab</b> → browser web di Steam → apri questa pagina e fissala con la puntina. <button type="button" id="hidehint" aria-label="Chiudi">✕</button></p>
+<footer><span id="upd"></span> · <a href="./" target="_blank" rel="noopener">Sito completo</a></footer>
+<script src="js/i18n.js"></script>
+<script src="js/overlay.js"></script>
+</body>
+</html>

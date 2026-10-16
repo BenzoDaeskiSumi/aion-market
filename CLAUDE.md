@@ -40,6 +40,13 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 - Official web API behind aion2.plaync.com Character Info (undocumented, may change): /en-us/api/gameinfo/servers|classes|pcdata?lang=en-US&region=eu,
   /api/character/info|equipment|daevanion/detail?characterId&serverId, search on api-search.plaync.com .../search/v2/character. No public developer API for the global yet.
 
+## Overlay + installable app
+- overlay.html + css/overlay.css + js/overlay.js: compact page for Steam's in-game browser (Shift+Tab, pin the window) and phones:
+  tabs Prezzi / Affari / Craft (own copy of craftEngine — keep in sync with js/craft.js) / Personaggio (Worker /char routes). Uses js/i18n.js.
+  Nothing touches the game client (no injection: forbidden by NCSOFT, anti-cheat). Linked from the footer ('Modalità overlay (Steam)').
+- PWA: manifest.webmanifest (icons img/icon-192/512 + maskable), sw.js (network first, same-origin cache fallback; skips h/ and db/items.json),
+  registered in js/main.js and js/overlay.js; footer 'Installa l'app' button appears on beforeinstallprompt. Bump CACHE in sw.js if the shell list changes.
+
 ## Automatic sync
 `.github/workflows/sync.yml` runs `scripts/sync.py` every hour (triggered at :00 by cron-job.org; sync.py first waits, up to 25 min,
 for aion2.exchange's new hourly snapshot (~:07) so the site gets this hour's prices): it reads the public API https://aion2.exchange/api (docs at /api/docs,

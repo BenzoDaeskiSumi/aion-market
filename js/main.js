@@ -23,3 +23,9 @@ function countVisit() {
     navigator.sendBeacon('https://aion-market-bot.aion2-market.workers.dev/hit', JSON.stringify({l: LANG, s: SERVER, m: MOBILE() ? 1 : 0}));
   } catch (e) {}
 }
+
+// installable app (PWA): service worker + an 'Installa l'app' button when the browser offers it
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+let INSTALL = null;
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); INSTALL = e; document.getElementById('install').hidden = false; });
+document.getElementById('install').addEventListener('click', () => { if (!INSTALL) return; INSTALL.prompt(); INSTALL = null; document.getElementById('install').hidden = true; });
