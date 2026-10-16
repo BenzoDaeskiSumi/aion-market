@@ -5,6 +5,25 @@ const LANG = (() => { try { const l = localStorage.getItem('aion-lang'); return 
 const LOCALE = {it: 'it-IT', en: 'en-GB', es: 'es-ES', fr: 'fr-FR'}[LANG];
 document.documentElement.lang = LANG;
 const EN = {
+  // database view
+  "Cerca tra tutti gli oggetti del gioco…": "Search every item in the game…",
+  "Statistiche": "Stats",
+  "Scambiabile": "Tradable",
+  "Non scambiabile": "Not tradable",
+  "Sì": "Yes",
+  "Categoria": "Category",
+  "ID oggetto": "Item ID",
+  "Apri nel Market: prezzi e grafico": "Open in the Market: prices and chart",
+  "Descrizione": "Description",
+  "Pietre e potenziamenti": "Stones & upgrades",
+  "Ali e compagni": "Wings & pets",
+  "Aspetto e collezioni": "Looks & collections",
+  "Altro": "Other",
+  "Caricamento del database…": "Loading the database…",
+  "Non riesco a caricare il database. Riprova tra qualche minuto.": "Can't load the database. Try again in a few minutes.",
+  "Nessun oggetto con questi filtri.": "No items with these filters.",
+  "Clicca un oggetto per vedere statistiche e descrizione. Dati ufficiali del dizionario oggetti NCSOFT.": "Click an item to see its stats and description. Official data from NCSOFT's item dictionary.",
+  "Fonte: dizionario oggetti ufficiale NCSOFT (nomi e statistiche del global, in inglese).": "Source: NCSOFT's official item dictionary (global names and stats, in English).",
   // header, KPIs, tabs, tools
   'Tassa': 'Tax', 'Tema': 'Theme', 'Lingua': 'Language', 'Oggetti': 'Items', 'In vendita': 'Listed', 'Da comprare': 'To buy', 'Da vendere': 'To sell',
   'Ultimo aggiornamento': 'Last update', 'Caricamento…': 'Loading…', 'Sezioni': 'Sections', 'Affari': 'Deals', 'Tipo di affare': 'Deal type',
@@ -102,11 +121,12 @@ const EN = {
   ': nessuno lo sta vendendo nel Market in questo momento.': ': nobody is selling it on the Market right now.', ': meno di 3 controlli, troppo pochi per giudicare il prezzo.': ': fewer than 3 checks, too few to judge the price.',
   // footer
   'Prezzi del server': 'Prices of the', '(Europa · Asmodiani), aggiornati ogni ora dai dati pubblici di': 'server (Europe · Asmodians), updated every hour from the public data of',
-  'e dai video del Market in gioco. Non affiliato a NCSOFT.': 'and from in-game Market videos. Not affiliated with NCSOFT.',
+  'e dai video del Market in gioco. Database oggetti: dizionario ufficiale NCSOFT. Non affiliato a NCSOFT.': 'and from in-game Market videos. Item database: NCSOFT official dictionary. Not affiliated with NCSOFT.',
 };
 const RLABEL = {'nelle ultime 24 ore': 'in the last 24 hours', 'negli ultimi 7 giorni': 'in the last 7 days', 'negli ultimi 30 giorni': 'in the last 30 days', 'negli ultimi 90 giorni': 'in the last 90 days'};
 const rl = (x) => RLABEL[x] || x;
 const EN_RE = [
+  [/^Nessun oggetto contiene "(.*)" con questi filtri\.$/, 'No item contains "$1" with these filters.'], [/^Mostra altri \((.+) di (.+)\)$/, 'Show more ($1 of $2)'],
   [/^· prossimo aggiornamento verso le (.+)$/, '· next update around $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· data is late, the next update should fix it'],
   [/^maestria (\d+)$/, 'mastery $1'],
   [/^Costo stimato \(combo (\d+)%\)$/, 'Estimated cost ($1% combo)'],
@@ -135,6 +155,25 @@ const EN_RE = [
     .replace(/Ricette: aion2\.exchange \(dai file del gioco\)\./, 'Recipes: aion2.exchange (from the game files).')],
 ];
 const ES = {
+  // database view
+  "Cerca tra tutti gli oggetti del gioco…": "Busca entre todos los objetos del juego…",
+  "Statistiche": "Estadísticas",
+  "Scambiabile": "Comerciable",
+  "Non scambiabile": "No comerciable",
+  "Sì": "Sí",
+  "Categoria": "Categoría",
+  "ID oggetto": "ID del objeto",
+  "Apri nel Market: prezzi e grafico": "Abrir en el Market: precios y gráfico",
+  "Descrizione": "Descripción",
+  "Pietre e potenziamenti": "Piedras y mejoras",
+  "Ali e compagni": "Alas y mascotas",
+  "Aspetto e collezioni": "Apariencia y colecciones",
+  "Altro": "Otros",
+  "Caricamento del database…": "Cargando la base de datos…",
+  "Non riesco a caricare il database. Riprova tra qualche minuto.": "No puedo cargar la base de datos. Inténtalo de nuevo en unos minutos.",
+  "Nessun oggetto con questi filtri.": "Ningún objeto con estos filtros.",
+  "Clicca un oggetto per vedere statistiche e descrizione. Dati ufficiali del dizionario oggetti NCSOFT.": "Haz clic en un objeto para ver sus estadísticas y descripción. Datos oficiales del diccionario de objetos de NCSOFT.",
+  "Fonte: dizionario oggetti ufficiale NCSOFT (nomi e statistiche del global, in inglese).": "Fuente: diccionario oficial de objetos de NCSOFT (nombres y estadísticas del global, en inglés).",
   'Tassa': 'Impuesto', 'Tema': 'Tema', 'Lingua': 'Idioma', 'Oggetti': 'Objetos', 'In vendita': 'En venta', 'Da comprare': 'Para comprar', 'Da vendere': 'Para vender',
   'Ultimo aggiornamento': 'Última actualización', 'Caricamento…': 'Cargando…', 'Sezioni': 'Secciones', 'Affari': 'Chollos', 'Tipo di affare': 'Tipo de chollo',
   'Categorie': 'Categorías', 'Cerca un item…': 'Busca un objeto…', 'Cerca un item': 'Busca un objeto', 'Cerca un oggetto craftabile…': 'Busca un objeto fabricable…',
@@ -222,11 +261,12 @@ const ES = {
     ': cuántas unidades se venden al día. Con "~" es una estimación por los anuncios que desaparecieron entre dos comprobaciones (también pueden haberse retirado). La señal Comprar solo aparece si se vende al menos 1 al día.',
   ': nessuno lo sta vendendo nel Market in questo momento.': ': nadie lo está vendiendo en el Market ahora mismo.', ': meno di 3 controlli, troppo pochi per giudicare il prezzo.': ': menos de 3 comprobaciones, demasiado pocas para juzgar el precio.',
   'Prezzi del server': 'Precios del servidor', '(Europa · Asmodiani), aggiornati ogni ora dai dati pubblici di': '(Europa · Asmodianos), actualizados cada hora con los datos públicos de',
-  'e dai video del Market in gioco. Non affiliato a NCSOFT.': 'y con vídeos del Market en el juego. No afiliado a NCSOFT.',
+  'e dai video del Market in gioco. Database oggetti: dizionario ufficiale NCSOFT. Non affiliato a NCSOFT.': 'y con vídeos del Market en el juego. Base de datos de objetos: diccionario oficial de NCSOFT. No afiliado a NCSOFT.',
 };
 const RLABEL_ES = {'nelle ultime 24 ore': 'en las últimas 24 horas', 'negli ultimi 7 giorni': 'en los últimos 7 días', 'negli ultimi 30 giorni': 'en los últimos 30 días', 'negli ultimi 90 giorni': 'en los últimos 90 días'};
 const rlEs = (x) => RLABEL_ES[x] || x;
 const ES_RE = [
+  [/^Nessun oggetto contiene "(.*)" con questi filtri\.$/, 'Ningún objeto contiene "$1" con estos filtros.'], [/^Mostra altri \((.+) di (.+)\)$/, 'Mostrar más ($1 de $2)'],
   [/^· prossimo aggiornamento verso le (.+)$/, '· próxima actualización hacia las $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· datos con retraso, la próxima actualización debería arreglarlo'],
   [/^maestria (\d+)$/, 'maestría $1'],
   [/^Costo stimato \(combo (\d+)%\)$/, 'Coste estimado (combo $1%)'],
@@ -256,6 +296,26 @@ const ES_RE = [
 ];
 
 const FR = {
+  // database view
+  "Cerca tra tutti gli oggetti del gioco…": "Chercher parmi tous les objets du jeu…",
+  "Statistiche": "Statistiques",
+  "Scambiabile": "Échangeable",
+  "Non scambiabile": "Non échangeable",
+  "Sì": "Oui",
+  "No": "Non",
+  "Categoria": "Catégorie",
+  "ID oggetto": "ID de l'objet",
+  "Apri nel Market: prezzi e grafico": "Ouvrir dans le Market : prix et graphique",
+  "Descrizione": "Description",
+  "Pietre e potenziamenti": "Pierres et améliorations",
+  "Ali e compagni": "Ailes et familiers",
+  "Aspetto e collezioni": "Apparence et collections",
+  "Altro": "Autres",
+  "Caricamento del database…": "Chargement de la base de données…",
+  "Non riesco a caricare il database. Riprova tra qualche minuto.": "Impossible de charger la base de données. Réessayez dans quelques minutes.",
+  "Nessun oggetto con questi filtri.": "Aucun objet avec ces filtres.",
+  "Clicca un oggetto per vedere statistiche e descrizione. Dati ufficiali del dizionario oggetti NCSOFT.": "Cliquez sur un objet pour voir ses statistiques et sa description. Données officielles du dictionnaire d'objets NCSOFT.",
+  "Fonte: dizionario oggetti ufficiale NCSOFT (nomi e statistiche del global, in inglese).": "Source : dictionnaire officiel des objets NCSOFT (noms et statistiques du global, en anglais).",
   'Tassa': 'Taxe', 'Tema': 'Thème', 'Lingua': 'Langue', 'Oggetti': 'Objets', 'In vendita': 'En vente', 'Da comprare': 'À acheter', 'Da vendere': 'À vendre',
   'Ultimo aggiornamento': 'Dernière mise à jour', 'Caricamento…': 'Chargement…', 'Sezioni': 'Sections', 'Affari': 'Bonnes affaires', 'Tipo di affare': "Type d'affaire",
   'Categorie': 'Catégories', 'Cerca un item…': 'Chercher un objet…', 'Cerca un item': 'Chercher un objet', 'Cerca un oggetto craftabile…': 'Chercher un objet fabricable…',
@@ -343,11 +403,12 @@ const FR = {
     ' : combien d\'unités se vendent par jour. Avec « ~ », c\'est une estimation à partir des annonces disparues entre deux relevés (elles peuvent aussi avoir été retirées). Le signal Acheter n\'apparaît que s\'il s\'en vend au moins 1 par jour.',
   ': nessuno lo sta vendendo nel Market in questo momento.': " : personne ne le vend au Market en ce moment.", ': meno di 3 controlli, troppo pochi per giudicare il prezzo.': ' : moins de 3 relevés, trop peu pour juger le prix.',
   'Prezzi del server': 'Prix du serveur', '(Europa · Asmodiani), aggiornati ogni ora dai dati pubblici di': '(Europe · Asmodiens), mis à jour chaque heure avec les données publiques de',
-  'e dai video del Market in gioco. Non affiliato a NCSOFT.': 'et des vidéos du Market en jeu. Non affilié à NCSOFT.',
+  'e dai video del Market in gioco. Database oggetti: dizionario ufficiale NCSOFT. Non affiliato a NCSOFT.': 'et des vidéos du Market en jeu. Base de données des objets : dictionnaire officiel NCSOFT. Non affilié à NCSOFT.',
 };
 const RLABEL_FR = {'nelle ultime 24 ore': 'sur les dernières 24 heures', 'negli ultimi 7 giorni': 'sur les 7 derniers jours', 'negli ultimi 30 giorni': 'sur les 30 derniers jours', 'negli ultimi 90 giorni': 'sur les 90 derniers jours'};
 const rlFr = (x) => RLABEL_FR[x] || x;
 const FR_RE = [
+  [/^Nessun oggetto contiene "(.*)" con questi filtri\.$/, 'Aucun objet ne contient « $1 » avec ces filtres.'], [/^Mostra altri \((.+) di (.+)\)$/, 'Afficher plus ($1 sur $2)'],
   [/^· prossimo aggiornamento verso le (.+)$/, '· prochaine mise à jour vers $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· données en retard, la prochaine mise à jour devrait corriger cela'],
   [/^maestria (\d+)$/, 'maîtrise $1'],
   [/^Costo stimato \(combo (\d+)%\)$/, 'Coût estimé (combo $1 %)'],

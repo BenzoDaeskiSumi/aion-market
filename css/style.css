@@ -434,3 +434,17 @@ footer { padding: 6px 16px 24px; font-size: 13px; text-shadow: none; }
 .facts .range::after { content: ''; position: absolute; top: -3px; left: calc(var(--v) - 2px); width: 4px; height: 12px; border-radius: 2px; background: var(--text); }
 .facts .rlh { display: block; margin-top: 4px; font-size: 12px; font-weight: 400; color: var(--dim); }
 td.up { color: var(--up); } td.down { color: var(--down); }
+/* database view */
+#dbtab td.dbst { color: var(--dim); font-size: 13px; white-space: normal; max-width: 420px; }
+.dbmore { display: block; margin: 12px auto 16px; }
+.dbmore[hidden] { display: none; }
+.craft .dbgo { width: 100%; justify-content: center; margin: 0 0 12px; }
+.craft h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); margin: 14px 0 6px; font-weight: 600; }
+.dbstats { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.dbstats li { display: flex; justify-content: space-between; gap: 12px; padding: 7px 12px; font-size: 14px; }
+.dbstats li + li { border-top: 1px solid var(--line); }
+.dbstats b { font-variant-numeric: tabular-nums; font-weight: 600; }
+.dbdesc { white-space: pre-line; font-size: 14px; line-height: 1.5; margin: 0; }
+#dbtab th:nth-child(2), #dbtab td.dbst { text-align: left; }
+.craft .dbgo { box-sizing: border-box; display: flex; }
+.win.dbview #grades .g-teal { display: none; }

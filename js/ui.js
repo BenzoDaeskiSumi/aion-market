@@ -61,7 +61,8 @@ function setView(v, deal) {
   VIEW = v; if (deal) DEAL = deal;
   if (v === 'deals') { sortK = DEAL === 'buy' ? 'flip_profit' : 'over_avg'; sortDir = -1; }
   else if (v === 'market') { [sortK, sortDir] = MARKET_SORT || ['grade_rank', -1]; }
-  document.getElementById('q').placeholder = v === 'craft' ? 'Cerca un oggetto craftabile…' : 'Cerca un item…';
+  document.getElementById('q').placeholder = v === 'craft' ? 'Cerca un oggetto craftabile…' : v === 'db' ? 'Cerca tra tutti gli oggetti del gioco…' : 'Cerca un item…';
+  if (v === 'db') loadDb();
   drawCats(); drawTable(); drawChart();
 }
 document.querySelectorAll('.tabs [role="tab"]').forEach((t) => t.addEventListener('click', () => setView(t.dataset.view)));

@@ -38,6 +38,7 @@ function drawCraftCats() {
 }
 function drawCats() {
   if (VIEW === 'craft') return drawCraftCats();
+  if (VIEW === 'db') return drawDbCats();
   const counts = d3.rollup(ITEMS, (v) => v.length, (r) => r.category);
   const nav = document.getElementById('cats'); nav.replaceChildren();
   const mk = (cls, label, n, pressed) => {
@@ -75,14 +76,18 @@ function drawCats() {
 
 /* ---------- table ---------- */
 function drawTable() {
-  const craft = VIEW === 'craft';
-  document.getElementById('maintab').hidden = craft; document.getElementById('crafttab').hidden = !craft;
-  document.getElementById('win').classList.toggle('craftview', craft);
+  const craft = VIEW === 'craft', db = VIEW === 'db';
+  document.getElementById('maintab').hidden = craft || db; document.getElementById('crafttab').hidden = !craft;
+  document.getElementById('dbtab').hidden = !db; if (!db) document.getElementById('dbmore').hidden = true;
+  document.getElementById('win').classList.toggle('craftview', craft || db);
+  document.getElementById('win').classList.toggle('dbview', db);
   document.getElementById('dealfilter').hidden = VIEW !== 'deals';
   document.querySelectorAll('.tabs [role="tab"]').forEach((t) => t.setAttribute('aria-selected', String(t.dataset.view === VIEW)));
   document.querySelectorAll('#dealfilter button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.deal === DEAL)));
-  document.getElementById('grades').style.display = craft ? 'none' : ''; naBtn.style.display = craft ? 'none' : '';
+  document.getElementById('grades').style.display = craft ? 'none' : ''; naBtn.style.display = craft || db ? 'none' : '';
+  favBtnEl.style.display = db ? 'none' : '';
   if (craft) return drawCraft();
+  if (db) return drawDb();
   const term = fold(document.getElementById('q').value.trim());
   const dealSig = DEAL === 'buy' ? 'Compra per rivendere' : 'Vendi ora';
   const rows = ITEMS.filter((r) => inSel(r) && GRADES_ON.has(r.grade) && (VIEW !== 'deals' || r.signal === dealSig) && (showNA || r.available || VIEW === 'deals' || onlyFav) && (!onlyFav || FAVS.has(r.item)) && (!term || fold(r.item + ' ' + (NAMES[r.item] || '') + ' ' + catName(r.category) + ' ' + GRADE[r.grade]).includes(term)))
@@ -154,7 +159,7 @@ document.addEventListener('click', (e) => { const b = e.target.closest('.fav[dat
 function drawChart() {
   const cd = document.getElementById('craftdetail'), help = document.querySelector('.aside .help');
   const chartBox = document.getElementById('chart');
-  if (VIEW === 'craft') { document.getElementById('alertbox').hidden = true; document.querySelectorAll('.aside .favbig').forEach((x) => x.remove()); document.getElementById('hero').hidden = true; help.hidden = true; chartBox.style.display = 'none'; document.getElementById('ranges').hidden = true; return drawCraftDetail(); }
+  if (VIEW === 'craft' || VIEW === 'db') { document.getElementById('alertbox').hidden = true; document.querySelectorAll('.aside .favbig').forEach((x) => x.remove()); document.getElementById('hero').hidden = true; help.hidden = true; chartBox.style.display = 'none'; document.getElementById('ranges').hidden = true; return VIEW === 'db' ? drawDbDetail() : drawCraftDetail(); }
   cd.hidden = true; help.hidden = false; chartBox.style.display = '';
   const box = document.getElementById('chart'); box.replaceChildren();
   const r = ITEMS.find((x) => x.item === picked);

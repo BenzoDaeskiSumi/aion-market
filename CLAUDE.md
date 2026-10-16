@@ -26,6 +26,16 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
   counters st:YYYY-MM-DD (no cookies, no IP); admins read them with /statistiche. Described in privacy.html.
 - Phone layout (<= 760 px): menu button for header controls, bottom tab bar, details as a bottom sheet (showDetail/closeSheet in js/ui.js).
 
+## Database view (wiki)
+- Tab 'Database' (VIEW 'db', js/db.js): every item of NCSOFT's official AION 2 item dictionary (tw.ncsoft.com/aion2_tw/v2.0/dict/search/item,
+  locale=en-US gives the global English names; fetched one grade at a time with grades=Epic|Unique|Legend|Rare|Common because a search stops at 10,000).
+  scripts/item_db.py -> data/db/items.json (compact rows [id, name, grade, cat, icon, tradable, stats, description]), weekly 'Item database' workflow.
+  Grades map Epic=orange, Unique=gold, Legend=blue, Rare=green, Common=white (checked against the Market's grades). Icons hotlinked from
+  assets.playnccdn.com (mentioned in privacy.html); local icons/ win when they exist. URL: v=db, c=<group|cat>, id=<item id>.
+  Sidebar groups DB_GROUPS in js/db.js; unknown dictionary categories fall into 'Altro'. Market price + 'Apri nel Market' when the name is on the Market.
+- Official web API behind aion2.plaync.com Character Info (undocumented, may change): /en-us/api/gameinfo/servers|classes|pcdata?lang=en-US&region=eu,
+  /api/character/info|equipment|daevanion/detail?characterId&serverId, search on api-search.plaync.com .../search/v2/character. No public developer API for the global yet.
+
 ## Automatic sync
 `.github/workflows/sync.yml` runs `scripts/sync.py` every hour (triggered at :00 by cron-job.org; sync.py first waits, up to 25 min,
 for aion2.exchange's new hourly snapshot (~:07) so the site gets this hour's prices): it reads the public API https://aion2.exchange/api (docs at /api/docs,

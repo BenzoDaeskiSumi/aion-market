@@ -63,6 +63,7 @@
     <button type="button" role="tab" data-view="market">Market</button>
     <button type="button" role="tab" data-view="deals">Affari <span id="tab-deals"></span></button>
     <button type="button" role="tab" data-view="craft">Crafting <span id="tab-craft"></span></button>
+    <button type="button" role="tab" data-view="db">Database <span id="tab-db"></span></button>
     <div class="dealfilter" id="dealfilter" role="group" aria-label="Tipo di affare">
       <button type="button" data-deal="buy">Da comprare</button><button type="button" data-deal="sell">Da vendere</button>
     </div>
@@ -115,6 +116,16 @@
           </tr></thead>
           <tbody id="crows"></tbody>
         </table>
+        <table id="dbtab" hidden>
+          <thead><tr>
+            <th><button data-b="grade">Oggetto</button></th>
+            <th class="hm"><button data-b="name">Statistiche</button></th>
+            <th class="hn"><button data-b="trade">Scambiabile</button></th>
+            <th><button data-b="price">Prezzo Market</button></th>
+          </tr></thead>
+          <tbody id="drows"></tbody>
+        </table>
+        <button type="button" class="tbtn dbmore" id="dbmore" hidden>Mostra altri</button>
       </div>
     </div>
 
@@ -147,12 +158,13 @@
     </aside>
   </div>
 </div>
-<footer>Prezzi del server <span id="f-server">Marchutan</span> (Europa · Asmodiani), aggiornati ogni ora dai dati pubblici di <a href="https://aion2.exchange/" target="_blank" rel="noopener">aion2.exchange</a> e dai video del Market in gioco. Non affiliato a NCSOFT. <a class="priv" href="privacy.html">Privacy</a></footer>
+<footer>Prezzi del server <span id="f-server">Marchutan</span> (Europa · Asmodiani), aggiornati ogni ora dai dati pubblici di <a href="https://aion2.exchange/" target="_blank" rel="noopener">aion2.exchange</a> e dai video del Market in gioco. Database oggetti: dizionario ufficiale NCSOFT. Non affiliato a NCSOFT. <a class="priv" href="privacy.html">Privacy</a></footer>
 
 <script src="js/i18n.js"></script>
 <script src="js/core.js"></script>
 <script src="js/market.js"></script>
 <script src="js/craft.js"></script>
+<script src="js/db.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/alerts.js"></script>
 <script src="js/account.js"></script>
