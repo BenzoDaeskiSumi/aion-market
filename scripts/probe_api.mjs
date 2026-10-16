@@ -17,3 +17,4 @@ const D = 'https://tw.ncsoft.com/aion2_tw/v2.0/dict/search/item?size=3&locale=en
 for (const g of ['Common', 'Rare', 'Legend', 'Unique', 'Epic', 'Mythic', 'Special', 'Ancient', 'Relic', 'Eternal', 'Heroic', 'Fabled', 'Uncommon', 'Superior'])
   log('grades', g, await grab(`${D}&page=1&grades=${g}`, 300));
 writeFileSync('/tmp/probe.txt', out.join('\n'));
+console.log(out.join('\n'));
