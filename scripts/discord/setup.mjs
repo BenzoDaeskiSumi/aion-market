@@ -167,7 +167,12 @@ for (const cat of CATS) {
     c.id = ex.id;
   }
 }
-await act('riordina categorie e canali come sopra', () => api('PATCH', `/guilds/${GUILD}/channels`, placed.filter((x) => !String(x.id).startsWith('new:') && !String(x.parent_id || '').startsWith('new:'))));
+await act('riordina categorie e canali come sopra', async () => {
+  const ok = placed.filter((x) => !String(x.id).startsWith('new:') && !String(x.parent_id || '').startsWith('new:'));
+  // Discord moves one channel to another category per request
+  for (const x of ok) { const c = channels.find((y) => y.id === x.id); if (x.parent_id && c && c.parent_id !== x.parent_id) await api('PATCH', `/channels/${x.id}`, {parent_id: x.parent_id}); }
+  await api('PATCH', `/guilds/${GUILD}/channels`, ok.map(({id, position}) => ({id, position})));
+});
 
 say('\n== Messaggi');
 const chId = (n) => (chBy(n) || {}).id;
