@@ -733,6 +733,27 @@ async function charChoices(q, srv) {
   return r.list.map((c) => ({name: `${c.name} · ${c.serverName} · ${meta.classes[c.pcId] || ''} Lv ${c.level}`.slice(0, 100), value: `${c.server}:${c.id}`.slice(0, 100)}));
 }
 
+// ---------- role picker in #scegli-ruoli (posted by scripts/discord/setup.mjs): menus rp:<group>, option values = role ids ----------
+async function rolePick(i, env, ctx) {
+  const gid = i.guild_id, uid = userId(i), have = new Set(i.member?.roles || []);
+  const menu = (i.message?.components || []).flatMap((r) => r.components || []).find((c) => c.custom_id === i.data.custom_id);
+  const group = (menu?.options || []).map((o) => o.value).filter((v) => /^\d+$/.test(v));
+  const want = new Set((i.data.values || []).filter((v) => group.includes(v)));
+  const add = group.filter((r) => want.has(r) && !have.has(r)), del = group.filter((r) => !want.has(r) && have.has(r));
+  const names = Object.fromEntries((menu?.options || []).map((o) => [o.value, o.label]));
+  ctx.waitUntil((async () => {
+    const call = (m, r) => fetch(`https://discord.com/api/v10/guilds/${gid}/members/${uid}/roles/${r}`, {method: m, headers: {Authorization: `Bot ${env.DISCORD_TOKEN}`, 'X-Audit-Log-Reason': 'Scelta dal menu ruoli'}});
+    let ok = true;
+    for (const r of add) ok = (await call('PUT', r)).ok && ok;
+    for (const r of del) ok = (await call('DELETE', r)).ok && ok;
+    const text = !ok ? '⚠️ Non sono riuscito a cambiare tutti i ruoli: avvisa un Centurion.'
+      : !add.length && !del.length ? 'Nessun cambiamento.'
+      : [add.length ? `✅ Aggiunti: ${add.map((r) => names[r]).join(', ')}` : null, del.length ? `➖ Tolti: ${del.map((r) => names[r]).join(', ')}` : null].filter(Boolean).join('\n');
+    await fetch(`https://discord.com/api/v10/webhooks/${i.application_id}/${i.token}/messages/@original`, {method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({content: text})});
+  })());
+  return Response.json({type: 5, data: {flags: 64}});                 // only the user sees the answer
+}
+
 // ---------- entry point ----------
 export default {
   async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env)])); },
@@ -786,6 +807,7 @@ export default {
       if (i.type === 3 && i.data.custom_id?.startsWith('al:')) return await alertForm(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('cr:')) return await craftButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('pc:')) return await charButton(i, env);
+      if (i.type === 3 && i.data.custom_id?.startsWith('rp:')) return await rolePick(i, env, ctx);
       if (i.type === 5 && i.data.custom_id?.startsWith('alm:')) return await alertSubmit(i, env);
       return oops('Comando sconosciuto.');
     } catch (e) {

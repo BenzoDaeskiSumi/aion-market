@@ -1,24 +1,31 @@
-name: Probe NCSOFT pages
+name: Discord setup
+# Sets up the guild's Discord server with the bot. 'plan' only reads and lists what it would do; 'apply' does it.
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'plan (prova a secco) o apply'
+        required: true
+        default: plan
 permissions:
   contents: write
 jobs:
-  probe:
+  setup:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: node scripts/discord/inventory.mjs > /tmp/run.txt 2>&1 || true
+      - run: node scripts/discord/setup.mjs > /tmp/run.txt 2>&1 || true
         env:
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          MODE: ${{ inputs.mode }}
       - name: Save the output on the temporary 'probe' branch
         run: |
           git config user.name "BenzoDaeskiSumi"
           git config user.email "173538282+BenzoDaeskiSumi@users.noreply.github.com"
           cp /tmp/run.txt /tmp/p.txt
           git checkout --orphan probe && git rm -rfq . && cp /tmp/p.txt probe.txt
-          git add -A && git commit -qm "probe output" && git push -f origin probe
+          git add -A && git commit -qm "discord setup output" && git push -f origin probe
