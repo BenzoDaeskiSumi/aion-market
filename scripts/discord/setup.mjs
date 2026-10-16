@@ -100,7 +100,7 @@ const myTop = Math.max(0, ...roles.filter((r) => member.roles.includes(r.id)).ma
 say(`Server: ${guild.name} · ${MODEMSG()}`);
 function MODEMSG() { return APPLY ? 'APPLICO le modifiche' : 'PROVA A SECCO: non cambio niente'; }
 const managedMax = Math.max(...roles.filter((r) => r.managed && !member.roles.includes(r.id)).map((r) => r.position), 0);
-if (myTop <= Math.max(...roles.filter((r) => !r.managed).map((r) => r.position))) {
+if (myTop <= Math.max(0, ...roles.filter((r) => !member.roles.includes(r.id) && r.id !== GUILD).map((r) => r.position))) {
   say(`\n⚠️ Mauro non ha un ruolo sopra gli altri (il suo ruolo più alto è in posizione ${myTop}). Discord non gli permette di creare o assegnare ruoli finché non lo è.`);
   say('   → Server → Impostazioni → Ruoli: crea un ruolo "Mauro", dagli Amministratore, trascinalo IN CIMA alla lista e assegnalo al bot Mauro.');
   if (APPLY) { writeFileSync('/tmp/probe.txt', log.join('\n')); process.exit(0); }
