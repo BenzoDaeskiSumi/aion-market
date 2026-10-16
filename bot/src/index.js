@@ -616,6 +616,9 @@ const ARMOR = [['MainHand', 'Arma'], ['SubHand', 'Seconda mano'], ['Helmet', 'El
   ['Gloves', 'Guanti'], ['Boots', 'Stivali'], ['Cape', 'Mantello']];
 const ACCS = [['Necklace', 'Collana'], ['Earring1', 'Orecchino'], ['Earring2', 'Orecchino'], ['Ring1', 'Anello'], ['Ring2', 'Anello'], ['Bracelet1', 'Bracciale'],
   ['Bracelet2', 'Bracciale'], ['Belt', 'Cintura'], ['Amulet', 'Amuleto'], ['Rune1', 'Runa'], ['Rune2', 'Runa']];
+// side bar of the card: one colour per class
+const CLASS_COLOR = {gladiator: 0xe0483e, templar: 0x4a7dff, assassin: 0xe0559e, ranger: 0x4caf50, sorcerer: 0x3fc4ff,
+  spiritmaster: 0x9b59ff, elementalist: 0x9b59ff, cleric: 0xf5d142, chanter: 0xff8a3d};
 const CHAR_VIEWS = {card: '📋 Scheda', gear: '🧩 Equipaggiamento', stats: '📊 Statistiche'};
 const classIcon = (name) => name ? `https://assets.playnccdn.com/static-aion2/characters/img/class/class_icon_${String(name).toLowerCase().replace(/[^a-z]/g, '')}.png` : undefined;
 // Discord can't load the official profile pictures directly: the Worker relays them (/char/img)
@@ -638,7 +641,7 @@ async function charView(server, id, view, uid, env) {
   const url = `${env.SITE}/?v=char&ch=${server}:${encodeURIComponent(id)}`;
   const base = {
     author: {name: `${pr.className || ''} · Lv ${pr.characterLevel ?? '?'}`, icon_url: classIcon(pr.className)},
-    title: pr.characterName || 'Personaggio', url, color: pr.raceId === 2 ? 0xb06cff : 0xf0c43f,
+    title: pr.characterName || 'Personaggio', url, color: CLASS_COLOR[String(pr.className || '').toLowerCase().replace(/[^a-z]/g, '')] ?? (pr.raceId === 2 ? 0xb06cff : 0xf0c43f),
     thumbnail: avatarProxy(pr.profileImage, env) ? {url: avatarProxy(pr.profileImage, env)} : undefined,
     footer: {text: `${pr.serverName || ''} · ${race} · dati ufficiali NCSOFT`}, timestamp: new Date().toISOString(),
   };
