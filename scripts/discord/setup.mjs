@@ -1,5 +1,6 @@
 // Sets up the guild's Discord server with the bot (Mauro). Run by the 'Discord setup' workflow.
 // MODE=plan (default) only reads the server and prints what it would do; MODE=apply does it.
+// (#eventi, #candidature, #compro-vendo and #crafting were removed by the owner: not recreated.)
 // Never deletes anything: existing channels and roles are kept (renamed or moved only where listed below).
 // Idempotent: things are found by name, so running it again only adds what is missing.
 import {writeFileSync} from 'node:fs';
@@ -52,11 +53,9 @@ const ROLES = [
 const CATS = [
   {name: '📌 BENVENUTO', channels: [
     {name: 'benvenuto', ro: true, topic: 'Chi siamo e come iniziare'}, {name: 'regole', ro: true, topic: 'Le regole della Legione'},
-    {name: 'scegli-ruoli', ro: true, topic: 'Scegli classe e contenuti: ti tagghiamo solo per quello che ti interessa'},
-    {name: 'candidature', forum: true, topic: 'Vuoi entrare? Apri un post: nome del personaggio, classe, Combat Power, orari. Controlliamo con /personaggio.',
-      tags: [['In attesa', '⏳'], ['Accettato', '✅'], ['Rifiutato', '❌']]}]},
+    {name: 'scegli-ruoli', ro: true, topic: 'Scegli classe e contenuti: ti tagghiamo solo per quello che ti interessa'}]},
   {name: '📢 LEGIONE', was: 'Canali testuali', channels: [
-    {name: 'annunci', ro: true, topic: 'Annunci degli ufficiali'}, {move: 'eventi'}, {move: 'generale'}, {move: 'filmati-e-highlights'}]},
+    {name: 'annunci', ro: true, topic: 'Annunci degli ufficiali'}, {move: 'generale'}, {move: 'filmati-e-highlights'}]},
   {name: '⚔️ CONTENUTI', channels: [
     {name: 'dungeon-e-raid', topic: 'Organizzazione di dungeon e raid'}, {name: 'pvp-abyss-arena', topic: 'PvP, Abyss e Arena'},
     {name: 'cerco-gruppo', forum: true, topic: 'Un post per ogni gruppo da formare: contenuto, orario, classi che servono. Metti il tag Pieno quando siete al completo.',
@@ -64,8 +63,7 @@ const CATS = [
     {move: 'guide'}]},
   {name: '💰 MARKET', was: 'Market', channels: [
     {move: 'info'}, {move: 'patch-market'}, {move: 'comandi'}, {move: 'avvisi'},
-    {name: 'compro-vendo', forum: true, topic: 'Scambi tra membri della Legione. Prezzi aggiornati: /info o il sito.', tags: [['Compro', '🛒'], ['Vendo', '💰'], ['Scambio', '🔁'], ['Concluso', '✅']]},
-    {name: 'crafting', topic: 'Richieste di craft e consigli: /craft <oggetto> per i costi'}, {move: 'feedback'}]},
+    {move: 'feedback'}]},
   {name: '🔒 UFFICIALI', staff: true, channels: [
     {name: 'ufficiali', topic: 'Discussioni tra ufficiali'}, {name: 'reclutamento', topic: 'Valutazione delle candidature'}, {name: 'log-moderazione', topic: 'Log di AutoMod e moderazione'}]},
   {name: '🔊 VOCALI', was: 'Canali vocali', channels: [

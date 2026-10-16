@@ -77,7 +77,6 @@ for c in channels:
         act(f"#{c['name']} → {want}", lambda c=c, want=want: api('PATCH', f"/channels/{c['id']}", {'name': want}))
 left = [c['name'] for c in channels if c['type'] != 4 and base(c['name']) not in NAMES]
 if left: say('  senza emoji (nomi non riconosciuti):', ', '.join(left))
-say('  tutti:', ' | '.join(f"{c['type']}:{c['name']}" for c in channels))
 if APPLY:
     channels = api('GET', f'/guilds/{G}/channels')
 cid = {base(c['name']): c['id'] for c in channels if c['type'] != 4}
@@ -96,7 +95,7 @@ MSG = {
         'fields': [
             {'name': '1️⃣  Leggi le regole', 'value': ch('regole'), 'inline': True},
             {'name': '2️⃣  Scegli i tuoi ruoli', 'value': ch('scegli-ruoli'), 'inline': True},
-            {'name': '3️⃣  Entra in Legione', 'value': ch('candidature'), 'inline': True},
+            {'name': '3️⃣  Entra in Legione', 'value': 'Scrivi a un **Centurion**', 'inline': True},
             {'name': '​', 'value': '**🤖 Mauro, il bot della Legione**', 'inline': False},
             {'name': '💰 Market', 'value': '`/info` prezzi e grafici\n`/affari` occasioni\n`/avviso` avvisi di prezzo', 'inline': True},
             {'name': '🔨 Crafting', 'value': '`/craft` costi e ricette\n`/preferiti` i tuoi oggetti', 'inline': True},
@@ -110,8 +109,8 @@ MSG = {
             {'name': '🤝  Rispetto', 'value': 'Niente insulti, discriminazioni o drama in chat pubblica.', 'inline': False},
             {'name': '🚫  Niente spam', 'value': 'Niente pubblicità o link sospetti. Venditori di kinah e account = ban.', 'inline': False},
             {'name': '🛡️  Gioco pulito', 'value': 'Niente cheat, bot, exploit o RMT: mettono a rischio il tuo account e la Legione.', 'inline': False},
-            {'name': '🗂️  Canali giusti', 'value': f"Gruppi in {ch('cerco-gruppo')}, comandi del bot in {ch('comandi')}, scambi in {ch('compro-vendo')}.", 'inline': False},
-            {'name': '📅  Eventi', 'value': f"Agli eventi in {ch('eventi')} presentati puntuale, o avvisa se non ci sei.", 'inline': False},
+            {'name': '🗂️  Canali giusti', 'value': f"Gruppi in {ch('cerco-gruppo')}, comandi del bot in {ch('comandi')}.", 'inline': False},
+            {'name': '📅  Eventi', 'value': 'Agli eventi della Legione presentati puntuale, o avvisa se non ci sei.', 'inline': False},
             {'name': '📨  Problemi?', 'value': 'Scrivi in privato a un **Centurion**, non in chat pubblica.', 'inline': False},
             {'name': '​', 'value': '**Gradi** · 👑 Brigade General · ⚔️ Centurion · 🛡️ Legionario · 🌱 Recluta', 'inline': False}],
         'footer': {'text': 'Chi non rispetta le regole può ricevere mute, kick o ban.'}}]},
