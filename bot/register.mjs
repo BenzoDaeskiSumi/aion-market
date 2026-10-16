@@ -7,7 +7,7 @@ catch { servers = await (await fetch('https://benzodaeskisumi.github.io/aion-mar
 const server = {type: 3, name: 'server', description: 'Server Asmodian (predefinito: quello registrato con /server)', required: false,
   choices: servers.slice(0, 25).map((s) => ({name: s.name, value: String(s.id)}))};
 const commands = [
-  {name: 'prezzo', description: 'Prezzo e info di un oggetto del Market', options: [
+  {name: 'info', description: 'Prezzo, grafici e info di un oggetto del Market', options: [
     {type: 3, name: 'oggetto', description: 'Nome dell’oggetto (in inglese, come in gioco)', required: true, autocomplete: true}, server]},
   {name: 'affari', description: 'I migliori affari del momento', options: [
     {type: 3, name: 'tipo', description: 'Cosa cerchi', required: false, choices: [{name: 'Da comprare (flip)', value: 'compra'}, {name: 'Da vendere ora', value: 'vendi'}]}, server]},

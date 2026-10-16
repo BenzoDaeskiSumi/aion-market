@@ -104,13 +104,13 @@ fr_FR item pages by English slug, credited with a followed link in the footer); 
 Look: modern dark app skin (Inter font, rounded cards, KPI row, pill tabs) — the '/* modern dark app skin */' block at the end of <style> overrides the older game-window CSS. Themes: Abyss (default, blue accent), Elyos (light), Asmodian (pink accent); chosen theme is remembered in localStorage ('aion-theme'). Sidebar shown/hidden is remembered as 'aion-side'. Grade filter buttons (#grades) toggle grades; Shift-click shows one grade only. Default sort = grade (Mythic first), ties keep in-game order (category, then order of first appearance in price_log.json) — so append new items in the order they appear in the Market.
 
 ## Discord bot
-bot/ is a Cloudflare Worker (Discord "Interactions Endpoint URL", slash commands only, no gateway): /prezzo <oggetto> [server] with
+bot/ is a Cloudflare Worker (Discord "Interactions Endpoint URL", slash commands only, no gateway): /info <oggetto> [server] with
 autocomplete, /affari [tipo compra|vendi] [server] /server <server> (remembers the user's server in Cloudflare KV, binding USERS,
 namespace 'aion-market-bot-users' created by bot.yml; precedence: command option > /server > site profile > Marchutan) and /preferiti [server] (the user's site favourites, one card at a time; ◀ ▶ buttons
 edit the same message, only the owner can press them). /preferiti reads Supabase through the SQL function in bot/supabase.sql
 (favorites_by_discord, Discord id -> favourites via auth.identities; only service_role may execute it). It reads data/s/<id>/summary.json (per-item snapshot written by sync.py's
 write_summary, same rules as computeItems — keep the two in sync) plus data/icons.json / data/servers.json from GitHub Pages.
-Charts: /prezzo and /preferiti cards have view buttons '📋 Scheda / 📈 7 giorni / 📈 30 giorni' (custom_id pv:<uid>:<sid>:<view>,
+Charts: /info and /preferiti cards have view buttons '📋 Scheda / 📈 7 giorni / 📈 30 giorni' (custom_id pv:<uid>:<sid>:<view>,
 item = the embed title; fav:<uid>:<sid>:<idx>:<view>) that edit the same message. Chart images are drawn by QuickChart.io (Chart.js v2 config
 in the URL, or /chart/create when too long) from data/s/<id>/hist.json (written by write_summary: 6-hour points for 7 days 'w',
 daily for 30 days 'm', [hours since epoch, price], last point extended to the latest check).
@@ -123,7 +123,7 @@ or with /avviso aggiungi|lista (select menu removes). An admin runs /avvisi-cana
 The Worker cron (*/15) reads all_alerts() and posts '<@user>' + item card once per crossing (KV alert_state; re-arms when the price
 goes back). SQL functions alerts_by_discord / set_alerts_by_discord / all_alerts are in bot/supabase.sql (service_role only).
 The Worker also has the DISCORD_TOKEN secret (to post messages).
-Card buttons (row under /prezzo and its chart views): ⭐ Preferito (fa:<sid>, toggles via set_favorites_by_discord), 🔔 Avviso (al:<sid> opens a modal
+Card buttons (row under /info and its chart views): ⭐ Preferito (fa:<sid>, toggles via set_favorites_by_discord), 🔔 Avviso (al:<sid> opens a modal
 alm:<sid>:<item>; direction is automatic: target above the current price = 'above', else 'below'), 🔨 Craft (cr:<sid>, only for craftable items),
 Apri sul sito. Anyone can press them, each for their own account; the item is the embed title. /preferiti has a 🔔 button too.
 /craft <oggetto> (autocomplete from data/recipes.json products) ports craftEngine() from js/craft.js — keep the two in sync. /aiuto lists all commands.

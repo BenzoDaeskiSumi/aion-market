@@ -67,7 +67,7 @@ async function serverOf(i, env) {
 const reply = (data) => Response.json({type: 4, data: {allowed_mentions: {parse: []}, ...data}});
 const oops = (content) => reply({content, flags: 64});        // 64 = only the user who asked sees it
 
-// ---------- item card (used by /prezzo and /preferiti) ----------
+// ---------- item card (used by /info and /preferiti) ----------
 function itemEmbed(name, r, sid, sname, ico, env) {
   const [gname, color] = GRADE[r.g] || GRADE.white;
   const ch = r.ch ? ` (${r.ch > 0 ? '▲ +' : '▼ '}${kin(Math.abs(r.ch))})` : '';
@@ -151,7 +151,7 @@ async function itemView(name, sid, view, env) {
 const itemUrl = (env, sid, name) => `${env.SITE}/?s=${sid}&item=${encodeURIComponent(name)}`;
 const serverName = (srv, sid) => srv.find((s) => s.id === sid)?.name || String(sid);
 
-// ---------- /prezzo ----------
+// ---------- /info ----------
 async function prezzo(i, env) {
   const data = i.data, sid = await serverOf(i, env), q = String(opt(data, 'oggetto')?.value || '').trim();
   const [sum, srv, ico, rec] = await Promise.all([summary(env, sid), servers(env), icons(env), recipes(env)]);
@@ -160,12 +160,12 @@ async function prezzo(i, env) {
   return reply({embeds: [itemEmbed(name, sum[name], sid, serverName(srv, sid), ico, env)],
     components: [viewRow(`pv:${userId(i)}:${sid}`, 'card'), actionRow(env, sid, name, crafts(rec).has(name))]});
 }
-// view buttons of /prezzo: the item is the card's title; only who asked can switch (one message, no spam)
+// view buttons of /info: the item is the card's title; only who asked can switch (one message, no spam)
 async function prezzoView(i, env) {
   const [, owner, sid, view] = i.data.custom_id.split(':');
-  if (userId(i) !== owner) return oops('Usa /prezzo per aprire la tua scheda: questi pulsanti sono di chi ha fatto la richiesta.');
+  if (userId(i) !== owner) return oops('Usa /info per aprire la tua scheda: questi pulsanti sono di chi ha fatto la richiesta.');
   const name = i.message?.embeds?.[0]?.title;
-  if (!name) return oops('Non trovo più l\'oggetto di questa scheda: rifai /prezzo.');
+  if (!name) return oops('Non trovo più l\'oggetto di questa scheda: rifai /info.');
   const [embed, rec] = await Promise.all([itemView(name, +sid, view, env), recipes(env)]);
   return Response.json({type: 7, data: {embeds: [embed], components: [viewRow(`pv:${owner}:${sid}`, view), actionRow(env, +sid, name, crafts(rec).has(name))]}});
 }
@@ -239,7 +239,7 @@ async function setServer(i, env) {
   if (!srv.some((s) => s.id === sid)) return oops('Server non valido: sceglilo dalla lista.');
   if (!env.USERS) return oops('Salvataggio non disponibile in questo momento.');
   await env.USERS.put(`srv:${userId(i)}`, String(sid));
-  return oops(`✅ Server registrato: **${serverName(srv, sid)}**. Da ora /prezzo, /affari e /preferiti useranno questo server; per cambiarlo rifai /server.`);
+  return oops(`✅ Server registrato: **${serverName(srv, sid)}**. Da ora /info, /affari e /preferiti useranno questo server; per cambiarlo rifai /server.`);
 }
 
 // ---------- price alerts: stored in profiles.alerts (site login), checked every 15 min by the cron below ----------
@@ -357,7 +357,7 @@ async function checkAlerts(env) {
 const cardItem = (i) => i.message?.embeds?.[0]?.title;
 async function favToggle(i, env) {
   const uid = userId(i), name = cardItem(i);
-  if (!name) return oops('Non trovo più l\'oggetto di questa scheda: rifai /prezzo.');
+  if (!name) return oops('Non trovo più l\'oggetto di questa scheda: rifai /info.');
   const prof = await profile(env, uid);
   if (!prof) return oops(`I preferiti sono per chi ha fatto l'accesso al sito: entra su ${env.SITE} con **Accedi con Discord** (una volta sola), poi riprova.`);
   const favs = new Set(prof.favorites || []), had = favs.has(name);
@@ -368,7 +368,7 @@ async function favToggle(i, env) {
 }
 async function alertForm(i, env) {
   const sid = +i.data.custom_id.split(':')[1], name = cardItem(i);
-  if (!name) return oops('Non trovo più l\'oggetto di questa scheda: rifai /prezzo.');
+  if (!name) return oops('Non trovo più l\'oggetto di questa scheda: rifai /info.');
   const prof = (await rpc(env, 'alerts_by_discord', {did: userId(i)}))[0];
   if (!prof) return oops(NO_LOGIN(env));
   const r = (await summary(env, sid))[name];
@@ -488,7 +488,7 @@ async function craftButton(i, env) {
 function aiuto(env) {
   return reply({flags: 64, embeds: [{title: '📖 Comandi del bot Aion 2 Market', url: env.SITE, color: 0x5b8cff, description: [
     '**Prezzi**',
-    '`/prezzo <oggetto>` — prezzo, media, vendite, trend e segnale. Sotto la scheda: 📋/📈 per scheda e grafici, ⭐ preferito, 🔔 avviso, 🔨 costo craft.',
+    '`/info <oggetto>` — prezzo, media, vendite, trend e segnale. Sotto la scheda: 📋/📈 per scheda e grafici, ⭐ preferito, 🔔 avviso, 🔨 costo craft.',
     '`/affari [compra|vendi]` — i migliori affari del momento: da comprare per rivendere o da vendere ora.',
     '`/craft <oggetto>` — quanto costa craftarlo adesso, ingrediente per ingrediente, e se conviene rispetto a comprarlo.',
     '',
@@ -577,7 +577,7 @@ export default {
         return Response.json({type: 8, data: {choices: names.map((n) => ({name: n.slice(0, 100), value: n.slice(0, 100)}))}});
       }
       if (i.type === 2) {
-        if (i.data.name === 'prezzo') return await prezzo(i, env);
+        if (i.data.name === 'info' || i.data.name === 'prezzo') return await prezzo(i, env);
         if (i.data.name === 'affari') return await affari(i, env);
         if (i.data.name === 'statistiche') return await stats(env);
         if (i.data.name === 'chisiamo') return reply({content: '# LA LEGIONE'});
