@@ -1,7 +1,7 @@
 // Interactive map data from MetaBot.GG (reuse allowed by MetaBot with a dofollow credit link).
 // Per region: map data -> data/map/<key>.json (main), icons -> img/mapicons/, tiles -> map/tiles/<dir>/<z>/<x>/<y>.webp (the 'tiles' branch).
 // Polite and patient: one map at a time, pauses, retries on 403/429 (their CDN rate-limits bursts).
-import {mkdirSync, writeFileSync, existsSync} from 'node:fs';
+import {mkdirSync, writeFileSync, existsSync, readFileSync} from 'node:fs';
 import {dirname} from 'node:path';
 const H = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36', Accept: '*/*', Referer: 'https://metabot.gg/en/aion-2/map'};
 const KEYS = ['World_D_Starter', 'World_D_A', 'World_D_B', 'World_L_Starter', 'World_L_A', 'World_L_B', 'Abyss_Reshanta_A', 'Abyss_Reshanta_B', 'Abyss_Reshanta_C', 'Abyss_Reshanta_D'];
@@ -22,12 +22,14 @@ async function get(url, raw, tries = 6) {
 mkdirSync('data/map', {recursive: true}); mkdirSync('img/mapicons', {recursive: true});
 const index = [];
 for (const key of KEYS) {
-  const d = await get(`https://metabot.gg/api/aion-2/maps/${key}?lang=en`);
-  await sleep(8000);
+  const file = `data/map/${key}.json`;
+  let d = await get(`https://metabot.gg/api/aion-2/maps/${key}?lang=en`, false, 8);
+  await sleep(45000);                                           // their API rate-limits: one map per ~minute
+  if (!d?.map && existsSync(file)) { d = JSON.parse(readFileSync(file, 'utf8')); console.log('kept previous', key); }
   if (!d?.map) { console.log('skip', key); continue; }
   const m = d.map;
   index.push({key, slug: m.slug, name: m.name, race: m.race, kind: m.kind, tileDir: m.tileDir, geometry: d.geometry, layers: (d.layers || []).map((l) => l.key)});
-  writeFileSync(`data/map/${key}.json`, JSON.stringify(d));
+  writeFileSync(file, JSON.stringify(d));
   console.log(key, m.name, Object.fromEntries(Object.entries(d.pins || {}).map(([k, v]) => [k, v.length])));
   if (TILES) {
     const g = d.geometry, jobs = [];

@@ -16,12 +16,15 @@ concurrency:
 jobs:
   map:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 300
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - name: Previous tiles (resume)
+        if: ${{ inputs.tiles == 'yes' }}
+        run: git fetch -q --depth 1 origin tiles && git archive FETCH_HEAD map | tar -x || true
       - run: node scripts/map_import.mjs ${{ inputs.tiles == 'yes' && '--tiles' || '' }}
       - name: Commit data and icons
         run: |
