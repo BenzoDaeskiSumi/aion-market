@@ -132,7 +132,9 @@ if (APPLY && ids['Brigade General'] && !String(ids['Brigade General']).startsWit
 } else say('• assegna Brigade General al proprietario del server');
 
 say('\n== Categorie e canali');
-const chBy = (name, type) => channels.find((c) => c.name.toLowerCase() === name.toLowerCase() && (type == null || c.type === type));
+// channels may carry an emoji prefix ('👋・benvenuto', set by style.py): compare the names without it
+const base = (n) => n.toLowerCase().replace(/^[^a-z0-9]+/, '');
+const chBy = (name, type) => channels.find((c) => base(c.name) === base(name) && (type == null || c.type === type));
 const staffIds = [ids['Centurion'], ids['Brigade General']].filter((x) => x && !String(x).startsWith('new:'));
 const ow = (c, cat) => {
   const o = [];

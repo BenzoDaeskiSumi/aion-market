@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'plan (prova a secco) o apply'
+        description: 'plan / apply (struttura) · style-plan / style-apply (grafica)'
         required: true
         default: plan
 permissions:
@@ -18,7 +18,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: node scripts/discord/setup.mjs > /tmp/run.txt 2>&1 || true
+      - run: pip install pillow >/dev/null
+      - run: |
+          if [[ "$MODE" == style* ]]; then python3 scripts/discord/style.py > /tmp/run.txt 2>&1 || true; else node scripts/discord/setup.mjs > /tmp/run.txt 2>&1 || true; fi
         env:
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
           MODE: ${{ inputs.mode }}
