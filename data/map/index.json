@@ -1,4 +1,124 @@
 {
  "source": "MetaBot.GG interactive map (https://metabot.gg/en/aion-2/map), reused with permission",
- "maps": []
+ "maps": [
+  {
+   "key": "World_D_A",
+   "slug": "altgard",
+   "name": "Altgard",
+   "race": "Dark",
+   "kind": "field",
+   "tileDir": "worldmap/world_d_a",
+   "geometry": {
+    "P": 8,
+    "maxZoom": 5,
+    "size": 8192
+   },
+   "layers": [
+    "empyrean_trace",
+    "hidden_cube",
+    "kibelisk",
+    "named",
+    "monster",
+    "dungeon",
+    "instance",
+    "gather",
+    "service",
+    "rift",
+    "monolith",
+    "updraft",
+    "portal",
+    "abyss_portal",
+    "garrison",
+    "field_event",
+    "quest"
+   ]
+  },
+  {
+   "key": "World_D_B",
+   "slug": "morheim",
+   "name": "Morheim",
+   "race": "Dark",
+   "kind": "field",
+   "tileDir": "worldmap/world_d_b",
+   "geometry": {
+    "P": 8,
+    "maxZoom": 5,
+    "size": 8192
+   },
+   "layers": [
+    "empyrean_trace",
+    "hidden_cube",
+    "kibelisk",
+    "named",
+    "monster",
+    "dungeon",
+    "instance",
+    "gather",
+    "service",
+    "rift",
+    "monolith",
+    "updraft",
+    "portal",
+    "garrison"
+   ]
+  },
+  {
+   "key": "World_L_A",
+   "slug": "verteron",
+   "name": "Verteron",
+   "race": "Light",
+   "kind": "field",
+   "tileDir": "worldmap/world_l_a",
+   "geometry": {
+    "P": 8,
+    "maxZoom": 5,
+    "size": 8192
+   },
+   "layers": [
+    "empyrean_trace",
+    "hidden_cube",
+    "kibelisk",
+    "named",
+    "monster",
+    "dungeon",
+    "instance",
+    "gather",
+    "service",
+    "rift",
+    "monolith",
+    "updraft",
+    "portal",
+    "abyss_portal",
+    "garrison",
+    "field_event",
+    "quest"
+   ]
+  },
+  {
+   "key": "Abyss_Reshanta_A",
+   "slug": "chaotic-lower-reshanta",
+   "name": "Chaotic Lower Reshanta",
+   "race": "All",
+   "kind": "abyss",
+   "tileDir": "worldmap/abyss_reshanta_a",
+   "geometry": {
+    "P": 4,
+    "maxZoom": 4,
+    "size": 4096
+   },
+   "layers": [
+    "empyrean_trace",
+    "kibelisk",
+    "named",
+    "monster",
+    "dungeon",
+    "gather",
+    "service",
+    "monolith",
+    "flight_ring",
+    "abyss_artifact",
+    "abyss_portal"
+   ]
+  }
+ ]
 }
