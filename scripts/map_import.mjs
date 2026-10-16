@@ -51,5 +51,13 @@ for (const n of ['trace', 'trace_done', 'updraft', 'portal', 'named', 'field_eve
   'quest_hero', 'quest_district', 'quest_duty', 'quest_ascension', 'abyss_portal', 'rift', 'dungeon', 'instance', 'gather', 'gather_od', 'npc', 'flight_ring', 'boss',
   'abyss_artifact', 'shop', 'storage', 'teleporter', 'jewelcraft', 'tailor', 'alchemy', 'cook', 'instance_npc', 'sealed', 'blacksmith'])
   if (!existsSync(`img/mapicons/${n}.webp`)) { const b = await get(`https://metabot.gg/web/aion2/mapicons/${n}.webp`, true, 3); if (b) writeFileSync(`img/mapicons/${n}.webp`, b); }
+// names of every item a gathering node gives (official dictionary on main), so the page can show them and their Market price
+if (existsSync('data/db/items.json')) {
+  const db = JSON.parse(readFileSync('data/db/items.json', 'utf8')), byId = new Map(db.items.map((r) => [r[0], r]));
+  const out = {};
+  for (const {key} of index) for (const g of JSON.parse(readFileSync(`data/map/${key}.json`, 'utf8')).gather || [])
+    for (const id of [...g.items, ...g.drops.flatMap((x) => [x.id, ...(x.extra || [])])]) { const r = byId.get(id); if (r) out[id] = [r[1], db.grades[r[2]], r[4]]; }
+  writeFileSync('data/map/items.json', JSON.stringify({icon_base: db.icon_base, items: out}));
+}
 console.log('maps:', index.map((m) => m.key).join(', '));
 if (!index.length) process.exit(1);

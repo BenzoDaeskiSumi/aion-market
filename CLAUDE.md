@@ -49,6 +49,16 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 - js/odds.js translates client-side: KO dictionary [it, en] (columns, values, table titles), PATTERNS, NOTES (NCSOFT's notes), then ko_en names;
   ES/FR get the English text. Untranslated strings (mostly skill names) stay Korean.
 
+## Interactive map (MetaBot.GG data, reused with permission: keep the followed credit link, no rel=nofollow)
+- map.html + css/map.css + js/map.js (Leaflet 1.9.4 vendored in lib/leaflet, CRS.Simple; pin coords are pixels of the size x size map at maxZoom).
+- scripts/map_import.mjs + 'Map data' workflow (weekly data; dispatch with tiles=yes also downloads tiles, resuming from the 'tiles' branch):
+  https://metabot.gg/api/aion-2/maps/<Key>?lang=en -> data/map/<Key>.json + index.json (main), icons img/mapicons/*.webp, tiles map/tiles/<tileDir>/z/x/y.webp
+  on the 'tiles' orphan branch (merged by 'Publish site'; map/ ignored on main). Their API rate-limits bursts (403): one map per ~minute; a failed map keeps its old file.
+- data/map/items.json: names/grades/icons (NCSOFT dictionary) of everything gathering nodes give; popups show the Market price of the user's server.
+- Layers: pins{layer: [x, y, ref, nameIdx, count]} (ref = npc id in refs.npcs, index into gather/dungeons/quests), traces, cubes (candidate spots), zones
+  (one label per name, shown by area as you zoom), subs[layer][i]. Busy layers (traces, cubes, monsters, gathering, NPCs, quests) start hidden; choices in
+  localStorage 'aion-map-layers', 'aion-map-gtypes', 'aion-map'. URL ?m=<slug>. Linked as tab 'Mappa 🗺️', in the footer and from odds.html.
+
 ## Overlay + installable app
 - overlay.html + css/overlay.css + js/overlay.js: compact page for Steam's in-game browser (Shift+Tab, pin the window) and phones:
   tabs Prezzi / Affari / Craft (own copy of craftEngine — keep in sync with js/craft.js) / Personaggio (Worker /char routes). Uses js/i18n.js.

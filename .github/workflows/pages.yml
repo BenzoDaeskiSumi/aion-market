@@ -39,6 +39,7 @@ jobs:
           python3 scripts/selfhost.py privacy.html
           python3 scripts/selfhost.py overlay.html
           python3 scripts/selfhost.py odds.html
+          python3 scripts/selfhost.py map.html
       - uses: actions/upload-pages-artifact@v3
         with: {path: .}
       - id: deployment

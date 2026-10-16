@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mappa interattiva · Aion 2 Market</title>
+<meta name="description" content="Mappa interattiva di AION 2: raccolta con i prezzi del Market, boss, mostri, dungeon, Kisk, tracce empiree e cubi nascosti. Dati di MetaBot.GG.">
+<meta name="theme-color" content="#0b0f18">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  try { const t = localStorage.getItem('aion-theme'); if (['abyss', 'elyos', 'asmodian'].includes(t)) document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<link rel="stylesheet" href="lib/leaflet/leaflet.css">
+<link rel="stylesheet" href="css/map.css">
+</head>
+<body>
+<header>
+  <a class="brand" href="./"><img src="img/favicon-48.png" alt="" width="26" height="26">Aion 2 Market</a>
+  <nav><a href="./">Market</a><a href="./?v=db">Database</a><a href="./?v=char">Personaggi</a><a href="map.html" aria-current="page">Mappa</a><a href="odds.html">Probabilità</a></nav>
+</header>
+<div class="app">
+  <aside id="panel" aria-label="Filtri della mappa">
+    <button type="button" class="handle" id="handle" aria-expanded="false"><span id="cur">Mappa</span><span class="chev" aria-hidden="true">▾</span></button>
+    <div class="body">
+      <div class="regions" id="regions"></div>
+      <input type="search" id="q" placeholder="Cerca zona, boss, dungeon…" autocomplete="off">
+      <ul class="hits" id="hits" hidden></ul>
+      <div class="lh"><span>Livelli</span><button type="button" class="mini" id="none">Nascondi tutti</button></div>
+      <ul class="layers" id="layers"></ul>
+      <div class="gtypes" id="gtypes" hidden></div>
+      <p class="credit">Dati e immagini della mappa: <a href="https://metabot.gg/en/aion-2/map" target="_blank">MetaBot.GG</a>, usati con il loro permesso.</p>
+    </div>
+  </aside>
+  <div id="map" role="application" aria-label="Mappa"></div>
+</div>
+<script src="js/i18n.js"></script>
+<script src="lib/leaflet/leaflet.js"></script>
+<script src="js/map.js"></script>
+</body>
+</html>
