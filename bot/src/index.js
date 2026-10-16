@@ -675,9 +675,11 @@ async function charView(server, id, view, uid, env) {
       ...(gods.length ? [{name: 'Divinità', value: cols(gods).slice(0, 1024), inline: true}] : [])]};
   } else {
     const boards = (d.daevanion?.boardList || []).filter((b) => b.totalNodeCount);
+    const ranks = (d.ranking?.rankingList || []).filter((r) => r.rankingContentsName);
     const wpn = by.MainHand;
     embed = {...base, description: [pr.titleName ? `🏷️ *${pr.titleName}*` : null, wpn ? `${NC_DOT[wpn.grade] || ''} ${wpn.name}${wpn.enchantLevel ? ` \`+${wpn.enchantLevel}\`` : ''}` : null].filter(Boolean).join('\n') || undefined,
       fields: [...head,
+        ...(ranks.length ? [{name: '🏆 Classifiche', value: ranks.map((r) => `**${r.rankingContentsName}**: ${r.rank ? `#${kin(r.rank)}` : '—'}${r.point ? ` · ${kin(r.point)} punti` : ''}`).join('\n').slice(0, 1024), inline: false}] : []),
         ...(boards.length >= 3 ? [{name: '✨ Daevanion', value: '\u200b', inline: false}] : [])],
       image: boards.length >= 3 ? {url: radarUrl(boards, pr.raceId === 2 ? '#b06cff' : '#f0c43f')} : undefined};
   }

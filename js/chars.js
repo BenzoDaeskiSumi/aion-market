@@ -123,6 +123,14 @@ function drawCharDetail() {
     });
     cd.appendChild(ul);
   }
+  const ranks = (d.ranking?.rankingList || []).filter((r) => r.rankingContentsName);
+  if (ranks.length) {
+    h3('Classifiche');
+    const ul = document.createElement('ul'); ul.className = 'dbstats';
+    ranks.forEach((r) => { const li = document.createElement('li'); const a = document.createElement('span'); a.textContent = r.rankingContentsName;
+      const b = document.createElement('b'); b.textContent = (r.rank ? '#' + fmtK(r.rank) : '—') + (r.point ? ' · ' + fmtK(r.point) : ''); li.append(a, b); ul.appendChild(li); });
+    cd.appendChild(ul);
+  }
   const boards = (d.daevanion?.boardList || []).filter((b) => b.totalNodeCount);
   if (boards.length) {
     h3('Daevanion');

@@ -5,6 +5,7 @@ const LANG = (() => { try { const l = localStorage.getItem('aion-lang'); return 
 const LOCALE = {it: 'it-IT', en: 'en-GB', es: 'es-ES', fr: 'fr-FR'}[LANG];
 document.documentElement.lang = LANG;
 const EN = {
+  'Classifiche': "Rankings",
   // characters view
   "Personaggi": "Characters",
   "Personaggio": "Character",
@@ -180,6 +181,7 @@ const EN_RE = [
     .replace(/Ricette: aion2\.exchange \(dai file del gioco\)\./, 'Recipes: aion2.exchange (from the game files).')],
 ];
 const ES = {
+  'Classifiche': "Clasificaciones",
   // characters view
   "Personaggi": "Personajes",
   "Personaggio": "Personaje",
@@ -346,6 +348,7 @@ const ES_RE = [
 ];
 
 const FR = {
+  'Classifiche': "Classements",
   // characters view
   "Personaggi": "Personnages",
   "Personaggio": "Personnage",
