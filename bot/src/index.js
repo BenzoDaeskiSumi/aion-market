@@ -649,14 +649,20 @@ async function charView(server, id, view, uid, env) {
   ];
   let embed;
   if (view === 'gear') {
-    const list = (slots) => slots.map(([k]) => by[k] && gearLine(by[k])).filter(Boolean).join('\n') || '—';
-    const arc = gear.filter((x) => /^Arcana/.test(x.slotPosName)).map((x) => `${NC_DOT[x.grade] || '▫️'} ${x.name}`).join('\n');
-    const skins = (d.extra?.skinList || []).map((x) => x.name).slice(0, 12).join(' · ');
+    // one line per item, enchant first; the same item worn twice (earrings, rings…) on one line
+    const list = (slots) => {
+      const rows = [];
+      for (const [k] of slots) { const x = by[k]; if (!x) continue;
+        const row = rows.find((r) => r.name === x.name); if (row) row.lv.push(x.enchantLevel); else rows.push({name: x.name, lv: [x.enchantLevel]}); }
+      const lvs = (lv) => (new Set(lv).size === 1 ? [lv[0]] : lv).filter((l) => l > 0).map((l) => `\`+${l}\``).join(' ');
+      return rows.map((r) => [lvs(r.lv), r.name + (r.lv.length > 1 ? ` ×${r.lv.length}` : '')].filter(Boolean).join(' ')).join('\n') || '—';
+    };
+    const arc = gear.filter((x) => /^Arcana/.test(x.slotPosName)).map((x) => x.name).join(' · ');
     embed = {...base, description: `🧩 **Equipaggiamento**${pr.titleName ? ` · *${pr.titleName}*` : ''}`,
       thumbnail: by.MainHand?.icon ? {url: by.MainHand.icon} : base.thumbnail,
-      fields: [{name: '🗡️ Armi e armature', value: list(ARMOR).slice(0, 1024), inline: true}, {name: '💍 Accessori', value: list(ACCS).slice(0, 1024), inline: true},
+      fields: [{name: '🗡️ Armi e armature', value: list(ARMOR).slice(0, 1024), inline: false}, {name: '💍 Accessori', value: list(ACCS).slice(0, 1024), inline: false},
         ...(arc ? [{name: '🃏 Arcana', value: arc.slice(0, 1024), inline: false}] : []),
-        ...(skins ? [{name: '👗 Aspetto', value: skins.slice(0, 1024), inline: false}] : [])]};
+]};
   } else if (view === 'stats') {
     const main = stats.filter((x) => ['STR', 'DEX', 'INT', 'CON', 'AGI', 'WIS'].includes(x.type));
     const gods = stats.filter((x) => x.type !== 'ItemLevel' && !main.includes(x));
@@ -669,7 +675,7 @@ async function charView(server, id, view, uid, env) {
     const wpn = by.MainHand;
     embed = {...base, description: [pr.titleName ? `🏷️ *${pr.titleName}*` : null, wpn ? `${NC_DOT[wpn.grade] || ''} ${wpn.name}${wpn.enchantLevel ? ` \`+${wpn.enchantLevel}\`` : ''}` : null].filter(Boolean).join('\n') || undefined,
       fields: [...head,
-        ...(boards.length ? [{name: '✨ Daevanion', value: '```\n' + boards.map((b) => `${b.name.padEnd(9)} ${bar(b.openPercent)} ${String(b.openPercent).padStart(3)}%`).join('\n') + '\n```', inline: false}] : [])],
+        ...(boards.length >= 3 ? [{name: '✨ Daevanion', value: '\u200b', inline: false}] : [])],
       image: boards.length >= 3 ? {url: radarUrl(boards, pr.raceId === 2 ? '#b06cff' : '#f0c43f')} : undefined};
   }
   const views = {type: 1, components: Object.entries(CHAR_VIEWS).map(([v, label]) => ({type: 2, style: v === view ? 1 : 2, label, disabled: v === view,
