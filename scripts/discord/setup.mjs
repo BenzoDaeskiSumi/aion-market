@@ -103,6 +103,7 @@ const managedMax = Math.max(...roles.filter((r) => r.managed && !member.roles.in
 if (myTop <= Math.max(0, ...roles.filter((r) => !member.roles.includes(r.id) && r.id !== GUILD).map((r) => r.position))) {
   say(`\n⚠️ Mauro non ha un ruolo sopra gli altri (il suo ruolo più alto è in posizione ${myTop}). Discord non gli permette di creare o assegnare ruoli finché non lo è.`);
   say('   → Server → Impostazioni → Ruoli: crea un ruolo "Mauro", dagli Amministratore, trascinalo IN CIMA alla lista e assegnalo al bot Mauro.');
+  say('   Ruoli adesso (dall\'alto): ' + roles.slice().sort((x, y) => y.position - x.position).map((r) => `${r.position} ${r.name}${member.roles.includes(r.id) ? ' [Mauro ce l\'ha]' : ''}${r.managed ? ' (bot)' : ''}`).join(' · '));
   if (APPLY) { writeFileSync('/tmp/probe.txt', log.join('\n')); process.exit(0); }
 }
 
