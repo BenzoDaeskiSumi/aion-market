@@ -153,7 +153,7 @@ function build() {
   // hidden cubes: every spot where one can be found; a popup also rings the other spots of the same area group
   for (const c of D.cubes || []) {
     for (const pt of c.pts) {
-      const m = L.marker(ll(...pt), {icon: icon('hidden_cube', 22)});
+      const m = L.marker(ll(...pt), {icon: icon('hidden_cube', 24)});
       m.bindPopup(`<div class="pp"><h3>Hidden Cube</h3><div class="sub">Gruppo di ${c.pts.length} punti in questa zona (cerchiati in arancione)</div></div>`);
       m.on('popupopen', () => { ring?.remove(); ring = L.layerGroup(c.pts.map((q) => L.circleMarker(ll(...q), {renderer: canvas, radius: 13, color: '#ff8a1f', weight: 2, fill: false, interactive: false}))).addTo(map); });
       m.on('popupclose', () => { ring?.remove(); ring = null; });
