@@ -2,6 +2,28 @@
  "source": "MetaBot.GG interactive map (https://metabot.gg/en/aion-2/map), reused with permission",
  "maps": [
   {
+   "key": "World_D_Starter",
+   "slug": "ishalgen",
+   "name": "Ishalgen",
+   "race": "Dark",
+   "kind": "starter",
+   "tileDir": "worldmap/world_d_starter",
+   "geometry": {
+    "P": 8,
+    "maxZoom": 5,
+    "size": 8192
+   },
+   "layers": [
+    "kibelisk",
+    "monster",
+    "dungeon",
+    "instance",
+    "service",
+    "updraft",
+    "quest"
+   ]
+  },
+  {
    "key": "World_D_A",
    "slug": "altgard",
    "name": "Altgard",
@@ -63,6 +85,27 @@
    ]
   },
   {
+   "key": "World_L_Starter",
+   "slug": "poeta",
+   "name": "Poeta",
+   "race": "Light",
+   "kind": "starter",
+   "tileDir": "worldmap/world_l_starter",
+   "geometry": {
+    "P": 4,
+    "maxZoom": 4,
+    "size": 4096
+   },
+   "layers": [
+    "kibelisk",
+    "monster",
+    "dungeon",
+    "service",
+    "updraft",
+    "quest"
+   ]
+  },
+  {
    "key": "World_L_A",
    "slug": "verteron",
    "name": "Verteron",
@@ -117,6 +160,31 @@
     "monolith",
     "flight_ring",
     "abyss_artifact",
+    "abyss_portal"
+   ]
+  },
+  {
+   "key": "Abyss_Reshanta_C",
+   "slug": "chaotic-middle-reshanta",
+   "name": "Chaotic Middle Reshanta",
+   "race": "All",
+   "kind": "abyss",
+   "tileDir": "worldmap/abyss_reshanta_c",
+   "geometry": {
+    "P": 2,
+    "maxZoom": 3,
+    "size": 2048
+   },
+   "layers": [
+    "empyrean_trace",
+    "kibelisk",
+    "named",
+    "monster",
+    "dungeon",
+    "service",
+    "monolith",
+    "abyss_artifact",
+    "updraft",
     "abyss_portal"
    ]
   }
