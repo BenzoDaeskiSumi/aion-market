@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'plan / apply (struttura) · style-plan / style-apply (grafica)'
+        description: 'plan / apply (struttura) · style-plan / style-apply (grafica) · msg-plan / msg-apply (messaggi di Mauro)'
         required: true
         default: plan
 permissions:
@@ -20,7 +20,7 @@ jobs:
           node-version: '20'
       - run: pip install pillow >/dev/null
       - run: |
-          if [[ "$MODE" == info* ]]; then python3 scripts/discord/info.py > /tmp/run.txt 2>&1 || true; elif [[ "$MODE" == audit ]]; then python3 scripts/discord/audit.py > /tmp/run.txt 2>&1 || true; elif [[ "$MODE" == style* ]]; then python3 scripts/discord/style.py > /tmp/run.txt 2>&1 || true; else node scripts/discord/setup.mjs > /tmp/run.txt 2>&1 || true; fi
+          if [[ "$MODE" == msg* ]]; then python3 scripts/discord/messages.py > /tmp/run.txt 2>&1 || true; elif [[ "$MODE" == info* ]]; then python3 scripts/discord/info.py > /tmp/run.txt 2>&1 || true; elif [[ "$MODE" == audit ]]; then python3 scripts/discord/audit.py > /tmp/run.txt 2>&1 || true; elif [[ "$MODE" == style* ]]; then python3 scripts/discord/style.py > /tmp/run.txt 2>&1 || true; else node scripts/discord/setup.mjs > /tmp/run.txt 2>&1 || true; fi
         env:
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
           MODE: ${{ inputs.mode }}

@@ -45,8 +45,6 @@ site = {
                            'tabelloni Daevanion e statistiche. Dati ufficiali NCSOFT, letti al momento.'),
         f('⭐ Preferiti e avvisi', 'Con **Accedi con Discord** salvi preferiti e avvisi di prezzo su ogni dispositivo e li usi anche col bot. '
                                    'Salviamo solo il tuo ID Discord e le tue scelte: con **Elimina account** cancelli tutto quando vuoi.'),
-        f('🎮 In gioco e sul telefono', f'**[Modalità overlay]({SITE}/overlay.html)** per il browser di Steam: Shift+Tab, apri la pagina e fissala con la puntina. '
-                                        'Sul telefono il sito si **installa come app** (Aggiungi a schermata Home).'),
         f('🎨 Su misura', '4 lingue: 🇮🇹 🇬🇧 🇪🇸 🇫🇷 (in francese con i nomi ufficiali degli oggetti) · 3 temi: Abyss, Elyos, Asmodian · '
                           'link condivisibili a qualunque oggetto o schermata.')],
     'image': {'url': BANNER},
@@ -67,8 +65,7 @@ bot = {
     'footer': {'text': 'Prezzi: aion2.exchange · dati di gioco: NCSOFT · ricette: MetaBot.GG · non affiliato a NCSOFT'},
 }
 msg = {'embeds': [site, bot], 'components': [{'type': 1, 'components': [
-    {'type': 2, 'style': 5, 'label': 'Apri il sito', 'emoji': {'name': '🌐'}, 'url': SITE},
-    {'type': 2, 'style': 5, 'label': 'Overlay per Steam', 'emoji': {'name': '🎮'}, 'url': f'{SITE}/overlay.html'}]}]}
+    {'type': 2, 'style': 5, 'label': 'Apri il sito', 'emoji': {'name': '🌐'}, 'url': SITE}]}]}
 size = sum(len(e.get('title', '')) + len(e.get('description', '')) + sum(len(x['name']) + len(x['value']) for x in e['fields']) + len(e.get('footer', {}).get('text', '')) for e in msg['embeds'])
 out = [f"{'APPLICO' if APPLY else 'PROVA A SECCO'} · messaggio in #info ({size} caratteri su 6000)"]
 if 'info' not in cid:

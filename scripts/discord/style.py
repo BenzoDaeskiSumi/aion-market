@@ -100,7 +100,7 @@ MSG = {
             {'name': '💰 Market', 'value': '`/info` prezzi e grafici\n`/affari` occasioni\n`/avviso` avvisi di prezzo', 'inline': True},
             {'name': '🔨 Crafting', 'value': '`/craft` costi e ricette\n`/preferiti` i tuoi oggetti', 'inline': True},
             {'name': '👤 Personaggi', 'value': '`/personaggio` CP, equip,\nDaevanion\n`/aiuto` tutti i comandi', 'inline': True},
-            {'name': '​', 'value': f'🌐 **[Sito della Legione]({SITE})** · 🎮 **[Overlay per Steam]({SITE}/overlay.html)**', 'inline': False}],
+            {'name': '​', 'value': f'🌐 **[Sito della Legione]({SITE})**', 'inline': False}],
         'image': {'url': BANNER}, 'footer': {'text': 'Buon gioco, Daeva!', 'icon_url': LOGO}}]},
     'regole': {'embeds': [{
         'color': 0xf0c43f, 'author': {'name': 'LA LEGIONE', 'icon_url': LOGO}, 'title': '📜 Regole della Legione',

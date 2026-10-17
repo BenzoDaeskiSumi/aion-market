@@ -40,14 +40,7 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 - Official web API behind aion2.plaync.com Character Info (undocumented, may change): /en-us/api/gameinfo/servers|classes|pcdata?lang=en-US&region=eu,
   /api/character/info|equipment|daevanion/detail?characterId&serverId, search on api-search.plaync.com .../search/v2/character. No public developer API for the global yet.
 
-## Official odds (Korean service)
-- odds.html + css/odds.css + js/odds.js: NCSOFT's legally required probability disclosure for KOREAN AION 2 (probability.plaync.com), with a big
-  yellow 'Dati del server COREANO' banner (global hasn't published its own). Linked as a dashed tab 'Probabilità 🇰🇷' and in the footer.
-- scripts/odds_import.mjs + 'Official odds (KR)' workflow (daily + dispatch, input force): API /api/aion2/versions|categories|contents/<leaf>|resources
-  (header resource-token) -> 'odds' orphan branch, data/odds/ (index.json tree, <leafId>.json string tables, ko_en.json item names); ignored on main,
-  merged by 'Publish site'. Locally: git worktree of origin/odds at ../aion-odds, data/odds symlinked to it.
-- js/odds.js translates client-side: KO dictionary [it, en] (columns, values, table titles), PATTERNS, NOTES (NCSOFT's notes), then ko_en names;
-  ES/FR get the English text. Untranslated strings (mostly skill names) stay Korean.
+## Official odds page: REMOVED (Oct 2026, the user asked). The 'odds' branch still holds the old KR data; nothing publishes it.
 
 ## Interactive map (MetaBot.GG data, reused with permission: keep the followed credit link, no rel=nofollow)
 - map.html + css/map.css + js/map.js (Leaflet 1.9.4 vendored in lib/leaflet, CRS.Simple; pin coords are pixels of the size x size map at maxZoom).
@@ -57,7 +50,7 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 - data/map/items.json: names/grades/icons (NCSOFT dictionary) of everything gathering nodes give; popups show the Market price of the user's server.
 - Layers: pins{layer: [x, y, ref, nameIdx, count]} (ref = npc id in refs.npcs, index into gather/dungeons/quests), traces, cubes (candidate spots), zones
   (one label per name, shown by area as you zoom), subs[layer][i]. Busy layers (traces, cubes, monsters, gathering, NPCs, quests) start hidden; choices in
-  localStorage 'aion-map-layers', 'aion-map-gtypes', 'aion-map'. URL ?m=<slug>. Linked as tab 'Mappa 🗺️', in the footer and from odds.html.
+  localStorage 'aion-map-layers', 'aion-map-gtypes', 'aion-map'. URL ?m=<slug>. Linked as tab 'Mappa 🗺️' and in the footer.
 - Game terms (layer names, ranks, gathering types, popup titles) stay in the official English of the EU client, in every language; only explanations are
   Italian + i18n. Hidden cubes: MetaBot's count is per area group (206 groups); the map draws every spot and counts spots, a popup rings its group.
   Scheduled bosses get their time from D.timers (kind boss, ref = npc id). Sub-zone labels ('A - B') only show up close. Regions: slugs on metabot.gg/en/aion-2/map,
@@ -66,7 +59,7 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 ## Overlay + installable app
 - overlay.html + css/overlay.css + js/overlay.js: compact page for Steam's in-game browser (Shift+Tab, pin the window) and phones:
   tabs Prezzi / Affari / Craft (own copy of craftEngine — keep in sync with js/craft.js) / Personaggio (Worker /char routes). Uses js/i18n.js.
-  Nothing touches the game client (no injection: forbidden by NCSOFT, anti-cheat). Linked from the footer ('Modalità overlay (Steam)').
+  Nothing touches the game client (no injection: forbidden by NCSOFT, anti-cheat). Not linked anywhere any more (the user asked to drop the mentions); still reachable at /overlay.html.
 - PWA: manifest.webmanifest (icons img/icon-192/512 + maskable), sw.js (network first, same-origin cache fallback; skips h/ and db/items.json),
   registered in js/main.js and js/overlay.js; footer 'Installa l'app' button appears on beforeinstallprompt. Bump CACHE in sw.js if the shell list changes.
 
@@ -145,7 +138,7 @@ placeholder/title/aria-label. Any new Italian UI text needs an EN, ES and FR ent
 In French, item names are the official in-game French names from data/names_fr.json (English -> French, merged into the
 dictionary; search matches both, accents optional). Built by the 'French names' workflow (scripts/names_fr.py, MetaBot.GG
 fr_FR item pages by English slug, credited with a followed link in the footer); re-run it when new items appear (only new ones are fetched).
-Header (all pages): one row = brand + page pills (Market, Affari, Crafting, Database, Personaggi = view buttons on index / links ?v= elsewhere, Mappa, Probabilità); on index also the server select and a gear button (#menubtn) opening the settings panel #barright (account, tax, theme, language; closes on Escape/outside click). Phone: pills become the bottom bar. #dealfilter sits above the columns. Look: modern dark app skin (Inter font, rounded cards) + the 'Abyss trading post' block at the end of css/style.css: theme wallpaper (bg/*.svg via --wall, url ../bg/) behind the header (.win::before, masked), Marcellus (--display) for brand, KPI numbers, panel titles and item names, KPIs as one board, tabs as an underline rail, inventory-slot icons with grade glow, grade rail on table rows (:has(.slot.g-*)); accessibility pass: --accent-fill (darker) behind white text, 12px minimum, 24px targets, no emoji icons. Older notes: — the '/* modern dark app skin */' block at the end of <style> overrides the older game-window CSS. Themes: Abyss (default, blue accent), Elyos (light), Asmodian (pink accent); chosen theme is remembered in localStorage ('aion-theme'). Sidebar shown/hidden is remembered as 'aion-side'. Grade filter buttons (#grades) toggle grades; Shift-click shows one grade only. Default sort = grade (Mythic first), ties keep in-game order (category, then order of first appearance in price_log.json) — so append new items in the order they appear in the Market.
+Header (all pages): one row = brand + page pills (Market, Affari, Crafting, Database, Personaggi = view buttons on index / links ?v= elsewhere, Mappa); on index also the server select and a gear button (#menubtn) opening the settings panel #barright (account, tax, theme, language; closes on Escape/outside click). Phone: pills become the bottom bar. #dealfilter sits above the columns. Look: modern dark app skin (Inter font, rounded cards) + the 'Abyss trading post' block at the end of css/style.css: theme wallpaper (bg/*.svg via --wall, url ../bg/) behind the header (.win::before, masked), Marcellus (--display) for brand, KPI numbers, panel titles and item names, KPIs as one board, tabs as an underline rail, inventory-slot icons with grade glow, grade rail on table rows (:has(.slot.g-*)); accessibility pass: --accent-fill (darker) behind white text, 12px minimum, 24px targets, no emoji icons. Older notes: — the '/* modern dark app skin */' block at the end of <style> overrides the older game-window CSS. Themes: Abyss (default, blue accent), Elyos (light), Asmodian (pink accent); chosen theme is remembered in localStorage ('aion-theme'). Sidebar shown/hidden is remembered as 'aion-side'. Grade filter buttons (#grades) toggle grades; Shift-click shows one grade only. Default sort = grade (Mythic first), ties keep in-game order (category, then order of first appearance in price_log.json) — so append new items in the order they appear in the Market.
 
 ## Discord bot
 bot/ is a Cloudflare Worker (Discord "Interactions Endpoint URL", slash commands only, no gateway): /info <oggetto> [server] with
