@@ -91,3 +91,7 @@ aside { border-right: 1px solid var(--line); background: var(--card); overflow: 
 .zl small { font-size: 11.5px; } .zl.v { font-size: 12px; }
 .credit a { display: inline-block; padding: 3px 0; }
 .mini { min-height: 28px; }
+/* shared identity with the main page: engraved serif for names and titles */
+.brand, h1 { font-family: 'Marcellus', 'Cinzel', Georgia, serif; font-weight: 400; letter-spacing: .01em; }
+.brand { font-size: 21px; }
+.brand img { box-shadow: 0 0 0 1.5px #f0c43f; }

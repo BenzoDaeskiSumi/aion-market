@@ -63,3 +63,7 @@ footer a { color: var(--dim); }
 .hint button { width: 28px; height: 28px; display: grid; place-items: center; right: 4px; top: 4px; }
 footer a { display: inline-block; padding: 4px 0; }
 .brand, header a:first-child { min-height: 28px; display: inline-flex; align-items: center; }
+/* shared identity with the main page: engraved serif for names and titles */
+.brand, h1 { font-family: 'Marcellus', 'Cinzel', Georgia, serif; font-weight: 400; letter-spacing: .01em; }
+.brand { font-size: 21px; }
+.brand img { box-shadow: 0 0 0 1.5px #f0c43f; }

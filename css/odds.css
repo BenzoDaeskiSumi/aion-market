@@ -112,3 +112,8 @@ td .ko { font-size: 12px; }
 .nd summary { min-height: 28px; display: flex; align-items: center; }
 .nd summary { list-style: none; gap: 6px; } .nd summary::-webkit-details-marker { display: none; }
 .nd summary::before { content: '▸'; } .nd[open] summary::before { content: '▾'; }
+/* shared identity with the main page: engraved serif for names and titles */
+.brand, h1 { font-family: 'Marcellus', 'Cinzel', Georgia, serif; font-weight: 400; letter-spacing: .01em; }
+.brand { font-size: 21px; }
+.brand img { box-shadow: 0 0 0 1.5px #f0c43f; }
+h1 { font-size: 28px; } .tbl h2 { font-family: 'Marcellus', 'Cinzel', Georgia, serif; font-weight: 400; font-size: 21px; }

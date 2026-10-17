@@ -495,3 +495,74 @@ footer a { display: inline-block; padding: 4px 0; }
 .krtag { font-size: 12px; font-weight: 700; letter-spacing: .04em; padding: 1px 5px; border-radius: 4px; border: 1px solid currentColor; line-height: 1.2; }
 :root[data-theme="elyos"] { --accent: #8a5a0c; --kinah: #7d5208; --down: #a12e1e; --up: #17683e; }
 :root[data-theme="elyos"] .sig.buyit { color: #8a4b06; }
+
+/* ================= "Abyss trading post" redesign =================
+   One bold place: the header sits on the theme's wallpaper (the Abyss sky / Elyos light / Asmodian dusk) fading into the page.
+   Engraved serif (Marcellus) for names and big numbers, like the game's own UI; Inter stays for data.
+   Item icons get inventory-slot frames in their grade colour, and table rows carry a grade rail on the left. */
+:root { --display: 'Marcellus', 'Cinzel', Georgia, serif;
+  --wall: url(../bg/abyss.svg);
+  --bg2: #090c18; --panel: #10152a; --panel-solid: #121830; --card: #151c36; --line: #232c4c; --field: #0c1124; --accent: #7aa7ff; }
+:root[data-theme="asmodian"] { --wall: url(../bg/asmodian.svg); --bg2: #0d0710; --panel: #160c1a; --panel-solid: #1a0f1f; --card: #1e1224; --line: #36213e; --field: #120914; --accent: #ff7ab0; }
+.win { position: relative; isolation: isolate; }
+.win::before { content: ''; position: absolute; z-index: -1; left: 50%; top: -20px; width: 100vw; height: 460px; transform: translateX(-50%); pointer-events: none;
+  background: var(--wall) center 30% / cover no-repeat; opacity: .7;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,.55) 45%, transparent 100%); mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,.55) 45%, transparent 100%); }
+:root[data-theme="elyos"] { --wall: url(../bg/elyos.svg); }
+:root[data-theme="elyos"] .win::before { opacity: .55; }
+/* brand */
+.bar { padding: 22px 4px 18px; }
+.bar h1 { font-family: var(--display); font-weight: 400; font-size: 34px; letter-spacing: .01em; gap: 14px; text-shadow: 0 2px 18px rgba(0,0,0,.45); }
+:root[data-theme="elyos"] .bar h1 { text-shadow: none; }
+.bar h1 small { font-family: var(--font); font-size: 13px; letter-spacing: 0; text-shadow: none; align-self: flex-end; margin-bottom: 6px; }
+.logo { width: 46px; height: 46px; border-radius: 10px; box-shadow: 0 0 0 1.5px var(--g-gold), 0 0 22px -6px var(--g-gold); }
+/* market board: one panel, five readings */
+.stats { gap: 0; background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.kpi { border: 0; border-radius: 0; background: none; padding: 16px 22px 14px; gap: 4px; font-size: 13px; }
+.kpi + .kpi { border-left: 1px solid var(--line); }
+.kpi b { font-family: var(--display); font-weight: 400; font-size: 32px; line-height: 1; letter-spacing: 0; }
+.kpi.statbtn { border-bottom: 0; }
+.kpi.statbtn:hover, .kpi.statbtn:focus-visible { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+/* ticker: sentence-case label */
+.take { border-radius: 14px; }
+.take .tlabel { text-transform: none; letter-spacing: 0; font-size: 13px; font-weight: 700; padding: 0 16px; }
+/* tabs as a rail */
+.tabs { gap: 2px; border-bottom: 1px solid var(--line); margin: 4px 0 14px; padding: 0; }
+.tabs [role="tab"], .tabs .tablink { background: none; border: 0; border-radius: 0; padding: 12px 16px 11px; color: var(--dim); font-size: 15px; font-weight: 600; margin-bottom: -1px; box-shadow: none; }
+.tabs [role="tab"]:hover, .tabs .tablink:hover { color: var(--text); background: none; }
+.tabs [role="tab"][aria-selected="true"] { background: none; border: 0; color: var(--text); box-shadow: inset 0 -2px 0 var(--accent); }
+.tabs [role="tab"] span { font-size: 12px; color: var(--dim); font-weight: 500; margin-left: 4px; }
+.tabs .tablink { border: 0; }
+.dealfilter { margin-left: auto; align-self: center; }
+/* panels: big radius for the three columns, small for controls inside */
+.side, .main, .aside { border-radius: 14px; }
+.aside h2 { font-family: var(--display); font-weight: 400; font-size: 24px; letter-spacing: .01em; }
+.pick .nm { font-family: var(--display); font-weight: 400; font-size: 24px; line-height: 1.15; }
+.hero b, .facts b { font-variant-numeric: tabular-nums; }
+/* inventory-slot icons */
+.slot { border: 1.5px solid currentColor; border-radius: 9px; padding: 0;
+  background: radial-gradient(120% 120% at 50% 100%, color-mix(in srgb, currentColor 45%, #000) 0%, color-mix(in srgb, currentColor 14%, #05070b) 62%, #05070b 100%);
+  box-shadow: 0 0 14px -5px currentColor, inset 0 0 0 1px rgba(0,0,0,.45); }
+.slot img { border-radius: 7px; }
+.slot.g-white { border-color: color-mix(in srgb, currentColor 55%, transparent); box-shadow: inset 0 0 0 1px rgba(0,0,0,.45); }
+:root[data-theme="elyos"] .slot { box-shadow: 0 1px 4px rgba(90,65,15,.25), inset 0 0 0 1px rgba(0,0,0,.25); }
+/* table: quieter header, taller rows, grade rail */
+th { text-transform: none; letter-spacing: 0; font-size: 13px; font-weight: 600; color: var(--dim); }
+#maintab td, #crafttab td, #dbtab td { padding-top: 9px; padding-bottom: 9px; }
+tbody tr:has(.slot.g-orange) td:first-child { box-shadow: inset 3px 0 0 var(--g-orange); }
+tbody tr:has(.slot.g-gold) td:first-child { box-shadow: inset 3px 0 0 var(--g-gold); }
+tbody tr:has(.slot.g-blue) td:first-child { box-shadow: inset 3px 0 0 var(--g-blue); }
+tbody tr:has(.slot.g-green) td:first-child { box-shadow: inset 3px 0 0 var(--g-green); }
+tbody tr:has(.slot.g-teal) td:first-child { box-shadow: inset 3px 0 0 var(--g-teal); }
+tbody tr.sel td { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+/* category list: active entry with a bar */
+.side button[aria-current="true"], .side button[aria-pressed="true"], .side button.on { box-shadow: inset 3px 0 0 var(--accent); }
+@media (max-width: 760px) {
+  .win::before { height: 300px; }
+  .bar h1 { font-size: 26px; } .logo { width: 38px; height: 38px; }
+  .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .kpi { padding: 12px 14px; } .kpi:nth-child(2) { border-left: 0; }
+  .kpi b { font-size: 26px; }
+  .tabs { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; } .tabs [role="tab"], .tabs .tablink { white-space: nowrap; padding: 10px 12px 9px; }
+}
