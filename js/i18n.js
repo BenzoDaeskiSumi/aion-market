@@ -602,6 +602,8 @@ const FR_RE = [
     .replace(/Ricette: aion2\.exchange \(dai file del gioco\)\./, 'Recettes : aion2.exchange (fichiers du jeu).')],
 ];
 
+// header settings panel
+Object.assign(EN, {'Tassa del Market': 'Market tax', 'Account': 'Account'}); Object.assign(ES, {'Tassa del Market': 'Impuesto del Market', 'Account': 'Cuenta'}); Object.assign(FR, {'Tassa del Market': 'Taxe du Market', 'Account': 'Compte'});
 // map page (map.html)
 Object.assign(EN, {'(ora del server)': '(server time)'}); Object.assign(ES, {'(ora del server)': '(hora del servidor)'}); Object.assign(FR, {'(ora del server)': '(heure du serveur)'});
 EN_RE.push([/^Ogni (\d+) ore dalle (\d\d:\d\d)$/, 'Every $1 hours from $2'], [/^Gruppo di (\d+) punti in questa zona \(cerchiati in arancione\)$/, 'Group of $1 spots in this area (ringed in orange)']);
