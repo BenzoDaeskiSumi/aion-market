@@ -61,9 +61,8 @@ done = skip = 0
 for c in sorted(chans, key=lambda c: (c['type'] != 4, c['position'])):
     old, p = c['name'], plain(c['name'])
     if c['type'] == 4:                                                     # category
-        emo = next((e for k, e in CAT if k in p), None)
-        lead = re.match(r'^([^\w\s]+)', re.sub(r'^[『「\s]+', '', old))
-        emo = emo or (lead.group(1).strip('』」 ') if lead else '✦')
+        lead = re.match(r'^([^\w\s]+)', re.sub(r'^[『「\s]+', '', old))          # keep the category's own emoji
+        emo = (lead.group(1).strip('』」 ') if lead else None) or next((e for k, e in CAT if k in p), '✦')
         new = f'『{emo} {bold_serif(p.upper())}』'
     elif p in CH:
         emo, label = CH[p]
