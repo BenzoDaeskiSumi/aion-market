@@ -5,3 +5,12 @@ d = json.load(urllib.request.urlopen(req))
 users = {u['id']: u['username'] for u in d.get('users', [])}
 out = [f"{e['id']} by {users.get(e['user_id'], e['user_id'])}: " + ', '.join(f"{c['key']}={c.get('old_value')}" for c in e.get('changes', []) if c['key'] == 'name') for e in d.get('audit_log_entries', [])]
 open('/tmp/probe.txt', 'w').write('\n'.join(out) or 'nessun canale cancellato'); print('\n'.join(out))
+# also: the channel list, and the last bot message in the timer channel (to check the countdown)
+get = lambda p: json.load(urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v10' + p, headers={'Authorization': f'Bot {T}', 'User-Agent': 'DiscordBot (aion-market, 1)'})))
+chs = get(f'/guilds/{G}/channels')
+lines = ['', '== canali'] + [f"{c['type']} {c['name']} parent={c.get('parent_id')}" for c in sorted(chs, key=lambda c: (c.get('parent_id') or '', c['position']))]
+for c in chs:
+    if c['name'].endswith('timer-eventi'):
+        for m in get(f"/channels/{c['id']}/messages?limit=3"):
+            lines += ['', '== messaggio timer', json.dumps(m.get('embeds'), ensure_ascii=False)[:3000]]
+open('/tmp/probe.txt', 'a').write('\n'.join(lines))
