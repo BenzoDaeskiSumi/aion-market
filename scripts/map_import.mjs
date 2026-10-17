@@ -4,7 +4,9 @@
 import {mkdirSync, writeFileSync, existsSync, readFileSync} from 'node:fs';
 import {dirname} from 'node:path';
 const H = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36', Accept: '*/*', Referer: 'https://metabot.gg/en/aion-2/map'};
-const KEYS = ['World_D_Starter', 'World_D_A', 'World_D_B', 'World_L_Starter', 'World_L_A', 'World_L_B', 'Abyss_Reshanta_A', 'Abyss_Reshanta_B', 'Abyss_Reshanta_C', 'Abyss_Reshanta_D'];
+// regions listed on https://metabot.gg/en/aion-2/map (slugs); their API key is read from the region page (e.g. World_D_A), with known ones as a shortcut
+const SLUGS = ['ishalgen', 'altgard', 'morheim', 'poeta', 'verteron', 'eltnen', 'chaotic-lower-reshanta', 'chaotic-middle-reshanta', 'chaotic-upper-reshanta'];
+const KNOWN = {altgard: 'World_D_A', morheim: 'World_D_B', verteron: 'World_L_A', 'chaotic-lower-reshanta': 'Abyss_Reshanta_A'};
 const TILES = process.argv.includes('--tiles');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 async function get(url, raw, tries = 6) {
@@ -21,7 +23,27 @@ async function get(url, raw, tries = 6) {
 }
 mkdirSync('data/map', {recursive: true}); mkdirSync('img/mapicons', {recursive: true});
 const index = [];
-for (const key of KEYS) {
+async function keyOf(slug) {
+  if (KNOWN[slug]) return KNOWN[slug];
+  for (let k = 0; k < 4; k++) {
+    try {
+      const r = await fetch(`https://metabot.gg/en/aion-2/map/${slug}`, {headers: {...H, Accept: 'text/html'}});
+      if (r.ok) {
+        const html = await r.text();
+        const m = html.match(/maps\/((?:World|Abyss)_[A-Za-z0-9_]+)/) || html.match(/"key"\s*:\s*"((?:World|Abyss)_[A-Za-z0-9_]+)"/)
+          || html.match(/worldmap\/((?:world|abyss)_[a-z0-9_]+)\//);
+        if (m) { const k2 = /^[a-z]/.test(m[1]) ? m[1].replace(/(^|_)([a-z])/g, (x, a, b) => a + b.toUpperCase()) : m[1]; console.log('key', slug, k2); return k2; }
+        console.log('no key in page', slug); return null;
+      }
+      console.log('page', slug, r.status);
+    } catch (e) { console.log('page error', slug, e.message); }
+    await sleep(30000 * (k + 1));
+  }
+  return null;
+}
+for (const slug of SLUGS) {
+  const key = await keyOf(slug); await sleep(15000);
+  if (!key) continue;
   const file = `data/map/${key}.json`;
   let d = await get(`https://metabot.gg/api/aion-2/maps/${key}?lang=en`, false, 8);
   await sleep(45000);                                           // their API rate-limits: one map per ~minute
