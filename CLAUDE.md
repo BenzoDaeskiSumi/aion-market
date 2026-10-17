@@ -170,5 +170,5 @@ cfg:timer_msg) with Discord timestamps <t:…:R> (they count down live). Schedul
 'days'+'at', 'windows', or 'respawn' = minutes after a kill: Gartua, set by the 💀 button tk:<id>, KV timer:<id>). Global times are community estimates.
 Discord server scripts (workflow 'Discord setup', mode X-plan / X-apply; output on the temporary 'probe' branch): msg = Mauro's fixed messages
 (scripts/discord/legion_msgs.py content + messages.py; banner images img/discord/*.png drawn from bg/*.svg with Cormorant Garamond), chan = channel names
-in the server style 『📢 𝐋𝐄𝐆𝐈𝐎𝐍𝐄』 / 「📜」𝐑𝐞𝐠𝐨𝐥𝐞 (Unicode Mathematical Bold; scripts match channels with base(), which maps those letters back to ASCII).
+in the server style: categories 『📢 𝐋𝐄𝐆𝐈𝐎𝐍𝐄』 (Unicode Mathematical Bold), channels plain '📜・regole' / voice '🍻 Taverna' (searchable); scripts match channels with base(), which also maps bold letters back to ASCII.
 To limit the bot to one channel: Discord server settings → Integrations → the bot → channels (no code).

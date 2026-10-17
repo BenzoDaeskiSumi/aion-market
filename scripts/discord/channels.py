@@ -1,6 +1,7 @@
 """Renames the guild's channels in the server's chosen style (Discord setup workflow, mode chan-plan / chan-apply):
-  categories  『📋 𝐈𝐍𝐅𝐎』      text/voice/forum  「📜」𝐑𝐞𝐠𝐨𝐥𝐞
-Letters are Unicode Mathematical Bold (serif); Discord does not lowercase them, so channel names keep their capital letter.
+  categories  『📋 𝐈𝐍𝐅𝐎』 (Unicode Mathematical Bold: they stand out as headings)
+  text/forum  📜・regole      voice  🍻 Taverna
+Channel names stay plain text so Ctrl+K search, #mentions and screen readers keep working (the user chose this over bold channel names).
 Channels are matched by their plain name (scripts' base()), so running it again changes nothing. Never deletes anything."""
 import json, os, re, sys, time, urllib.request, urllib.error
 sys.path.insert(0, os.path.dirname(__file__))
@@ -66,7 +67,7 @@ for c in sorted(chans, key=lambda c: (c['type'] != 4, c['position'])):
         new = f'『{emo} {bold_serif(p.upper())}』'
     elif p in CH:
         emo, label = CH[p]
-        new = f'「{emo}」{bold_serif(label)}'
+        new = f'{emo} {label}' if c['type'] in (2, 13) else f'{emo}・{label.lower()}'   # voice keeps spaces and capitals
     else:
         say(f'  ? non so come chiamare "{old}" (lasciato com\'è)'); skip += 1; continue
     if new == old:
