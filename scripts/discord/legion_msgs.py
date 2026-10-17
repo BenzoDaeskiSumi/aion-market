@@ -92,21 +92,22 @@ def build(ch, roles, cemo):
             if cemo(c): o['emoji'] = cemo(c)
             cls_opts.append(o)
     cnt_opts = [{'label': n, 'value': roles[n], 'description': d.capitalize(), 'emoji': {'name': e}} for n, e, d in CONTENT if n in roles]
-    icons = ' '.join(f"<:{cemo(c)['name']}:{cemo(c)['id']}>" for c in CLASSES if cemo(c))
+    def tag(c):
+        e = cemo(c)
+        return f"<:{e['name']}:{e['id']}> **{c}**" if e else f'**{c}**'
+    grid = '\n'.join('   '.join(tag(c) for c in CLASSES[k:k + 2]) for k in range(0, len(CLASSES), 2))
     picker = {'embeds': [banner('ruoli', BLUE), {'color': BLUE, 'description': '\n'.join([
-        H('Come funziona', '🎭'),
-        '• Apri i menu qui sotto e **spunta** quello che ti riguarda.',
-        '• Mauro ti dà i ruoli **subito**.',
-        '• Per togliere un ruolo, riapri il menu e **togli la spunta**.',
-        SEP,
         H('Classi', '🛡️'),
-        icons,
-        '• Spunta **tutte** le classi che giochi, anche gli **alt**.',
-        '• Il nome prende il colore della classe **più in alto** nella lista dei ruoli.',
+        grid,
+        '',
+        '• Spunta **tutte** quelle che giochi, anche gli **alt**.',
         SEP,
         H('Contenuti', '🎯'),
-        *[f'➤ **{n}** {d}' for n, e, d in CONTENT],
+        *[f'➤ {e} **{n}**  {d}' for n, e, d in CONTENT],
+        '',
         '• Ti tagghiamo **solo** per quello che scegli.',
+        SEP,
+        '**N.B.** Per togliere un ruolo riapri il menu e togli la spunta.',
     ])}],
         'components': [
             {'type': 1, 'components': [{'type': 3, 'custom_id': 'rp:class', 'placeholder': 'Le classi che giochi', 'min_values': 0,
