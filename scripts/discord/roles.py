@@ -1,5 +1,5 @@
 """Role separators (Discord setup workflow, mode roles-plan / roles-apply).
-Three empty roles act as headings in a member's profile: ───── 𝐆𝐑𝐀𝐃𝐈 ─────, ───── 𝐂𝐋𝐀𝐒𝐒𝐈 ─────, ───── 𝐂𝐎𝐍𝐓𝐄𝐍𝐔𝐓𝐈 ─────.
+Three empty roles act as headings in a member's profile: ─ 𝐆𝐑𝐀𝐃𝐈 ─, ─ 𝐂𝐋𝐀𝐒𝐒𝐈 ─, ─ 𝐂𝐎𝐍𝐓𝐄𝐍𝐔𝐓𝐈 ─.
 - creates them if missing (no permissions, no colour, not shown separately, not mentionable)
 - orders the roles: separator, then its group, for the three groups
 - gives each member the separator of every group they have a role in, and takes it away when the group is empty
@@ -34,7 +34,7 @@ def api(method, path, body=None):
     raise RuntimeError('rate limited ' + path)
 
 
-sep = lambda title: f'─────  {bold_serif(title.upper())}  ─────'
+sep = lambda title: f'─ {bold_serif(title.upper())} ─'   # short: a long name wraps badly in the profile's role pills
 GROUPS = [('Gradi', ['Brigade General', 'Centurion', 'Legionario', 'Recluta', 'Amico della Legione']),
           ('Classi', CLASSES),
           ('Contenuti', [n for n, _, _ in CONTENT])]
@@ -52,6 +52,11 @@ for title, _ in GROUPS:
     name = sep(title)
     if name in byname:
         sep_id[title] = byname[name]['id']; continue
+    old = next((r for r in roles if bold_serif(title.upper()) in r['name'] and '─' in r['name']), None)
+    if old:                                          # older, longer separator name: rename it
+        say(f"  rinomino {old['name']}  →  {name}")
+        if APPLY: api('PATCH', f"/guilds/{G}/roles/{old['id']}", {'name': name})
+        sep_id[title] = old['id']; byname[name] = old; continue
     say(f'  creo il ruolo {name}')
     if APPLY:
         r = api('POST', f'/guilds/{G}/roles', {'name': name, 'permissions': '0', 'color': 0, 'hoist': False, 'mentionable': False})
