@@ -850,7 +850,8 @@ export default {
   async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500)))])); },
   async fetch(req, env, ctx) {
     if (new URL(req.url).pathname === '/hit') return hit(req, env);
-    if (new URL(req.url).pathname === '/timers/status') return Response.json({channel: await env.USERS.get('cfg:timer_channel'), msg: await env.USERS.get('cfg:timer_msg'), err: await env.USERS.get('timer_err')});
+    if (new URL(req.url).pathname === '/timers/run') { try { await updateTimers(env); } catch (e) { await env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500)); } }
+    if (new URL(req.url).pathname.startsWith('/timers/')) return Response.json({channel: await env.USERS.get('cfg:timer_channel'), msg: await env.USERS.get('cfg:timer_msg'), err: await env.USERS.get('timer_err')});
     if (new URL(req.url).pathname.startsWith('/char/')) return charApi(req, env);
     if (req.method !== 'POST') return new Response('Aion 2 Market bot: ok');
     const body = await req.text();
