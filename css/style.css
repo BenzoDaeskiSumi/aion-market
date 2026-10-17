@@ -566,3 +566,28 @@ tbody tr.sel td { background: color-mix(in srgb, var(--accent) 12%, transparent)
   .kpi b { font-size: 26px; }
   .tabs { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; } .tabs [role="tab"], .tabs .tablink { white-space: nowrap; padding: 10px 12px 9px; }
 }
+
+/* ================= one top bar on every page: brand + page pills (same as Mappa / Probabilità) ================= */
+.bar { position: relative; flex-wrap: wrap; gap: 12px 18px; padding: 14px 4px 14px; margin-bottom: 8px; border-bottom: 1px solid var(--line); }
+.bar h1 { font-size: 24px; text-shadow: none; }
+.bar h1 .home { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; }
+.bar h1 .logo { width: 34px; height: 34px; }
+.bar .tabs { margin: 0; border: 0; gap: 6px; flex-wrap: wrap; align-items: center; }
+.bar .tabs [role="tab"], .bar .tabs .tablink { padding: 6px 14px; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--panel) 85%, transparent);
+  color: var(--dim); font-size: 14px; font-weight: 600; box-shadow: none; margin: 0; min-height: 34px; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; }
+.bar .tabs [role="tab"]:hover, .bar .tabs .tablink:hover { color: var(--text); border-color: var(--accent); }
+.bar .tabs [role="tab"][aria-selected="true"] { background: var(--accent-fill); border-color: var(--accent-fill); color: #fff; box-shadow: none; }
+.bar .tabs [role="tab"][aria-selected="true"] span { color: rgba(255,255,255,.8); }
+.bar .tabs [role="tab"] span { margin-left: 0; }
+.bar .right { margin-left: auto; }
+.dealfilter { display: inline-flex; margin: 0 0 12px; }
+.dealfilter[hidden] { display: none; }
+@media (min-width: 761px) and (max-width: 1500px) { .bar .right { width: 100%; justify-content: flex-end; } }
+@media (max-width: 760px) {
+  .bar { border-bottom: 0; margin-bottom: 4px; padding: 10px 2px; }
+  .bar h1 { font-size: 22px; }
+  .bar .tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; margin: 0; padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); gap: 6px; flex-wrap: nowrap; overflow-x: auto;
+    background: var(--panel-solid); border-top: 1px solid var(--line); box-shadow: 0 -6px 18px rgba(0, 0, 0, .25); justify-content: flex-start; }
+  .bar .tabs [role="tab"], .bar .tabs .tablink { flex: none; white-space: nowrap; }
+  .dealfilter { display: flex; } .dealfilter button { flex: 1; }
+}
