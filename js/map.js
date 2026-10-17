@@ -12,27 +12,29 @@ const LOC = {it: 'it-IT', en: 'en-GB', es: 'es-ES', fr: 'fr-FR'}[LANG] || 'it-IT
 const fmt = (n) => (n >= 1e6 ? (n / 1e6).toLocaleString(LOC, {maximumFractionDigits: 2}) + 'M' : n >= 1e4 ? Math.round(n / 1e3).toLocaleString(LOC) + 'K' : n.toLocaleString(LOC));
 
 // layer key -> [Italian label, icon file (img/mapicons) or null for a coloured dot]
+// game terms stay in the official English of the EU client (what players see in game); only the explanations are translated
 const LAYERS = {
-  zones: ['Nomi delle zone', null], empyrean_trace: ['Tracce empiree', 'trace'], hidden_cube: ['Cubi nascosti', 'cube'], kibelisk: ['Kisk', 'kisk'],
-  named: ['Boss (named)', 'named'], monster: ['Mostri', null], dungeon: ['Dungeon', 'dungeon'], instance: ['Istanze', 'instance'],
-  gather: ['Raccolta', 'gather'], service: ['NPC e servizi', 'npc'], rift: ['Spaccature spaziotemporali', 'rift'], monolith: ['Monoliti', 'monolith'],
-  updraft: ['Correnti ascensionali', 'updraft'], portal: ['Portali', 'portal'], abyss_portal: ["Portali per l'Abyss", 'abyss_portal'],
-  garrison: ['Guarnigioni', 'garrison'], field_event: ['Eventi sul campo', 'field_event'], quest: ['Missioni', 'quest_hero'],
-  flight_ring: ['Anelli di volo', 'flight_ring'], abyss_artifact: ["Artefatti dell'Abyss", 'abyss_artifact'],
+  zones: ['Zone Names', null], empyrean_trace: ['Empyrean Traces', 'trace'], hidden_cube: ['Hidden Cubes', 'cube'], kibelisk: ['Kibelisks', 'kisk'],
+  named: ['Named Monsters', 'named'], monster: ['Monsters', null], dungeon: ['Dungeon Entrances', 'dungeon'], instance: ['Instances', 'instance'],
+  gather: ['Gathering', 'gather'], service: ['NPCs & Services', 'npc'], rift: ['Spacetime Rifts', 'rift'], monolith: ['Monoliths', 'monolith'],
+  updraft: ['Updrafts', 'updraft'], portal: ['Teleport Portals', 'portal'], abyss_portal: ['Abyss Portals', 'abyss_portal'],
+  garrison: ['Garrisons', 'garrison'], field_event: ['Field Events', 'field_event'], quest: ['Quests', 'quest_hero'],
+  flight_ring: ['Flight Rings', 'flight_ring'], abyss_artifact: ['Abyss Artifacts', 'abyss_artifact'],
 };
 const RACE = {Dark: 'Asmodian', Light: 'Elyos', All: 'Abyss'};
-const GTYPE = {Herb: 'Erbe', Berry: 'Bacche', Vegetable: 'Ortaggi', Tree: 'Legno', Metal: 'Minerali', Jewelry: 'Gemme', Od: 'Od', Shellfish: 'Molluschi',
-  Mushroom: 'Funghi', Flower: 'Fiori', Fish: 'Pesci'};
+const GTYPE = {};                                     // gathering node types: shown as in the data (Herb, Berry, Metal, Od…)
 const GCOLOR = {Herb: '#6fdc8c', Berry: '#ff6b9a', Vegetable: '#b6e36b', Tree: '#c99a5b', Metal: '#b8c4d6', Jewelry: '#5ad1ff', Od: '#b48cff', Shellfish: '#ffb36b'};
-const RANK = {normal: 'Normale', elite: 'Élite', named: 'Named', boss: 'Boss', hero: 'Eroe', legend: 'Leggendario'};
-const SUBS = {sealed: 'Sigillato', quest: 'Missione', party: 'Di gruppo', garrison: 'Guarnigione', renegade: 'Rinnegati', balaur: 'Balaur', bandit: 'Banditi',
-  hero: 'Missione eroica', district: 'Missione di zona', ground: 'A terra', air: 'In volo', water: "In acqua"};
+const RANK = {normal: 'Normal', elite: 'Elite', named: 'Named', boss: 'Boss', hero: 'Hero', legend: 'Legendary'};
+const SUBS = {sealed: 'Sealed', quest: 'Quest', party: 'Party', garrison: 'Garrison', renegade: 'Renegade', balaur: 'Balaur', bandit: 'Bandit',
+  hero: 'Hero Quest', district: 'District Quest', ground: 'Ground', air: 'Air', water: 'Water'};
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const hhmm = (m) => `${String(Math.floor(m / 60) % 24).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
 
 const map = L.map('map', {crs: L.CRS.Simple, zoomSnap: 0.5, zoomDelta: 0.5, attributionControl: true, zoomControl: true, preferCanvas: false});
 map.attributionControl.setPrefix(false);
 const canvas = L.canvas({padding: 0.5, tolerance: 6});
 map.createPane('labels').style.zIndex = 650; map.getPane('labels').style.pointerEvents = 'none';
-let IDX, D, G, tiles, groups = {}, zoneLabels, SEARCH = [], ITEMS = null, PRICES = null, GFILTER = store.get('aion-map-gtypes', null);
+let ring, IDX, D, G, tiles, groups = {}, zoneLabels, SEARCH = [], ITEMS = null, PRICES = null, GFILTER = store.get('aion-map-gtypes', null);
 const ON = store.get('aion-map-layers', {});
 const GT = document.getElementById('gtypes');
 
@@ -67,21 +69,24 @@ function popupFor(layer, pin, i) {
   switch (layer) {
     case 'monster': case 'named': case 'service': {
       const n = npc(ref) || {};
-      const bits = [n.level ? `Livello ${n.level}` : '', n.rank ? RANK[n.rank] || n.rank : '', n.aggro ? 'Aggressivo' : '', count > 1 ? `× ${count}` : ''].filter(Boolean);
-      return t(n.name || nameOf(ni) || LAYERS[layer][0], esc(bits.join(' · ')));
+      const bits = [n.level ? `Lv ${n.level}` : '', n.rank ? RANK[n.rank] || n.rank : '', n.aggro ? 'Aggressive' : '', count > 1 ? `× ${count}` : ''].filter(Boolean);
+      // scheduled bosses (MetaBot timers, EU server time)
+      const tm = (D.timers || []).filter((x) => x.kind === 'boss' && String(x.ref) === String(ref));
+      const when = tm.map((x) => x.type === 'cycle' ? `Ogni ${x.cycle / 60} ore dalle ${hhmm(x.offset)}` : `${x.days.map((d) => DAYS[d]).join(', ')} ${hhmm(x.offset)}`).join(' · ');
+      return t(n.name || nameOf(ni) || LAYERS[layer][0], esc(bits.join(' · ')), when ? `<p>⏰ ${esc(when)} <small>(ora del server)</small></p>` : '');
     }
     case 'gather': {
-      const g = D.gather?.[ref]; if (!g) return t('Raccolta');
+      const g = D.gather?.[ref]; if (!g) return t('Gathering');
       const extra = [...new Set(g.drops.flatMap((x) => x.extra || []))].filter((id) => !g.items.includes(id));
-      return t(g.label, esc([GTYPE[g.type] || g.type, g.grade, g.mastery ? `Maestria ${g.mastery}` : ''].filter(Boolean).join(' · ')),
+      return t(g.label, esc([g.type, g.grade, g.mastery ? `Mastery ${g.mastery}` : ''].filter(Boolean).join(' · ')),
         `<ul>${g.items.map((id) => itemLi(id)).join('')}</ul>${extra.length ? `<div class="sub" style="margin-top:8px">A volte anche</div><ul>${extra.map((id) => itemLi(id)).join('')}</ul>` : ''}`);
     }
     case 'dungeon': { const g = D.dungeons?.[ref]; return t(g?.name || nameOf(ni) || 'Dungeon', esc(SUBS[sub] || SUBS[g?.type] || '')); }
-    case 'quest': { const q = D.quests?.[ref]; return t(q?.name || nameOf(ni) || 'Missione', esc([SUBS[sub], q?.type].filter(Boolean).join(' · '))); }
-    case 'abyss_portal': return t("Portale per l'Abyss", esc(D.destMaps?.[sub] || ''));
+    case 'quest': { const q = D.quests?.[ref]; return t(q?.name || nameOf(ni) || 'Quest', esc([SUBS[sub], q?.type].filter(Boolean).join(' · '))); }
+    case 'abyss_portal': return t('Abyss Portal', esc(D.destMaps?.[sub] || ''));
     case 'rift': {
       const tm = (D.timers || []).find((x) => x.kind === 'rift' && x.pts.some(([x1, y1]) => x1 === pin[0] && y1 === pin[1]));
-      return t(nameOf(ni) || 'Spaccatura spaziotemporale', tm?.cycle ? `Si apre ogni ${tm.cycle % 60 ? tm.cycle + ' minuti' : tm.cycle / 60 + ' ore'}` : '');
+      return t(nameOf(ni) || 'Spacetime Rift', tm?.cycle ? `Si apre ogni ${tm.cycle % 60 ? tm.cycle + ' minuti' : tm.cycle / 60 + ' ore'}` : '');
     }
     default: return t(nameOf(ni) || LAYERS[layer]?.[0] || layer, esc(SUBS[sub] || (sub && typeof sub === 'string' ? sub : '')));
   }
@@ -112,7 +117,7 @@ function build() {
     let poly, c, lv; try { poly = P(z.poly); c = P(z.c); lv = P(z.lv); } catch (e) { continue; }
     if (!Array.isArray(poly) || !Array.isArray(c)) continue;
     const village = z.type === 'village', b = best[z.name], k = (G.size / 8192) ** 2, a = b.a / k;
-    const tier = b.z !== z || b.a > full ? 0 : village ? 4 : a >= 300000 ? 2 : a >= 40000 ? 3 : 4;
+    const tier = b.z !== z || b.a > full ? 0 : village || / - /.test(z.name) ? 4 : a >= 300000 ? 2 : a >= 40000 ? 3 : 4;
     const p = L.polygon(poly.map(([x, y]) => ll(x, y)), {color: village ? '#ffe6a8' : '#ffffff', weight: 1, opacity: village ? 0.35 : 0.25, fillOpacity: 0, interactive: false});
     groups.zones.addLayer(p);
     const lvl = lv && lv[0] ? (lv[0] === lv[1] ? `Lv ${lv[0]}` : `Lv ${lv[0]}–${lv[1]}`) : '';
@@ -143,21 +148,24 @@ function build() {
   // Empyrean traces and hidden cubes (their own arrays)
   for (const tr of D.traces || []) {
     const m = L.marker(ll(...tr.pt), {icon: icon('trace', 18)});
-    m.bindPopup(`<div class="pp"><h3>Traccia empirea</h3><div class="sub">${esc(SUBS[tr.sub] || tr.sub || '')}</div></div>`); add('empyrean_trace', m);
+    m.bindPopup(`<div class="pp"><h3>Empyrean Trace</h3><div class="sub">${esc(SUBS[tr.sub] || tr.sub || '')}</div></div>`); add('empyrean_trace', m);
   }
+  // hidden cubes: every spot where one can be found; a popup also rings the other spots of the same area group
   for (const c of D.cubes || []) {
-    const many = c.pts.length > 1;
     for (const pt of c.pts) {
-      const m = L.marker(ll(...pt), {icon: icon('cube', many ? 18 : 24)});
-      m.bindPopup(`<div class="pp"><h3>Cubo nascosto</h3><div class="sub">${many ? `Compare in uno di questi ${c.pts.length} punti` : ''}</div></div>`); add('hidden_cube', m);
+      const m = L.marker(ll(...pt), {icon: icon('cube', 20)});
+      m.bindPopup(`<div class="pp"><h3>Hidden Cube</h3><div class="sub">Gruppo di ${c.pts.length} punti in questa zona (cerchiati in arancione)</div></div>`);
+      m.on('popupopen', () => { ring?.remove(); ring = L.layerGroup(c.pts.map((q) => L.circleMarker(ll(...q), {renderer: canvas, radius: 13, color: '#ff8a1f', weight: 2, fill: false, interactive: false}))).addTo(map); });
+      m.on('popupclose', () => { ring?.remove(); ring = null; });
+      add('hidden_cube', m);
     }
   }
   drawLayers(); applyGather(); zoneLabelsByZoom(); iconScale();
 }
 
-function counts() {
-  const c = {}; for (const l of D.layers || []) c[l.key] = l.count;
-  c.zones = (D.zones || []).length; return c;
+function counts() {                      // what is actually drawn (MetaBot's own counts are per group for cubes)
+  const c = {}; for (const [k, g] of Object.entries(groups)) c[k] = g.getLayers().length;
+  c.zones = new Set((D.zones || []).map((z) => z.name)).size; return c;
 }
 const BUSY = new Set(['empyrean_trace', 'hidden_cube', 'monster', 'gather', 'service', 'quest', 'instance', 'flight_ring']);
 const isOn = (k) => (k in ON ? ON[k] : k === 'zones' || (!BUSY.has(k) && !!(D.layers || []).find((l) => l.key === k)?.on));
@@ -212,7 +220,7 @@ $('q').addEventListener('input', () => {
   const seen = new Set(), res = SEARCH.filter((s) => s.label && s.label.toLowerCase().includes(q) && !seen.has(s.label + s.key) && seen.add(s.label + s.key)).slice(0, 30);
   hits.replaceChildren(...res.map((s) => {
     const li = document.createElement('li'), b = document.createElement('button'); b.type = 'button';
-    b.append(document.createTextNode(s.label), Object.assign(document.createElement('small'), {textContent: [LAYERS[s.key]?.[0] === 'Nomi delle zone' ? 'Zona' : LAYERS[s.key]?.[0], s.extra].filter(Boolean).join(' · ')}));
+    b.append(document.createTextNode(s.label), Object.assign(document.createElement('small'), {textContent: [s.key === 'zones' ? 'Zone' : LAYERS[s.key]?.[0], s.extra].filter(Boolean).join(' · ')}));
     b.addEventListener('click', () => go(s)); li.append(b); return li;
   }));
   hits.hidden = !res.length;

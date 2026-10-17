@@ -58,6 +58,10 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 - Layers: pins{layer: [x, y, ref, nameIdx, count]} (ref = npc id in refs.npcs, index into gather/dungeons/quests), traces, cubes (candidate spots), zones
   (one label per name, shown by area as you zoom), subs[layer][i]. Busy layers (traces, cubes, monsters, gathering, NPCs, quests) start hidden; choices in
   localStorage 'aion-map-layers', 'aion-map-gtypes', 'aion-map'. URL ?m=<slug>. Linked as tab 'Mappa 🗺️', in the footer and from odds.html.
+- Game terms (layer names, ranks, gathering types, popup titles) stay in the official English of the EU client, in every language; only explanations are
+  Italian + i18n. Hidden cubes: MetaBot's count is per area group (206 groups); the map draws every spot and counts spots, a popup rings its group.
+  Scheduled bosses get their time from D.timers (kind boss, ref = npc id). Sub-zone labels ('A - B') only show up close. Regions: slugs on metabot.gg/en/aion-2/map,
+  key read from each region page (data/map/import_log.txt); Upper Reshanta (Abyss_Reshanta_D) has no data on MetaBot yet.
 
 ## Overlay + installable app
 - overlay.html + css/overlay.css + js/overlay.js: compact page for Steam's in-game browser (Shift+Tab, pin the window) and phones:
