@@ -9,7 +9,11 @@ document.getElementById('sheetclose').addEventListener('click', closeSheet);
 document.getElementById('sheetbg').addEventListener('click', closeSheet);
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSheet(); });
 const menuBtn = document.getElementById('menubtn');
-menuBtn.addEventListener('click', () => { const open = document.querySelector('.bar').classList.toggle('menu-open'); menuBtn.setAttribute('aria-expanded', String(open)); });
+// settings panel (account, tax, theme, language): opens under the gear button, closes on Escape or a click outside
+const setMenu = (open) => { document.querySelector('.bar').classList.toggle('menu-open', open); menuBtn.setAttribute('aria-expanded', String(open)); };
+menuBtn.addEventListener('click', (e) => { e.stopPropagation(); setMenu(menuBtn.getAttribute('aria-expanded') !== 'true'); });
+document.addEventListener('click', (e) => { if (menuBtn.getAttribute('aria-expanded') === 'true' && !e.target.closest('#barright')) setMenu(false); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menuBtn.getAttribute('aria-expanded') === 'true') { setMenu(false); menuBtn.focus(); } });
 
 /* Aion 2 Market — Grade filter, toggles and view/tab events. Classic script: shares globals with the others, loaded in order by index.html. */
 /* ---------- grade filter ---------- */

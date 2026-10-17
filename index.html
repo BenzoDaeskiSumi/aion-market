@@ -35,7 +35,7 @@
 <body>
 <div class="win" id="win">
   <div class="bar">
-    <h1><a class="home" href="./"><img class="logo" src="img/favicon-256.png" alt="" width="36" height="36">Aion 2 Market</a></h1>
+    <h1><a class="home" href="./"><img class="logo" src="img/favicon-256.png" alt="" width="36" height="36"><span class="bt">Aion 2 Market</span></a></h1>
     <nav class="tabs" role="tablist" aria-label="Sezioni">
       <button type="button" role="tab" data-view="market">Market</button>
       <button type="button" role="tab" data-view="deals">Affari <span id="tab-deals"></span></button>
@@ -45,19 +45,21 @@
       <a class="tablink" href="map.html" title="Mappa interattiva"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>Mappa</a>
       <a class="tablink" href="odds.html" title="Probabilità ufficiali (server coreano)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>Probabilità <span class="krtag">KR</span></a>
     </nav>
-    <button class="menubtn" id="menubtn" type="button" aria-expanded="false" aria-controls="barright" aria-label="Impostazioni"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-    <div class="right" id="barright">
-      <span class="acct" id="acct"></span>
+    <div class="barend">
       <label class="srv"><span>Server</span><select id="server" aria-label="Server"><option value="12305">Marchutan</option></select></label>
-      <span><span class="coin"></span>Tassa <b id="t-tax">—</b></span>
-      <div class="themes" role="group" aria-label="Tema">
+      <button class="menubtn" id="menubtn" type="button" aria-expanded="false" aria-controls="barright" aria-label="Impostazioni" title="Impostazioni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    </div>
+    <div class="right" id="barright" role="dialog" aria-label="Impostazioni">
+      <div class="setrow"><span class="setlbl">Account</span><span class="acct" id="acct"></span></div>
+      <div class="setrow"><span class="setlbl">Tassa del Market</span><span><span class="coin"></span><b id="t-tax">—</b></span></div>
+      <div class="setrow"><span class="setlbl">Tema</span><div class="themes" role="group" aria-label="Tema">
         <button type="button" data-theme="abyss"><i style="background:#7fd4ff"></i>Abyss</button>
         <button type="button" data-theme="elyos"><i style="background:#e8c46a"></i>Elyos</button>
         <button type="button" data-theme="asmodian"><i style="background:#ff7ab0"></i>Asmodian</button>
-      </div>
-      <div class="themes langs" role="group" aria-label="Lingua">
+      </div></div>
+      <div class="setrow"><span class="setlbl">Lingua</span><div class="themes langs" role="group" aria-label="Lingua">
         <button type="button" data-lang="it" title="Italiano">IT</button><button type="button" data-lang="en" title="English">EN</button><button type="button" data-lang="es" title="Español">ES</button><button type="button" data-lang="fr" title="Français">FR</button>
-      </div>
+      </div></div>
     </div>
   </div>
   <div class="upd" id="upd" aria-live="polite"></div>
