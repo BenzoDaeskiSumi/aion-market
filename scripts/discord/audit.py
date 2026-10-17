@@ -14,3 +14,5 @@ for c in chs:
         for m in get(f"/channels/{c['id']}/messages?limit=3"):
             lines += ['', '== messaggio timer', json.dumps(m.get('embeds'), ensure_ascii=False)[:3000]]
 print('\n'.join(lines))
+try: print('\n== timer status', urllib.request.urlopen(urllib.request.Request('https://aion-market-bot.aion2-market.workers.dev/timers/status', headers={'User-Agent': 'Mozilla/5.0'})).read().decode())
+except Exception as e: print('timer status error', e)
