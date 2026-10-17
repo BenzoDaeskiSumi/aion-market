@@ -746,6 +746,18 @@ async function rolePick(i, env, ctx) {
     let ok = true;
     for (const r of add) ok = (await call('PUT', r)).ok && ok;
     for (const r of del) ok = (await call('DELETE', r)).ok && ok;
+    // separator role of this group (───── 𝐂𝐋𝐀𝐒𝐒𝐈 ─────): shown only while the member has at least one role of the group
+    const title = {class: 'CLASSI', content: 'CONTENUTI'}[i.data.custom_id.slice(3)];
+    if (title && ok) {
+      const bold = [...title].map((c) => String.fromCodePoint(0x1D400 + c.charCodeAt(0) - 65)).join('');
+      const roles = await (await fetch(`https://discord.com/api/v10/guilds/${gid}/roles`, {headers: {Authorization: `Bot ${env.DISCORD_TOKEN}`}})).json().catch(() => []);
+      const sep = Array.isArray(roles) ? roles.find((r) => r.name.includes(bold) && r.name.includes('─')) : null;
+      if (sep) {
+        const after = new Set([...have].filter((r) => !del.includes(r)).concat(add)), any = group.some((r) => after.has(r));
+        if (any && !have.has(sep.id)) await call('PUT', sep.id);
+        if (!any && have.has(sep.id)) await call('DELETE', sep.id);
+      }
+    }
     const text = !ok ? '⚠️ Non sono riuscito a cambiare tutti i ruoli: avvisa un Centurion.'
       : !add.length && !del.length ? 'Nessun cambiamento.'
       : [add.length ? `✅ Aggiunti: ${add.map((r) => names[r]).join(', ')}` : null, del.length ? `➖ Tolti: ${del.map((r) => names[r]).join(', ')}` : null].filter(Boolean).join('\n');
