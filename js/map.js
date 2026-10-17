@@ -14,7 +14,7 @@ const fmt = (n) => (n >= 1e6 ? (n / 1e6).toLocaleString(LOC, {maximumFractionDig
 // layer key -> [Italian label, icon file (img/mapicons) or null for a coloured dot]
 // game terms stay in the official English of the EU client (what players see in game); only the explanations are translated
 const LAYERS = {
-  zones: ['Zone Names', null], empyrean_trace: ['Empyrean Traces', 'trace'], hidden_cube: ['Hidden Cubes', 'cube'], kibelisk: ['Kibelisks', 'kisk'],
+  zones: ['Zone Names', null], empyrean_trace: ['Empyrean Traces', 'trace'], hidden_cube: ['Hidden Cubes', 'hidden_cube'], kibelisk: ['Kibelisks', 'kisk'],
   named: ['Named Monsters', 'named'], monster: ['Monsters', null], dungeon: ['Dungeon Entrances', 'dungeon'], instance: ['Instances', 'instance'],
   gather: ['Gathering', 'gather'], service: ['NPCs & Services', 'npc'], rift: ['Spacetime Rifts', 'rift'], monolith: ['Monoliths', 'monolith'],
   updraft: ['Updrafts', 'updraft'], portal: ['Teleport Portals', 'portal'], abyss_portal: ['Abyss Portals', 'abyss_portal'],
@@ -153,7 +153,7 @@ function build() {
   // hidden cubes: every spot where one can be found; a popup also rings the other spots of the same area group
   for (const c of D.cubes || []) {
     for (const pt of c.pts) {
-      const m = L.marker(ll(...pt), {icon: icon('cube', 20)});
+      const m = L.marker(ll(...pt), {icon: icon('hidden_cube', 22)});
       m.bindPopup(`<div class="pp"><h3>Hidden Cube</h3><div class="sub">Gruppo di ${c.pts.length} punti in questa zona (cerchiati in arancione)</div></div>`);
       m.on('popupopen', () => { ring?.remove(); ring = L.layerGroup(c.pts.map((q) => L.circleMarker(ll(...q), {renderer: canvas, radius: 13, color: '#ff8a1f', weight: 2, fill: false, interactive: false}))).addTo(map); });
       m.on('popupclose', () => { ring?.remove(); ring = null; });
