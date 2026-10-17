@@ -13,4 +13,4 @@ for c in chs:
     if c['name'].endswith('timer-eventi'):
         for m in get(f"/channels/{c['id']}/messages?limit=3"):
             lines += ['', '== messaggio timer', json.dumps(m.get('embeds'), ensure_ascii=False)[:3000]]
-open('/tmp/probe.txt', 'a').write('\n'.join(lines))
+print('\n'.join(lines))
