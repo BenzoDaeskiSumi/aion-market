@@ -6,8 +6,10 @@ import {dirname} from 'node:path';
 const H = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36', Accept: '*/*', Referer: 'https://metabot.gg/en/aion-2/map'};
 // regions listed on https://metabot.gg/en/aion-2/map (slugs); their API key is read from the region page (e.g. World_D_A), with known ones as a shortcut
 const SLUGS = ['ishalgen', 'altgard', 'morheim', 'poeta', 'verteron', 'eltnen', 'chaotic-lower-reshanta', 'chaotic-middle-reshanta', 'chaotic-upper-reshanta'];
-const KNOWN = {altgard: 'World_D_A', morheim: 'World_D_B', verteron: 'World_L_A', 'chaotic-lower-reshanta': 'Abyss_Reshanta_A'};
+const KNOWN = {ishalgen: 'World_D_Starter', altgard: 'World_D_A', morheim: 'World_D_B', poeta: 'World_L_Starter', verteron: 'World_L_A', 'chaotic-lower-reshanta': 'Abyss_Reshanta_A', 'chaotic-middle-reshanta': 'Abyss_Reshanta_C'};
+const GUESS = {eltnen: ['World_L_B'], 'chaotic-upper-reshanta': ['Abyss_Reshanta_B', 'Abyss_Reshanta_D']};
 const TILES = process.argv.includes('--tiles');
+const LOG = []; const log0 = console.log; console.log = (...a) => { LOG.push(a.join(' ')); log0(...a); };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 async function get(url, raw, tries = 6) {
   for (let k = 0; k < tries; k++) {
@@ -33,11 +35,17 @@ async function keyOf(slug) {
         const m = html.match(/maps\/((?:World|Abyss)_[A-Za-z0-9_]+)/) || html.match(/"key"\s*:\s*"((?:World|Abyss)_[A-Za-z0-9_]+)"/)
           || html.match(/worldmap\/((?:world|abyss)_[a-z0-9_]+)\//);
         if (m) { const k2 = /^[a-z]/.test(m[1]) ? m[1].replace(/(^|_)([a-z])/g, (x, a, b) => a + b.toUpperCase()) : m[1]; console.log('key', slug, k2); return k2; }
-        console.log('no key in page', slug); return null;
+        console.log('no key in page', slug, html.length, (html.match(/(World|Abyss)_[A-Za-z_]+|worldmap\/[a-z_]+/g) || []).slice(0, 8).join(' ')); break;
       }
-      console.log('page', slug, r.status);
+      console.log('page', slug, r.status); if (r.status === 404) break;
     } catch (e) { console.log('page error', slug, e.message); }
     await sleep(30000 * (k + 1));
+  }
+  for (const g of GUESS[slug] || []) {           // the page gave nothing: try the likely API keys
+    await sleep(20000);
+    const r = await fetch(`https://metabot.gg/api/aion-2/maps/${g}?lang=en`, {headers: H}).catch(() => null);
+    console.log('guess', slug, g, r?.status);
+    if (r?.ok) return g;
   }
   return null;
 }
@@ -48,7 +56,7 @@ for (const slug of SLUGS) {
   let d = await get(`https://metabot.gg/api/aion-2/maps/${key}?lang=en`, false, 8);
   await sleep(45000);                                           // their API rate-limits: one map per ~minute
   if (!d?.map && existsSync(file)) { d = JSON.parse(readFileSync(file, 'utf8')); console.log('kept previous', key); }
-  if (!d?.map) { console.log('skip', key); continue; }
+  if (!d?.map) { console.log('skip', slug, key); continue; }
   const m = d.map;
   index.push({key, slug: m.slug, name: m.name, race: m.race, kind: m.kind, tileDir: m.tileDir, geometry: d.geometry, layers: (d.layers || []).map((l) => l.key)});
   writeFileSync(file, JSON.stringify(d));
@@ -82,4 +90,5 @@ if (existsSync('data/db/items.json')) {
   writeFileSync('data/map/items.json', JSON.stringify({icon_base: db.icon_base, items: out}));
 }
 console.log('maps:', index.map((m) => m.key).join(', '));
+writeFileSync('data/map/import_log.txt', LOG.join('\n') + '\n');
 if (!index.length) process.exit(1);
