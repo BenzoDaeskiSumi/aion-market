@@ -168,4 +168,7 @@ Apri sul sito. Anyone can press them, each for their own account; the item is th
 Event countdown: the cron also keeps ONE message in '⏰・timer-eventi' (created by the Worker next to #annunci, read-only; KV cfg:timer_channel /
 cfg:timer_msg) with Discord timestamps <t:…:R> (they count down live). Schedule in data/timers.json (EU server time Europe/Berlin, 'every/offset',
 'days'+'at', 'windows', or 'respawn' = minutes after a kill: Gartua, set by the 💀 button tk:<id>, KV timer:<id>). Global times are community estimates.
+Discord server scripts (workflow 'Discord setup', mode X-plan / X-apply; output on the temporary 'probe' branch): msg = Mauro's fixed messages
+(scripts/discord/legion_msgs.py content + messages.py; banner images img/discord/*.png drawn from bg/*.svg with Cormorant Garamond), chan = channel names
+in the server style 『📢 𝐋𝐄𝐆𝐈𝐎𝐍𝐄』 / 「📜」𝐑𝐞𝐠𝐨𝐥𝐞 (Unicode Mathematical Bold; scripts match channels with base(), which maps those letters back to ASCII).
 To limit the bot to one channel: Discord server settings → Integrations → the bot → channels (no code).
