@@ -1,0 +1,12 @@
+{
+ "_": "Event schedule for the Discord countdown channel (bot/src/index.js timers). Times are EU server time (tz). every/offset in minutes from local midnight; days 0=Sunday. Edit here, the bot reads it from the site.",
+ "tz": "Europe/Berlin",
+ "source": "MetaBot.GG map timers, shugo.gg, allthings.how (NCSOFT has not published official global times)",
+ "events": [
+  {"id": "rift", "emoji": "🌀", "name": "Spaccatura spaziotemporale", "every": 180, "offset": 120, "dur": 60, "note": "Il portale resta aperto solo i primi 10 minuti"},
+  {"id": "siege", "emoji": "🏛️", "name": "Assedio dell'Artefatto → Corridoi dell'Abisso", "days": [1, 4, 6], "at": "21:00", "dur": 30, "note": "Lun · Gio · Sab — la fazione che vince apre i Corridoi dell'Abisso"},
+  {"id": "nahma", "emoji": "👹", "name": "Guardian Lord Nahma", "days": [0, 5], "at": "21:00", "dur": 30, "note": "Ven · Dom — Chaotic Lower Reshanta"},
+  {"id": "battlefield", "emoji": "⚔️", "name": "Battlefield", "windows": [["11:00", "14:00"], ["20:00", "22:00"]], "note": "Orari del server coreano: sul global non sono ancora ufficiali", "unconfirmed": true},
+  {"id": "gartua", "emoji": "🐉", "name": "Immortal Gartua", "respawn": 720, "note": "Immortal Isle (Altgard) · torna 12 ore dopo la morte: premi il bottone quando muore"}
+ ]
+}

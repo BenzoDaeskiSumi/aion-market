@@ -754,9 +754,99 @@ async function rolePick(i, env, ctx) {
   return Response.json({type: 5, data: {flags: 64}});                 // only the user sees the answer
 }
 
+
+// ---------- event countdown channel: one message edited by the cron, with Discord timestamps (<t:…:R> counts down live) ----------
+// Schedule in data/timers.json on the site (EU server time). Gartua respawns 12 h after a kill: members press the button when it dies.
+const GUILD = '1553398446524731435', TIMER_CH = '⏰・timer-eventi';
+function tzOffset(ts, tz) {               // minutes the zone is ahead of UTC at ts
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', {timeZone: tz, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'})
+    .formatToParts(new Date(ts)).map((x) => [x.type, x.value]));
+  return (Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute) - Math.floor(ts / 6e4) * 6e4) / 6e4;
+}
+function localDay(ts, tz) {               // {y, m, d, dow} of ts in tz
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', {timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short'}).formatToParts(new Date(ts)).map((x) => [x.type, x.value]));
+  return {y: +p.year, m: +p.month, d: +p.day, dow: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(p.weekday)};
+}
+function atLocal(y, m, d, min, tz) {      // UTC ms of local y-m-d + min minutes
+  const guess = Date.UTC(y, m - 1, d, 0, min);
+  let ts = guess - tzOffset(guess, tz) * 6e4;
+  return guess - tzOffset(ts, tz) * 6e4;
+}
+const hm = (s) => { const [h, m] = s.split(':').map(Number); return h * 60 + m; };
+// [start, end] windows (UTC ms) of an event from yesterday to 8 days ahead
+function windows(ev, tz, now) {
+  const out = [];
+  for (let k = -1; k <= 8; k++) {
+    const {y, m, d, dow} = localDay(now + k * 864e5, tz);
+    if (ev.days && !ev.days.includes(dow)) continue;
+    const starts = ev.every ? Array.from({length: Math.ceil((1440 - (ev.offset % ev.every)) / ev.every)}, (_, j) => [(ev.offset % ev.every) + j * ev.every, ev.dur])
+      : ev.windows ? ev.windows.map(([a, b]) => [hm(a), hm(b) - hm(a)]) : ev.at ? [[hm(ev.at), ev.dur || 30]] : [];
+    for (const [st, dur] of starts) { const a = atLocal(y, m, d, st, tz); out.push([a, a + dur * 6e4]); }
+  }
+  return out.sort((a, b) => a[0] - b[0]);
+}
+const T = (ms, f = 'R') => `<t:${Math.floor(ms / 1000)}:${f}>`;
+async function timerMessage(env) {
+  const cfg = await (await fetch(`${env.SITE}/data/timers.json`, {cf: {cacheTtl: 300}})).json();
+  const now = Date.now(), tz = cfg.tz || 'Europe/Berlin', fields = [];
+  for (const ev of cfg.events) {
+    let v;
+    if (ev.respawn) {
+      const k = JSON.parse(await env.USERS.get('timer:' + ev.id) || 'null');
+      if (!k) v = '❔ Nessuna morte segnata: premi il bottone qui sotto quando muore.';
+      else {
+        const back = k.t + ev.respawn * 6e4;
+        v = back > now ? `Torna ${T(back)} · ${T(back, 't')}\n-# ucciso ${T(k.t)} (segnato da ${k.by})` : `🟢 **Dovrebbe essere vivo** da ${T(back)}\n-# ultima morte segnata ${T(k.t, 'f')}`;
+      }
+    } else {
+      const w = windows(ev, tz, now), open = w.find(([a, b]) => a <= now && now < b), next = w.find(([a]) => a > now);
+      v = (open ? `🟢 **In corso** · finisce ${T(open[1])}\n` : '') + (next ? `${open ? 'Poi' : 'Prossimo'} ${T(next[0])} · ${T(next[0], next[0] - now > 864e5 ? 'f' : 't')}` : '—');
+    }
+    fields.push({name: `${ev.emoji} ${ev.name}${ev.unconfirmed ? ' ❔' : ''}`, value: `${v}\n-# ${ev.note || ''}`.slice(0, 1024), inline: false});
+  }
+  const gartua = cfg.events.filter((e) => e.respawn);
+  return {embeds: [{color: 0xb06cff, title: '⏰ Timer degli eventi', description: 'Conto alla rovescia degli eventi principali (gli orari si vedono nel tuo fuso orario).\n​', fields,
+    footer: {text: 'Orari del server EU stimati dalla community: NCSOFT non li ha pubblicati. Aggiornato ogni 15 minuti.'}, timestamp: new Date(now).toISOString()}],
+    components: gartua.length ? [{type: 1, components: gartua.flatMap((e) => [
+      {type: 2, style: 4, label: `${e.name.split(' ').pop()} è morto adesso`, emoji: {name: '💀'}, custom_id: `tk:${e.id}`},
+      {type: 2, style: 2, label: 'Annulla', custom_id: `tk:${e.id}:x`}])}] : []};
+}
+const dapi = (env, method, path, body) => fetch(`https://discord.com/api/v10${path}`, {method,
+  headers: {Authorization: `Bot ${env.DISCORD_TOKEN}`, 'Content-Type': 'application/json', 'X-Audit-Log-Reason': 'Canale timer degli eventi'}, body: body ? JSON.stringify(body) : undefined});
+async function timerChannel(env) {        // creates the read-only channel once (next to #annunci), then remembers it
+  let ch = await env.USERS.get('cfg:timer_channel');
+  if (ch) return ch;
+  const list = await (await dapi(env, 'GET', `/guilds/${GUILD}/channels`)).json();
+  const found = list.find((c) => c.type === 0 && /timer-eventi$/.test(c.name));
+  if (found) ch = found.id;
+  else {
+    const ann = list.find((c) => c.type === 0 && /annunci$/.test(c.name)), me = await (await dapi(env, 'GET', '/users/@me')).json();
+    const r = await dapi(env, 'POST', `/guilds/${GUILD}/channels`, {name: TIMER_CH, type: 0, parent_id: ann?.parent_id, position: (ann?.position ?? 0) + 1,
+      topic: 'Countdown di Spaccature, Assedio/Corridoi dell\'Abisso, Nahma, Battlefield e Gartua. Aggiornato da Mauro.',
+      permission_overwrites: [{id: GUILD, type: 0, allow: '0', deny: String(0x800 | 0x40)}, {id: me.id, type: 1, allow: String(0x400 | 0x800 | 0x4000 | 0x10000), deny: '0'}]});
+    if (!r.ok) return null;
+    ch = (await r.json()).id;
+  }
+  await env.USERS.put('cfg:timer_channel', ch);
+  return ch;
+}
+async function updateTimers(env) {
+  const ch = await timerChannel(env); if (!ch) return;
+  const msg = await timerMessage(env), id = await env.USERS.get('cfg:timer_msg');
+  if (id) { const r = await dapi(env, 'PATCH', `/channels/${ch}/messages/${id}`, msg); if (r.ok) return; if (r.status !== 404) return; }
+  const r = await dapi(env, 'POST', `/channels/${ch}/messages`, msg);
+  if (r.ok) await env.USERS.put('cfg:timer_msg', (await r.json()).id);
+}
+async function timerButton(i, env) {      // 💀 "is dead now" / Annulla, then redraw the message in place
+  const [, id, x] = i.data.custom_id.split(':');
+  if (x) await env.USERS.delete('timer:' + id);
+  else await env.USERS.put('timer:' + id, JSON.stringify({t: Date.now(), by: i.member?.nick || i.member?.user?.global_name || i.member?.user?.username || 'qualcuno'}));
+  return Response.json({type: 7, data: await timerMessage(env)});
+}
+
 // ---------- entry point ----------
 export default {
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env)])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env), updateTimers(env).catch(() => {})])); },
   async fetch(req, env, ctx) {
     if (new URL(req.url).pathname === '/hit') return hit(req, env);
     if (new URL(req.url).pathname.startsWith('/char/')) return charApi(req, env);
@@ -807,6 +897,7 @@ export default {
       if (i.type === 3 && i.data.custom_id?.startsWith('al:')) return await alertForm(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('cr:')) return await craftButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('pc:')) return await charButton(i, env);
+      if (i.type === 3 && i.data.custom_id?.startsWith('tk:')) return await timerButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('rp:')) return await rolePick(i, env, ctx);
       if (i.type === 5 && i.data.custom_id?.startsWith('alm:')) return await alertSubmit(i, env);
       return oops('Comando sconosciuto.');

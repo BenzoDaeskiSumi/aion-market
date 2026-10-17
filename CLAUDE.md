@@ -168,4 +168,7 @@ alm:<sid>:<item>; direction is automatic: target above the current price = 'abov
 Apri sul sito. Anyone can press them, each for their own account; the item is the embed title. /preferiti has a 🔔 button too.
 /craft <oggetto> (autocomplete from data/recipes.json products) ports craftEngine() from js/craft.js — keep the two in sync. /aiuto lists all commands.
 /chisiamo answers '# LA LEGIONE' (guild joke; the bot can't read plain chat messages, slash commands only).
+Event countdown: the cron also keeps ONE message in '⏰・timer-eventi' (created by the Worker next to #annunci, read-only; KV cfg:timer_channel /
+cfg:timer_msg) with Discord timestamps <t:…:R> (they count down live). Schedule in data/timers.json (EU server time Europe/Berlin, 'every/offset',
+'days'+'at', 'windows', or 'respawn' = minutes after a kill: Gartua, set by the 💀 button tk:<id>, KV timer:<id>). Global times are community estimates.
 To limit the bot to one channel: Discord server settings → Integrations → the bot → channels (no code).
