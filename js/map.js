@@ -153,7 +153,7 @@ function build() {
   // hidden cubes: every spot where one can be found; a popup also rings the other spots of the same area group
   for (const c of D.cubes || []) {
     for (const pt of c.pts) {
-      const m = L.marker(ll(...pt), {icon: icon('hidden_cube', 24)});
+      const m = L.marker(ll(...pt), {icon: icon(raceIcon('hidden_cube'), 24)});
       m.bindPopup(`<div class="pp"><h3>Hidden Cube</h3><div class="sub">Gruppo di ${c.pts.length} punti in questa zona (cerchiati in arancione)</div></div>`);
       m.on('popupopen', () => { ring?.remove(); ring = L.layerGroup(c.pts.map((q) => L.circleMarker(ll(...q), {renderer: canvas, radius: 13, color: '#ff8a1f', weight: 2, fill: false, interactive: false}))).addTo(map); });
       m.on('popupclose', () => { ring?.remove(); ring = null; });
@@ -176,7 +176,7 @@ function drawLayers() {
     cb.type = 'checkbox'; cb.checked = !!isOn(k);
     cb.addEventListener('change', () => { ON[k] = cb.checked; store.set('aion-map-layers', ON); show(k); });
     const ic = document.createElement('span'); ic.className = 'ic';
-    const f = LAYERS[k]?.[1], file = k === 'kibelisk' ? raceIcon('kisk') : k === 'monolith' ? raceIcon('monolith') : f;
+    const f = LAYERS[k]?.[1], file = k === 'kibelisk' ? raceIcon('kisk') : k === 'monolith' ? raceIcon('monolith') : k === 'hidden_cube' ? raceIcon('hidden_cube') : f;
     if (file) ic.append(Object.assign(document.createElement('img'), {src: `img/mapicons/${file}.webp`, alt: ''}));
     else { const d = document.createElement('span'); d.className = 'dot'; d.style.background = k === 'zones' ? 'transparent' : (D.layers.find((l) => l.key === k)?.color || '#888'); if (k === 'zones') d.style.borderColor = '#fff'; ic.append(d); }
     lab.append(cb, ic, document.createTextNode(LAYERS[k]?.[0] || k), Object.assign(document.createElement('span'), {className: 'n', textContent: (c[k] ?? '').toLocaleString(LOC)}));
