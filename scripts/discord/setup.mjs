@@ -131,7 +131,7 @@ if (APPLY && ids['Brigade General'] && !String(ids['Brigade General']).startsWit
 
 say('\n== Categorie e canali');
 // channels may carry an emoji prefix ('👋・benvenuto', set by style.py): compare the names without it
-const base = (n) => n.toLowerCase().replace(/^[^a-z0-9]+/, '');
+const base = (n) => [...n].map((c) => { const o = c.codePointAt(0); return o >= 0x1D400 && o <= 0x1D419 ? String.fromCharCode(o - 0x1D400 + 65) : o >= 0x1D41A && o <= 0x1D433 ? String.fromCharCode(o - 0x1D41A + 97) : o >= 0x1D7CE && o <= 0x1D7D7 ? String.fromCharCode(o - 0x1D7CE + 48) : c; }).join('').toLowerCase().replace(/^[^a-z0-9]+/, '');
 const chBy = (name, type) => channels.find((c) => base(c.name) === base(name) && (type == null || c.type === type));
 const staffIds = [ids['Centurion'], ids['Brigade General']].filter((x) => x && !String(x).startsWith('new:'));
 const ow = (c, cat) => {

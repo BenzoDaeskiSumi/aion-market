@@ -37,7 +37,11 @@ def act(what, fn):
     return fn() if APPLY else None
 
 
-base = lambda n: re.sub(r'^[^a-z0-9]+', '', n.lower())          # name without the emoji prefix
+def base(n):
+    """Channel name without decoration: Mathematical Bold letters back to ASCII, emoji/brackets dropped, lowercase."""
+    n = ''.join(chr(ord(c) - 0x1D400 + 65) if 0x1D400 <= ord(c) <= 0x1D419 else chr(ord(c) - 0x1D41A + 97) if 0x1D41A <= ord(c) <= 0x1D433
+                else chr(ord(c) - 0x1D7CE + 48) if 0x1D7CE <= ord(c) <= 0x1D7D7 else c for c in n)
+    return re.sub(r'^[^a-z0-9]+', '', n.lower())
 
 me = api('GET', '/users/@me')
 say(f"{'APPLICO' if APPLY else 'PROVA A SECCO'} · sistemazione grafica")

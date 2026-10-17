@@ -21,7 +21,11 @@ def api(method, path, body=None):
             raise RuntimeError(f'{method} {path} -> {e.code} {e.read()[:300]!r}')
 
 
-base = lambda n: re.sub(r'^[^a-z0-9]+', '', n.lower())
+def base(n):
+    """Channel name without decoration: Mathematical Bold letters back to ASCII, emoji/brackets dropped, lowercase."""
+    n = ''.join(chr(ord(c) - 0x1D400 + 65) if 0x1D400 <= ord(c) <= 0x1D419 else chr(ord(c) - 0x1D41A + 97) if 0x1D41A <= ord(c) <= 0x1D433
+                else chr(ord(c) - 0x1D7CE + 48) if 0x1D7CE <= ord(c) <= 0x1D7D7 else c for c in n)
+    return re.sub(r'^[^a-z0-9]+', '', n.lower())
 me = api('GET', '/users/@me')
 cid = {base(c['name']): c['id'] for c in api('GET', f'/guilds/{G}/channels') if c['type'] != 4}
 ch = lambda n: f'<#{cid[n]}>' if n in cid else f'#{n}'

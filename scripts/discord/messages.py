@@ -32,7 +32,11 @@ def api(method, path, body=None):
     raise RuntimeError('rate limited ' + path)
 
 
-base = lambda n: re.sub(r'^[^a-z0-9]+', '', n.lower())
+def base(n):
+    """Channel name without decoration: Mathematical Bold letters back to ASCII, emoji/brackets dropped, lowercase."""
+    n = ''.join(chr(ord(c) - 0x1D400 + 65) if 0x1D400 <= ord(c) <= 0x1D419 else chr(ord(c) - 0x1D41A + 97) if 0x1D41A <= ord(c) <= 0x1D433
+                else chr(ord(c) - 0x1D7CE + 48) if 0x1D7CE <= ord(c) <= 0x1D7D7 else c for c in n)
+    return re.sub(r'^[^a-z0-9]+', '', n.lower())
 me = api('GET', '/users/@me')
 chans = api('GET', f'/guilds/{G}/channels')
 cid = {base(c['name']): c['id'] for c in chans if c['type'] != 4}
