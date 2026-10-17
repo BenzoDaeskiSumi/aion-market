@@ -1,0 +1,5 @@
+APPLICO · separatori dei ruoli
+  creo il ruolo Ospite
+  ordine dei ruoli: 13 da spostare
+  membri letti: 38 · separatori da dare: 0 · da togliere: 0
+fatto
