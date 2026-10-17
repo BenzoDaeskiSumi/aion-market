@@ -1,0 +1,21 @@
+kept previous World_D_Starter
+World_D_Starter Ishalgen [object Object]
+  tiles worldmap/world_d_starter: 0 files, 0.0 MB
+World_D_A Altgard [object Object]
+  tiles worldmap/world_d_a: 0 files, 0.0 MB
+World_D_B Morheim [object Object]
+  tiles worldmap/world_d_b: 0 files, 0.0 MB
+World_L_Starter Poeta [object Object]
+  tiles worldmap/world_l_starter: 0 files, 0.0 MB
+World_L_A Verteron [object Object]
+  tiles worldmap/world_l_a: 0 files, 0.0 MB
+key eltnen World_L_B
+World_L_B Eltnen [object Object]
+  tiles worldmap/world_l_b: 1365 files, 7.3 MB
+Abyss_Reshanta_A Chaotic Lower Reshanta [object Object]
+  tiles worldmap/abyss_reshanta_a: 0 files, 0.0 MB
+Abyss_Reshanta_C Chaotic Middle Reshanta [object Object]
+  tiles worldmap/abyss_reshanta_c: 0 files, 0.0 MB
+key chaotic-upper-reshanta Abyss_Reshanta_D
+skip chaotic-upper-reshanta Abyss_Reshanta_D
+maps: World_D_Starter, World_D_A, World_D_B, World_L_Starter, World_L_A, World_L_B, Abyss_Reshanta_A, Abyss_Reshanta_C

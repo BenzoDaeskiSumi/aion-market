@@ -138,6 +138,34 @@
    ]
   },
   {
+   "key": "World_L_B",
+   "slug": "eltnen",
+   "name": "Eltnen",
+   "race": "Light",
+   "kind": "field",
+   "tileDir": "worldmap/world_l_b",
+   "geometry": {
+    "P": 8,
+    "maxZoom": 5,
+    "size": 8192
+   },
+   "layers": [
+    "empyrean_trace",
+    "hidden_cube",
+    "kibelisk",
+    "named",
+    "monster",
+    "dungeon",
+    "instance",
+    "gather",
+    "service",
+    "rift",
+    "monolith",
+    "portal",
+    "garrison"
+   ]
+  },
+  {
    "key": "Abyss_Reshanta_A",
    "slug": "chaotic-lower-reshanta",
    "name": "Chaotic Lower Reshanta",
