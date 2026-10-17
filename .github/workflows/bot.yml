@@ -19,6 +19,8 @@ jobs:
           DISCORD_PUBLIC_KEY: ${{ secrets.DISCORD_PUBLIC_KEY }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          DISCORD_APP_ID: ${{ secrets.DISCORD_APP_ID }}
+          DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
         run: |
           # wrangler's output goes into annotations so it can be read without the raw logs
           report() { tail -n 25 "$1" | sed 's/\x1b\[[0-9;]*m//g' | grep -v '^\s*$' | while IFS= read -r l; do echo "::$2::$l"; done; }
@@ -46,6 +48,9 @@ jobs:
           grep -o 'https://[^ ]*workers.dev' deploy.txt | head -1 | sed 's/^/::notice::Worker URL /'
           if ! printf '%s' "$DISCORD_PUBLIC_KEY" | npx -y wrangler@4 secret put DISCORD_PUBLIC_KEY > secret.txt 2>&1; then report secret.txt error; exit 1; fi
           if ! printf '%s' "$DISCORD_TOKEN" | npx -y wrangler@4 secret put DISCORD_TOKEN > secret.txt 2>&1; then report secret.txt error; exit 1; fi
+          if [ -n "$DISCORD_APP_ID" ]; then printf '%s' "$DISCORD_APP_ID" | npx -y wrangler@4 secret put DISCORD_APP_ID > secret.txt 2>&1 || report secret.txt error; fi
+          if [ -n "$DISCORD_CLIENT_SECRET" ]; then printf '%s' "$DISCORD_CLIENT_SECRET" | npx -y wrangler@4 secret put DISCORD_CLIENT_SECRET > secret.txt 2>&1 || report secret.txt error
+          else echo "::warning::secret DISCORD_CLIENT_SECRET missing: 'Entra nel Discord' uses a plain invite (no 'Ospite' role)"; fi
           if [ -n "$SUPABASE_SERVICE_KEY" ]; then
             if ! printf '%s' "$SUPABASE_SERVICE_KEY" | npx -y wrangler@4 secret put SUPABASE_SERVICE_KEY > secret.txt 2>&1; then report secret.txt error; exit 1; fi
           else echo "::warning::secret SUPABASE_SERVICE_KEY missing: /preferiti will not work"; fi

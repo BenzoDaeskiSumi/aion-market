@@ -9,6 +9,9 @@ const EN = {
   // overlay page
   "Modalità overlay (Steam)": "Overlay mode (Steam)",
   "Installa l'app": "Install the app",
+  "Un progetto della": "A project of the",
+  ", gilda italiana Asmodian su Marchutan": ", an Italian Asmodian guild on Marchutan",
+  "Entra nel nostro Discord": "Join our Discord",
   "Prezzi": "Prices",
   "Craft": "Craft",
   "Cerca un oggetto…": "Search an item…",
@@ -214,6 +217,9 @@ const ES = {
   // overlay page
   "Modalità overlay (Steam)": "Modo overlay (Steam)",
   "Installa l'app": "Instalar la app",
+  "Un progetto della": "Un proyecto de la",
+  ", gilda italiana Asmodian su Marchutan": ", hermandad italiana Asmodian en Marchutan",
+  "Entra nel nostro Discord": "Únete a nuestro Discord",
   "Prezzi": "Precios",
   "Craft": "Fabricar",
   "Cerca un oggetto…": "Busca un objeto…",
@@ -410,6 +416,9 @@ const FR = {
   // overlay page
   "Modalità overlay (Steam)": "Mode overlay (Steam)",
   "Installa l'app": "Installer l'appli",
+  "Un progetto della": "Un projet de la",
+  ", gilda italiana Asmodian su Marchutan": ", guilde italienne Asmodienne sur Marchutan",
+  "Entra nel nostro Discord": "Rejoignez notre Discord",
   "Prezzi": "Prix",
   "Craft": "Craft",
   "Cerca un oggetto…": "Chercher un objet…",

@@ -171,4 +171,7 @@ cfg:timer_msg) with Discord timestamps <t:…:R> (they count down live). Schedul
 Discord server scripts (workflow 'Discord setup', mode X-plan / X-apply; output on the temporary 'probe' branch): msg = Mauro's fixed messages
 (scripts/discord/legion_msgs.py content + messages.py; banner images img/discord/*.png drawn from bg/*.svg with Cormorant Garamond), chan = channel names
 in the server style: categories 『📢 𝐋𝐄𝐆𝐈𝐎𝐍𝐄』 (Unicode Mathematical Bold), channels plain '📜・regole' / voice '🍻 Taverna' (searchable); scripts match channels with base(), which also maps bold letters back to ASCII.
+'Entra nel nostro Discord' (index footer, guild line 'Un progetto della Legione…'): links the Worker's /join -> Discord OAuth (identify guilds.join, redirect
+https://aion-market-bot.aion2-market.workers.dev/join/cb registered in the Developer Portal) -> PUT guild member with roles Ospite + 𝐆𝐑𝐀𝐃𝐈 separator (only if new).
+Needs repo secret DISCORD_CLIENT_SECRET (bot.yml puts it + DISCORD_APP_ID as Worker secrets); without it /join redirects to a permanent invite (KV cfg:site_invite).
 To limit the bot to one channel: Discord server settings → Integrations → the bot → channels (no code).

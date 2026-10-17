@@ -857,11 +857,57 @@ async function timerButton(i, env) {      // 💀 "is dead now" / Annulla, then 
   return Response.json({type: 7, data: await timerMessage(env)});
 }
 
+// ---------- "Entra nel Discord" from the site: /join -> Discord login (identify + guilds.join) -> the Worker adds the user with the 'Ospite' role ----------
+// Without DISCORD_CLIENT_SECRET (or if anything fails) it falls back to a plain invite link. Nothing is stored apart from the 10-minute login state.
+const JOIN_ROLE = 'Ospite', WORKER = (env) => env.WORKER_URL || 'https://aion-market-bot.aion2-market.workers.dev';
+async function siteInvite(env) {
+  let code = await env.USERS.get('cfg:site_invite');
+  if (code) return `https://discord.gg/${code}`;
+  const list = await (await dapi(env, 'GET', `/guilds/${GUILD}/channels`)).json();
+  const ch = list.find((c) => c.type === 0 && /benvenut/i.test(c.name)) || list.find((c) => c.type === 0);
+  const inv = await (await dapi(env, 'POST', `/channels/${ch.id}/invites`, {max_age: 0, max_uses: 0, unique: true})).json();
+  if (!inv.code) throw new Error('invite: ' + JSON.stringify(inv).slice(0, 200));
+  await env.USERS.put('cfg:site_invite', inv.code);
+  return `https://discord.gg/${inv.code}`;
+}
+async function join(req, env) {
+  const url = new URL(req.url), cb = WORKER(env) + '/join/cb', go = (u) => Response.redirect(u, 302);
+  const fallback = async () => go(await siteInvite(env).catch(() => env.SITE));
+  if (!env.DISCORD_CLIENT_SECRET || !env.DISCORD_APP_ID) return fallback();
+  if (url.pathname === '/join') {
+    const state = crypto.randomUUID();
+    await env.USERS.put('oauth:' + state, '1', {expirationTtl: 600});
+    return go('https://discord.com/oauth2/authorize?' + new URLSearchParams({client_id: env.DISCORD_APP_ID, response_type: 'code',
+      scope: 'identify guilds.join', redirect_uri: cb, state, prompt: 'none'}));
+  }
+  try {
+    const state = url.searchParams.get('state'), code = url.searchParams.get('code');
+    if (!code || !state || !(await env.USERS.get('oauth:' + state))) return fallback();
+    await env.USERS.delete('oauth:' + state);
+    const tok = await (await fetch('https://discord.com/api/v10/oauth2/token', {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: new URLSearchParams({client_id: env.DISCORD_APP_ID, client_secret: env.DISCORD_CLIENT_SECRET, grant_type: 'authorization_code', code, redirect_uri: cb})})).json();
+    if (!tok.access_token) return fallback();
+    const me = await (await fetch('https://discord.com/api/v10/users/@me', {headers: {Authorization: `Bearer ${tok.access_token}`}})).json();
+    const roles = await (await dapi(env, 'GET', `/guilds/${GUILD}/roles`)).json();
+    let guest = roles.find((r) => r.name === JOIN_ROLE);
+    if (!guest) guest = await (await dapi(env, 'POST', `/guilds/${GUILD}/roles`, {name: JOIN_ROLE, permissions: '0', color: 0x95a5a6, hoist: false, mentionable: false})).json();
+    const sep = roles.find((r) => r.name.includes('𝐆𝐑𝐀𝐃𝐈') && r.name.includes('─'));
+    // 201 = joined now (gets the roles), 204 = already a member (left as they are)
+    const r = await dapi(env, 'PUT', `/guilds/${GUILD}/members/${me.id}`, {access_token: tok.access_token, roles: [guest.id, sep?.id].filter(Boolean)});
+    if (r.status !== 201 && r.status !== 204) return fallback();
+    return go(`https://discord.com/channels/${GUILD}`);
+  } catch (e) {
+    await env.USERS.put('join_err', String(e?.stack || e).slice(0, 500));
+    return fallback();
+  }
+}
+
 // ---------- entry point ----------
 export default {
   async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500)))])); },
   async fetch(req, env, ctx) {
     if (new URL(req.url).pathname === '/hit') return hit(req, env);
+    if (/^\/join(\/cb)?$/.test(new URL(req.url).pathname)) return join(req, env);
     if (new URL(req.url).pathname === '/timers/run') { try { await updateTimers(env); } catch (e) { await env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500)); } }
     if (new URL(req.url).pathname.startsWith('/timers/')) return Response.json({channel: await env.USERS.get('cfg:timer_channel'), msg: await env.USERS.get('cfg:timer_msg'), err: await env.USERS.get('timer_err')});
     if (new URL(req.url).pathname.startsWith('/char/')) return charApi(req, env);

@@ -35,7 +35,7 @@ def api(method, path, body=None):
 
 
 sep = lambda title: f'{bold_serif(title.upper())} ' + '─' * 60   # wider than the profile's role list: the pill takes a whole line (Discord cuts it with …), so each group starts on a new line like a folder
-GROUPS = [('Gradi', ['Brigade General', 'Centurion', 'Legionario', 'Recluta', 'Amico della Legione']),
+GROUPS = [('Gradi', ['Brigade General', 'Centurion', 'Legionario', 'Recluta', 'Amico della Legione', 'Ospite']),
           ('Classi', CLASSES),
           ('Contenuti', [n for n, _, _ in CONTENT])]
 
@@ -63,6 +63,13 @@ for title, _ in GROUPS:
         sep_id[title] = r['id']; roles.append(r)
     else:
         sep_id[title] = f'new:{title}'
+
+# 'Ospite' = people who came in from the site's 'Entra nel Discord' button (the Worker's /join gives it)
+if 'Ospite' not in byname:
+    say('  creo il ruolo Ospite')
+    if APPLY:
+        r = api('POST', f'/guilds/{G}/roles', {'name': 'Ospite', 'permissions': '0', 'color': 0x95a5a6, 'hoist': False, 'mentionable': False})
+        roles.append(r); byname['Ospite'] = r
 
 # 2) order: within the range these roles already occupy, top to bottom = separator + group, group after group
 if APPLY:
