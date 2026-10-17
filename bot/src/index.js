@@ -746,7 +746,7 @@ async function rolePick(i, env, ctx) {
     let ok = true;
     for (const r of add) ok = (await call('PUT', r)).ok && ok;
     for (const r of del) ok = (await call('DELETE', r)).ok && ok;
-    // separator role of this group (─ 𝐂𝐋𝐀𝐒𝐒𝐈 ─): shown only while the member has at least one role of the group
+    // separator role of this group (𝐂𝐋𝐀𝐒𝐒𝐈 ────…): shown only while the member has at least one role of the group
     const title = {class: 'CLASSI', content: 'CONTENUTI'}[i.data.custom_id.slice(3)];
     if (title && ok) {
       const bold = [...title].map((c) => String.fromCodePoint(0x1D400 + c.charCodeAt(0) - 65)).join('');
