@@ -824,7 +824,7 @@ async function timerChannel(env) {        // creates the read-only channel once 
     const r = await dapi(env, 'POST', `/guilds/${GUILD}/channels`, {name: TIMER_CH, type: 0, parent_id: ann?.parent_id, position: (ann?.position ?? 0) + 1,
       topic: 'Countdown di Spaccature, Assedio/Corridoi dell\'Abisso, Nahma, Battlefield e Gartua. Aggiornato da Mauro.',
       permission_overwrites: [{id: GUILD, type: 0, allow: '0', deny: String(0x800 | 0x40)}, {id: me.id, type: 1, allow: String(0x400 | 0x800 | 0x4000 | 0x10000), deny: '0'}]});
-    if (!r.ok) return null;
+    if (!r.ok) { await env.USERS.put('timer_err', `create ${r.status} ${(await r.text()).slice(0, 300)}`); return null; }
     ch = (await r.json()).id;
   }
   await env.USERS.put('cfg:timer_channel', ch);
@@ -835,7 +835,8 @@ async function updateTimers(env) {
   const msg = await timerMessage(env), id = await env.USERS.get('cfg:timer_msg');
   if (id) { const r = await dapi(env, 'PATCH', `/channels/${ch}/messages/${id}`, msg); if (r.ok) return; if (r.status !== 404) return; }
   const r = await dapi(env, 'POST', `/channels/${ch}/messages`, msg);
-  if (r.ok) await env.USERS.put('cfg:timer_msg', (await r.json()).id);
+  if (r.ok) { await env.USERS.put('cfg:timer_msg', (await r.json()).id); await env.USERS.delete('timer_err'); }
+  else await env.USERS.put('timer_err', `post ${r.status} ${(await r.text()).slice(0, 300)}`);
 }
 async function timerButton(i, env) {      // 💀 "is dead now" / Annulla, then redraw the message in place
   const [, id, x] = i.data.custom_id.split(':');
@@ -846,9 +847,10 @@ async function timerButton(i, env) {      // 💀 "is dead now" / Annulla, then 
 
 // ---------- entry point ----------
 export default {
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env), updateTimers(env).catch(() => {})])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500)))])); },
   async fetch(req, env, ctx) {
     if (new URL(req.url).pathname === '/hit') return hit(req, env);
+    if (new URL(req.url).pathname === '/timers/status') return Response.json({channel: await env.USERS.get('cfg:timer_channel'), msg: await env.USERS.get('cfg:timer_msg'), err: await env.USERS.get('timer_err')});
     if (new URL(req.url).pathname.startsWith('/char/')) return charApi(req, env);
     if (req.method !== 'POST') return new Response('Aion 2 Market bot: ok');
     const body = await req.text();
