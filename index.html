@@ -66,8 +66,8 @@
     <button type="button" role="tab" data-view="craft">Crafting <span id="tab-craft"></span></button>
     <button type="button" role="tab" data-view="db">Database <span id="tab-db"></span></button>
     <button type="button" role="tab" data-view="char">Personaggi</button>
-    <a class="tablink" href="map.html" title="Mappa interattiva">Mappa <span>🗺️</span></a>
-    <a class="tablink" href="odds.html" title="Probabilità ufficiali (server coreano)">Probabilità <span>🇰🇷</span></a>
+    <a class="tablink" href="map.html" title="Mappa interattiva"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>Mappa</a>
+    <a class="tablink" href="odds.html" title="Probabilità ufficiali (server coreano)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>Probabilità <span class="krtag">KR</span></a>
     <div class="dealfilter" id="dealfilter" role="group" aria-label="Tipo di affare">
       <button type="button" data-deal="buy">Da comprare</button><button type="button" data-deal="sell">Da vendere</button>
     </div>
@@ -162,7 +162,7 @@
         <p><b>Vendite/g</b>: quanti pezzi si vendono al giorno. Con "~" è una stima dalle inserzioni sparite tra un controllo e l'altro (possono essere anche ritirate). Il segnale Compra compare solo se se ne vende almeno 1 al giorno.</p>
         <p><b>Non disponibile</b>: nessuno lo sta vendendo nel Market in questo momento.</p>
         <p><b>Servono più dati</b>: meno di 3 controlli, troppo pochi per giudicare il prezzo.</p>
-        <p><b>Prezzo anomalo</b>: il prezzo è più di 3 volte lontano dalla media e ci sono solo 1-2 inserzioni: probabilmente un errore o un'inserzione "troll", da non prendere come segnale.</p>
+        <p><b>Prezzo anomalo</b>: prezzo oltre 3 volte lontano dalla media, con solo 1-2 inserzioni. Di solito è un errore di battitura o un'inserzione troll: ignoralo.</p>
         <p><b>Affidabilità</b>: quanto fidarsi del segnale (alta, media, bassa), in base a quanti controlli ci sono, quante inserzioni e quanto è stabile il prezzo. Con affidabilità bassa non diamo Compra/Vendi. La media ignora i prezzi assurdi.</p>
       </details>
     </aside>

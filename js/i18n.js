@@ -117,14 +117,14 @@ const EN = {
   'Costo di 1 craft': 'Cost of 1 craft', 'Costo stimato (combo 25%)': 'Estimated cost (25% combo)', 'Costo stimato (con fallimenti)': 'Estimated cost (with failures)',
   'Differenza': 'Difference', 'Risparmio craftando': 'Saved by crafting', 'Profitto se lo rivendi': 'Profit if you resell it', 'Prezzi aggiornati': 'Prices updated',
   // alerts
-  '🔔 Avviso di prezzo': '🔔 Price alert', 'Accedi con Discord per ricevere un messaggio dal bot quando questo oggetto arriva al prezzo che vuoi.': 'Log in with Discord to get a message from the bot when this item reaches the price you want.',
+  'Avviso di prezzo': 'Price alert', 'Accedi con Discord per ricevere un messaggio dal bot quando questo oggetto arriva al prezzo che vuoi.': 'Log in with Discord to get a message from the bot when this item reaches the price you want.',
   'Scende sotto': 'Drops below', 'Sale sopra': 'Rises above', 'Avvisami': 'Alert me', 'Quando': 'When', 'Prezzo': 'Price', 'Togli avviso': 'Remove alert',
   'Scrivi un prezzo (anche 250k, 1.5m) o scegli qui sotto': 'Type a price (also 250k, 1.5m) or pick one below', 'Prezzo non valido': 'Invalid price',
   'Scrivi un prezzo, es. 250000, 250k o 1.5m.': 'Type a price, e.g. 250000, 250k or 1.5m.', 'Hai già 25 avvisi: togline qualcuno.': 'You already have 25 alerts: remove some.',
   'Non sono riuscito a salvare, riprova.': "Couldn't save, try again.", 'Il bot ti scrive nel canale avvisi del server Discord (controllo ogni 15 minuti).': 'The bot writes to you in the alerts channel of the Discord server (checked every 15 minutes).',
   'Media 3 giorni': '3-day average', 'Min 7g': '7d min', 'Max 7g': '7d max',
   // account
-  '🕒 Prezzi aggiornati:': '🕒 Prices updated:',
+  'Prezzi aggiornati:': 'Prices updated:',
   "Altro": "Other",
   "Esito": "Outcome",
   "Craft normale": "Normal craft",
@@ -143,7 +143,7 @@ const EN = {
   "alta": "high",
   "media": "medium",
   "bassa": "low",
-  ": il prezzo è più di 3 volte lontano dalla media e ci sono solo 1-2 inserzioni: probabilmente un errore o un'inserzione \"troll\", da non prendere come segnale.": ": the price is more than 3 times away from the average with only 1-2 listings: probably a mistake or a \"troll\" listing, not a real signal.",
+  ": prezzo oltre 3 volte lontano dalla media, con solo 1-2 inserzioni. Di solito è un errore di battitura o un'inserzione troll: ignoralo.": ": price more than 3 times away from the average, with only 1-2 listings. Usually a typo or a troll listing: ignore it.",
   ": quanto fidarsi del segnale (alta, media, bassa), in base a quanti controlli ci sono, quante inserzioni e quanto è stabile il prezzo. Con affidabilità bassa non diamo Compra/Vendi. La media ignora i prezzi assurdi.": ": how much to trust the signal (high, medium, low), based on the number of checks, listings and how steady the price is. With low reliability there is no Buy/Sell. The average ignores absurd prices.",
   "Elimina account": "Delete account",
   "Sicuro? Clicca di nuovo": "Sure? Click again",
@@ -182,7 +182,7 @@ const EN_RE = [
   [/^Daevanion: (.+)$/, "Daevanion: $1"],
   [/^Nessun personaggio trovato con "(.*)"\.$/, "No character found with \"$1\"."], [/^(.+) · Market (.+)$/, '$1 · Market $2'],
   [/^Nessun oggetto contiene "(.*)" con questi filtri\.$/, 'No item contains "$1" with these filters.'], [/^Mostra altri \((.+) di (.+)\)$/, 'Show more ($1 of $2)'],
-  [/^· prossimo aggiornamento verso le (.+)$/, '· next update around $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· data is late, the next update should fix it'],
+  [/^· prossimo aggiornamento verso le (.+)$/, '· next update around $1'], [/^· dati in ritardo, li recupera il prossimo aggiornamento$/, '· data is late, the next update catches up'],
   [/^maestria (\d+)$/, 'mastery $1'],
   [/^Costo stimato \(combo (\d+)%\)$/, 'Estimated cost ($1% combo)'],
   [/^(.+) l'uno dal negozio NPC$/, '$1 each from the NPC shop'],
@@ -316,13 +316,13 @@ const ES = {
   'Vendite al giorno': 'Ventas al día', 'Ancora pochi dati': 'Aún pocos datos', 'Media = prezzo di vendita reale': 'Media = precio de venta real', '28 giorni': '28 días',
   'Costo di 1 craft': 'Coste de 1 craft', 'Costo stimato (combo 25%)': 'Coste estimado (combo 25%)', 'Costo stimato (con fallimenti)': 'Coste estimado (con fallos)',
   'Differenza': 'Diferencia', 'Risparmio craftando': 'Ahorro fabricando', 'Profitto se lo rivendi': 'Beneficio si lo revendes', 'Prezzi aggiornati': 'Precios actualizados',
-  '🔔 Avviso di prezzo': '🔔 Aviso de precio', 'Accedi con Discord per ricevere un messaggio dal bot quando questo oggetto arriva al prezzo che vuoi.': 'Inicia sesión con Discord para recibir un mensaje del bot cuando este objeto llegue al precio que quieras.',
+  'Avviso di prezzo': 'Aviso de precio', 'Accedi con Discord per ricevere un messaggio dal bot quando questo oggetto arriva al prezzo che vuoi.': 'Inicia sesión con Discord para recibir un mensaje del bot cuando este objeto llegue al precio que quieras.',
   'Scende sotto': 'Baja de', 'Sale sopra': 'Sube de', 'Avvisami': 'Avísame', 'Quando': 'Cuándo', 'Prezzo': 'Precio', 'Togli avviso': 'Quitar aviso',
   'Scrivi un prezzo (anche 250k, 1.5m) o scegli qui sotto': 'Escribe un precio (también 250k, 1.5m) o elige abajo', 'Prezzo non valido': 'Precio no válido',
   'Scrivi un prezzo, es. 250000, 250k o 1.5m.': 'Escribe un precio, p. ej. 250000, 250k o 1.5m.', 'Hai già 25 avvisi: togline qualcuno.': 'Ya tienes 25 avisos: quita alguno.',
   'Non sono riuscito a salvare, riprova.': 'No he podido guardar, inténtalo de nuevo.', 'Il bot ti scrive nel canale avvisi del server Discord (controllo ogni 15 minuti).': 'El bot te escribe en el canal de avisos del servidor de Discord (comprueba cada 15 minutos).',
   'Media 3 giorni': 'Media 3 días', 'Min 7g': 'Mín 7d', 'Max 7g': 'Máx 7d',
-  '🕒 Prezzi aggiornati:': '🕒 Precios actualizados:',
+  'Prezzi aggiornati:': 'Precios actualizados:',
   "Altro": "Otros",
   "Esito": "Resultado",
   "Craft normale": "Craft normal",
@@ -341,7 +341,7 @@ const ES = {
   "alta": "alta",
   "media": "media",
   "bassa": "baja",
-  ": il prezzo è più di 3 volte lontano dalla media e ci sono solo 1-2 inserzioni: probabilmente un errore o un'inserzione \"troll\", da non prendere come segnale.": ": el precio está a más de 3 veces de la media y solo hay 1-2 anuncios: probablemente un error o un anuncio \"troll\", no es una señal real.",
+  ": prezzo oltre 3 volte lontano dalla media, con solo 1-2 inserzioni. Di solito è un errore di battitura o un'inserzione troll: ignoralo.": ": precio a más de 3 veces de la media, con solo 1-2 anuncios. Suele ser un error al escribir o un anuncio troll: ignóralo.",
   ": quanto fidarsi del segnale (alta, media, bassa), in base a quanti controlli ci sono, quante inserzioni e quanto è stabile il prezzo. Con affidabilità bassa non diamo Compra/Vendi. La media ignora i prezzi assurdi.": ": cuánto fiarse de la señal (alta, media, baja), según el número de comprobaciones, de anuncios y lo estable que es el precio. Con fiabilidad baja no damos Comprar/Vender. La media ignora los precios absurdos.",
   "Elimina account": "Eliminar cuenta",
   "Sicuro? Clicca di nuovo": "¿Seguro? Haz clic otra vez",
@@ -377,7 +377,7 @@ const ES_RE = [
   [/^Daevanion: (.+)$/, "Daevanion: $1"],
   [/^Nessun personaggio trovato con "(.*)"\.$/, "Ningún personaje encontrado con \"$1\"."], [/^(.+) · Market (.+)$/, '$1 · Market $2'],
   [/^Nessun oggetto contiene "(.*)" con questi filtri\.$/, 'Ningún objeto contiene "$1" con estos filtros.'], [/^Mostra altri \((.+) di (.+)\)$/, 'Mostrar más ($1 de $2)'],
-  [/^· prossimo aggiornamento verso le (.+)$/, '· próxima actualización hacia las $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· datos con retraso, la próxima actualización debería arreglarlo'],
+  [/^· prossimo aggiornamento verso le (.+)$/, '· próxima actualización hacia las $1'], [/^· dati in ritardo, li recupera il prossimo aggiornamento$/, '· datos con retraso, los recupera la próxima actualización'],
   [/^maestria (\d+)$/, 'maestría $1'],
   [/^Costo stimato \(combo (\d+)%\)$/, 'Coste estimado (combo $1%)'],
   [/^(.+) l'uno dal negozio NPC$/, '$1 cada uno en la tienda NPC'],
@@ -513,13 +513,13 @@ const FR = {
   'Vendite al giorno': 'Ventes par jour', 'Ancora pochi dati': 'Encore trop peu de données', 'Media = prezzo di vendita reale': 'Moyenne = prix de vente réel', '28 giorni': '28 jours',
   'Costo di 1 craft': 'Coût de 1 craft', 'Costo stimato (combo 25%)': 'Coût estimé (combo 25 %)', 'Costo stimato (con fallimenti)': 'Coût estimé (avec échecs)',
   'Differenza': 'Différence', 'Risparmio craftando': 'Économie en fabriquant', 'Profitto se lo rivendi': 'Profit si tu le revends', 'Prezzi aggiornati': 'Prix mis à jour',
-  '🔔 Avviso di prezzo': '🔔 Alerte de prix', 'Accedi con Discord per ricevere un messaggio dal bot quando questo oggetto arriva al prezzo che vuoi.': 'Connecte-toi avec Discord pour recevoir un message du bot quand cet objet atteint le prix que tu veux.',
+  'Avviso di prezzo': 'Alerte de prix', 'Accedi con Discord per ricevere un messaggio dal bot quando questo oggetto arriva al prezzo che vuoi.': 'Connecte-toi avec Discord pour recevoir un message du bot quand cet objet atteint le prix que tu veux.',
   'Scende sotto': 'Descend sous', 'Sale sopra': 'Monte au-dessus de', 'Avvisami': 'Préviens-moi', 'Quando': 'Quand', 'Prezzo': 'Prix', 'Togli avviso': "Retirer l'alerte",
   'Scrivi un prezzo (anche 250k, 1.5m) o scegli qui sotto': 'Écris un prix (aussi 250k, 1.5m) ou choisis ci-dessous', 'Prezzo non valido': 'Prix non valide',
   'Scrivi un prezzo, es. 250000, 250k o 1.5m.': 'Écris un prix, par ex. 250000, 250k ou 1.5m.', 'Hai già 25 avvisi: togline qualcuno.': 'Tu as déjà 25 alertes : retires-en quelques-unes.',
   'Non sono riuscito a salvare, riprova.': "Impossible d'enregistrer, réessaie.", 'Il bot ti scrive nel canale avvisi del server Discord (controllo ogni 15 minuti).': "Le bot t'écrit dans le salon d'alertes du serveur Discord (vérification toutes les 15 minutes).",
   'Media 3 giorni': 'Moyenne 3 jours', 'Min 7g': 'Min 7j', 'Max 7g': 'Max 7j',
-  '🕒 Prezzi aggiornati:': '🕒 Prix mis à jour :',
+  'Prezzi aggiornati:': 'Prix mis à jour :',
   "Altro": "Autres",
   "Esito": "Résultat",
   "Craft normale": "Craft normal",
@@ -538,7 +538,7 @@ const FR = {
   "alta": "haute",
   "media": "moyenne",
   "bassa": "faible",
-  ": il prezzo è più di 3 volte lontano dalla media e ci sono solo 1-2 inserzioni: probabilmente un errore o un'inserzione \"troll\", da non prendere come segnale.": " : le prix est à plus de 3 fois la moyenne avec seulement 1-2 annonces : sans doute une erreur ou une annonce « troll », pas un vrai signal.",
+  ": prezzo oltre 3 volte lontano dalla media, con solo 1-2 inserzioni. Di solito è un errore di battitura o un'inserzione troll: ignoralo.": " : prix à plus de 3 fois la moyenne, avec seulement 1-2 annonces. En général une faute de frappe ou une annonce troll : ignorez-le.",
   ": quanto fidarsi del segnale (alta, media, bassa), in base a quanti controlli ci sono, quante inserzioni e quanto è stabile il prezzo. Con affidabilità bassa non diamo Compra/Vendi. La media ignora i prezzi assurdi.": " : à quel point se fier au signal (haute, moyenne, faible), selon le nombre de relevés, d'annonces et la stabilité du prix. Avec une fiabilité faible, pas d'Acheter/Vendre. La moyenne ignore les prix absurdes.",
   "Elimina account": "Supprimer le compte",
   "Sicuro? Clicca di nuovo": "Sûr ? Clique encore",
@@ -574,7 +574,7 @@ const FR_RE = [
   [/^Daevanion: (.+)$/, "Daevanion : $1"],
   [/^Nessun personaggio trovato con "(.*)"\.$/, "Aucun personnage trouvé avec « $1 »."], [/^(.+) · Market (.+)$/, '$1 · Market $2'],
   [/^Nessun oggetto contiene "(.*)" con questi filtri\.$/, 'Aucun objet ne contient « $1 » avec ces filtres.'], [/^Mostra altri \((.+) di (.+)\)$/, 'Afficher plus ($1 sur $2)'],
-  [/^· prossimo aggiornamento verso le (.+)$/, '· prochaine mise à jour vers $1'], [/^· dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli$/, '· données en retard, la prochaine mise à jour devrait corriger cela'],
+  [/^· prossimo aggiornamento verso le (.+)$/, '· prochaine mise à jour vers $1'], [/^· dati in ritardo, li recupera il prossimo aggiornamento$/, '· données en retard, la prochaine mise à jour les rattrape'],
   [/^maestria (\d+)$/, 'maîtrise $1'],
   [/^Costo stimato \(combo (\d+)%\)$/, 'Coût estimé (combo $1 %)'],
   [/^(.+) l'uno dal negozio NPC$/, "$1 l'unité à la boutique PNJ"],
@@ -620,9 +620,9 @@ Object.assign(FR, {"Il global (EU) potrebbe avere valori diversi.": "Le global (
 Object.assign(EN, {"Probabilità ufficiali (server coreano)": "Official chances (Korean server)"});
 Object.assign(ES, {"Probabilità ufficiali (server coreano)": "Probabilidades oficiales (servidor coreano)"});
 Object.assign(FR, {"Probabilità ufficiali (server coreano)": "Probabilités officielles (serveur coréen)"});
-Object.assign(EN, {"Dati del server COREANO.": "KOREAN server data.", "Queste sono le probabilità ufficiali che NCSOFT pubblica per legge per il servizio coreano di AION 2. Il server global (EU) non ha ancora pubblicato le sue tabelle:": "These are the official chances NCSOFT publishes by law for the Korean AION 2 service. The global (EU) server has not published its tables yet:", "i valori potrebbero essere diversi": "the values may be different", "Probabilità ufficiali": "Official chances", "Probabilità": "Chances", "Probabilità (KR)": "Chances (KR)", "Fonte:": "Source:", "(servizio coreano). Nomi degli oggetti tradotti con il dizionario ufficiale NCSOFT; i termini non tradotti restano in coreano. Non affiliato a NCSOFT.": "(Korean service). Item names translated with the official NCSOFT dictionary; untranslated terms stay in Korean. Not affiliated with NCSOFT.", "← Torna al sito": "← Back to the site", "☰ Categorie": "☰ Categories", "Non riesco a caricare questa tabella.": "I can't load this table.", "Le tabelle non sono ancora disponibili. Riprova tra poco.": "The tables are not available yet. Try again soon."});
-Object.assign(ES, {"Dati del server COREANO.": "Datos del servidor COREANO.", "Queste sono le probabilità ufficiali che NCSOFT pubblica per legge per il servizio coreano di AION 2. Il server global (EU) non ha ancora pubblicato le sue tabelle:": "Son las probabilidades oficiales que NCSOFT publica por ley para el servicio coreano de AION 2. El servidor global (EU) aún no ha publicado sus tablas:", "i valori potrebbero essere diversi": "los valores podrían ser distintos", "Probabilità ufficiali": "Probabilidades oficiales", "Probabilità": "Probabilidades", "Probabilità (KR)": "Probabilidades (KR)", "Fonte:": "Fuente:", "(servizio coreano). Nomi degli oggetti tradotti con il dizionario ufficiale NCSOFT; i termini non tradotti restano in coreano. Non affiliato a NCSOFT.": "(servicio coreano). Nombres de objetos traducidos con el diccionario oficial de NCSOFT; los términos sin traducir quedan en coreano. No afiliado a NCSOFT.", "← Torna al sito": "← Volver al sitio", "☰ Categorie": "☰ Categorías", "Non riesco a caricare questa tabella.": "No puedo cargar esta tabla.", "Le tabelle non sono ancora disponibili. Riprova tra poco.": "Las tablas aún no están disponibles. Inténtalo pronto."});
-Object.assign(FR, {"Dati del server COREANO.": "Données du serveur CORÉEN.", "Queste sono le probabilità ufficiali che NCSOFT pubblica per legge per il servizio coreano di AION 2. Il server global (EU) non ha ancora pubblicato le sue tabelle:": "Ce sont les probabilités officielles que NCSOFT publie par la loi pour le service coréen d'AION 2. Le serveur global (EU) n'a pas encore publié ses tables :", "i valori potrebbero essere diversi": "les valeurs peuvent être différentes", "Probabilità ufficiali": "Probabilités officielles", "Probabilità": "Probabilités", "Probabilità (KR)": "Probabilités (KR)", "Fonte:": "Source :", "(servizio coreano). Nomi degli oggetti tradotti con il dizionario ufficiale NCSOFT; i termini non tradotti restano in coreano. Non affiliato a NCSOFT.": "(service coréen). Noms d'objets traduits avec le dictionnaire officiel NCSOFT ; les termes non traduits restent en coréen. Non affilié à NCSOFT.", "← Torna al sito": "← Retour au site", "☰ Categorie": "☰ Catégories", "Non riesco a caricare questa tabella.": "Impossible de charger cette table.", "Le tabelle non sono ancora disponibili. Riprova tra poco.": "Les tables ne sont pas encore disponibles. Réessayez bientôt."});
+Object.assign(EN, {"Dati del server COREANO.": "KOREAN server data.", "NCSOFT pubblica per legge queste probabilità per il servizio coreano di AION 2. Il global (EU) non ha ancora le sue tabelle:": "NCSOFT publishes these chances by law for the Korean AION 2 service. Global (EU) has no tables of its own yet:", "i valori potrebbero essere diversi": "the values may be different", "Probabilità ufficiali": "Official chances", "Probabilità": "Chances", "Probabilità (KR)": "Chances (KR)", "Fonte:": "Source:", "(servizio coreano). Nomi degli oggetti tradotti con il dizionario ufficiale NCSOFT; i termini non tradotti restano in coreano. Non affiliato a NCSOFT.": "(Korean service). Item names translated with the official NCSOFT dictionary; untranslated terms stay in Korean. Not affiliated with NCSOFT.", "← Torna al sito": "← Back to the site", "☰ Categorie": "☰ Categories", "Non riesco a caricare questa tabella.": "I can't load this table.", "Le tabelle non sono ancora disponibili. Riprova tra poco.": "The tables are not available yet. Try again soon."});
+Object.assign(ES, {"Dati del server COREANO.": "Datos del servidor COREANO.", "NCSOFT pubblica per legge queste probabilità per il servizio coreano di AION 2. Il global (EU) non ha ancora le sue tabelle:": "NCSOFT publica por ley estas probabilidades para el servicio coreano de AION 2. El global (EU) aún no tiene sus tablas:", "i valori potrebbero essere diversi": "los valores podrían ser distintos", "Probabilità ufficiali": "Probabilidades oficiales", "Probabilità": "Probabilidades", "Probabilità (KR)": "Probabilidades (KR)", "Fonte:": "Fuente:", "(servizio coreano). Nomi degli oggetti tradotti con il dizionario ufficiale NCSOFT; i termini non tradotti restano in coreano. Non affiliato a NCSOFT.": "(servicio coreano). Nombres de objetos traducidos con el diccionario oficial de NCSOFT; los términos sin traducir quedan en coreano. No afiliado a NCSOFT.", "← Torna al sito": "← Volver al sitio", "☰ Categorie": "☰ Categorías", "Non riesco a caricare questa tabella.": "No puedo cargar esta tabla.", "Le tabelle non sono ancora disponibili. Riprova tra poco.": "Las tablas aún no están disponibles. Inténtalo pronto."});
+Object.assign(FR, {"Dati del server COREANO.": "Données du serveur CORÉEN.", "NCSOFT pubblica per legge queste probabilità per il servizio coreano di AION 2. Il global (EU) non ha ancora le sue tabelle:": "NCSOFT publie ces probabilités par obligation légale pour le service coréen d'AION 2. Le global (EU) n'a pas encore ses tables :", "i valori potrebbero essere diversi": "les valeurs peuvent être différentes", "Probabilità ufficiali": "Probabilités officielles", "Probabilità": "Probabilités", "Probabilità (KR)": "Probabilités (KR)", "Fonte:": "Source :", "(servizio coreano). Nomi degli oggetti tradotti con il dizionario ufficiale NCSOFT; i termini non tradotti restano in coreano. Non affiliato a NCSOFT.": "(service coréen). Noms d'objets traduits avec le dictionnaire officiel NCSOFT ; les termes non traduits restent en coréen. Non affilié à NCSOFT.", "← Torna al sito": "← Retour au site", "☰ Categorie": "☰ Catégories", "Non riesco a caricare questa tabella.": "Impossible de charger cette table.", "Le tabelle non sono ancora disponibili. Riprova tra poco.": "Les tables ne sont pas encore disponibles. Réessayez bientôt."});
 const DICT = {en: EN, es: ES, fr: FR}[LANG] || {}, RE = {en: EN_RE, es: ES_RE, fr: FR_RE}[LANG] || [];
 // in-game item names exist in French: with LANG fr they are shown instead of the English ones (data/names_fr.json)
 let NAMES = {};

@@ -231,7 +231,7 @@ footer a.priv { margin-left: 6px; }
 .alertbox ul { list-style: none; margin: 0 0 8px; padding: 0; } .alertbox li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 3px 0; }
 .alertbox li button { all: unset; cursor: pointer; color: var(--dim); padding: 0 6px; } .alertbox li button:hover { color: var(--text); }
 .alertbox form { display: flex; gap: 6px; flex-wrap: wrap; } .alertbox select, .alertbox input { font: inherit; color: var(--text); background: var(--card, transparent); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; min-width: 0; }
-.alertbox input { width: 110px; flex: 1; } .alertbox form button { font: inherit; cursor: pointer; border: 0; border-radius: 6px; padding: 5px 12px; background: var(--accent); color: #fff; }
+.alertbox input { width: 110px; flex: 1; } .alertbox form button { font: inherit; cursor: pointer; border: 0; border-radius: 6px; padding: 5px 12px; background: var(--accent-fill); color: #fff; }
 #crows td.dim { color: var(--dim); }
 .upd { padding: 6px 20px; font-size: 14px; color: var(--dim); }
 .upd b { color: var(--text); font-weight: 600; }
@@ -320,13 +320,13 @@ body { font-family: var(--font); font-size: 15px; background: var(--bg2); }
 .kpi.buy b { color: var(--up); } .kpi.sell b { color: var(--kinah); }
 /* ticker */
 .take { border: 1px solid var(--line); border-radius: var(--r); background: var(--panel); margin: 0 0 12px; font-size: 14px; overflow: hidden; }
-.take .tlabel { font-family: var(--font); font-size: 11px; letter-spacing: .08em; border-radius: 0; background: var(--accent); color: #fff; }
+.take .tlabel { font-family: var(--font); font-size: 11px; letter-spacing: .08em; border-radius: 0; background: var(--accent-fill); color: #fff; }
 .take .deal { border-right-color: var(--line); padding: 9px 18px; }
 .take .deal .nm { font-size: 14px; font-weight: 600; }
 /* tabs as segmented pills */
 .tabs { padding: 0; border: 0; gap: 6px; margin: 0 0 12px; align-items: center; }
 .tabs [role="tab"] { font-family: var(--font); font-size: 14px; font-weight: 600; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); margin: 0; background: var(--panel); }
-.tabs [role="tab"][aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: none; }
+.tabs [role="tab"][aria-selected="true"] { background: var(--accent-fill); border-color: var(--accent-fill); color: #fff; box-shadow: none; }
 .tabs [role="tab"] span { font-family: var(--font); font-size: 12px; }
 .dealfilter { border-radius: 999px; overflow: hidden; background: var(--panel); }
 /* layout: three cards */
@@ -474,3 +474,24 @@ td.up { color: var(--up); } td.down { color: var(--down); }
 .tabs .tablink { font-family: var(--font); font-size: 14px; font-weight: 600; padding: 8px 16px; border-radius: 999px; border: 1px dashed var(--line); background: var(--panel); color: var(--dim); text-decoration: none; }
 .tabs .tablink:hover { color: var(--text); border-color: var(--accent); }
 .tabs .tablink span { margin-left: 4px; }
+
+/* ================= accessibility pass (WCAG AA: 4.5:1 text, 24px targets, 12px minimum text) ================= */
+:root { --accent-fill: #3d6be6; }
+:root[data-theme="asmodian"] { --accent-fill: #c8326f; }
+:root[data-theme="elyos"] { --accent-fill: #8a5a0c;
+  /* grade colours a shade darker on parchment, so names stay readable */
+  --g-green: #22703a; --g-blue: #1f50a8; --g-gold: #85560c; --g-orange: #a8440c; --g-teal: #0e6b61; }
+:root[data-theme="elyos"] .sig.craftit { color: #22703a; }
+.take .tlabel { font-size: 12px; }
+.pv, .alertbox .chips button { font-size: 12px; }
+.fav, #maintab .fav, #crafttab .fav { width: 28px; height: 28px; }
+th button { min-height: 24px; display: inline-flex; align-items: center; }
+details.help summary { min-height: 28px; }
+footer a { display: inline-block; padding: 4px 0; }
+.sheetclose { min-width: 36px; min-height: 36px; }
+.tabs .tablink { display: inline-flex; align-items: center; gap: 6px; }
+.tabs .tablink svg, header nav a svg { width: 16px; height: 16px; flex: none; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; } }
+.krtag { font-size: 12px; font-weight: 700; letter-spacing: .04em; padding: 1px 5px; border-radius: 4px; border: 1px solid currentColor; line-height: 1.2; }
+:root[data-theme="elyos"] { --accent: #8a5a0c; --kinah: #7d5208; --down: #a12e1e; --up: #17683e; }
+:root[data-theme="elyos"] .sig.buyit { color: #8a4b06; }

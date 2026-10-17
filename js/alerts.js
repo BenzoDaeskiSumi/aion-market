@@ -9,7 +9,7 @@ function paintUpd() {
   const b = document.createElement('b'); b.textContent = fmtDT(SNAP);
   // aion2.exchange takes a new snapshot every hour and our sync waits for it, then ~5 min to save and publish
   const next = new Date(+SNAP + 36e5 + 5 * 6e4);
-  el.append('🕒 Prezzi aggiornati: ', b, late ? ' · dati in ritardo, il prossimo aggiornamento dovrebbe sistemarli' : ' · prossimo aggiornamento verso le ' + hm(next));
+  el.append('Prezzi aggiornati: ', b, late ? ' · dati in ritardo, li recupera il prossimo aggiornamento' : ' · prossimo aggiornamento verso le ' + hm(next));
 }
 setInterval(() => { if (SNAP) paintUpd(); }, 60000);
 
@@ -26,7 +26,7 @@ function saveAlerts() { if (sb && USER) return sb.from('profiles').update({alert
 function drawAlerts(r) {
   const box = document.getElementById('alertbox'); box.hidden = !r || !sb; box.replaceChildren();
   if (box.hidden) return;
-  const h = document.createElement('h3'); h.textContent = '🔔 Avviso di prezzo'; box.appendChild(h);
+  const h = document.createElement('h3'); h.textContent = 'Avviso di prezzo'; box.appendChild(h);
   if (!USER) { const p = document.createElement('p'); p.textContent = 'Accedi con Discord per ricevere un messaggio dal bot quando questo oggetto arriva al prezzo che vuoi.'; box.appendChild(p); return; }
   const mine = ALERTS.map((a, k) => [a, k]).filter(([a]) => a.item === r.item && a.server === SERVER);
   if (mine.length) {

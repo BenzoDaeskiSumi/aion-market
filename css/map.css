@@ -14,7 +14,7 @@ header { display: flex; align-items: center; gap: 18px; padding: 10px 16px; bord
 .brand img { border-radius: 7px; }
 header nav { display: flex; gap: 6px; flex-wrap: wrap; }
 header nav a { text-decoration: none; color: var(--dim); padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line); font-size: 13.5px; font-weight: 600; }
-header nav a[aria-current] { background: var(--accent); border-color: var(--accent); color: #fff; }
+header nav a[aria-current] { background: var(--accent-fill); border-color: var(--accent-fill); color: #fff; }
 .app { flex: 1; min-height: 0; display: grid; grid-template-columns: 300px minmax(0, 1fr); }
 #map { height: 100%; background: #05070b; }
 aside { border-right: 1px solid var(--line); background: var(--card); overflow: auto; padding: 12px; }
@@ -23,7 +23,7 @@ aside { border-right: 1px solid var(--line); background: var(--card); overflow: 
 .regions .grp { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
 .regions .grp b { width: 100%; font-size: 12px; color: var(--dim); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
 .regions button, .gtypes button, .mini { font: inherit; font-size: 13px; color: var(--text); background: var(--field); border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; cursor: pointer; }
-.regions button[aria-pressed="true"], .gtypes button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.regions button[aria-pressed="true"], .gtypes button[aria-pressed="true"] { background: var(--accent-fill); border-color: var(--accent-fill); color: #fff; }
 .regions button:disabled { opacity: .45; cursor: default; }
 .mini { font-size: 12px; padding: 2px 9px; color: var(--dim); }
 #q { width: 100%; font: inherit; color: var(--text); background: var(--field); border: 1px solid var(--line); border-radius: 9px; padding: 7px 11px; }
@@ -82,3 +82,12 @@ aside { border-right: 1px solid var(--line); background: var(--card); overflow: 
   aside.open .body { display: block; }
   .leaflet-bottom.leaflet-right { bottom: 56px; }
 }
+
+/* accessibility pass: filled buttons use a darker accent so white text keeps 4.5:1 contrast */
+:root { --accent-fill: #3d6be6; }
+:root[data-theme="asmodian"] { --accent-fill: #c8326f; }
+:root[data-theme="elyos"] { --accent-fill: #8a5a0c; --accent: #8a5a0c; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+.zl small { font-size: 11.5px; } .zl.v { font-size: 12px; }
+.credit a { display: inline-block; padding: 3px 0; }
+.mini { min-height: 28px; }

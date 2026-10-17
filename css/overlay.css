@@ -19,7 +19,7 @@ select, input { font: inherit; color: var(--text); background: var(--field); bor
 select { padding: 5px 8px; max-width: 46%; }
 .tabs { display: flex; gap: 4px; padding: 0 10px 8px; }
 .tabs button { all: unset; cursor: pointer; flex: 1; text-align: center; padding: 6px 4px; border-radius: 999px; font-weight: 600; font-size: 13px; color: var(--dim); background: var(--card); border: 1px solid var(--line); }
-.tabs button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.tabs button[aria-selected="true"] { background: var(--accent-fill); border-color: var(--accent-fill); color: #fff; }
 .tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .searchbar { padding: 0 10px 8px; }
 #q { width: 100%; padding: 8px 11px; }
@@ -53,3 +53,13 @@ main { flex: 1; padding: 0 10px 10px; display: grid; gap: 6px; align-content: st
 footer { padding: 6px 10px 10px; font-size: 11px; color: var(--dim); }
 footer a { color: var(--dim); }
 .g-white { color: var(--g-white); } .g-green { color: var(--g-green); } .g-blue { color: var(--g-blue); } .g-gold { color: var(--g-gold); } .g-orange { color: var(--g-orange); } .g-teal { color: var(--g-teal); }
+
+/* accessibility pass: filled buttons use a darker accent so white text keeps 4.5:1 contrast */
+:root { --accent-fill: #3d6be6; }
+:root[data-theme="asmodian"] { --accent-fill: #c8326f; }
+:root[data-theme="elyos"] { --accent-fill: #8a5a0c; --accent: #8a5a0c; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+.val small, .badge, footer { font-size: 12px; }
+.hint button { width: 28px; height: 28px; display: grid; place-items: center; right: 4px; top: 4px; }
+footer a { display: inline-block; padding: 4px 0; }
+.brand, header a:first-child { min-height: 28px; display: inline-flex; align-items: center; }
