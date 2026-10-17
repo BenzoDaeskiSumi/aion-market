@@ -1,0 +1,6131 @@
+{
+"Abyssal Power Shard": {
+"category": "Consumable Miscellaneous",
+"grade": "white"
+},
+"Aed Boots": {
+"category": "Shoes",
+"grade": "green",
+"level": 35
+},
+"Aed Breastplate": {
+"category": "Top",
+"grade": "green",
+"level": 35
+},
+"Aed Cloak": {
+"category": "Cloak",
+"grade": "green",
+"level": 35
+},
+"Aed Gloves": {
+"category": "Gloves",
+"grade": "green",
+"level": 35
+},
+"Aed Greaves": {
+"category": "Legs",
+"grade": "green",
+"level": 35
+},
+"Aed Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 35
+},
+"Aed Pauldrons": {
+"category": "Pauldrons",
+"grade": "green",
+"level": 35
+},
+"Alluring Diamond Earrings": {
+"category": "Earrings",
+"grade": "green",
+"level": 25
+},
+"Alluring Ruby Necklace": {
+"category": "Necklace",
+"grade": "green",
+"level": 25
+},
+"Alluring Sapphire Ring": {
+"category": "Ring",
+"grade": "green",
+"level": 25
+},
+"Amplify Stone (Unique)": {
+"category": "Special Material",
+"grade": "gold"
+},
+"Ansas Boots": {
+"category": "Shoes",
+"grade": "blue"
+},
+"Ansas Breastplate": {
+"category": "Top",
+"grade": "blue"
+},
+"Ansas Cloak": {
+"category": "Cloak",
+"grade": "blue"
+},
+"Ansas Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Ansas Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Ansas Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 40
+},
+"Apple Candy (Skin: Helm)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Argo Boots": {
+"category": "Shoes",
+"grade": "gold",
+"level": 70
+},
+"Argo Breastplate": {
+"category": "Top",
+"grade": "gold",
+"level": 70
+},
+"Argo Cloak": {
+"category": "Cloak",
+"grade": "gold"
+},
+"Argo Earrings": {
+"category": "Earrings",
+"grade": "gold",
+"level": 70
+},
+"Argo Gloves": {
+"category": "Gloves",
+"grade": "gold",
+"level": 70
+},
+"Argo Greaves": {
+"category": "Legs",
+"grade": "gold",
+"level": 70
+},
+"Argo Helm": {
+"category": "Helm",
+"grade": "gold",
+"level": 70
+},
+"Argo Necklace": {
+"category": "Necklace",
+"grade": "gold",
+"level": 70
+},
+"Argo Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 70
+},
+"Argo Ring": {
+"category": "Ring",
+"grade": "gold",
+"level": 70
+},
+"Aria": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Artisan's Asvata Bow": {
+"category": "Bow",
+"grade": "blue",
+"level": 39
+},
+"Artisan's Asvata Staff": {
+"category": "Staff",
+"grade": "blue",
+"level": 39
+},
+"Artisan's Conide Pasta": {
+"category": "Food",
+"grade": "green"
+},
+"Artisan's Curry Meat Stirfry": {
+"category": "Food",
+"grade": "green"
+},
+"Artisan's Diamond Earrings": {
+"category": "Earrings",
+"grade": "blue",
+"level": 39
+},
+"Artisan's Fruit Salad": {
+"category": "Food",
+"grade": "green"
+},
+"Artisan's Grilled Pujery": {
+"category": "Food",
+"grade": "green"
+},
+"Artisan's Ohkra Fried Meat": {
+"category": "Food",
+"grade": "green"
+},
+"Artisan's Orichalcum Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 39
+},
+"Artisan's Orichalcum Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 39
+},
+"Artisan's Orichalcum Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 39
+},
+"Artisan's Orichalcum Dagger": {
+"category": "Dagger",
+"grade": "blue",
+"level": 39
+},
+"Artisan's Orichalcum Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 39
+},
+"Artisan's Orichalcum Greatsword": {
+"category": "Greatsword",
+"grade": "blue",
+"level": 39
+},
+"Artisan's Orichalcum Greaves": {
+"category": "Legs",
+"grade": "blue"
+},
+"Artisan's Orichalcum Guard": {
+"category": "Guard",
+"grade": "blue",
+"level": 39
+},
+"Artisan's Orichalcum Helm": {
+"category": "Helm",
+"grade": "blue"
+},
+"Artisan's Orichalcum Longsword": {
+"category": "Longsword",
+"grade": "blue",
+"level": 39
+},
+"Artisan's Orichalcum Mace": {
+"category": "Mace",
+"grade": "blue",
+"level": 39
+},
+"Artisan's Orichalcum Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 39
+},
+"Artisan's Refining Stone": {
+"category": "Crafting Material",
+"grade": "blue"
+},
+"Artisan's Ruby Necklace": {
+"category": "Necklace",
+"grade": "blue",
+"level": 39
+},
+"Artisan's Sapphire Ring": {
+"category": "Ring",
+"grade": "blue",
+"level": 39
+},
+"Artisan's Splendent Asvata Bow": {
+"category": "Bow",
+"grade": "gold",
+"level": 44
+},
+"Artisan's Splendent Asvata Staff": {
+"category": "Staff",
+"grade": "gold",
+"level": 44
+},
+"Artisan's Splendent Diamond Earrings": {
+"category": "Earrings",
+"grade": "gold"
+},
+"Artisan's Splendent Orichalcum Boots": {
+"category": "Shoes",
+"grade": "gold"
+},
+"Artisan's Splendent Orichalcum Breastplate": {
+"category": "Top",
+"grade": "gold"
+},
+"Artisan's Splendent Orichalcum Cloak": {
+"category": "Cloak",
+"grade": "gold",
+"level": 44
+},
+"Artisan's Splendent Orichalcum Dagger": {
+"category": "Dagger",
+"grade": "gold",
+"level": 44
+},
+"Artisan's Splendent Orichalcum Gloves": {
+"category": "Gloves",
+"grade": "gold",
+"level": 44
+},
+"Artisan's Splendent Orichalcum Greatsword": {
+"category": "Greatsword",
+"grade": "gold",
+"level": 44
+},
+"Artisan's Splendent Orichalcum Greaves": {
+"category": "Legs",
+"grade": "gold",
+"level": 44
+},
+"Artisan's Splendent Orichalcum Guard": {
+"category": "Guard",
+"grade": "gold",
+"level": 44
+},
+"Artisan's Splendent Orichalcum Helm": {
+"category": "Helm",
+"grade": "gold",
+"level": 44
+},
+"Artisan's Splendent Orichalcum Longsword": {
+"category": "Longsword",
+"grade": "gold",
+"level": 44
+},
+"Artisan's Splendent Orichalcum Mace": {
+"category": "Mace",
+"grade": "gold",
+"level": 44
+},
+"Artisan's Splendent Orichalcum Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 44
+},
+"Artisan's Splendent Ruby Necklace": {
+"category": "Necklace",
+"grade": "gold",
+"level": 44
+},
+"Artisan's Splendent Sapphire Ring": {
+"category": "Ring",
+"grade": "gold",
+"level": 44
+},
+"Artisan's Splendent Truth Orb": {
+"category": "Orb",
+"grade": "gold",
+"level": 44
+},
+"Artisan's Splendent Truth Spellbook": {
+"category": "Spellbook",
+"grade": "gold",
+"level": 44
+},
+"Artisan's Steamed Pujery": {
+"category": "Food",
+"grade": "green"
+},
+"Artisan's Truth Orb": {
+"category": "Orb",
+"grade": "blue",
+"level": 39
+},
+"Artisan's Truth Spellbook": {
+"category": "Spellbook",
+"grade": "blue",
+"level": 39
+},
+"Artisan's Ultimate Refining Stone": {
+"category": "Crafting Material",
+"grade": "gold"
+},
+"Artwork: Addicted Hardirun": {
+"category": "Pantheon",
+"grade": "blue"
+},
+"Artwork: Advisor Resana": {
+"category": "Pantheon",
+"grade": "blue"
+},
+"Artwork: Argo, the Spirit King": {
+"category": "Pantheon",
+"grade": "white"
+},
+"Artwork: Berserker Vargor": {
+"category": "Pantheon",
+"grade": "green"
+},
+"Artwork: Black Tentacle Lawa": {
+"category": "Pantheon",
+"grade": "white"
+},
+"Artwork: Black Warrior Aed": {
+"category": "Pantheon",
+"grade": "green"
+},
+"Artwork: Blood Warrior Lannar": {
+"category": "Pantheon",
+"grade": "green"
+},
+"Artwork: Bloodfang Pnyn": {
+"category": "Pantheon",
+"grade": "white"
+},
+"Artwork: Blooming Korin": {
+"category": "Pantheon",
+"grade": "green"
+},
+"Artwork: Blue Wave Kelpina": {
+"category": "Pantheon",
+"grade": "blue"
+},
+"Artwork: Bodyguard Teegant": {
+"category": "Pantheon",
+"grade": "green"
+},
+"Artwork: Centurion Demiros": {
+"category": "Pantheon",
+"grade": "white"
+},
+"Artwork: Dark Shadow Vishwada": {
+"category": "Pantheon",
+"grade": "gold"
+},
+"Artwork: Deceiver Trid": {
+"category": "Pantheon",
+"grade": "blue"
+},
+"Artwork: Desecrator Newbold": {
+"category": "Pantheon",
+"grade": "white"
+},
+"Artwork: Divine Ansas": {
+"category": "Pantheon",
+"grade": "white"
+},
+"Artwork: Drakan Battalion Weapon Guruta": {
+"category": "Pantheon",
+"grade": "gold"
+},
+"Artwork: Draupnir": {
+"category": "Pantheon",
+"grade": "gold"
+},
+"Artwork: Eternal Gartua": {
+"category": "Pantheon",
+"grade": "orange"
+},
+"Artwork: Executioner Barthien": {
+"category": "Pantheon",
+"grade": "gold"
+},
+"Artwork: Faithful Rajit": {
+"category": "Pantheon",
+"grade": "green"
+},
+"Artwork: Ferocious Horn Den": {
+"category": "Pantheon",
+"grade": "gold"
+},
+"Artwork: Fire Temple": {
+"category": "Pantheon",
+"grade": "gold"
+},
+"Artwork: Forest Warrior Aullamu": {
+"category": "Pantheon",
+"grade": "white"
+},
+"Artwork: Guardian Lord Nahma": {
+"category": "Pantheon",
+"grade": "orange"
+},
+"Artwork: Harvest Manager Moshav": {
+"category": "Pantheon",
+"grade": "blue"
+},
+"Artwork: Heretic Layla": {
+"category": "Pantheon",
+"grade": "blue"
+},
+"Artwork: High Commander Lagta": {
+"category": "Pantheon",
+"grade": "white"
+},
+"Artwork: High Overseer Nutah": {
+"category": "Pantheon",
+"grade": "white"
+},
+"Artwork: Immortal Gartua": {
+"category": "Pantheon",
+"grade": "orange"
+},
+"Artwork: Kernon of the West": {
+"category": "Pantheon",
+"grade": "green"
+},
+"Artwork: Krao": {
+"category": "Pantheon",
+"grade": "gold"
+},
+"Artwork: Melted Danar": {
+"category": "Pantheon",
+"grade": "green"
+},
+"Artwork: Neikel of the East": {
+"category": "Pantheon",
+"grade": "green"
+},
+"Artwork: Predator Garsan": {
+"category": "Pantheon",
+"grade": "white"
+},
+"Artwork: Researcher Setram": {
+"category": "Pantheon",
+"grade": "gold"
+},
+"Artwork: Rotten Kutar": {
+"category": "Pantheon",
+"grade": "green"
+},
+"Artwork: Sentinel K'nash": {
+"category": "Pantheon",
+"grade": "gold"
+},
+"Artwork: Sharp Shylak": {
+"category": "Pantheon",
+"grade": "gold"
+},
+"Artwork: Silent Dartan": {
+"category": "Pantheon",
+"grade": "white"
+},
+"Artwork: Soul Ruler Kashapa": {
+"category": "Pantheon",
+"grade": "white"
+},
+"Artwork: Special Operations Leader Linx": {
+"category": "Pantheon",
+"grade": "white"
+},
+"Artwork: Specter Archon Axios": {
+"category": "Pantheon",
+"grade": "gold"
+},
+"Artwork: Urugugu": {
+"category": "Pantheon",
+"grade": "gold"
+},
+"Artwork: Vakron Sky Island": {
+"category": "Pantheon",
+"grade": "gold"
+},
+"Artwork: Veteran Shujakan": {
+"category": "Pantheon",
+"grade": "blue"
+},
+"Artwork: Visionary Karuka": {
+"category": "Pantheon",
+"grade": "gold"
+},
+"Artwork: Watcher Kaira": {
+"category": "Pantheon",
+"grade": "white"
+},
+"Asvata Bow": {
+"category": "Bow",
+"grade": "white",
+"level": 18
+},
+"Asvata Log": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Asvata Paper": {
+"category": "Crafting Material",
+"grade": "white"
+},
+"Asvata Staff": {
+"category": "Staff",
+"grade": "white",
+"level": 18
+},
+"Asvata Wood": {
+"category": "Crafting Material",
+"grade": "white"
+},
+"Aulla Breastplate": {
+"category": "Top",
+"grade": "blue"
+},
+"Aulla Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 40
+},
+"Aulla Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Aulla Greaves": {
+"category": "Legs",
+"grade": "blue"
+},
+"Aulla Helm": {
+"category": "Helm",
+"grade": "blue"
+},
+"Aullamu Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 40
+},
+"Aullamu Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 40
+},
+"Aullamu Cloak": {
+"category": "Cloak",
+"grade": "blue"
+},
+"Aullamu Gloves": {
+"category": "Gloves",
+"grade": "blue"
+},
+"Aullamu Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Aullamu Helm": {
+"category": "Helm",
+"grade": "blue",
+"level": 40
+},
+"Aullamu Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue"
+},
+"Axios Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 40
+},
+"Axios Breastplate": {
+"category": "Top",
+"grade": "blue"
+},
+"Axios Cloak": {
+"category": "Cloak",
+"grade": "blue"
+},
+"Axios Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Axios Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Axios Helm": {
+"category": "Helm",
+"grade": "blue",
+"level": 40
+},
+"Axios Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 40
+},
+"Azpha": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Balaur's Essence": {
+"category": "Crafting Material",
+"grade": "blue"
+},
+"Barthien Boots": {
+"category": "Shoes",
+"grade": "blue"
+},
+"Barthien Breastplate": {
+"category": "Top",
+"grade": "blue"
+},
+"Barthien Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 40
+},
+"Barthien Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Barthien Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Barthien Helm": {
+"category": "Helm",
+"grade": "blue",
+"level": 40
+},
+"Barthien Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue"
+},
+"Bloodthirsty Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 33
+},
+"Bloodthirsty Bow": {
+"category": "Bow",
+"grade": "blue",
+"level": 33
+},
+"Bloodthirsty Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 33
+},
+"Bloodthirsty Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 33
+},
+"Bloodthirsty Dagger": {
+"category": "Dagger",
+"grade": "blue",
+"level": 33
+},
+"Bloodthirsty Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 33
+},
+"Bloodthirsty Greatsword": {
+"category": "Greatsword",
+"grade": "blue",
+"level": 33
+},
+"Bloodthirsty Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 33
+},
+"Bloodthirsty Guard": {
+"category": "Guard",
+"grade": "blue",
+"level": 33
+},
+"Bloodthirsty Helm": {
+"category": "Helm",
+"grade": "blue",
+"level": 33
+},
+"Bloodthirsty Longsword": {
+"category": "Longsword",
+"grade": "blue",
+"level": 33
+},
+"Bloodthirsty Mace": {
+"category": "Mace",
+"grade": "blue",
+"level": 33
+},
+"Bloodthirsty Orb": {
+"category": "Orb",
+"grade": "blue",
+"level": 33
+},
+"Bloodthirsty Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 33
+},
+"Bloodthirsty Spellbook": {
+"category": "Spellbook",
+"grade": "blue",
+"level": 33
+},
+"Bloodthirsty Staff": {
+"category": "Staff",
+"grade": "blue",
+"level": 33
+},
+"Blue Butterfly Wings": {
+"category": "Wings",
+"grade": "gold"
+},
+"Calendula": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Chaos Boots": {
+"category": "Shoes",
+"grade": "green",
+"level": 20
+},
+"Chaos Bow": {
+"category": "Bow",
+"grade": "green",
+"level": 20
+},
+"Chaos Breastplate": {
+"category": "Top",
+"grade": "green",
+"level": 20
+},
+"Chaos Cloak": {
+"category": "Cloak",
+"grade": "green",
+"level": 20
+},
+"Chaos Dagger": {
+"category": "Dagger",
+"grade": "green",
+"level": 20
+},
+"Chaos Gloves": {
+"category": "Gloves",
+"grade": "green",
+"level": 20
+},
+"Chaos Greatsword": {
+"category": "Greatsword",
+"grade": "green",
+"level": 20
+},
+"Chaos Greaves": {
+"category": "Legs",
+"grade": "green",
+"level": 20
+},
+"Chaos Guard": {
+"category": "Guard",
+"grade": "green",
+"level": 20
+},
+"Chaos Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 20
+},
+"Chaos Longsword": {
+"category": "Longsword",
+"grade": "green",
+"level": 20
+},
+"Chaos Mace": {
+"category": "Mace",
+"grade": "green",
+"level": 20
+},
+"Chaos Orb": {
+"category": "Orb",
+"grade": "green",
+"level": 20
+},
+"Chaos Pauldrons": {
+"category": "Pauldrons",
+"grade": "green",
+"level": 20
+},
+"Chaos Spellbook": {
+"category": "Spellbook",
+"grade": "green",
+"level": 20
+},
+"Chaos Staff": {
+"category": "Staff",
+"grade": "green",
+"level": 20
+},
+"Colossus: Guardian Lord Nahma": {
+"category": "Pantheon",
+"grade": "orange"
+},
+"Comet Boots": {
+"category": "Shoes",
+"grade": "green",
+"level": 25
+},
+"Comet Bow": {
+"category": "Bow",
+"grade": "green",
+"level": 25
+},
+"Comet Breastplate": {
+"category": "Top",
+"grade": "green",
+"level": 25
+},
+"Comet Cloak": {
+"category": "Cloak",
+"grade": "green",
+"level": 25
+},
+"Comet Dagger": {
+"category": "Dagger",
+"grade": "green",
+"level": 25
+},
+"Comet Gloves": {
+"category": "Gloves",
+"grade": "green",
+"level": 25
+},
+"Comet Greatsword": {
+"category": "Greatsword",
+"grade": "green",
+"level": 25
+},
+"Comet Greaves": {
+"category": "Legs",
+"grade": "green"
+},
+"Comet Guard": {
+"category": "Guard",
+"grade": "green",
+"level": 25
+},
+"Comet Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 25
+},
+"Comet Longsword": {
+"category": "Longsword",
+"grade": "green",
+"level": 25
+},
+"Comet Mace": {
+"category": "Mace",
+"grade": "green",
+"level": 25
+},
+"Comet Orb": {
+"category": "Orb",
+"grade": "green",
+"level": 25
+},
+"Comet Pauldrons": {
+"category": "Pauldrons",
+"grade": "green"
+},
+"Comet Spellbook": {
+"category": "Spellbook",
+"grade": "green",
+"level": 25
+},
+"Comet Staff": {
+"category": "Staff",
+"grade": "green",
+"level": 25
+},
+"Conide": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Conide Pasta": {
+"category": "Food",
+"grade": "white"
+},
+"Conquering Diamond Earrings": {
+"category": "Earrings",
+"grade": "gold",
+"level": 51
+},
+"Conquering Sapphire Ring": {
+"category": "Ring",
+"grade": "gold",
+"level": 51
+},
+"Conviction Diamond Earrings": {
+"category": "Earrings",
+"grade": "green",
+"level": 20
+},
+"Conviction Ruby Necklace": {
+"category": "Necklace",
+"grade": "green",
+"level": 20
+},
+"Conviction Sapphire Ring": {
+"category": "Ring",
+"grade": "green",
+"level": 20
+},
+"Coriolus": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Courage Boots": {
+"category": "Shoes",
+"grade": "gold",
+"level": 41
+},
+"Courage Bow": {
+"category": "Bow",
+"grade": "gold",
+"level": 41
+},
+"Courage Breastplate": {
+"category": "Top",
+"grade": "gold",
+"level": 41
+},
+"Courage Cloak": {
+"category": "Cloak",
+"grade": "gold",
+"level": 41
+},
+"Courage Dagger": {
+"category": "Dagger",
+"grade": "gold",
+"level": 41
+},
+"Courage Gloves": {
+"category": "Gloves",
+"grade": "gold",
+"level": 41
+},
+"Courage Greatsword": {
+"category": "Greatsword",
+"grade": "gold",
+"level": 41
+},
+"Courage Greaves": {
+"category": "Legs",
+"grade": "gold",
+"level": 41
+},
+"Courage Guard": {
+"category": "Guard",
+"grade": "gold",
+"level": 41
+},
+"Courage Helm": {
+"category": "Helm",
+"grade": "gold",
+"level": 41
+},
+"Courage Longsword": {
+"category": "Longsword",
+"grade": "gold",
+"level": 41
+},
+"Courage Mace": {
+"category": "Mace",
+"grade": "gold",
+"level": 41
+},
+"Courage Orb": {
+"category": "Orb",
+"grade": "gold",
+"level": 41
+},
+"Courage Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 41
+},
+"Courage Sapphire Ring": {
+"category": "Ring",
+"grade": "gold",
+"level": 41
+},
+"Courage Spellbook": {
+"category": "Spellbook",
+"grade": "gold",
+"level": 41
+},
+"Courage Staff": {
+"category": "Staff",
+"grade": "gold",
+"level": 41
+},
+"Curry Meat Stirfry": {
+"category": "Food",
+"grade": "white"
+},
+"Cypri": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Danar Boots": {
+"category": "Shoes",
+"grade": "green",
+"level": 35
+},
+"Danar Breastplate": {
+"category": "Top",
+"grade": "green"
+},
+"Danar Cloak": {
+"category": "Cloak",
+"grade": "green",
+"level": 35
+},
+"Danar Gloves": {
+"category": "Gloves",
+"grade": "green"
+},
+"Danar Greaves": {
+"category": "Legs",
+"grade": "green"
+},
+"Danar Helm": {
+"category": "Helm",
+"grade": "green"
+},
+"Danar Pauldrons": {
+"category": "Pauldrons",
+"grade": "green",
+"level": 35
+},
+"Dark Dragon Lord Bow": {
+"category": "Bow",
+"grade": "gold",
+"level": 78
+},
+"Dark Dragon Lord Breastplate": {
+"category": "Top",
+"grade": "gold",
+"level": 78
+},
+"Dark Dragon Lord Dagger": {
+"category": "Dagger",
+"grade": "gold",
+"level": 78
+},
+"Dark Dragon Lord Greatsword": {
+"category": "Greatsword",
+"grade": "gold",
+"level": 78
+},
+"Dark Dragon Lord Guard": {
+"category": "Guard",
+"grade": "gold",
+"level": 78
+},
+"Dark Dragon Lord Longsword": {
+"category": "Longsword",
+"grade": "gold",
+"level": 78
+},
+"Dark Dragon Lord Mace": {
+"category": "Mace",
+"grade": "gold",
+"level": 78
+},
+"Dark Dragon Lord Orb": {
+"category": "Orb",
+"grade": "gold",
+"level": 78
+},
+"Dark Dragon Lord Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 78
+},
+"Dark Dragon Lord Ring": {
+"category": "Ring",
+"grade": "gold",
+"level": 78
+},
+"Dark Dragon Lord Spellbook": {
+"category": "Spellbook",
+"grade": "gold",
+"level": 78
+},
+"Dark Dragon Lord Staff": {
+"category": "Staff",
+"grade": "gold",
+"level": 78
+},
+"Dark Dragon's Beef Wellington": {
+"category": "Food",
+"grade": "blue"
+},
+"Dark Dragon's Chopped Steak": {
+"category": "Food",
+"grade": "blue"
+},
+"Dark Dragon's Seafood Pasta": {
+"category": "Food",
+"grade": "blue"
+},
+"Dartan Boots": {
+"category": "Shoes",
+"grade": "gold"
+},
+"Dartan Breastplate": {
+"category": "Top",
+"grade": "gold",
+"level": 46
+},
+"Dartan Cloak": {
+"category": "Cloak",
+"grade": "gold",
+"level": 46
+},
+"Dartan Earrings": {
+"category": "Earrings",
+"grade": "gold",
+"level": 46
+},
+"Dartan Gloves": {
+"category": "Gloves",
+"grade": "gold"
+},
+"Dartan Greaves": {
+"category": "Legs",
+"grade": "gold"
+},
+"Dartan Helm": {
+"category": "Helm",
+"grade": "gold",
+"level": 46
+},
+"Dartan Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 46
+},
+"Dartan Ring": {
+"category": "Ring",
+"grade": "gold",
+"level": 46
+},
+"Defender Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 23
+},
+"Defender Bow": {
+"category": "Bow",
+"grade": "blue",
+"level": 23
+},
+"Defender Dagger": {
+"category": "Dagger",
+"grade": "blue",
+"level": 23
+},
+"Defender Greatsword": {
+"category": "Greatsword",
+"grade": "blue",
+"level": 23
+},
+"Defender Guard": {
+"category": "Guard",
+"grade": "blue",
+"level": 23
+},
+"Defender Longsword": {
+"category": "Longsword",
+"grade": "blue",
+"level": 23
+},
+"Defender Mace": {
+"category": "Mace",
+"grade": "blue",
+"level": 23
+},
+"Defender Orb": {
+"category": "Orb",
+"grade": "blue",
+"level": 23
+},
+"Defender Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 23
+},
+"Defender Spellbook": {
+"category": "Spellbook",
+"grade": "blue",
+"level": 23
+},
+"Defender Staff": {
+"category": "Staff",
+"grade": "blue",
+"level": 23
+},
+"Demiros Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 40
+},
+"Demiros Breastplate": {
+"category": "Top",
+"grade": "blue"
+},
+"Demiros Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Demiros Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Demiros Helm": {
+"category": "Helm",
+"grade": "blue"
+},
+"Demiros Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 40
+},
+"Destruction Boots": {
+"category": "Shoes",
+"grade": "blue"
+},
+"Destruction Bow": {
+"category": "Bow",
+"grade": "blue",
+"level": 33
+},
+"Destruction Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 33
+},
+"Destruction Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 33
+},
+"Destruction Dagger": {
+"category": "Dagger",
+"grade": "blue",
+"level": 33
+},
+"Destruction Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 33
+},
+"Destruction Greatsword": {
+"category": "Greatsword",
+"grade": "blue",
+"level": 33
+},
+"Destruction Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 33
+},
+"Destruction Guard": {
+"category": "Guard",
+"grade": "blue",
+"level": 33
+},
+"Destruction Helm": {
+"category": "Helm",
+"grade": "blue",
+"level": 33
+},
+"Destruction Longsword": {
+"category": "Longsword",
+"grade": "blue",
+"level": 33
+},
+"Destruction Mace": {
+"category": "Mace",
+"grade": "blue",
+"level": 33
+},
+"Destruction Orb": {
+"category": "Orb",
+"grade": "blue",
+"level": 33
+},
+"Destruction Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 33
+},
+"Destruction Spellbook": {
+"category": "Spellbook",
+"grade": "blue",
+"level": 33
+},
+"Destruction Staff": {
+"category": "Staff",
+"grade": "blue",
+"level": 33
+},
+"Diamond Decoration": {
+"category": "Crafting Material",
+"grade": "white"
+},
+"Diamond Earrings": {
+"category": "Earrings",
+"grade": "white",
+"level": 16
+},
+"Diamond Gemstone": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Diamond Powder": {
+"category": "Crafting Material",
+"grade": "white"
+},
+"Discipline Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 38
+},
+"Discipline Bow": {
+"category": "Bow",
+"grade": "blue",
+"level": 38
+},
+"Discipline Breastplate": {
+"category": "Top",
+"grade": "blue"
+},
+"Discipline Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 38
+},
+"Discipline Dagger": {
+"category": "Dagger",
+"grade": "blue",
+"level": 38
+},
+"Discipline Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 38
+},
+"Discipline Greatsword": {
+"category": "Greatsword",
+"grade": "blue",
+"level": 38
+},
+"Discipline Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 38
+},
+"Discipline Guard": {
+"category": "Guard",
+"grade": "blue",
+"level": 38
+},
+"Discipline Helm": {
+"category": "Helm",
+"grade": "blue",
+"level": 38
+},
+"Discipline Longsword": {
+"category": "Longsword",
+"grade": "blue",
+"level": 38
+},
+"Discipline Mace": {
+"category": "Mace",
+"grade": "blue",
+"level": 38
+},
+"Discipline Orb": {
+"category": "Orb",
+"grade": "blue",
+"level": 38
+},
+"Discipline Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 38
+},
+"Discipline Spellbook": {
+"category": "Spellbook",
+"grade": "blue",
+"level": 38
+},
+"Discipline Staff": {
+"category": "Staff",
+"grade": "blue",
+"level": 38
+},
+"Dusk Diamond Earrings": {
+"category": "Earrings",
+"grade": "green",
+"level": 30
+},
+"Dusk Ruby Necklace": {
+"category": "Necklace",
+"grade": "green",
+"level": 30
+},
+"Dusk Sapphire Ring": {
+"category": "Ring",
+"grade": "green",
+"level": 30
+},
+"Earth Boots": {
+"category": "Shoes",
+"grade": "white",
+"level": 20
+},
+"Earth Bow": {
+"category": "Bow",
+"grade": "white",
+"level": 20
+},
+"Earth Breastplate": {
+"category": "Top",
+"grade": "white",
+"level": 20
+},
+"Earth Cloak": {
+"category": "Cloak",
+"grade": "white",
+"level": 20
+},
+"Earth Dagger": {
+"category": "Dagger",
+"grade": "white",
+"level": 20
+},
+"Earth Gloves": {
+"category": "Gloves",
+"grade": "white",
+"level": 20
+},
+"Earth Greatsword": {
+"category": "Greatsword",
+"grade": "white",
+"level": 20
+},
+"Earth Greaves": {
+"category": "Legs",
+"grade": "white",
+"level": 20
+},
+"Earth Guard": {
+"category": "Guard",
+"grade": "white",
+"level": 20
+},
+"Earth Helm": {
+"category": "Helm",
+"grade": "white",
+"level": 20
+},
+"Earth Longsword": {
+"category": "Longsword",
+"grade": "white",
+"level": 20
+},
+"Earth Mace": {
+"category": "Mace",
+"grade": "white",
+"level": 20
+},
+"Earth Orb": {
+"category": "Orb",
+"grade": "white",
+"level": 20
+},
+"Earth Pauldrons": {
+"category": "Pauldrons",
+"grade": "white",
+"level": 20
+},
+"Earth Spellbook": {
+"category": "Spellbook",
+"grade": "white",
+"level": 20
+},
+"Earth Staff": {
+"category": "Staff",
+"grade": "white",
+"level": 20
+},
+"Ebony Dragon Lord Bow": {
+"category": "Bow",
+"grade": "gold",
+"level": 94
+},
+"Ebony Dragon Lord Breastplate": {
+"category": "Top",
+"grade": "gold",
+"level": 94
+},
+"Ebony Dragon Lord Dagger": {
+"category": "Dagger",
+"grade": "gold",
+"level": 94
+},
+"Ebony Dragon Lord Greatsword": {
+"category": "Greatsword",
+"grade": "gold",
+"level": 94
+},
+"Ebony Dragon Lord Guard": {
+"category": "Guard",
+"grade": "gold",
+"level": 94
+},
+"Ebony Dragon Lord Helm": {
+"category": "Helm",
+"grade": "gold",
+"level": 94
+},
+"Ebony Dragon Lord Longsword": {
+"category": "Longsword",
+"grade": "gold",
+"level": 94
+},
+"Ebony Dragon Lord Mace": {
+"category": "Mace",
+"grade": "gold",
+"level": 94
+},
+"Ebony Dragon Lord Orb": {
+"category": "Orb",
+"grade": "gold",
+"level": 94
+},
+"Ebony Dragon Lord Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 94
+},
+"Ebony Dragon Lord Ring": {
+"category": "Ring",
+"grade": "gold",
+"level": 94
+},
+"Ebony Dragon Lord Spellbook": {
+"category": "Spellbook",
+"grade": "gold",
+"level": 94
+},
+"Ebony Dragon Lord Staff": {
+"category": "Staff",
+"grade": "gold",
+"level": 94
+},
+"Elder Bow": {
+"category": "Bow",
+"grade": "blue",
+"level": 23
+},
+"Elder Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 23
+},
+"Elder Dagger": {
+"category": "Dagger",
+"grade": "blue",
+"level": 23
+},
+"Elder Greatsword": {
+"category": "Greatsword",
+"grade": "blue",
+"level": 23
+},
+"Elder Guard": {
+"category": "Guard",
+"grade": "blue",
+"level": 23
+},
+"Elder Longsword": {
+"category": "Longsword",
+"grade": "blue",
+"level": 23
+},
+"Elder Mace": {
+"category": "Mace",
+"grade": "blue",
+"level": 23
+},
+"Elder Orb": {
+"category": "Orb",
+"grade": "blue",
+"level": 23
+},
+"Elder Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 23
+},
+"Elder Spellbook": {
+"category": "Spellbook",
+"grade": "blue",
+"level": 23
+},
+"Elder Staff": {
+"category": "Staff",
+"grade": "blue",
+"level": 23
+},
+"Emote: Kurukuru": {
+"category": "Consumable Miscellaneous",
+"grade": "teal"
+},
+"Enhanced Durable Balaur Scale": {
+"category": "Crafting Material",
+"grade": "blue"
+},
+"Enhanced Hard Balaur Scale": {
+"category": "Crafting Material",
+"grade": "blue"
+},
+"Enhanced Thick Balaur Scale": {
+"category": "Crafting Material",
+"grade": "blue"
+},
+"Ethereal Boots": {
+"category": "Shoes",
+"grade": "green",
+"level": 20
+},
+"Ethereal Bow": {
+"category": "Bow",
+"grade": "green",
+"level": 20
+},
+"Ethereal Breastplate": {
+"category": "Top",
+"grade": "green",
+"level": 20
+},
+"Ethereal Cloak": {
+"category": "Cloak",
+"grade": "green"
+},
+"Ethereal Dagger": {
+"category": "Dagger",
+"grade": "green",
+"level": 20
+},
+"Ethereal Gloves": {
+"category": "Gloves",
+"grade": "green",
+"level": 20
+},
+"Ethereal Greatsword": {
+"category": "Greatsword",
+"grade": "green",
+"level": 20
+},
+"Ethereal Greaves": {
+"category": "Legs",
+"grade": "green"
+},
+"Ethereal Guard": {
+"category": "Guard",
+"grade": "green",
+"level": 20
+},
+"Ethereal Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 20
+},
+"Ethereal Longsword": {
+"category": "Longsword",
+"grade": "green",
+"level": 20
+},
+"Ethereal Mace": {
+"category": "Mace",
+"grade": "green",
+"level": 20
+},
+"Ethereal Orb": {
+"category": "Orb",
+"grade": "green",
+"level": 20
+},
+"Ethereal Pauldrons": {
+"category": "Pauldrons",
+"grade": "green"
+},
+"Ethereal Spellbook": {
+"category": "Spellbook",
+"grade": "green",
+"level": 20
+},
+"Ethereal Staff": {
+"category": "Staff",
+"grade": "green",
+"level": 20
+},
+"Expert's Asvata Bow": {
+"category": "Bow",
+"grade": "green",
+"level": 28
+},
+"Expert's Asvata Staff": {
+"category": "Staff",
+"grade": "green",
+"level": 28
+},
+"Expert's Diamond Earrings": {
+"category": "Earrings",
+"grade": "green",
+"level": 28
+},
+"Expert's Orichalcum Boots": {
+"category": "Shoes",
+"grade": "green",
+"level": 28
+},
+"Expert's Orichalcum Breastplate": {
+"category": "Top",
+"grade": "green",
+"level": 28
+},
+"Expert's Orichalcum Cloak": {
+"category": "Cloak",
+"grade": "green",
+"level": 28
+},
+"Expert's Orichalcum Dagger": {
+"category": "Dagger",
+"grade": "green",
+"level": 28
+},
+"Expert's Orichalcum Gloves": {
+"category": "Gloves",
+"grade": "green",
+"level": 28
+},
+"Expert's Orichalcum Greatsword": {
+"category": "Greatsword",
+"grade": "green",
+"level": 28
+},
+"Expert's Orichalcum Greaves": {
+"category": "Legs",
+"grade": "green",
+"level": 28
+},
+"Expert's Orichalcum Guard": {
+"category": "Guard",
+"grade": "green",
+"level": 28
+},
+"Expert's Orichalcum Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 28
+},
+"Expert's Orichalcum Longsword": {
+"category": "Longsword",
+"grade": "green",
+"level": 28
+},
+"Expert's Orichalcum Mace": {
+"category": "Mace",
+"grade": "green",
+"level": 28
+},
+"Expert's Orichalcum Pauldrons": {
+"category": "Pauldrons",
+"grade": "green",
+"level": 28
+},
+"Expert's Refining Stone": {
+"category": "Crafting Material",
+"grade": "green"
+},
+"Expert's Ruby Necklace": {
+"category": "Necklace",
+"grade": "green",
+"level": 28
+},
+"Expert's Sapphire Ring": {
+"category": "Ring",
+"grade": "green",
+"level": 28
+},
+"Expert's Splendent Asvata Bow": {
+"category": "Bow",
+"grade": "blue",
+"level": 35
+},
+"Expert's Splendent Asvata Staff": {
+"category": "Staff",
+"grade": "blue",
+"level": 35
+},
+"Expert's Splendent Diamond Earrings": {
+"category": "Earrings",
+"grade": "blue",
+"level": 35
+},
+"Expert's Splendent Orichalcum Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 35
+},
+"Expert's Splendent Orichalcum Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 35
+},
+"Expert's Splendent Orichalcum Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 35
+},
+"Expert's Splendent Orichalcum Dagger": {
+"category": "Dagger",
+"grade": "blue",
+"level": 35
+},
+"Expert's Splendent Orichalcum Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 35
+},
+"Expert's Splendent Orichalcum Greatsword": {
+"category": "Greatsword",
+"grade": "blue",
+"level": 35
+},
+"Expert's Splendent Orichalcum Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 35
+},
+"Expert's Splendent Orichalcum Guard": {
+"category": "Guard",
+"grade": "blue",
+"level": 35
+},
+"Expert's Splendent Orichalcum Helm": {
+"category": "Helm",
+"grade": "blue",
+"level": 35
+},
+"Expert's Splendent Orichalcum Longsword": {
+"category": "Longsword",
+"grade": "blue",
+"level": 35
+},
+"Expert's Splendent Orichalcum Mace": {
+"category": "Mace",
+"grade": "blue",
+"level": 35
+},
+"Expert's Splendent Orichalcum Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 35
+},
+"Expert's Splendent Ruby Necklace": {
+"category": "Necklace",
+"grade": "blue",
+"level": 35
+},
+"Expert's Splendent Sapphire Ring": {
+"category": "Ring",
+"grade": "blue",
+"level": 35
+},
+"Expert's Splendent Truth Orb": {
+"category": "Orb",
+"grade": "blue",
+"level": 35
+},
+"Expert's Splendent Truth Spellbook": {
+"category": "Spellbook",
+"grade": "blue",
+"level": 35
+},
+"Expert's Truth Orb": {
+"category": "Orb",
+"grade": "green",
+"level": 28
+},
+"Expert's Truth Spellbook": {
+"category": "Spellbook",
+"grade": "green",
+"level": 28
+},
+"Fairy's Dream Wings": {
+"category": "Wings",
+"grade": "green"
+},
+"Fallen Ancient God Boots": {
+"category": "Shoes",
+"grade": "gold",
+"level": 46
+},
+"Fallen Ancient God Bow": {
+"category": "Bow",
+"grade": "gold",
+"level": 46
+},
+"Fallen Ancient God Breastplate": {
+"category": "Top",
+"grade": "gold"
+},
+"Fallen Ancient God Cloak": {
+"category": "Cloak",
+"grade": "gold",
+"level": 46
+},
+"Fallen Ancient God Dagger": {
+"category": "Dagger",
+"grade": "gold",
+"level": 46
+},
+"Fallen Ancient God Gloves": {
+"category": "Gloves",
+"grade": "gold",
+"level": 46
+},
+"Fallen Ancient God Greatsword": {
+"category": "Greatsword",
+"grade": "gold",
+"level": 46
+},
+"Fallen Ancient God Greaves": {
+"category": "Legs",
+"grade": "gold"
+},
+"Fallen Ancient God Guard": {
+"category": "Guard",
+"grade": "gold",
+"level": 46
+},
+"Fallen Ancient God Helm": {
+"category": "Helm",
+"grade": "gold"
+},
+"Fallen Ancient God Longsword": {
+"category": "Longsword",
+"grade": "gold",
+"level": 46
+},
+"Fallen Ancient God Mace": {
+"category": "Mace",
+"grade": "gold",
+"level": 46
+},
+"Fallen Ancient God Orb": {
+"category": "Orb",
+"grade": "gold",
+"level": 46
+},
+"Fallen Ancient God Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 46
+},
+"Fallen Ancient God Sapphire Ring": {
+"category": "Ring",
+"grade": "gold",
+"level": 46
+},
+"Fallen Ancient God Spellbook": {
+"category": "Spellbook",
+"grade": "gold",
+"level": 46
+},
+"Fallen Ancient God Staff": {
+"category": "Staff",
+"grade": "gold",
+"level": 46
+},
+"Fantasy Boots": {
+"category": "Shoes",
+"grade": "gold",
+"level": 36
+},
+"Fantasy Bow": {
+"category": "Bow",
+"grade": "gold",
+"level": 36
+},
+"Fantasy Breastplate": {
+"category": "Top",
+"grade": "gold",
+"level": 36
+},
+"Fantasy Cloak": {
+"category": "Cloak",
+"grade": "gold",
+"level": 36
+},
+"Fantasy Gloves": {
+"category": "Gloves",
+"grade": "gold",
+"level": 36
+},
+"Fantasy Greatsword": {
+"category": "Greatsword",
+"grade": "gold",
+"level": 36
+},
+"Fantasy Greaves": {
+"category": "Legs",
+"grade": "gold",
+"level": 36
+},
+"Fantasy Guard": {
+"category": "Guard",
+"grade": "gold",
+"level": 36
+},
+"Fantasy Helm": {
+"category": "Helm",
+"grade": "gold",
+"level": 36
+},
+"Fantasy Knife": {
+"category": "Dagger",
+"grade": "gold",
+"level": 36
+},
+"Fantasy Longsword": {
+"category": "Longsword",
+"grade": "gold",
+"level": 36
+},
+"Fantasy Mace": {
+"category": "Mace",
+"grade": "gold",
+"level": 36
+},
+"Fantasy Orb": {
+"category": "Orb",
+"grade": "gold",
+"level": 36
+},
+"Fantasy Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 36
+},
+"Fantasy Spellbook": {
+"category": "Spellbook",
+"grade": "gold",
+"level": 36
+},
+"Fantasy Staff": {
+"category": "Staff",
+"grade": "gold",
+"level": 36
+},
+"Festival Shugo Transformation Candy": {
+"category": "Candy",
+"grade": "teal"
+},
+"Fine Asvata Log": {
+"category": "Gathering Material",
+"grade": "green"
+},
+"Fine Diamond Gemstone": {
+"category": "Gathering Material",
+"grade": "green"
+},
+"Fine Durable Balaur Horn": {
+"category": "Crafting Material",
+"grade": "blue"
+},
+"Fine Hard Balaur Horn": {
+"category": "Crafting Material",
+"grade": "blue"
+},
+"Fine Odyle": {
+"category": "Gathering Material",
+"grade": "green"
+},
+"Fine Orichalcum Ore": {
+"category": "Gathering Material",
+"grade": "green"
+},
+"Fine Ruby Gemstone": {
+"category": "Gathering Material",
+"grade": "green"
+},
+"Fine Sapphire Gemstone": {
+"category": "Gathering Material",
+"grade": "green"
+},
+"Fine Thick Balaur Horn": {
+"category": "Crafting Material",
+"grade": "blue"
+},
+"Fine Yggdrasil Log": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Forgotten Boots": {
+"category": "Shoes",
+"grade": "white",
+"level": 13
+},
+"Forgotten Bow": {
+"category": "Bow",
+"grade": "white",
+"level": 13
+},
+"Forgotten Breastplate": {
+"category": "Top",
+"grade": "white",
+"level": 13
+},
+"Forgotten Cloak": {
+"category": "Cloak",
+"grade": "white",
+"level": 13
+},
+"Forgotten Dagger": {
+"category": "Dagger",
+"grade": "white",
+"level": 13
+},
+"Forgotten Gloves": {
+"category": "Gloves",
+"grade": "white",
+"level": 13
+},
+"Forgotten Greatsword": {
+"category": "Greatsword",
+"grade": "white",
+"level": 13
+},
+"Forgotten Greaves": {
+"category": "Legs",
+"grade": "white",
+"level": 13
+},
+"Forgotten Guard": {
+"category": "Guard",
+"grade": "white",
+"level": 13
+},
+"Forgotten Helm": {
+"category": "Helm",
+"grade": "white",
+"level": 13
+},
+"Forgotten Longsword": {
+"category": "Longsword",
+"grade": "white",
+"level": 13
+},
+"Forgotten Mace": {
+"category": "Mace",
+"grade": "white",
+"level": 13
+},
+"Forgotten Orb": {
+"category": "Orb",
+"grade": "white",
+"level": 13
+},
+"Forgotten Pauldrons": {
+"category": "Pauldrons",
+"grade": "white",
+"level": 13
+},
+"Forgotten Spellbook": {
+"category": "Spellbook",
+"grade": "white",
+"level": 13
+},
+"Forgotten Staff": {
+"category": "Staff",
+"grade": "white",
+"level": 13
+},
+"Fresh Aria": {
+"category": "Gathering Material",
+"grade": "green"
+},
+"Fresh Azpha": {
+"category": "Gathering Material",
+"grade": "green"
+},
+"Fresh Calendula": {
+"category": "Gathering Material",
+"grade": "green"
+},
+"Fresh Fruit": {
+"category": "Crafting Material",
+"grade": "white"
+},
+"Fresh Raw Meat": {
+"category": "Crafting Material",
+"grade": "white"
+},
+"Fresh Targena": {
+"category": "Gathering Material",
+"grade": "green"
+},
+"Frontline Boots": {
+"category": "Shoes",
+"grade": "green",
+"level": 20
+},
+"Frontline Bow": {
+"category": "Bow",
+"grade": "green",
+"level": 20
+},
+"Frontline Dagger": {
+"category": "Dagger",
+"grade": "green",
+"level": 20
+},
+"Frontline Gloves": {
+"category": "Gloves",
+"grade": "green",
+"level": 20
+},
+"Frontline Greatsword": {
+"category": "Greatsword",
+"grade": "green",
+"level": 20
+},
+"Frontline Guard": {
+"category": "Guard",
+"grade": "green",
+"level": 20
+},
+"Frontline Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 20
+},
+"Frontline Longsword": {
+"category": "Longsword",
+"grade": "green",
+"level": 20
+},
+"Frontline Mace": {
+"category": "Mace",
+"grade": "green",
+"level": 20
+},
+"Frontline Orb": {
+"category": "Orb",
+"grade": "green",
+"level": 20
+},
+"Frontline Spellbook": {
+"category": "Spellbook",
+"grade": "green",
+"level": 20
+},
+"Frontline Staff": {
+"category": "Staff",
+"grade": "green",
+"level": 20
+},
+"Fruit Salad": {
+"category": "Food",
+"grade": "white"
+},
+"Garsan Boots": {
+"category": "Shoes",
+"grade": "blue"
+},
+"Garsan Breastplate": {
+"category": "Top",
+"grade": "blue"
+},
+"Garsan Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 40
+},
+"Garsan Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Garsan Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Garsan Helm": {
+"category": "Helm",
+"grade": "blue"
+},
+"Garsan Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 40
+},
+"Garshim Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 40
+},
+"Garshim Cloak": {
+"category": "Cloak",
+"grade": "blue"
+},
+"Garshim Gloves": {
+"category": "Gloves",
+"grade": "blue"
+},
+"Garshim Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 40
+},
+"Gartua Boots": {
+"category": "Shoes",
+"grade": "gold",
+"level": 70
+},
+"Gartua Breastplate": {
+"category": "Top",
+"grade": "gold"
+},
+"Gartua Cloak": {
+"category": "Cloak",
+"grade": "gold"
+},
+"Gartua Earrings": {
+"category": "Earrings",
+"grade": "gold",
+"level": 70
+},
+"Gartua Gloves": {
+"category": "Gloves",
+"grade": "gold"
+},
+"Gartua Greaves": {
+"category": "Legs",
+"grade": "gold"
+},
+"Gartua Helm": {
+"category": "Helm",
+"grade": "gold"
+},
+"Gartua Necklace": {
+"category": "Necklace",
+"grade": "gold",
+"level": 70
+},
+"Gartua Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 70
+},
+"Gartua Ring": {
+"category": "Ring",
+"grade": "gold",
+"level": 70
+},
+"Grilled Pujery": {
+"category": "Food",
+"grade": "white"
+},
+"Guardian Lord Nahma Boots": {
+"category": "Shoes",
+"grade": "gold",
+"level": 86
+},
+"Guardian Lord Nahma Breastplate": {
+"category": "Top",
+"grade": "gold",
+"level": 86
+},
+"Guardian Lord Nahma Cloak": {
+"category": "Cloak",
+"grade": "gold"
+},
+"Guardian Lord Nahma Earrings": {
+"category": "Earrings",
+"grade": "gold"
+},
+"Guardian Lord Nahma Gloves": {
+"category": "Gloves",
+"grade": "gold"
+},
+"Guardian Lord Nahma Greaves": {
+"category": "Legs",
+"grade": "gold"
+},
+"Guardian Lord Nahma Helm": {
+"category": "Helm",
+"grade": "gold",
+"level": 86
+},
+"Guardian Lord Nahma Necklace": {
+"category": "Necklace",
+"grade": "gold"
+},
+"Guardian Lord Nahma Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 86
+},
+"Guardian Lord Nahma Ring": {
+"category": "Ring",
+"grade": "gold",
+"level": 86
+},
+"Guardian Token (Skin: Helm)": {
+"category": "Skin Armor",
+"grade": "gold"
+},
+"Guruta Boots": {
+"category": "Shoes",
+"grade": "blue"
+},
+"Guruta Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 40
+},
+"Guruta Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 40
+},
+"Guruta Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Guruta Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Guruta Helm": {
+"category": "Helm",
+"grade": "blue",
+"level": 40
+},
+"Guruta Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue"
+},
+"Hardirun Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 40
+},
+"Hardirun Breastplate": {
+"category": "Top",
+"grade": "blue"
+},
+"Hardirun Cloak": {
+"category": "Cloak",
+"grade": "blue"
+},
+"Hardirun Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Hardirun Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Hardirun Helm": {
+"category": "Helm",
+"grade": "blue",
+"level": 40
+},
+"Hardirun Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 40
+},
+"High Commander Lagta Boots": {
+"category": "Shoes",
+"grade": "gold"
+},
+"High Commander Lagta Breastplate": {
+"category": "Top",
+"grade": "gold",
+"level": 46
+},
+"High Commander Lagta Cloak": {
+"category": "Cloak",
+"grade": "gold"
+},
+"High Commander Lagta Earrings": {
+"category": "Earrings",
+"grade": "gold",
+"level": 46
+},
+"High Commander Lagta Gloves": {
+"category": "Gloves",
+"grade": "gold"
+},
+"High Commander Lagta Greaves": {
+"category": "Legs",
+"grade": "gold"
+},
+"High Commander Lagta Helm": {
+"category": "Helm",
+"grade": "gold"
+},
+"High Commander Lagta Necklace": {
+"category": "Necklace",
+"grade": "gold",
+"level": 46
+},
+"High Commander Lagta Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 46
+},
+"High Commander Lagta Ring": {
+"category": "Ring",
+"grade": "gold",
+"level": 46
+},
+"Holy Spirit Boots": {
+"category": "Shoes",
+"grade": "gold"
+},
+"Holy Spirit Bow": {
+"category": "Bow",
+"grade": "gold",
+"level": 41
+},
+"Holy Spirit Breastplate": {
+"category": "Top",
+"grade": "gold"
+},
+"Holy Spirit Cloak": {
+"category": "Cloak",
+"grade": "gold",
+"level": 41
+},
+"Holy Spirit Gloves": {
+"category": "Gloves",
+"grade": "gold",
+"level": 41
+},
+"Holy Spirit Greatsword": {
+"category": "Greatsword",
+"grade": "gold",
+"level": 41
+},
+"Holy Spirit Greaves": {
+"category": "Legs",
+"grade": "gold"
+},
+"Holy Spirit Guard": {
+"category": "Guard",
+"grade": "gold",
+"level": 41
+},
+"Holy Spirit Helm": {
+"category": "Helm",
+"grade": "gold",
+"level": 41
+},
+"Holy Spirit Knife": {
+"category": "Dagger",
+"grade": "gold",
+"level": 41
+},
+"Holy Spirit Longsword": {
+"category": "Longsword",
+"grade": "gold",
+"level": 41
+},
+"Holy Spirit Mace": {
+"category": "Mace",
+"grade": "gold",
+"level": 41
+},
+"Holy Spirit Orb": {
+"category": "Orb",
+"grade": "gold",
+"level": 41
+},
+"Holy Spirit Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 41
+},
+"Holy Spirit Spellbook": {
+"category": "Spellbook",
+"grade": "gold",
+"level": 41
+},
+"Holy Spirit Staff": {
+"category": "Staff",
+"grade": "gold",
+"level": 41
+},
+"Illusion Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 33
+},
+"Illusion Bow": {
+"category": "Bow",
+"grade": "blue",
+"level": 33
+},
+"Illusion Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 33
+},
+"Illusion Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 33
+},
+"Illusion Dagger": {
+"category": "Dagger",
+"grade": "blue",
+"level": 33
+},
+"Illusion Gloves": {
+"category": "Gloves",
+"grade": "blue"
+},
+"Illusion Greatsword": {
+"category": "Greatsword",
+"grade": "blue",
+"level": 33
+},
+"Illusion Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 33
+},
+"Illusion Guard": {
+"category": "Guard",
+"grade": "blue",
+"level": 33
+},
+"Illusion Helm": {
+"category": "Helm",
+"grade": "blue",
+"level": 33
+},
+"Illusion Longsword": {
+"category": "Longsword",
+"grade": "blue",
+"level": 33
+},
+"Illusion Mace": {
+"category": "Mace",
+"grade": "blue",
+"level": 33
+},
+"Illusion Orb": {
+"category": "Orb",
+"grade": "blue",
+"level": 33
+},
+"Illusion Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 33
+},
+"Illusion Spellbook": {
+"category": "Spellbook",
+"grade": "blue",
+"level": 33
+},
+"Illusion Staff": {
+"category": "Staff",
+"grade": "blue",
+"level": 33
+},
+"Inina": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Intermediate Abyssal Manastone": {
+"category": "Manastone/Soulstone",
+"grade": "green"
+},
+"Intermediate Abyssal Soulstone": {
+"category": "Manastone/Soulstone",
+"grade": "green"
+},
+"Intermediate Manastone": {
+"category": "Manastone/Soulstone",
+"grade": "white"
+},
+"Intermediate Soulstone": {
+"category": "Manastone/Soulstone",
+"grade": "white"
+},
+"Intruder Bow": {
+"category": "Bow",
+"grade": "green",
+"level": 25
+},
+"Intruder Dagger": {
+"category": "Dagger",
+"grade": "green",
+"level": 25
+},
+"Intruder Gloves": {
+"category": "Gloves",
+"grade": "green",
+"level": 25
+},
+"Intruder Greatsword": {
+"category": "Greatsword",
+"grade": "green",
+"level": 25
+},
+"Intruder Guard": {
+"category": "Guard",
+"grade": "green",
+"level": 25
+},
+"Intruder Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 25
+},
+"Intruder Longsword": {
+"category": "Longsword",
+"grade": "green",
+"level": 25
+},
+"Intruder Mace": {
+"category": "Mace",
+"grade": "green",
+"level": 25
+},
+"Intruder Orb": {
+"category": "Orb",
+"grade": "green",
+"level": 25
+},
+"Intruder Pauldrons": {
+"category": "Pauldrons",
+"grade": "green",
+"level": 25
+},
+"Intruder Spellbook": {
+"category": "Spellbook",
+"grade": "green",
+"level": 25
+},
+"Intruder Staff": {
+"category": "Staff",
+"grade": "green",
+"level": 25
+},
+"K'nash Boots": {
+"category": "Shoes",
+"grade": "blue"
+},
+"K'nash Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 40
+},
+"K'nash Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 40
+},
+"K'nash Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"K'nash Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"K'nash Helm": {
+"category": "Helm",
+"grade": "blue"
+},
+"K'nash Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue"
+},
+"Kaira Boots": {
+"category": "Shoes",
+"grade": "gold",
+"level": 56
+},
+"Kaira Breastplate": {
+"category": "Top",
+"grade": "gold",
+"level": 62
+},
+"Kaira Cloak": {
+"category": "Cloak",
+"grade": "gold",
+"level": 56
+},
+"Kaira Earrings": {
+"category": "Earrings",
+"grade": "gold",
+"level": 56
+},
+"Kaira Gloves": {
+"category": "Gloves",
+"grade": "gold"
+},
+"Kaira Greaves": {
+"category": "Legs",
+"grade": "gold"
+},
+"Kaira Helm": {
+"category": "Helm",
+"grade": "gold",
+"level": 56
+},
+"Kaira Necklace": {
+"category": "Necklace",
+"grade": "gold",
+"level": 56
+},
+"Kaira Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 56
+},
+"Kaira Ring": {
+"category": "Ring",
+"grade": "gold",
+"level": 56
+},
+"Karuka Boots": {
+"category": "Shoes",
+"grade": "blue"
+},
+"Karuka Breastplate": {
+"category": "Top",
+"grade": "blue"
+},
+"Karuka Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 40
+},
+"Karuka Gloves": {
+"category": "Gloves",
+"grade": "blue"
+},
+"Karuka Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Karuka Helm": {
+"category": "Helm",
+"grade": "blue"
+},
+"Karuka Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue"
+},
+"Kashapa Boots": {
+"category": "Shoes",
+"grade": "gold"
+},
+"Kashapa Breastplate": {
+"category": "Top",
+"grade": "gold",
+"level": 46
+},
+"Kashapa Cloak": {
+"category": "Cloak",
+"grade": "gold",
+"level": 46
+},
+"Kashapa Earrings": {
+"category": "Earrings",
+"grade": "gold",
+"level": 46
+},
+"Kashapa Gloves": {
+"category": "Gloves",
+"grade": "gold"
+},
+"Kashapa Greaves": {
+"category": "Legs",
+"grade": "gold"
+},
+"Kashapa Helm": {
+"category": "Helm",
+"grade": "gold",
+"level": 46
+},
+"Kashapa Necklace": {
+"category": "Necklace",
+"grade": "gold",
+"level": 46
+},
+"Kashapa Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 46
+},
+"Kashapa Ring": {
+"category": "Ring",
+"grade": "gold",
+"level": 46
+},
+"Kasia Boots": {
+"category": "Shoes",
+"grade": "blue"
+},
+"Kasia Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 40
+},
+"Kasia Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Kasia Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Kasia Helm": {
+"category": "Helm",
+"grade": "blue"
+},
+"Kasia Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue"
+},
+"Kelpina Boots": {
+"category": "Shoes",
+"grade": "blue"
+},
+"Kelpina Breastplate": {
+"category": "Top",
+"grade": "blue"
+},
+"Kelpina Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 40
+},
+"Kelpina Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Kelpina Greaves": {
+"category": "Legs",
+"grade": "blue"
+},
+"Kelpina Helm": {
+"category": "Helm",
+"grade": "blue"
+},
+"Kelpina Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 40
+},
+"Kernon Boots": {
+"category": "Shoes",
+"grade": "green",
+"level": 35
+},
+"Kernon Gloves": {
+"category": "Gloves",
+"grade": "green",
+"level": 35
+},
+"Kernon Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 35
+},
+"Kernon Pauldrons": {
+"category": "Pauldrons",
+"grade": "green",
+"level": 35
+},
+"Korin Boots": {
+"category": "Shoes",
+"grade": "green",
+"level": 35
+},
+"Korin Breastplate": {
+"category": "Top",
+"grade": "green",
+"level": 35
+},
+"Korin Cloak": {
+"category": "Cloak",
+"grade": "green",
+"level": 35
+},
+"Korin Gloves": {
+"category": "Gloves",
+"grade": "green",
+"level": 35
+},
+"Korin Greaves": {
+"category": "Legs",
+"grade": "green",
+"level": 35
+},
+"Korin Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 35
+},
+"Korin Pauldrons": {
+"category": "Pauldrons",
+"grade": "green",
+"level": 35
+},
+"Kukuru": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Kusan Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 40
+},
+"Kusan Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 40
+},
+"Kusan Helm": {
+"category": "Helm",
+"grade": "blue"
+},
+"Kusan Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 40
+},
+"Kutar Boots": {
+"category": "Shoes",
+"grade": "green",
+"level": 35
+},
+"Kutar Breastplate": {
+"category": "Top",
+"grade": "green",
+"level": 35
+},
+"Kutar Cloak": {
+"category": "Cloak",
+"grade": "green",
+"level": 35
+},
+"Kutar Gloves": {
+"category": "Gloves",
+"grade": "green",
+"level": 35
+},
+"Kutar Greaves": {
+"category": "Legs",
+"grade": "green",
+"level": 35
+},
+"Kutar Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 35
+},
+"Kutar Pauldrons": {
+"category": "Pauldrons",
+"grade": "green",
+"level": 35
+},
+"Lannar Boots": {
+"category": "Shoes",
+"grade": "green",
+"level": 35
+},
+"Lannar Breastplate": {
+"category": "Top",
+"grade": "green",
+"level": 35
+},
+"Lannar Cloak": {
+"category": "Cloak",
+"grade": "green",
+"level": 35
+},
+"Lannar Gloves": {
+"category": "Gloves",
+"grade": "green",
+"level": 35
+},
+"Lannar Greaves": {
+"category": "Legs",
+"grade": "green",
+"level": 35
+},
+"Lannar Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 35
+},
+"Lannar Pauldrons": {
+"category": "Pauldrons",
+"grade": "green"
+},
+"Lawa Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 40
+},
+"Lawa Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 40
+},
+"Lawa Cloak": {
+"category": "Cloak",
+"grade": "blue"
+},
+"Lawa Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Lawa Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Lawa Helm": {
+"category": "Helm",
+"grade": "blue"
+},
+"Lawa Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue"
+},
+"Layla Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 40
+},
+"Layla Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Layla Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Lesser Abyssal Manastone": {
+"category": "Manastone/Soulstone",
+"grade": "green"
+},
+"Lesser Abyssal Soulstone": {
+"category": "Manastone/Soulstone",
+"grade": "green"
+},
+"Lesser Manastone": {
+"category": "Manastone/Soulstone",
+"grade": "white"
+},
+"Lesser Soulstone": {
+"category": "Manastone/Soulstone",
+"grade": "white"
+},
+"Life Crystal": {
+"category": "Potions",
+"grade": "white"
+},
+"Light Droplet (Skin: Earrings)": {
+"category": "Skin Decoration",
+"grade": "blue"
+},
+"Light Droplet (Skin: Necklace)": {
+"category": "Skin Decoration",
+"grade": "blue"
+},
+"Linx Boots": {
+"category": "Shoes",
+"grade": "blue"
+},
+"Linx Breastplate": {
+"category": "Top",
+"grade": "blue"
+},
+"Linx Cloak": {
+"category": "Cloak",
+"grade": "blue"
+},
+"Linx Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Linx Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Linx Helm": {
+"category": "Helm",
+"grade": "blue",
+"level": 40
+},
+"Linx Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 40
+},
+"Lower Abyss Rift Stone": {
+"category": "Duration Ticket",
+"grade": "teal"
+},
+"Luminous Boots": {
+"category": "Shoes",
+"grade": "green",
+"level": 25
+},
+"Luminous Bow": {
+"category": "Bow",
+"grade": "green",
+"level": 25
+},
+"Luminous Breastplate": {
+"category": "Top",
+"grade": "green",
+"level": 25
+},
+"Luminous Cloak": {
+"category": "Cloak",
+"grade": "green",
+"level": 25
+},
+"Luminous Dagger": {
+"category": "Dagger",
+"grade": "green",
+"level": 25
+},
+"Luminous Gloves": {
+"category": "Gloves",
+"grade": "green",
+"level": 25
+},
+"Luminous Greatsword": {
+"category": "Greatsword",
+"grade": "green",
+"level": 25
+},
+"Luminous Greaves": {
+"category": "Legs",
+"grade": "green",
+"level": 25
+},
+"Luminous Guard": {
+"category": "Guard",
+"grade": "green",
+"level": 25
+},
+"Luminous Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 25
+},
+"Luminous Longsword": {
+"category": "Longsword",
+"grade": "green",
+"level": 25
+},
+"Luminous Mace": {
+"category": "Mace",
+"grade": "green",
+"level": 25
+},
+"Luminous Orb": {
+"category": "Orb",
+"grade": "green",
+"level": 25
+},
+"Luminous Pauldrons": {
+"category": "Pauldrons",
+"grade": "green",
+"level": 25
+},
+"Luminous Spellbook": {
+"category": "Spellbook",
+"grade": "green",
+"level": 25
+},
+"Luminous Staff": {
+"category": "Staff",
+"grade": "green",
+"level": 25
+},
+"Lunatic Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 45
+},
+"Lunatic Bow": {
+"category": "Bow",
+"grade": "blue",
+"level": 45
+},
+"Lunatic Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 45
+},
+"Lunatic Dagger": {
+"category": "Dagger",
+"grade": "blue",
+"level": 45
+},
+"Lunatic Greatsword": {
+"category": "Greatsword",
+"grade": "blue",
+"level": 45
+},
+"Lunatic Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 45
+},
+"Lunatic Guard": {
+"category": "Guard",
+"grade": "blue",
+"level": 45
+},
+"Lunatic Longsword": {
+"category": "Longsword",
+"grade": "blue",
+"level": 45
+},
+"Lunatic Mace": {
+"category": "Mace",
+"grade": "blue",
+"level": 45
+},
+"Lunatic Orb": {
+"category": "Orb",
+"grade": "blue",
+"level": 45
+},
+"Lunatic Spellbook": {
+"category": "Spellbook",
+"grade": "blue",
+"level": 45
+},
+"Lunatic Staff": {
+"category": "Staff",
+"grade": "blue",
+"level": 45
+},
+"Magic Crystal": {
+"category": "Crafting Material",
+"grade": "white"
+},
+"Mana Potion": {
+"category": "Potions",
+"grade": "white"
+},
+"Mela": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Moonlight Blossom (Skin: Earrings)": {
+"category": "Skin Decoration",
+"grade": "gold"
+},
+"Moonlight Blossom (Skin: Necklace)": {
+"category": "Skin Decoration",
+"grade": "gold"
+},
+"Morfa": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Moshav Cloak": {
+"category": "Cloak",
+"grade": "blue"
+},
+"Moshav Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Moshav Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Moshav Helm": {
+"category": "Helm",
+"grade": "blue",
+"level": 40
+},
+"Moshav Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 40
+},
+"Neikel Boots": {
+"category": "Shoes",
+"grade": "green",
+"level": 35
+},
+"Neikel Cloak": {
+"category": "Cloak",
+"grade": "green",
+"level": 35
+},
+"Neikel Greaves": {
+"category": "Legs",
+"grade": "green"
+},
+"Neikel Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 35
+},
+"Neikel Pauldrons": {
+"category": "Pauldrons",
+"grade": "green",
+"level": 35
+},
+"Newbold Boots": {
+"category": "Shoes",
+"grade": "blue"
+},
+"Newbold Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 40
+},
+"Newbold Cloak": {
+"category": "Cloak",
+"grade": "blue"
+},
+"Newbold Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Newbold Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Newbold Helm": {
+"category": "Helm",
+"grade": "blue",
+"level": 40
+},
+"Newbold Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 40
+},
+"Nutah Boots": {
+"category": "Shoes",
+"grade": "blue"
+},
+"Nutah Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 40
+},
+"Nutah Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 40
+},
+"Nutah Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Nutah Greaves": {
+"category": "Legs",
+"grade": "blue"
+},
+"Nutah Helm": {
+"category": "Helm",
+"grade": "blue"
+},
+"Nutah Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 40
+},
+"Oath-Sworn Ruby Necklace": {
+"category": "Necklace",
+"grade": "blue",
+"level": 33
+},
+"Oath-Sworn Sapphire Ring": {
+"category": "Ring",
+"grade": "blue",
+"level": 33
+},
+"Odyle": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Odyle Wings": {
+"category": "Wings",
+"grade": "blue"
+},
+"Ohkra": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Ohkra Fried Meat": {
+"category": "Food",
+"grade": "white"
+},
+"Order Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 38
+},
+"Order Bow": {
+"category": "Bow",
+"grade": "blue",
+"level": 38
+},
+"Order Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 38
+},
+"Order Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 38
+},
+"Order Dagger": {
+"category": "Dagger",
+"grade": "blue",
+"level": 38
+},
+"Order Gloves": {
+"category": "Gloves",
+"grade": "blue"
+},
+"Order Greatsword": {
+"category": "Greatsword",
+"grade": "blue",
+"level": 38
+},
+"Order Greaves": {
+"category": "Legs",
+"grade": "blue"
+},
+"Order Guard": {
+"category": "Guard",
+"grade": "blue",
+"level": 38
+},
+"Order Helm": {
+"category": "Helm",
+"grade": "blue",
+"level": 38
+},
+"Order Longsword": {
+"category": "Longsword",
+"grade": "blue",
+"level": 38
+},
+"Order Mace": {
+"category": "Mace",
+"grade": "blue",
+"level": 38
+},
+"Order Orb": {
+"category": "Orb",
+"grade": "blue",
+"level": 38
+},
+"Order Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 38
+},
+"Order Spellbook": {
+"category": "Spellbook",
+"grade": "blue",
+"level": 38
+},
+"Order Staff": {
+"category": "Staff",
+"grade": "blue",
+"level": 38
+},
+"Orichalcum Boots": {
+"category": "Shoes",
+"grade": "white",
+"level": 16
+},
+"Orichalcum Breastplate": {
+"category": "Top",
+"grade": "white",
+"level": 16
+},
+"Orichalcum Cloak": {
+"category": "Cloak",
+"grade": "white",
+"level": 16
+},
+"Orichalcum Dagger": {
+"category": "Dagger",
+"grade": "white",
+"level": 18
+},
+"Orichalcum Gloves": {
+"category": "Gloves",
+"grade": "white",
+"level": 16
+},
+"Orichalcum Greatsword": {
+"category": "Greatsword",
+"grade": "white",
+"level": 18
+},
+"Orichalcum Greaves": {
+"category": "Legs",
+"grade": "white",
+"level": 16
+},
+"Orichalcum Guard": {
+"category": "Guard",
+"grade": "white",
+"level": 18
+},
+"Orichalcum Helm": {
+"category": "Helm",
+"grade": "white",
+"level": 16
+},
+"Orichalcum Ingot": {
+"category": "Crafting Material",
+"grade": "white"
+},
+"Orichalcum Longsword": {
+"category": "Longsword",
+"grade": "white",
+"level": 18
+},
+"Orichalcum Mace": {
+"category": "Mace",
+"grade": "white",
+"level": 18
+},
+"Orichalcum Ore": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Orichalcum Pauldrons": {
+"category": "Pauldrons",
+"grade": "white",
+"level": 16
+},
+"Pact-Bound Bow": {
+"category": "Bow",
+"grade": "blue",
+"level": 43
+},
+"Pact-Bound Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 43
+},
+"Pact-Bound Dagger": {
+"category": "Dagger",
+"grade": "blue",
+"level": 43
+},
+"Pact-Bound Diamond Earrings": {
+"category": "Earrings",
+"grade": "blue",
+"level": 43
+},
+"Pact-Bound Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 43
+},
+"Pact-Bound Greatsword": {
+"category": "Greatsword",
+"grade": "blue",
+"level": 43
+},
+"Pact-Bound Guard": {
+"category": "Guard",
+"grade": "blue",
+"level": 43
+},
+"Pact-Bound Longsword": {
+"category": "Longsword",
+"grade": "blue",
+"level": 43
+},
+"Pact-Bound Mace": {
+"category": "Mace",
+"grade": "blue",
+"level": 43
+},
+"Pact-Bound Orb": {
+"category": "Orb",
+"grade": "blue",
+"level": 43
+},
+"Pact-Bound Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 43
+},
+"Pact-Bound Ruby Necklace": {
+"category": "Necklace",
+"grade": "blue",
+"level": 43
+},
+"Pact-Bound Sapphire Ring": {
+"category": "Ring",
+"grade": "blue",
+"level": 43
+},
+"Pact-Bound Spellbook": {
+"category": "Spellbook",
+"grade": "blue",
+"level": 43
+},
+"Pact-Bound Staff": {
+"category": "Staff",
+"grade": "blue",
+"level": 43
+},
+"Phantasm Boots": {
+"category": "Shoes",
+"grade": "white",
+"level": 18
+},
+"Phantasm Bow": {
+"category": "Bow",
+"grade": "white",
+"level": 18
+},
+"Phantasm Breastplate": {
+"category": "Top",
+"grade": "white",
+"level": 18
+},
+"Phantasm Cloak": {
+"category": "Cloak",
+"grade": "white",
+"level": 18
+},
+"Phantasm Dagger": {
+"category": "Dagger",
+"grade": "white",
+"level": 18
+},
+"Phantasm Gloves": {
+"category": "Gloves",
+"grade": "white",
+"level": 18
+},
+"Phantasm Greatsword": {
+"category": "Greatsword",
+"grade": "white",
+"level": 18
+},
+"Phantasm Greaves": {
+"category": "Legs",
+"grade": "white",
+"level": 18
+},
+"Phantasm Guard": {
+"category": "Guard",
+"grade": "white",
+"level": 18
+},
+"Phantasm Helm": {
+"category": "Helm",
+"grade": "white",
+"level": 18
+},
+"Phantasm Longsword": {
+"category": "Longsword",
+"grade": "white",
+"level": 18
+},
+"Phantasm Mace": {
+"category": "Mace",
+"grade": "white",
+"level": 18
+},
+"Phantasm Orb": {
+"category": "Orb",
+"grade": "white",
+"level": 18
+},
+"Phantasm Pauldrons": {
+"category": "Pauldrons",
+"grade": "white",
+"level": 18
+},
+"Phantasm Spellbook": {
+"category": "Spellbook",
+"grade": "white",
+"level": 18
+},
+"Phantasm Staff": {
+"category": "Staff",
+"grade": "white",
+"level": 18
+},
+"Pnyn Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 40
+},
+"Pnyn Gloves": {
+"category": "Gloves",
+"grade": "blue"
+},
+"Pnyn Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 40
+},
+"Power Shard": {
+"category": "Consumable Miscellaneous",
+"grade": "white"
+},
+"Pragmatist Boots": {
+"category": "Shoes",
+"grade": "blue"
+},
+"Pragmatist Bow": {
+"category": "Bow",
+"grade": "blue",
+"level": 28
+},
+"Pragmatist Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 28
+},
+"Pragmatist Cloak": {
+"category": "Cloak",
+"grade": "blue"
+},
+"Pragmatist Dagger": {
+"category": "Dagger",
+"grade": "blue",
+"level": 28
+},
+"Pragmatist Gloves": {
+"category": "Gloves",
+"grade": "blue"
+},
+"Pragmatist Greatsword": {
+"category": "Greatsword",
+"grade": "blue",
+"level": 28
+},
+"Pragmatist Greaves": {
+"category": "Legs",
+"grade": "blue"
+},
+"Pragmatist Guard": {
+"category": "Guard",
+"grade": "blue",
+"level": 28
+},
+"Pragmatist Helm": {
+"category": "Helm",
+"grade": "blue"
+},
+"Pragmatist Longsword": {
+"category": "Longsword",
+"grade": "blue",
+"level": 28
+},
+"Pragmatist Mace": {
+"category": "Mace",
+"grade": "blue",
+"level": 28
+},
+"Pragmatist Orb": {
+"category": "Orb",
+"grade": "blue",
+"level": 28
+},
+"Pragmatist Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 28
+},
+"Pragmatist Spellbook": {
+"category": "Spellbook",
+"grade": "blue",
+"level": 28
+},
+"Pragmatist Staff": {
+"category": "Staff",
+"grade": "blue",
+"level": 28
+},
+"Promise Legion (Skin: Boots)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Promise Legion (Skin: Breastplate)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Promise Legion (Skin: Cloak)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Promise Legion (Skin: Gloves)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Promise Legion (Skin: Greaves)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Promise Legion (Skin: Helm)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Promise Legion (Skin: Pauldrons)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Pujery": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Pure Asvata Log": {
+"category": "Gathering Material",
+"grade": "blue"
+},
+"Pure Diamond Gemstone": {
+"category": "Gathering Material",
+"grade": "blue"
+},
+"Pure Odyle": {
+"category": "Gathering Material",
+"grade": "blue"
+},
+"Pure Orichalcum Ore": {
+"category": "Gathering Material",
+"grade": "blue"
+},
+"Pure Ruby Gemstone": {
+"category": "Gathering Material",
+"grade": "blue"
+},
+"Pure Sapphire Gemstone": {
+"category": "Gathering Material",
+"grade": "blue"
+},
+"Pure Yggdrasil Log": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Radiant Asvata Log": {
+"category": "Gathering Material",
+"grade": "gold"
+},
+"Radiant Diamond Gemstone": {
+"category": "Gathering Material",
+"grade": "gold"
+},
+"Radiant Love Wings": {
+"category": "Wings",
+"grade": "gold"
+},
+"Radiant Odyle": {
+"category": "Gathering Material",
+"grade": "gold"
+},
+"Radiant Orichalcum Ore": {
+"category": "Gathering Material",
+"grade": "gold"
+},
+"Radiant Ruby Gemstone": {
+"category": "Gathering Material",
+"grade": "gold"
+},
+"Radiant Sapphire Gemstone": {
+"category": "Gathering Material",
+"grade": "gold"
+},
+"Radiant Yggdrasil Log": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Rainy Forest Boots": {
+"category": "Shoes",
+"grade": "green",
+"level": 15
+},
+"Rainy Forest Bow": {
+"category": "Bow",
+"grade": "green",
+"level": 15
+},
+"Rainy Forest Breastplate": {
+"category": "Top",
+"grade": "green",
+"level": 15
+},
+"Rainy Forest Cloak": {
+"category": "Cloak",
+"grade": "green",
+"level": 15
+},
+"Rainy Forest Dagger": {
+"category": "Dagger",
+"grade": "green",
+"level": 15
+},
+"Rainy Forest Gloves": {
+"category": "Gloves",
+"grade": "green",
+"level": 15
+},
+"Rainy Forest Greatsword": {
+"category": "Greatsword",
+"grade": "green",
+"level": 15
+},
+"Rainy Forest Greaves": {
+"category": "Legs",
+"grade": "green",
+"level": 15
+},
+"Rainy Forest Guard": {
+"category": "Guard",
+"grade": "green",
+"level": 15
+},
+"Rainy Forest Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 15
+},
+"Rainy Forest Longsword": {
+"category": "Longsword",
+"grade": "green",
+"level": 15
+},
+"Rainy Forest Mace": {
+"category": "Mace",
+"grade": "green",
+"level": 15
+},
+"Rainy Forest Orb": {
+"category": "Orb",
+"grade": "green",
+"level": 15
+},
+"Rainy Forest Spellbook": {
+"category": "Spellbook",
+"grade": "green",
+"level": 15
+},
+"Rainy Forest Staff": {
+"category": "Staff",
+"grade": "green",
+"level": 15
+},
+"Rajit Boots": {
+"category": "Shoes",
+"grade": "green",
+"level": 35
+},
+"Rajit Breastplate": {
+"category": "Top",
+"grade": "green",
+"level": 35
+},
+"Rajit Cloak": {
+"category": "Cloak",
+"grade": "green",
+"level": 35
+},
+"Rajit Gloves": {
+"category": "Gloves",
+"grade": "green",
+"level": 35
+},
+"Rajit Greaves": {
+"category": "Legs",
+"grade": "green",
+"level": 35
+},
+"Rajit Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 35
+},
+"Rajit Pauldrons": {
+"category": "Pauldrons",
+"grade": "green",
+"level": 35
+},
+"Raw Leather": {
+"category": "Crafting Material",
+"grade": "white"
+},
+"Raydam": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Refining Stone": {
+"category": "Crafting Material",
+"grade": "white"
+},
+"Relic Collector Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 23
+},
+"Relic Collector Bow": {
+"category": "Bow",
+"grade": "blue",
+"level": 23
+},
+"Relic Collector Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 23
+},
+"Relic Collector Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 23
+},
+"Relic Collector Dagger": {
+"category": "Dagger",
+"grade": "blue",
+"level": 23
+},
+"Relic Collector Gloves": {
+"category": "Gloves",
+"grade": "blue"
+},
+"Relic Collector Greatsword": {
+"category": "Greatsword",
+"grade": "blue",
+"level": 23
+},
+"Relic Collector Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 23
+},
+"Relic Collector Guard": {
+"category": "Guard",
+"grade": "blue",
+"level": 23
+},
+"Relic Collector Helm": {
+"category": "Helm",
+"grade": "blue",
+"level": 23
+},
+"Relic Collector Longsword": {
+"category": "Longsword",
+"grade": "blue",
+"level": 23
+},
+"Relic Collector Mace": {
+"category": "Mace",
+"grade": "blue",
+"level": 23
+},
+"Relic Collector Orb": {
+"category": "Orb",
+"grade": "blue",
+"level": 23
+},
+"Relic Collector Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 23
+},
+"Relic Collector Spellbook": {
+"category": "Spellbook",
+"grade": "blue",
+"level": 23
+},
+"Relic Collector Staff": {
+"category": "Staff",
+"grade": "blue",
+"level": 23
+},
+"Resana Boots": {
+"category": "Shoes",
+"grade": "blue"
+},
+"Resana Breastplate": {
+"category": "Top",
+"grade": "blue"
+},
+"Resana Cloak": {
+"category": "Cloak",
+"grade": "blue"
+},
+"Resana Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Resana Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Resana Helm": {
+"category": "Helm",
+"grade": "blue",
+"level": 40
+},
+"Resana Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 40
+},
+"Restored Recon Team (Skin: Boots)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Restored Recon Team (Skin: Breastplate)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Restored Recon Team (Skin: Cloak)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Restored Recon Team (Skin: Gloves)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Restored Recon Team (Skin: Greaves)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Restored Recon Team (Skin: Helm)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Restored Recon Team (Skin: Pauldrons)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Ritual Diamond Earrings": {
+"category": "Earrings",
+"grade": "blue",
+"level": 23
+},
+"Ritual Ruby Necklace": {
+"category": "Necklace",
+"grade": "blue",
+"level": 23
+},
+"Ritual Sapphire Ring": {
+"category": "Ring",
+"grade": "blue",
+"level": 23
+},
+"Riverside Boots": {
+"category": "Shoes",
+"grade": "white",
+"level": 18
+},
+"Riverside Bow": {
+"category": "Bow",
+"grade": "white",
+"level": 18
+},
+"Riverside Breastplate": {
+"category": "Top",
+"grade": "white",
+"level": 18
+},
+"Riverside Cloak": {
+"category": "Cloak",
+"grade": "white",
+"level": 18
+},
+"Riverside Dagger": {
+"category": "Dagger",
+"grade": "white",
+"level": 18
+},
+"Riverside Gloves": {
+"category": "Gloves",
+"grade": "white",
+"level": 18
+},
+"Riverside Greatsword": {
+"category": "Greatsword",
+"grade": "white",
+"level": 18
+},
+"Riverside Greaves": {
+"category": "Legs",
+"grade": "white",
+"level": 18
+},
+"Riverside Guard": {
+"category": "Guard",
+"grade": "white",
+"level": 18
+},
+"Riverside Helm": {
+"category": "Helm",
+"grade": "white",
+"level": 18
+},
+"Riverside Longsword": {
+"category": "Longsword",
+"grade": "white",
+"level": 18
+},
+"Riverside Mace": {
+"category": "Mace",
+"grade": "white",
+"level": 18
+},
+"Riverside Orb": {
+"category": "Orb",
+"grade": "white",
+"level": 18
+},
+"Riverside Pauldrons": {
+"category": "Pauldrons",
+"grade": "white",
+"level": 18
+},
+"Riverside Spellbook": {
+"category": "Spellbook",
+"grade": "white",
+"level": 18
+},
+"Riverside Staff": {
+"category": "Staff",
+"grade": "white",
+"level": 18
+},
+"Ruby Decoration": {
+"category": "Crafting Material",
+"grade": "white"
+},
+"Ruby Gemstone": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Ruby Necklace": {
+"category": "Necklace",
+"grade": "white",
+"level": 16
+},
+"Ruby Powder": {
+"category": "Crafting Material",
+"grade": "white"
+},
+"Saam Laurel (Skin: Helm)": {
+"category": "Skin Armor",
+"grade": "gold"
+},
+"Sacrificial Diamond Earrings": {
+"category": "Earrings",
+"grade": "white",
+"level": 20
+},
+"Sacrificial Ruby Necklace": {
+"category": "Necklace",
+"grade": "white",
+"level": 20
+},
+"Sacrificial Sapphire Ring": {
+"category": "Ring",
+"grade": "white",
+"level": 20
+},
+"Saendukal Mask (Skin: Helm)": {
+"category": "Skin Armor",
+"grade": "gold"
+},
+"Sapphire Decoration": {
+"category": "Crafting Material",
+"grade": "white"
+},
+"Sapphire Gemstone": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Sapphire Powder": {
+"category": "Crafting Material",
+"grade": "white"
+},
+"Sapphire Ring": {
+"category": "Ring",
+"grade": "white",
+"level": 16
+},
+"Saursus Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 40
+},
+"Saursus Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Saursus Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 40
+},
+"Sealed Ancient Aullaeu Wings": {
+"category": "Substance Morph Material",
+"grade": "gold"
+},
+"Sealed Black Fragment Wings": {
+"category": "Substance Morph Material",
+"grade": "gold"
+},
+"Sealed Blue Wave Wings": {
+"category": "Substance Morph Material",
+"grade": "gold"
+},
+"Sealed Dark Veil Wings": {
+"category": "Substance Morph Material",
+"grade": "gold"
+},
+"Sealed Forest Spirit Wings": {
+"category": "Substance Morph Material",
+"grade": "gold"
+},
+"Sealed Kromede Wings": {
+"category": "Substance Morph Material",
+"grade": "gold"
+},
+"Seed of Detection": {
+"category": "Consumable Miscellaneous",
+"grade": "white"
+},
+"Setram Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 40
+},
+"Setram Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Setram Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Shade Boots": {
+"category": "Shoes",
+"grade": "white",
+"level": 13
+},
+"Shade Bow": {
+"category": "Bow",
+"grade": "white",
+"level": 13
+},
+"Shade Breastplate": {
+"category": "Top",
+"grade": "white",
+"level": 13
+},
+"Shade Cloak": {
+"category": "Cloak",
+"grade": "white",
+"level": 13
+},
+"Shade Dagger": {
+"category": "Dagger",
+"grade": "white",
+"level": 13
+},
+"Shade Gloves": {
+"category": "Gloves",
+"grade": "white",
+"level": 13
+},
+"Shade Greatsword": {
+"category": "Greatsword",
+"grade": "white",
+"level": 13
+},
+"Shade Greaves": {
+"category": "Legs",
+"grade": "white",
+"level": 13
+},
+"Shade Guard": {
+"category": "Guard",
+"grade": "white",
+"level": 13
+},
+"Shade Helm": {
+"category": "Helm",
+"grade": "white",
+"level": 13
+},
+"Shade Longsword": {
+"category": "Longsword",
+"grade": "white",
+"level": 13
+},
+"Shade Mace": {
+"category": "Mace",
+"grade": "white",
+"level": 13
+},
+"Shade Orb": {
+"category": "Orb",
+"grade": "white",
+"level": 13
+},
+"Shade Pauldrons": {
+"category": "Pauldrons",
+"grade": "white",
+"level": 13
+},
+"Shade Spellbook": {
+"category": "Spellbook",
+"grade": "white",
+"level": 13
+},
+"Shade Staff": {
+"category": "Staff",
+"grade": "white",
+"level": 13
+},
+"Shadow Ruby (Skin: Earrings)": {
+"category": "Skin Decoration",
+"grade": "blue"
+},
+"Shadow Ruby (Skin: Necklace)": {
+"category": "Skin Decoration",
+"grade": "blue"
+},
+"Shugo Transformation Candy": {
+"category": "Candy",
+"grade": "teal"
+},
+"Shujakan Boots": {
+"category": "Shoes",
+"grade": "blue"
+},
+"Shujakan Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 40
+},
+"Shujakan Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 40
+},
+"Shujakan Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Shujakan Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Shujakan Helm": {
+"category": "Helm",
+"grade": "blue"
+},
+"Shujakan Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue"
+},
+"Shylak Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 40
+},
+"Shylak Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 40
+},
+"Shylak Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 40
+},
+"Shylak Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Shylak Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Shylak Helm": {
+"category": "Helm",
+"grade": "blue"
+},
+"Shylak Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue"
+},
+"Silent Resolve (Skin: Boots)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Silent Resolve (Skin: Breastplate)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Silent Resolve (Skin: Cloak)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Silent Resolve (Skin: Gloves)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Silent Resolve (Skin: Greaves)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Silent Resolve (Skin: Helm)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Silent Resolve (Skin: Pauldrons)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Soft Balaur Meat": {
+"category": "Crafting Material",
+"grade": "green"
+},
+"Spectral Boots": {
+"category": "Shoes",
+"grade": "gold",
+"level": 41
+},
+"Spectral Bow": {
+"category": "Bow",
+"grade": "gold",
+"level": 41
+},
+"Spectral Breastplate": {
+"category": "Top",
+"grade": "gold",
+"level": 41
+},
+"Spectral Cloak": {
+"category": "Cloak",
+"grade": "gold",
+"level": 41
+},
+"Spectral Gloves": {
+"category": "Gloves",
+"grade": "gold",
+"level": 41
+},
+"Spectral Greatsword": {
+"category": "Greatsword",
+"grade": "gold",
+"level": 41
+},
+"Spectral Greaves": {
+"category": "Legs",
+"grade": "gold",
+"level": 41
+},
+"Spectral Guard": {
+"category": "Guard",
+"grade": "gold",
+"level": 41
+},
+"Spectral Helm": {
+"category": "Helm",
+"grade": "gold",
+"level": 41
+},
+"Spectral Knife": {
+"category": "Dagger",
+"grade": "gold",
+"level": 41
+},
+"Spectral Longsword": {
+"category": "Longsword",
+"grade": "gold",
+"level": 41
+},
+"Spectral Mace": {
+"category": "Mace",
+"grade": "gold",
+"level": 41
+},
+"Spectral Orb": {
+"category": "Orb",
+"grade": "gold",
+"level": 41
+},
+"Spectral Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 41
+},
+"Spectral Spellbook": {
+"category": "Spellbook",
+"grade": "gold",
+"level": 41
+},
+"Spectral Staff": {
+"category": "Staff",
+"grade": "gold",
+"level": 41
+},
+"Spiritstone": {
+"category": "Crafting Material",
+"grade": "white"
+},
+"Spiritstone Powder": {
+"category": "Crafting Material",
+"grade": "white"
+},
+"Splendent Asvata Bow": {
+"category": "Bow",
+"grade": "green",
+"level": 22
+},
+"Splendent Asvata Staff": {
+"category": "Staff",
+"grade": "green",
+"level": 22
+},
+"Splendent Dark Dragon Lord Bow": {
+"category": "Bow",
+"grade": "gold",
+"level": 86
+},
+"Splendent Dark Dragon Lord Breastplate": {
+"category": "Top",
+"grade": "gold",
+"level": 86
+},
+"Splendent Dark Dragon Lord Dagger": {
+"category": "Dagger",
+"grade": "gold",
+"level": 86
+},
+"Splendent Dark Dragon Lord Greatsword": {
+"category": "Greatsword",
+"grade": "gold",
+"level": 86
+},
+"Splendent Dark Dragon Lord Guard": {
+"category": "Guard",
+"grade": "gold",
+"level": 86
+},
+"Splendent Dark Dragon Lord Helm": {
+"category": "Helm",
+"grade": "gold",
+"level": 86
+},
+"Splendent Dark Dragon Lord Longsword": {
+"category": "Longsword",
+"grade": "gold",
+"level": 86
+},
+"Splendent Dark Dragon Lord Mace": {
+"category": "Mace",
+"grade": "gold",
+"level": 86
+},
+"Splendent Dark Dragon Lord Orb": {
+"category": "Orb",
+"grade": "gold",
+"level": 86
+},
+"Splendent Dark Dragon Lord Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 86
+},
+"Splendent Dark Dragon Lord Ring": {
+"category": "Ring",
+"grade": "gold",
+"level": 86
+},
+"Splendent Dark Dragon Lord Spellbook": {
+"category": "Spellbook",
+"grade": "gold",
+"level": 86
+},
+"Splendent Dark Dragon Lord Staff": {
+"category": "Staff",
+"grade": "gold",
+"level": 86
+},
+"Splendent Diamond Earrings": {
+"category": "Earrings",
+"grade": "green",
+"level": 22
+},
+"Splendent Ebony Dragon Lord Bow": {
+"category": "Bow",
+"grade": "gold",
+"level": 102
+},
+"Splendent Ebony Dragon Lord Dagger": {
+"category": "Dagger",
+"grade": "gold",
+"level": 102
+},
+"Splendent Ebony Dragon Lord Greatsword": {
+"category": "Greatsword",
+"grade": "gold",
+"level": 102
+},
+"Splendent Ebony Dragon Lord Guard": {
+"category": "Guard",
+"grade": "gold",
+"level": 102
+},
+"Splendent Ebony Dragon Lord Helm": {
+"category": "Helm",
+"grade": "gold",
+"level": 102
+},
+"Splendent Ebony Dragon Lord Longsword": {
+"category": "Longsword",
+"grade": "gold",
+"level": 102
+},
+"Splendent Ebony Dragon Lord Mace": {
+"category": "Mace",
+"grade": "gold",
+"level": 102
+},
+"Splendent Ebony Dragon Lord Orb": {
+"category": "Orb",
+"grade": "gold",
+"level": 102
+},
+"Splendent Ebony Dragon Lord Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 102
+},
+"Splendent Ebony Dragon Lord Ring": {
+"category": "Ring",
+"grade": "gold",
+"level": 102
+},
+"Splendent Ebony Dragon Lord Spellbook": {
+"category": "Spellbook",
+"grade": "gold",
+"level": 102
+},
+"Splendent Ebony Dragon Lord Staff": {
+"category": "Staff",
+"grade": "gold",
+"level": 102
+},
+"Splendent Orichalcum Boots": {
+"category": "Shoes",
+"grade": "green"
+},
+"Splendent Orichalcum Breastplate": {
+"category": "Top",
+"grade": "green",
+"level": 22
+},
+"Splendent Orichalcum Cloak": {
+"category": "Cloak",
+"grade": "green",
+"level": 22
+},
+"Splendent Orichalcum Dagger": {
+"category": "Dagger",
+"grade": "green",
+"level": 22
+},
+"Splendent Orichalcum Gloves": {
+"category": "Gloves",
+"grade": "green",
+"level": 22
+},
+"Splendent Orichalcum Greatsword": {
+"category": "Greatsword",
+"grade": "green",
+"level": 22
+},
+"Splendent Orichalcum Greaves": {
+"category": "Legs",
+"grade": "green",
+"level": 22
+},
+"Splendent Orichalcum Guard": {
+"category": "Guard",
+"grade": "green",
+"level": 22
+},
+"Splendent Orichalcum Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 22
+},
+"Splendent Orichalcum Longsword": {
+"category": "Longsword",
+"grade": "green",
+"level": 22
+},
+"Splendent Orichalcum Mace": {
+"category": "Mace",
+"grade": "green",
+"level": 22
+},
+"Splendent Orichalcum Pauldrons": {
+"category": "Pauldrons",
+"grade": "green",
+"level": 22
+},
+"Splendent Ruby Necklace": {
+"category": "Necklace",
+"grade": "green",
+"level": 22
+},
+"Splendent Sapphire Ring": {
+"category": "Ring",
+"grade": "green",
+"level": 22
+},
+"Splendent Star Dragon Lord Boots": {
+"category": "Shoes",
+"grade": "gold"
+},
+"Splendent Star Dragon Lord Bow": {
+"category": "Bow",
+"grade": "gold",
+"level": 70
+},
+"Splendent Star Dragon Lord Breastplate": {
+"category": "Top",
+"grade": "gold",
+"level": 70
+},
+"Splendent Star Dragon Lord Cloak": {
+"category": "Cloak",
+"grade": "gold",
+"level": 70
+},
+"Splendent Star Dragon Lord Dagger": {
+"category": "Dagger",
+"grade": "gold",
+"level": 70
+},
+"Splendent Star Dragon Lord Earrings": {
+"category": "Earrings",
+"grade": "gold",
+"level": 70
+},
+"Splendent Star Dragon Lord Gloves": {
+"category": "Gloves",
+"grade": "gold"
+},
+"Splendent Star Dragon Lord Greatsword": {
+"category": "Greatsword",
+"grade": "gold",
+"level": 70
+},
+"Splendent Star Dragon Lord Greaves": {
+"category": "Legs",
+"grade": "gold"
+},
+"Splendent Star Dragon Lord Guard": {
+"category": "Guard",
+"grade": "gold",
+"level": 70
+},
+"Splendent Star Dragon Lord Longsword": {
+"category": "Longsword",
+"grade": "gold",
+"level": 70
+},
+"Splendent Star Dragon Lord Mace": {
+"category": "Mace",
+"grade": "gold",
+"level": 70
+},
+"Splendent Star Dragon Lord Necklace": {
+"category": "Necklace",
+"grade": "gold"
+},
+"Splendent Star Dragon Lord Orb": {
+"category": "Orb",
+"grade": "gold",
+"level": 70
+},
+"Splendent Star Dragon Lord Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 70
+},
+"Splendent Star Dragon Lord Ring": {
+"category": "Ring",
+"grade": "gold",
+"level": 70
+},
+"Splendent Star Dragon Lord Spellbook": {
+"category": "Spellbook",
+"grade": "gold",
+"level": 70
+},
+"Splendent Star Dragon Lord Staff": {
+"category": "Staff",
+"grade": "gold",
+"level": 70
+},
+"Splendent Truth Orb": {
+"category": "Orb",
+"grade": "green",
+"level": 22
+},
+"Splendent Truth Spellbook": {
+"category": "Spellbook",
+"grade": "green",
+"level": 22
+},
+"Spring Blossom Whisper (Skin: Earrings)": {
+"category": "Skin Decoration",
+"grade": "gold"
+},
+"Spring Blossom Whisper (Skin: Necklace)": {
+"category": "Skin Decoration",
+"grade": "gold"
+},
+"Star Dragon Lord Boots": {
+"category": "Shoes",
+"grade": "gold"
+},
+"Star Dragon Lord Bow": {
+"category": "Bow",
+"grade": "gold",
+"level": 62
+},
+"Star Dragon Lord Breastplate": {
+"category": "Top",
+"grade": "gold",
+"level": 62
+},
+"Star Dragon Lord Cloak": {
+"category": "Cloak",
+"grade": "gold",
+"level": 62
+},
+"Star Dragon Lord Dagger": {
+"category": "Dagger",
+"grade": "gold",
+"level": 62
+},
+"Star Dragon Lord Earrings": {
+"category": "Earrings",
+"grade": "gold",
+"level": 62
+},
+"Star Dragon Lord Gloves": {
+"category": "Gloves",
+"grade": "gold"
+},
+"Star Dragon Lord Greatsword": {
+"category": "Greatsword",
+"grade": "gold",
+"level": 62
+},
+"Star Dragon Lord Greaves": {
+"category": "Legs",
+"grade": "gold"
+},
+"Star Dragon Lord Guard": {
+"category": "Guard",
+"grade": "gold",
+"level": 62
+},
+"Star Dragon Lord Helm": {
+"category": "Helm",
+"grade": "gold",
+"level": 62
+},
+"Star Dragon Lord Longsword": {
+"category": "Longsword",
+"grade": "gold",
+"level": 62
+},
+"Star Dragon Lord Mace": {
+"category": "Mace",
+"grade": "gold",
+"level": 62
+},
+"Star Dragon Lord Necklace": {
+"category": "Necklace",
+"grade": "gold",
+"level": 62
+},
+"Star Dragon Lord Orb": {
+"category": "Orb",
+"grade": "gold",
+"level": 62
+},
+"Star Dragon Lord Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 62
+},
+"Star Dragon Lord Ring": {
+"category": "Ring",
+"grade": "gold",
+"level": 62
+},
+"Star Dragon Lord Spellbook": {
+"category": "Spellbook",
+"grade": "gold",
+"level": 62
+},
+"Star Dragon Lord Staff": {
+"category": "Staff",
+"grade": "gold",
+"level": 62
+},
+"Starlight Ruby Necklace": {
+"category": "Necklace",
+"grade": "blue",
+"level": 28
+},
+"Starlight Sapphire Ring": {
+"category": "Ring",
+"grade": "blue",
+"level": 28
+},
+"Status Effect Resist Scroll": {
+"category": "Scroll",
+"grade": "white"
+},
+"Steamed Pujery": {
+"category": "Food",
+"grade": "white"
+},
+"Strong Leather": {
+"category": "Crafting Material",
+"grade": "white"
+},
+"Superior Abyssal Manastone": {
+"category": "Manastone/Soulstone",
+"grade": "green"
+},
+"Superior Abyssal Soulstone": {
+"category": "Manastone/Soulstone",
+"grade": "green"
+},
+"Superior Benediction Scroll": {
+"category": "Scroll",
+"grade": "white"
+},
+"Superior Courage Scroll": {
+"category": "Scroll",
+"grade": "white"
+},
+"Superior Healing Potion": {
+"category": "Potions",
+"grade": "white"
+},
+"Superior Life Potion": {
+"category": "Potions",
+"grade": "white"
+},
+"Superior Life Serum": {
+"category": "Potions",
+"grade": "white"
+},
+"Superior Manastone": {
+"category": "Manastone/Soulstone",
+"grade": "white"
+},
+"Superior Power Shard": {
+"category": "Consumable Miscellaneous",
+"grade": "white"
+},
+"Superior Soulstone": {
+"category": "Manastone/Soulstone",
+"grade": "white"
+},
+"Superior Speed Scroll": {
+"category": "Scroll",
+"grade": "white"
+},
+"Superior Wind Serum": {
+"category": "Potions",
+"grade": "white"
+},
+"Sweet Whisper (Skin: Earrings)": {
+"category": "Skin Decoration",
+"grade": "gold"
+},
+"Sweet Whisper (Skin: Necklace)": {
+"category": "Skin Decoration",
+"grade": "gold"
+},
+"Tanned Durable Balaur Leather": {
+"category": "Crafting Material",
+"grade": "blue"
+},
+"Tanned Hard Balaur Leather": {
+"category": "Crafting Material",
+"grade": "blue"
+},
+"Tanned Thick Balaur Leather": {
+"category": "Crafting Material",
+"grade": "blue"
+},
+"Targena": {
+"category": "Gathering Material",
+"grade": "white"
+},
+"Taulo Boots": {
+"category": "Shoes",
+"grade": "blue"
+},
+"Taulo Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 40
+},
+"Taulo Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Taulo Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 40
+},
+"Teegant Boots": {
+"category": "Shoes",
+"grade": "green",
+"level": 35
+},
+"Teegant Breastplate": {
+"category": "Top",
+"grade": "green",
+"level": 35
+},
+"Teegant Cloak": {
+"category": "Cloak",
+"grade": "green",
+"level": 35
+},
+"Teegant Gloves": {
+"category": "Gloves",
+"grade": "green",
+"level": 35
+},
+"Teegant Greaves": {
+"category": "Legs",
+"grade": "green",
+"level": 35
+},
+"Teegant Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 35
+},
+"Teegant Pauldrons": {
+"category": "Pauldrons",
+"grade": "green",
+"level": 35
+},
+"Tempest Boots": {
+"category": "Shoes",
+"grade": "green",
+"level": 15
+},
+"Tempest Bow": {
+"category": "Bow",
+"grade": "green",
+"level": 15
+},
+"Tempest Breastplate": {
+"category": "Top",
+"grade": "green",
+"level": 15
+},
+"Tempest Cloak": {
+"category": "Cloak",
+"grade": "green"
+},
+"Tempest Dagger": {
+"category": "Dagger",
+"grade": "green",
+"level": 15
+},
+"Tempest Gloves": {
+"category": "Gloves",
+"grade": "green",
+"level": 15
+},
+"Tempest Greatsword": {
+"category": "Greatsword",
+"grade": "green",
+"level": 15
+},
+"Tempest Greaves": {
+"category": "Legs",
+"grade": "green"
+},
+"Tempest Guard": {
+"category": "Guard",
+"grade": "green",
+"level": 15
+},
+"Tempest Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 15
+},
+"Tempest Longsword": {
+"category": "Longsword",
+"grade": "green",
+"level": 15
+},
+"Tempest Mace": {
+"category": "Mace",
+"grade": "green",
+"level": 15
+},
+"Tempest Orb": {
+"category": "Orb",
+"grade": "green",
+"level": 15
+},
+"Tempest Pauldrons": {
+"category": "Pauldrons",
+"grade": "green",
+"level": 15
+},
+"Tempest Spellbook": {
+"category": "Spellbook",
+"grade": "green",
+"level": 15
+},
+"Tempest Staff": {
+"category": "Staff",
+"grade": "green",
+"level": 15
+},
+"Temple Guardian Bow": {
+"category": "Bow",
+"grade": "blue",
+"level": 28
+},
+"Temple Guardian Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 28
+},
+"Temple Guardian Dagger": {
+"category": "Dagger",
+"grade": "blue",
+"level": 28
+},
+"Temple Guardian Greatsword": {
+"category": "Greatsword",
+"grade": "blue",
+"level": 28
+},
+"Temple Guardian Guard": {
+"category": "Guard",
+"grade": "blue",
+"level": 28
+},
+"Temple Guardian Longsword": {
+"category": "Longsword",
+"grade": "blue",
+"level": 28
+},
+"Temple Guardian Mace": {
+"category": "Mace",
+"grade": "blue",
+"level": 28
+},
+"Temple Guardian Orb": {
+"category": "Orb",
+"grade": "blue",
+"level": 28
+},
+"Temple Guardian Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 28
+},
+"Temple Guardian Spellbook": {
+"category": "Spellbook",
+"grade": "blue",
+"level": 28
+},
+"Temple Guardian Staff": {
+"category": "Staff",
+"grade": "blue",
+"level": 28
+},
+"Theostone: Aulak's Roar": {
+"category": "Theostone",
+"grade": "green"
+},
+"Theostone: Aultross's Promise": {
+"category": "Theostone",
+"grade": "green"
+},
+"Theostone: Aulvicar's Sorcery": {
+"category": "Theostone",
+"grade": "green"
+},
+"Theostone: Bargott's Ember": {
+"category": "Theostone",
+"grade": "green"
+},
+"Theostone: Gartua's Strength": {
+"category": "Theostone",
+"grade": "green"
+},
+"Theostone: Heladrir's Chains": {
+"category": "Theostone",
+"grade": "green"
+},
+"Theostone: Kaisinel's Vestige": {
+"category": "Theostone",
+"grade": "green"
+},
+"Theostone: Notun's Craft": {
+"category": "Theostone",
+"grade": "green"
+},
+"Theostone: Perion's Tragedy": {
+"category": "Theostone",
+"grade": "green"
+},
+"Theostone: Rathman's Greed": {
+"category": "Theostone",
+"grade": "green"
+},
+"Theostone: Reda's Tenacity": {
+"category": "Theostone",
+"grade": "green"
+},
+"Theostone: Tassin's Command": {
+"category": "Theostone",
+"grade": "green"
+},
+"Theostone: Ulgorn's Will": {
+"category": "Theostone",
+"grade": "green"
+},
+"Tranquility Bow": {
+"category": "Bow",
+"grade": "gold",
+"level": 36
+},
+"Tranquility Dagger": {
+"category": "Dagger",
+"grade": "gold",
+"level": 36
+},
+"Tranquility Greatsword": {
+"category": "Greatsword",
+"grade": "gold",
+"level": 36
+},
+"Tranquility Guard": {
+"category": "Guard",
+"grade": "gold",
+"level": 36
+},
+"Tranquility Longsword": {
+"category": "Longsword",
+"grade": "gold",
+"level": 36
+},
+"Tranquility Mace": {
+"category": "Mace",
+"grade": "gold",
+"level": 36
+},
+"Tranquility Orb": {
+"category": "Orb",
+"grade": "gold",
+"level": 36
+},
+"Tranquility Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 36
+},
+"Tranquility Sapphire Ring": {
+"category": "Ring",
+"grade": "gold",
+"level": 36
+},
+"Tranquility Spellbook": {
+"category": "Spellbook",
+"grade": "gold",
+"level": 36
+},
+"Tranquility Staff": {
+"category": "Staff",
+"grade": "gold",
+"level": 36
+},
+"Trid Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 40
+},
+"Trid Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 40
+},
+"Trid Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 40
+},
+"Trid Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Trid Greaves": {
+"category": "Legs",
+"grade": "blue"
+},
+"Trid Helm": {
+"category": "Helm",
+"grade": "blue"
+},
+"Trid Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 40
+},
+"Truth Orb": {
+"category": "Orb",
+"grade": "white",
+"level": 18
+},
+"Truth Spellbook": {
+"category": "Spellbook",
+"grade": "white",
+"level": 18
+},
+"Vagabond Boots": {
+"category": "Shoes",
+"grade": "green",
+"level": 30
+},
+"Vagabond Bow": {
+"category": "Bow",
+"grade": "green",
+"level": 30
+},
+"Vagabond Breastplate": {
+"category": "Top",
+"grade": "green",
+"level": 30
+},
+"Vagabond Cloak": {
+"category": "Cloak",
+"grade": "green",
+"level": 30
+},
+"Vagabond Dagger": {
+"category": "Dagger",
+"grade": "green",
+"level": 30
+},
+"Vagabond Gloves": {
+"category": "Gloves",
+"grade": "green",
+"level": 30
+},
+"Vagabond Greatsword": {
+"category": "Greatsword",
+"grade": "green",
+"level": 30
+},
+"Vagabond Greaves": {
+"category": "Legs",
+"grade": "green",
+"level": 30
+},
+"Vagabond Guard": {
+"category": "Guard",
+"grade": "green",
+"level": 30
+},
+"Vagabond Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 30
+},
+"Vagabond Longsword": {
+"category": "Longsword",
+"grade": "green",
+"level": 30
+},
+"Vagabond Mace": {
+"category": "Mace",
+"grade": "green",
+"level": 30
+},
+"Vagabond Orb": {
+"category": "Orb",
+"grade": "green",
+"level": 30
+},
+"Vagabond Pauldrons": {
+"category": "Pauldrons",
+"grade": "green",
+"level": 30
+},
+"Vagabond Spellbook": {
+"category": "Spellbook",
+"grade": "green",
+"level": 30
+},
+"Vagabond Staff": {
+"category": "Staff",
+"grade": "green",
+"level": 30
+},
+"Vargor Boots": {
+"category": "Shoes",
+"grade": "green"
+},
+"Vargor Breastplate": {
+"category": "Top",
+"grade": "green",
+"level": 35
+},
+"Vargor Cloak": {
+"category": "Cloak",
+"grade": "green",
+"level": 35
+},
+"Vargor Gloves": {
+"category": "Gloves",
+"grade": "green",
+"level": 35
+},
+"Vargor Greaves": {
+"category": "Legs",
+"grade": "green",
+"level": 35
+},
+"Vargor Helm": {
+"category": "Helm",
+"grade": "green",
+"level": 35
+},
+"Vargor Pauldrons": {
+"category": "Pauldrons",
+"grade": "green",
+"level": 35
+},
+"Verdant Leaf (Skin: Earrings)": {
+"category": "Skin Decoration",
+"grade": "blue"
+},
+"Verdant Leaf (Skin: Necklace)": {
+"category": "Skin Decoration",
+"grade": "blue"
+},
+"Vishwada Boots": {
+"category": "Shoes",
+"grade": "blue"
+},
+"Vishwada Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 40
+},
+"Vishwada Cloak": {
+"category": "Cloak",
+"grade": "blue",
+"level": 40
+},
+"Vishwada Gloves": {
+"category": "Gloves",
+"grade": "blue",
+"level": 40
+},
+"Vishwada Greaves": {
+"category": "Legs",
+"grade": "blue",
+"level": 40
+},
+"Vishwada Helm": {
+"category": "Helm",
+"grade": "blue"
+},
+"Vishwada Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue"
+},
+"Vowed Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 38
+},
+"Vowed Bow": {
+"category": "Bow",
+"grade": "blue",
+"level": 38
+},
+"Vowed Breastplate": {
+"category": "Top",
+"grade": "blue",
+"level": 38
+},
+"Vowed Dagger": {
+"category": "Dagger",
+"grade": "blue",
+"level": 38
+},
+"Vowed Diamond Earrings": {
+"category": "Earrings",
+"grade": "blue",
+"level": 38
+},
+"Vowed Greatsword": {
+"category": "Greatsword",
+"grade": "blue",
+"level": 38
+},
+"Vowed Guard": {
+"category": "Guard",
+"grade": "blue",
+"level": 38
+},
+"Vowed Longsword": {
+"category": "Longsword",
+"grade": "blue",
+"level": 38
+},
+"Vowed Mace": {
+"category": "Mace",
+"grade": "blue",
+"level": 38
+},
+"Vowed Orb": {
+"category": "Orb",
+"grade": "blue",
+"level": 38
+},
+"Vowed Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 38
+},
+"Vowed Ruby Necklace": {
+"category": "Necklace",
+"grade": "blue",
+"level": 38
+},
+"Vowed Sapphire Ring": {
+"category": "Ring",
+"grade": "blue",
+"level": 38
+},
+"Vowed Spellbook": {
+"category": "Spellbook",
+"grade": "blue",
+"level": 38
+},
+"Vowed Staff": {
+"category": "Staff",
+"grade": "blue",
+"level": 38
+},
+"Water Spirit Mask (Skin: Helm)": {
+"category": "Skin Armor",
+"grade": "gold"
+},
+"Whispering Oblivion Boots": {
+"category": "Shoes",
+"grade": "blue",
+"level": 28
+},
+"Whispering Oblivion Bow": {
+"category": "Bow",
+"grade": "blue",
+"level": 28
+},
+"Whispering Oblivion Dagger": {
+"category": "Dagger",
+"grade": "blue",
+"level": 28
+},
+"Whispering Oblivion Greatsword": {
+"category": "Greatsword",
+"grade": "blue",
+"level": 28
+},
+"Whispering Oblivion Guard": {
+"category": "Guard",
+"grade": "blue",
+"level": 28
+},
+"Whispering Oblivion Longsword": {
+"category": "Longsword",
+"grade": "blue",
+"level": 28
+},
+"Whispering Oblivion Mace": {
+"category": "Mace",
+"grade": "blue",
+"level": 28
+},
+"Whispering Oblivion Orb": {
+"category": "Orb",
+"grade": "blue",
+"level": 28
+},
+"Whispering Oblivion Pauldrons": {
+"category": "Pauldrons",
+"grade": "blue",
+"level": 28
+},
+"Whispering Oblivion Spellbook": {
+"category": "Spellbook",
+"grade": "blue",
+"level": 28
+},
+"Whispering Oblivion Staff": {
+"category": "Staff",
+"grade": "blue",
+"level": 28
+},
+"White Petal Sigh (Skin: Earrings)": {
+"category": "Skin Decoration",
+"grade": "gold"
+},
+"White Petal Sigh (Skin: Necklace)": {
+"category": "Skin Decoration",
+"grade": "gold"
+},
+"Wild Wanderer (Skin: Boots)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Wild Wanderer (Skin: Breastplate)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Wild Wanderer (Skin: Gloves)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Wild Wanderer (Skin: Greaves)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Wild Wanderer (Skin: Helm)": {
+"category": "Skin Armor",
+"grade": "blue"
+},
+"Wind Serum": {
+"category": "Potions",
+"grade": "white"
+},
+"Windmancer Mask (Skin: Helm)": {
+"category": "Skin Armor",
+"grade": "gold"
+},
+"Wisdom Boots": {
+"category": "Shoes",
+"grade": "gold",
+"level": 36
+},
+"Wisdom Bow": {
+"category": "Bow",
+"grade": "gold",
+"level": 36
+},
+"Wisdom Breastplate": {
+"category": "Top",
+"grade": "gold"
+},
+"Wisdom Cloak": {
+"category": "Cloak",
+"grade": "gold"
+},
+"Wisdom Gloves": {
+"category": "Gloves",
+"grade": "gold",
+"level": 36
+},
+"Wisdom Greatsword": {
+"category": "Greatsword",
+"grade": "gold",
+"level": 36
+},
+"Wisdom Greaves": {
+"category": "Legs",
+"grade": "gold",
+"level": 36
+},
+"Wisdom Guard": {
+"category": "Guard",
+"grade": "gold",
+"level": 36
+},
+"Wisdom Helm": {
+"category": "Helm",
+"grade": "gold"
+},
+"Wisdom Knife": {
+"category": "Dagger",
+"grade": "gold",
+"level": 36
+},
+"Wisdom Longsword": {
+"category": "Longsword",
+"grade": "gold",
+"level": 36
+},
+"Wisdom Mace": {
+"category": "Mace",
+"grade": "gold",
+"level": 36
+},
+"Wisdom Orb": {
+"category": "Orb",
+"grade": "gold",
+"level": 36
+},
+"Wisdom Pauldrons": {
+"category": "Pauldrons",
+"grade": "gold",
+"level": 36
+},
+"Wisdom Spellbook": {
+"category": "Spellbook",
+"grade": "gold",
+"level": 36
+},
+"Wisdom Staff": {
+"category": "Staff",
+"grade": "gold",
+"level": 36
+},
+"Woodland Whisper (Skin: Earrings)": {
+"category": "Skin Decoration",
+"grade": "blue"
+},
+"Woodland Whisper (Skin: Necklace)": {
+"category": "Skin Decoration",
+"grade": "blue"
+},
+"Wrathful Ego": {
+"category": "Crafting Material",
+"grade": "gold"
+},
+"Wrathful Mind": {
+"category": "Crafting Material",
+"grade": "gold"
+},
+"Wrathful Will": {
+"category": "Crafting Material",
+"grade": "gold"
+},
+"Yggdrasil Log": {
+"category": "Gathering Material",
+"grade": "white"
+}
+}
