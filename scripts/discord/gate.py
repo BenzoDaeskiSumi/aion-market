@@ -94,11 +94,11 @@ for c in sorted(chans, key=lambda c: (c['type'] != 4, c['position'])):
     ows = [dict(x) for x in c.get('permission_overwrites', [])]
     before = json.dumps(sorted(ows, key=lambda x: x['id']))
     public = 'benvenut' in g
-    guest = True                                                         # the user opened everything (voice included) to guests; only UFFICIALI stays closed
+    guest = 'progressi' not in name                                      # guests see everything (voice included) but UFFICIALI and #progressi (Legione only)
     set_view(ows, G, 0, None if public else False)                       # @everyone (role id = guild id)
     set_view(ows, byname['Ospite']['id'], 0, True if guest and not public else None)
     for rid in grade_ids:
-        set_view(ows, rid, 0, None if public else True)
+        set_view(ows, rid, 0, None if public else (True if guest or rid != byname.get('Amico della Legione', {}).get('id') else False))
     set_view(ows, me['id'], 1, True)
     ows = [o for o in ows if o['allow'] != '0' or o['deny'] != '0']
     if json.dumps(sorted(ows, key=lambda x: x['id'])) == before: continue

@@ -1234,6 +1234,69 @@ async function legionApi(req, env, ctx) {
   return res;
 }
 
+// ---------- weekly Combat Power report: every Wednesday 08:00 (Italy) in '📈・progressi' (members of the Legione only) ----------
+// KV wk:snap = {t, rows: {uid: {name, cls, cp, il}}} = the values at the previous report (the first one is taken silently when the feature starts).
+const WEEK_TZ = 'Europe/Rome', WEEK_DOW = 3, WEEK_HOUR = 8;
+async function weekRows(env) {
+  const out = {};
+  for (const {name} of (await env.USERS.list({prefix: 'link:'})).keys) {
+    const l = JSON.parse(await env.USERS.get(name) || 'null');
+    if (inLegion(l)) out[name.slice(5)] = {name: l.name, cls: l.cls, cp: l.cp || 0, il: l.il || 0};
+  }
+  return out;
+}
+function weekEmbed(prev, now) {
+  const fmtDay = (t) => new Intl.DateTimeFormat('it-IT', {timeZone: WEEK_TZ, weekday: 'short', day: 'numeric', month: 'short'}).format(new Date(t));
+  const rows = Object.entries(now.rows).map(([uid, r]) => ({uid, ...r, old: prev.rows[uid]})).map((r) => ({...r, gain: r.old ? r.cp - r.old.cp : null, gs: r.old && r.il && r.old.il ? r.il - r.old.il : null}));
+  const known = rows.filter((r) => r.gain != null).sort((a, b) => b.gain - a.gain), fresh = rows.filter((r) => r.gain == null);
+  const up = known.filter((r) => r.gain > 0), still = known.filter((r) => r.gain <= 0);
+  const medal = ['🥇', '🥈', '🥉'], sgn = (v) => (v > 0 ? '+' : v < 0 ? '−' : '±') + kin(Math.abs(v));
+  const line = (r, k) => `${medal[k] || `\`${String(k + 1).padStart(2)}.\``} **${r.name}** · ${r.cls} · **${sgn(r.gain)} CP**` +
+    `\n-# ${kin(r.old.cp)} → ${kin(r.cp)}${r.gs ? ` · Gear Score ${sgn(r.gs)}` : ''} · <@${r.uid}>`;
+  const total = up.reduce((a, r) => a + r.gain, 0);
+  const desc = [`Dal **${fmtDay(prev.t)}** al **${fmtDay(now.t)}**`, '',
+    ...(up.length ? up.slice(0, 20).map(line) : ['Nessuno è cresciuto questa settimana… si recupera la prossima! 💪']),
+    ...(up.length > 20 ? [`…e altri ${up.length - 20}`] : [])].join('\n');
+  const fields = [];
+  if (up.length) fields.push({name: '📊 La Legione', value: `**${sgn(total)} CP** in totale · media **${sgn(Math.round(total / up.length))}** a testa · ${up.length} su ${known.length} sono cresciuti`});
+  if (still.length) fields.push({name: '😴 Fermi', value: still.map((r) => r.name).join(' · ').slice(0, 1024)});
+  if (fresh.length) fields.push({name: '🆕 Nuovi collegati', value: `${fresh.map((r) => r.name).join(' · ')}`.slice(0, 900) + '\n-# li confrontiamo dalla prossima settimana'});
+  return {title: '📈 Progressi della settimana', color: 0xe8b64a, description: desc.slice(0, 4096), fields,
+    footer: {text: 'Combat Power ufficiale NCSOFT dei personaggi collegati con /collega · ogni mercoledì alle 8'}, timestamp: new Date(now.t).toISOString()};
+}
+async function weeklyChannel(env) {        // read-only, visible to the Legione's grades only (not Ospite / Amico)
+  let ch = await env.USERS.get('cfg:week_channel');
+  if (ch) return ch;
+  const list = await (await dapi(env, 'GET', `/guilds/${GUILD}/channels`)).json();
+  const found = list.find((c) => c.type === 0 && /progressi$/.test(c.name));
+  if (found) ch = found.id;
+  else {
+    const near = list.find((c) => c.type === 0 && /traguardi$/.test(c.name)) || list.find((c) => c.type === 0 && /generale$/.test(c.name));
+    const me = await (await dapi(env, 'GET', '/users/@me')).json(), roles = await (await dapi(env, 'GET', `/guilds/${GUILD}/roles`)).json();
+    const r = await dapi(env, 'POST', `/guilds/${GUILD}/channels`, {name: '📈・progressi', type: 0, parent_id: near?.parent_id, position: (near?.position ?? 0) + 1,
+      topic: 'Ogni mercoledì alle 8 Mauro pubblica di quanto è cresciuto il Combat Power dei membri della Legione. Solo per la Legione.',
+      permission_overwrites: [{id: GUILD, type: 0, allow: '0', deny: String(0x400 | 0x800)}, {id: me.id, type: 1, allow: String(0x400 | 0x800 | 0x4000 | 0x10000), deny: '0'},
+        ...roles.filter((x) => CORE_GRADES.includes(x.name)).map((x) => ({id: x.id, type: 0, allow: String(0x400), deny: String(0x800)}))]});
+    if (!r.ok) { await env.USERS.put('timer_err', `week ${r.status} ${(await r.text()).slice(0, 300)}`); return null; }
+    ch = (await r.json()).id;
+  }
+  await env.USERS.put('cfg:week_channel', ch);
+  return ch;
+}
+async function weeklyReport(env, force) {
+  const now = Date.now(), d = localDay(now, WEEK_TZ), hour = Math.floor(((now / 6e4 + tzOffset(now, WEEK_TZ)) % 1440 + 1440) % 1440 / 60);
+  const snap = JSON.parse(await env.USERS.get('wk:snap') || 'null');
+  if (!snap) { await env.USERS.put('wk:snap', JSON.stringify({t: now, rows: await weekRows(env)})); await weeklyChannel(env); return; }  // first run: baseline
+  const today = `${d.y}-${d.m}-${d.d}`;
+  if (!force && (d.dow !== WEEK_DOW || hour < WEEK_HOUR || await env.USERS.get('wk:last') === today)) return;
+  const cur = {t: now, rows: await weekRows(env)}, ch = await weeklyChannel(env);
+  if (!ch) return;
+  const r = await dapi(env, 'POST', `/channels/${ch}/messages`, {embeds: [weekEmbed(snap, cur)], allowed_mentions: {parse: []}});
+  if (!r.ok) { await env.USERS.put('timer_err', `week post ${r.status} ${(await r.text()).slice(0, 200)}`); return; }
+  await env.USERS.put('wk:last', today);
+  await env.USERS.put('wk:snap', JSON.stringify(cur));
+}
+
 // ---------- /raid: sign-up sheet with Tank / Healer / DPS buttons; the cron tags everyone ~15 min before ----------
 // KV raid:<id> = {title, t, slots, by, ch, note, list: {tank: [uid], heal: [], dps: []}, pinged}; expires a day after the start.
 const RAID_TZ = 'Europe/Rome', RAID_ROLES = [['tank', 'Tank', '🛡️'], ['heal', 'Healer', '✚'], ['dps', 'DPS', '⚔️']];
@@ -1331,7 +1394,7 @@ async function raidReminders(env) {               // cron: tag the sign-ups once
 
 // ---------- entry point ----------
 export default {
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => env.USERS.put('sweep_err', String(e?.stack || e).slice(0, 400)))])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => env.USERS.put('sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300)))])); },
   async fetch(req, env, ctx) {
     if (new URL(req.url).pathname === '/hit') return hit(req, env);
     if (/^\/join(\/cb)?$/.test(new URL(req.url).pathname)) return join(req, env);
