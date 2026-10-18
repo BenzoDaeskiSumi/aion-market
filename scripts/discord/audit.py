@@ -31,3 +31,19 @@ try:
                                  headers={'Authorization': f'Bot {T}', 'Content-Type': 'application/json', 'User-Agent': 'DiscordBot (aion-market, 1)'})
     print('\n== invite https://discord.gg/' + json.load(urllib.request.urlopen(req))['code'])
 except Exception as e: print('invite error', e)
+try:
+    W = 'https://aion-market-bot.aion2-market.workers.dev/char/'
+    rq = lambda u: json.load(urllib.request.urlopen(urllib.request.Request(W + u, headers={'User-Agent': 'Mozilla/5.0'})))
+    n = 0
+    for q in ['Benzo', 'Ben', 'Mar', 'Lux', 'Dark']:
+        for c in rq(f'search?q={q}&s=2305')['list']:
+            if c['level'] < 40: continue
+            d = rq(f"info?id={urllib.parse.quote(c['id'])}&s={c['server']}")
+            st = {x.get('type'): x.get('value') for x in (d.get('stat') or {}).get('statList', [])}
+            print('== gs', d['profile']['characterName'], 'lv', d['profile']['characterLevel'], 'cp', d['profile'].get('combatPower'), 'itemlevel', st.get('ItemLevel'), 'legion', d['profile'].get('regionName'))
+            n += 1
+            if n >= 10: break
+        if n >= 10: break
+    print('== stat types', list(st.keys())[:40])
+    print('== ranking', json.dumps(d.get('ranking'), ensure_ascii=False)[:600])
+except Exception as e: print('gs probe error', e)
