@@ -501,7 +501,7 @@ function aiuto(env) {
     '`/server <server>` — registra il tuo server: gli altri comandi lo useranno in automatico.',
     '',
     '**Legione**',
-    '`/collega <personaggio>` — collega il tuo personaggio: soprannome e ruolo di classe automatici, `/personaggio` senza nome mostra il tuo. `/scollega` per toglierlo.',
+    '`/collega <personaggio> [server]` — collega il tuo personaggio: soprannome e ruolo di classe automatici, `/personaggio` senza nome mostra il tuo. `/scollega` per toglierlo. Gli admin aggiungono `utente` per collegare o scollegare qualcun altro.',
     '`/legione` — i personaggi collegati della Legione in ordine di Combat Power.',
     '`/raid <titolo> <quando>` — iscrizioni a un raid con i pulsanti Tank / Healer / DPS; Mauro tagga gli iscritti 15 minuti prima. Quando: `21:00`, `domani 21`, `sabato 21:30`, `25/10 21:00`.',
     '',
@@ -1021,10 +1021,18 @@ async function gradeByLegion(env, gid, uid, have, c) {
   return {got, roles: Array.isArray(roles) ? roles : []};
 }
 // the whole link: checks, KV, nickname, grade, class role, officer note. Returns the message for the user.
-async function doLink(env, i, server, id) {
-  const uid = userId(i), gid = i.guild_id || GUILD, have = new Set(i.member?.roles || []);
+const isAdmin = (i) => { const p = BigInt(i.member?.permissions || 0); return !!(p & 8n || p & 32n || p & 0x10000000n); };   // Administrator, Manage Server or Manage Roles
+async function linkTarget(env, i, uid) {         // who gets the link: the user, or (admins) another member
+  if (!uid || uid === userId(i)) return {uid: userId(i), roles: i.member?.roles || [], self: true};
+  const r = await dapi(env, 'GET', `/guilds/${i.guild_id || GUILD}/members/${uid}`);
+  return r.ok ? {uid, roles: (await r.json()).roles || [], self: false} : null;
+}
+async function doLink(env, i, server, id, tgt) {
+  tgt = tgt || {uid: userId(i), roles: i.member?.roles || [], self: true};
+  const uid = tgt.uid, gid = i.guild_id || GUILD, have = new Set(tgt.roles), you = tgt.self ? 'ti' : 'gli', by = userId(i);
   const owner = await env.USERS.get(`linkc:${server}:${id}`);
-  if (owner && owner !== uid) return {content: `Questo personaggio è già collegato a <@${owner}>. Se è tuo, scrivi a un Centurion.`};
+  if (owner && owner !== uid && !isAdmin(i)) return {content: `Questo personaggio è già collegato a <@${owner}>. Se è tuo, scrivi a un Centurion.`};
+  if (owner && owner !== uid) { await env.USERS.delete('link:' + owner); }       // an admin moves it to the right person
   const c = await charProfile(server, id);
   if (!c.name) return {content: 'Il sito ufficiale non mi dà i dati di questo personaggio, riprova tra poco.'};
   const old = await linkOf(env, uid);
@@ -1034,52 +1042,70 @@ async function doLink(env, i, server, id) {
   await env.USERS.put(`linkc:${server}:${id}`, uid);
   const notes = [];
   const n = await dapi(env, 'PATCH', `/guilds/${gid}/members/${uid}`, {nick: c.name});
-  notes.push(n.ok ? `🏷️ Soprannome: **${c.name}**` : '🏷️ Non posso cambiarti il soprannome (succede col proprietario del server o con ruoli sopra Mauro): mettilo a mano.');
+  notes.push(n.ok ? `🏷️ Soprannome: **${c.name}**` : `🏷️ Non posso cambiar${you} il soprannome (succede col proprietario del server o con ruoli sopra Mauro): va messo a mano.`);
   const {got, roles} = await gradeByLegion(env, gid, uid, have, c);
   const cr = roles.find((x) => CLASS_ROLES.includes(x.name) && norm(x.name) === norm(c.cls));
   if (cr && !have.has(cr.id)) {
     const ok = (await dapi(env, 'PUT', `/guilds/${gid}/members/${uid}/roles/${cr.id}`)).ok;
     const sep = roles.find((x) => x.name.includes('𝐂𝐋𝐀𝐒𝐒𝐈') && x.name.includes('─'));
     if (ok && sep && !have.has(sep.id)) await dapi(env, 'PUT', `/guilds/${gid}/members/${uid}/roles/${sep.id}`);
-    notes.push(ok ? `🎭 Classe: **${cr.name}**` : '🎭 Non sono riuscito a darti il ruolo di classe.');
+    notes.push(ok ? `🎭 Classe: **${cr.name}**` : '🎭 Non sono riuscito a dare il ruolo di classe.');
   }
-  if (inLegion(c)) notes.push(got ? '⚔️ Sei nella **Legione** in gioco: benvenuto, sei **Recluta**! Ora vedi tutti i canali.' : '⚔️ Sei nella **Legione** in gioco: compari in `/legione`.');
+  if (!tgt.self) notes.push(inLegion(c) ? `⚔️ In gioco è nella **Legione**${got ? ': ora è **Recluta**' : ''}.` : `👋 In gioco ${c.legion ? `è nella legione **${c.legion}**` : 'non è in una legione'}${got ? ': ora è **Ospite**' : ''}.`);
+  else if (inLegion(c)) notes.push(got ? '⚔️ Sei nella **Legione** in gioco: benvenuto, sei **Recluta**! Ora vedi tutti i canali.' : '⚔️ Sei nella **Legione** in gioco: compari in `/legione`.');
   else notes.push(`👋 In gioco ${c.legion ? `sei nella legione **${c.legion}**` : 'non sei in una legione'}${c.server !== LEGION.server ? ` (server ${c.serverName})` : ''}: sei **Ospite**${got ? '' : ' o tieni il ruolo che hai'} e vedi tutti i canali, vocali comprese. Quando entri nella Legione su Marchutan ti promuovo a Recluta da solo.`);
-  if (!old || old.id !== c.id) await officerNote(env, `🔗 <@${uid}> ha collegato **${c.name}** · ${c.cls} · ${kin(c.cp)} CP · ${c.serverName} · legione: ${c.legion || 'nessuna'}${got ? ` → **${got}**` : ''}`).catch(() => {});
+  if (!old || old.id !== c.id) await officerNote(env, `🔗 ${tgt.self ? `<@${uid}> ha collegato` : `<@${by}> ha collegato per <@${uid}>`} **${c.name}** · ${c.cls} · ${kin(c.cp)} CP · ${c.serverName} · legione: ${c.legion || 'nessuna'}${got ? ` → **${got}**` : ''}`).catch(() => {});
   const card = await charView(c.server, c.id, 'card', uid, env).catch(() => ({}));
-  return {...card, content: [`✅ **${c.name}** (${c.serverName}) è collegato al tuo account.`, ...notes].join('\n')};
+  return {...card, content: [tgt.self ? `✅ **${c.name}** (${c.serverName}) è collegato al tuo account.` : `✅ **${c.name}** (${c.serverName}) è collegato a <@${uid}>.`, ...notes].join('\n')};
 }
 const hook = (i, env, data, method = 'PATCH') => fetch(`https://discord.com/api/v10/webhooks/${i.application_id || env.DISCORD_APP_ID}/${i.token}/messages/@original`,
   {method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify({allowed_mentions: {parse: []}, ...data})});
-async function pickAndLink(i, env, raw) {         // name typed (command or modal): link the only match, else offer a menu of matches
+async function serverFrom(txt) {                // server typed or picked: id ('2305') or name ('Marchutan'), else null
+  const t = String(txt || '').trim().toLowerCase();
+  if (!t) return null;
+  if (/^\d{4}$/.test(t)) return +t;
+  const {servers: list} = await charMeta();
+  return (list.find((x) => x.name.toLowerCase() === t) || list.find((x) => x.name.toLowerCase().startsWith(t)))?.id ?? -1;
+}
+async function pickAndLink(i, env, raw, srv, tgt) {   // name typed (command or modal): link the only match, else offer a menu of matches
   const m = raw.match(/^(\d{4}):([A-Za-z0-9_\-=]{10,80})$/);
-  if (m) return doLink(env, i, +m[1], m[2]);
-  const [r, meta] = await Promise.all([charSearch(raw, null, 1, 25), charMeta().catch(() => ({classes: {}}))]);
+  if (m) return doLink(env, i, +m[1], m[2], tgt);
+  if (srv === -1) return {content: 'Non conosco quel server: scrivi il nome come in gioco (es. Marchutan) oppure lascialo vuoto.'};
+  const [r, meta] = await Promise.all([charSearch(raw, srv || null, 1, 25), charMeta().catch(() => ({classes: {}}))]);
   const exact = r.list.filter((c) => c.name.toLowerCase() === raw.toLowerCase());
   const list = exact.length ? exact : r.list;
-  if (list.length === 1) return doLink(env, i, list[0].server, list[0].id);
-  if (!list.length) return {content: `Nessun personaggio **${raw}** sui server EU. Controlla il nome (come in gioco) e riprova.`};
+  if (list.length === 1) return doLink(env, i, list[0].server, list[0].id, tgt);
+  if (!list.length) return {content: `Nessun personaggio **${raw}**${srv ? ' su quel server' : ' sui server EU'}. Controlla il nome (come in gioco) e riprova.`};
   list.sort((a, b) => (b.server === LEGION.server) - (a.server === LEGION.server));
-  return {content: `Ho trovato ${list.length} personaggi: qual è il tuo?`, components: [{type: 1, components: [{type: 3, custom_id: 'lks', placeholder: 'Scegli il tuo personaggio',
+  return {content: `Ho trovato ${list.length} personaggi: ${tgt && !tgt.self ? `quale è quello di <@${tgt.uid}>` : 'qual è il tuo'}?`, components: [{type: 1, components: [{type: 3,
+    custom_id: tgt && !tgt.self ? `lks:${tgt.uid}` : 'lks', placeholder: 'Scegli il personaggio',
     options: list.slice(0, 25).map((c) => ({label: `${c.name} · ${c.serverName}`.slice(0, 100), description: `${meta.classes[c.pcId] || ''} Lv ${c.level}`.slice(0, 100), value: `${c.server}:${c.id}`.slice(0, 100)}))}]}]};
 }
+const OFFLINE = {content: 'Il sito ufficiale di NCSOFT non risponde in questo momento, riprova tra poco.'};
 async function collega(i, env, ctx) {
-  const raw = String(opt(i.data, 'personaggio')?.value || '').trim();
-  ctx.waitUntil(pickAndLink(i, env, raw).then((d) => hook(i, env, d)).catch(() => hook(i, env, {content: 'Il sito ufficiale di NCSOFT non risponde in questo momento, riprova tra poco.'})));
+  const raw = String(opt(i.data, 'personaggio')?.value || '').trim(), who = opt(i.data, 'utente')?.value;
+  if (who && who !== userId(i) && !isAdmin(i)) return oops('Solo gli amministratori possono collegare il personaggio di un altro.');
+  ctx.waitUntil((async () => {
+    const tgt = await linkTarget(env, i, who);
+    if (!tgt) return hook(i, env, {content: 'Non trovo quell\'utente nel server.'});
+    return hook(i, env, await pickAndLink(i, env, raw, await serverFrom(opt(i.data, 'server')?.value), tgt));
+  })().catch(() => hook(i, env, OFFLINE)));
   return Response.json({type: 5, data: {flags: 64}});
 }
 function linkModal() {                           // 'Collega il tuo personaggio' button in #benvenuto
   return Response.json({type: 9, data: {custom_id: 'lkm', title: 'Collega il tuo personaggio', components: [{type: 1, components: [
-    {type: 4, custom_id: 'name', label: 'Nome del personaggio (come in gioco)', style: 1, min_length: 2, max_length: 30, required: true, placeholder: 'es. Benzo'}]}]}});
+    {type: 4, custom_id: 'name', label: 'Nome del personaggio (come in gioco)', style: 1, min_length: 2, max_length: 30, required: true, placeholder: 'es. Benzo'}]},
+    {type: 1, components: [{type: 4, custom_id: 'server', label: 'Server', style: 1, max_length: 20, required: false, value: 'Marchutan', placeholder: 'Marchutan (vuoto = tutti i server EU)'}]}]}});
 }
 async function linkModalSubmit(i, env, ctx) {
-  const raw = String(i.data.components?.[0]?.components?.[0]?.value || '').trim();
-  ctx.waitUntil(pickAndLink(i, env, raw).then((d) => hook(i, env, d)).catch(() => hook(i, env, {content: 'Il sito ufficiale di NCSOFT non risponde in questo momento, riprova tra poco.'})));
+  const val = (k) => String((i.data.components || []).flatMap((r) => r.components || []).find((c) => c.custom_id === k)?.value || '').trim();
+  ctx.waitUntil((async () => hook(i, env, await pickAndLink(i, env, val('name'), await serverFrom(val('server')))))().catch(() => hook(i, env, OFFLINE)));
   return Response.json({type: 5, data: {flags: 64}});
 }
 async function linkSelect(i, env, ctx) {
-  const [server, id] = String(i.data.values?.[0] || '').split(':');
-  ctx.waitUntil(doLink(env, i, +server, id).then((d) => hook(i, env, {components: [], ...d})).catch(() => hook(i, env, {content: 'Il sito ufficiale di NCSOFT non risponde in questo momento, riprova tra poco.', components: []})));
+  const [server, id] = String(i.data.values?.[0] || '').split(':'), who = i.data.custom_id.split(':')[1];
+  if (who && !isAdmin(i)) return oops('Solo gli amministratori possono collegare il personaggio di un altro.');
+  ctx.waitUntil(linkTarget(env, i, who).then((tgt) => doLink(env, i, +server, id, tgt)).then((d) => hook(i, env, {components: [], ...d})).catch(() => hook(i, env, {content: 'Il sito ufficiale di NCSOFT non risponde in questo momento, riprova tra poco.', components: []})));
   return Response.json({type: 6});                // update the same (ephemeral) message when done
 }
 // cron: re-check a few linked members per run (subrequest limits): promote Ospite -> Recluta when they join the Legione in game,
@@ -1108,10 +1134,13 @@ async function legionSweep(env) {
   await env.USERS.put('cfg:sweep_at', String(at));
 }
 async function scollega(i, env) {
-  const uid = userId(i), l = await linkOf(env, uid);
-  if (!l) return oops('Non hai nessun personaggio collegato.');
+  const who = opt(i.data, 'utente')?.value, uid = who || userId(i), other = uid !== userId(i);
+  if (other && !isAdmin(i)) return oops('Solo gli amministratori possono scollegare il personaggio di un altro.');
+  const l = await linkOf(env, uid);
+  if (!l) return oops(other ? `<@${uid}> non ha nessun personaggio collegato.` : 'Non hai nessun personaggio collegato.');
   await env.USERS.delete('link:' + uid); await env.USERS.delete(`linkc:${l.server}:${l.id}`);
-  return oops(`Ok, **${l.name}** non è più collegato. Soprannome e ruoli restano come sono.`);
+  if (other) await officerNote(env, `✂️ <@${userId(i)}> ha scollegato **${l.name}** da <@${uid}>`).catch(() => {});
+  return oops(`Ok, **${l.name}** non è più collegato${other ? ` a <@${uid}>` : ''}. Soprannome e ruoli restano come sono.`);
 }
 async function legione(i, env, ctx) {           // members with a linked character, by Combat Power (refreshed from the official site)
   const followup = (data) => fetch(`https://discord.com/api/v10/webhooks/${i.application_id || env.DISCORD_APP_ID}/${i.token}/messages/@original`,
@@ -1318,12 +1347,12 @@ export default {
     try {
       if (i.type === 4) {                                                       // autocomplete
         const sid = await serverOf(i, env), foc = flat(i.data).find((o) => o.focused), q = String(foc?.value || '');
-        if (i.data.name === 'personaggio' && foc?.name === 'server') {
+        if ((i.data.name === 'personaggio' || i.data.name === 'collega') && foc?.name === 'server') {
           const {servers: list} = await charMeta(), q2 = String(foc.value || '').toLowerCase();
           return Response.json({type: 8, data: {choices: list.filter((x) => x.name.toLowerCase().includes(q2)).slice(0, 25)
             .map((x) => ({name: `${x.name} · ${x.race === 1 ? 'Elyos' : 'Asmodian'}`, value: String(x.id)}))}});
         }
-        if (i.data.name === 'collega') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), null)}});
+        if (i.data.name === 'collega') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), /^\d{4}$/.test(String(opt(i.data, 'server')?.value || '')) ? opt(i.data, 'server').value : null)}});
         if (i.data.name === 'personaggio') {
           const srv = /^\d{4}$/.test(String(opt(i.data, 'server')?.value || '')) ? opt(i.data, 'server').value : null;
           return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), srv)}});
@@ -1364,7 +1393,7 @@ export default {
       if (i.type === 3 && i.data.custom_id?.startsWith('pc:')) return await charButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('tk:')) return await timerButton(i, env);
       if (i.type === 3 && i.data.custom_id === 'lk:start') return linkModal();
-      if (i.type === 3 && i.data.custom_id === 'lks') return await linkSelect(i, env, ctx);
+      if (i.type === 3 && /^lks(:|$)/.test(i.data.custom_id || '')) return await linkSelect(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('ts:')) return await signupButton(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('rs:')) return await raidButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('rp:')) return await rolePick(i, env, ctx);
