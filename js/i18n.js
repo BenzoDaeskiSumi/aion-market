@@ -720,3 +720,6 @@ FR_RE.push([/^La Legione su Marchutan · (\d+) membri$/, "Legione sur Marchutan 
 EN_RE.push([/^craft ([−+])(\d+)%$/, 'craft $1$2%'], [/^Consuma un (.+), contato tra gli ingredienti\.$/, 'Uses one $1, counted among the ingredients.']);
 ES_RE.push([/^Consuma un (.+), contato tra gli ingredienti\.$/, 'Consume un $1, contado entre los ingredientes.']);
 FR_RE.push([/^Consuma un (.+), contato tra gli ingredienti\.$/, 'Consomme un $1, compté parmi les ingrédients.']);
+EN_RE.push([/^Accesso con Discord non riuscito: (.+)$/, 'Discord login failed: $1']);
+ES_RE.push([/^Accesso con Discord non riuscito: (.+)$/, 'Error al iniciar sesión con Discord: $1']);
+FR_RE.push([/^Accesso con Discord non riuscito: (.+)$/, 'Échec de la connexion Discord : $1']);

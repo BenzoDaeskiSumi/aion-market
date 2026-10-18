@@ -54,6 +54,16 @@ async function loadProfile() {
 if (sb) {
   sb.auth.onAuthStateChange((event, session) => {
     const was = USER?.id; USER = session?.user || null; paintAcct();
+// if Discord / Supabase sent the user back with an error, say so instead of silently showing the logged-out page
+(() => {
+  const q = new URLSearchParams(location.search + '&' + location.hash.replace(/^#/, ''));
+  const err = q.get('error_description') || q.get('error');
+  if (!err) return;
+  const box = document.createElement('div'); box.className = 'loginerr'; box.setAttribute('role', 'alert');
+  box.textContent = 'Accesso con Discord non riuscito: ' + err.replace(/\+/g, ' ');
+  document.body.prepend(box); setTimeout(() => box.remove(), 15000);
+  history.replaceState(null, '', location.pathname);
+})();
     if (USER && USER.id !== was) setTimeout(loadProfile, 0);       // after the auth callback returns
     if (!USER) { profileReady = false; ALERTS = []; }
     if (ITEMS.length) drawChart();

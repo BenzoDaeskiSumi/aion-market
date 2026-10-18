@@ -653,3 +653,6 @@ footer .guild a.discord:hover, footer .guild a.discord:focus-visible { backgroun
 
 /* the profession is already under each item name: its column only on wide screens */
 @media (max-width: 1700px) { #crafttab .hsk { display: none; } }
+
+/* login error banner (Discord/Supabase sent back an error) */
+.loginerr { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 9999; max-width: min(92vw, 720px); padding: 10px 16px; border-radius: 10px; background: #5c1d22; color: #fff; font-size: 14px; box-shadow: 0 6px 24px rgba(0,0,0,.4); }
