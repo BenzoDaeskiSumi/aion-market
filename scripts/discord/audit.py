@@ -47,3 +47,7 @@ try:
     print('== stat types', list(st.keys())[:40])
     print('== ranking', json.dumps(d.get('ranking'), ensure_ascii=False)[:600])
 except Exception as e: print('gs probe error', e)
+try:
+    L = json.load(urllib.request.urlopen(urllib.request.Request('https://aion-market-bot.aion2-market.workers.dev/legion', headers={'User-Agent': 'Mozilla/5.0'})))
+    print('\n== legion', len(L['members']), 'membri', [(m['name'], m['il'], m['cp']) for m in L['members']][:10])
+except Exception as e: print('legion error', e)
