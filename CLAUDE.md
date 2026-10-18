@@ -183,7 +183,7 @@ Site: Worker GET /legion (public, Legione members only: key, name, cls, lv, cp, 
 auth/v1/user -> Discord id -> own character key). js/chars.js: Personaggi with an empty search shows the roster (sorted by Gear Score) + composition; the
 logged-in member's row is marked and opens by default; the detail adds Gear Score / CP sparklines (milestones dashed).
 /legione = linked characters whose in-game legion is 'Legione' on Marchutan (official profile.regionName = legion name; NCSOFT server id 2305, not the Market's 12305), by CP (refreshes entries older than 6 h). /raid lists show 'class CP' next to linked members. Described in privacy.html.
-Weekly report: weeklyReport() in the cron, Wednesday 08:00 Europe/Rome, posts weekEmbed(KV wk:snap vs now; stored link profiles, kept fresh by legionSweep) in '📈・progressi'
+Weekly report: weeklyReport() in the cron, Wednesday 08:00 Europe/Rome, posts weekEmbeds(everyone alphabetically, no ranking/medals at the user's request; KV wk:snap vs now; stored link profiles, kept fresh by legionSweep) in '📈・progressi'
 (KV cfg:week_channel; read-only, visible to CORE_GRADES only: gate.py keeps Ospite and Amico out of it); first cron run only stores the baseline (KV wk:last = day posted).
 /chisiamo answers '# LA LEGIONE' (guild joke; the bot can't read plain chat messages, slash commands only).
 Event countdown: the cron also keeps ONE message in '⏰・timer-eventi' (created by the Worker next to #annunci, read-only; KV cfg:timer_channel /

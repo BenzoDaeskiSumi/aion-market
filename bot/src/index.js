@@ -1245,24 +1245,25 @@ async function weekRows(env) {
   }
   return out;
 }
-function weekEmbed(prev, now) {
+function weekEmbeds(prev, now) {            // everyone, alphabetical: a diary of the week, not a ranking
   const fmtDay = (t) => new Intl.DateTimeFormat('it-IT', {timeZone: WEEK_TZ, weekday: 'short', day: 'numeric', month: 'short'}).format(new Date(t));
-  const rows = Object.entries(now.rows).map(([uid, r]) => ({uid, ...r, old: prev.rows[uid]})).map((r) => ({...r, gain: r.old ? r.cp - r.old.cp : null, gs: r.old && r.il && r.old.il ? r.il - r.old.il : null}));
-  const known = rows.filter((r) => r.gain != null).sort((a, b) => b.gain - a.gain), fresh = rows.filter((r) => r.gain == null);
-  const up = known.filter((r) => r.gain > 0), still = known.filter((r) => r.gain <= 0);
-  const medal = ['🥇', '🥈', '🥉'], sgn = (v) => (v > 0 ? '+' : v < 0 ? '−' : '±') + kin(Math.abs(v));
-  const line = (r, k) => `${medal[k] || `\`${String(k + 1).padStart(2)}.\``} **${r.name}** · ${r.cls} · **${sgn(r.gain)} CP**` +
-    `\n-# ${kin(r.old.cp)} → ${kin(r.cp)}${r.gs ? ` · Gear Score ${sgn(r.gs)}` : ''} · <@${r.uid}>`;
-  const total = up.reduce((a, r) => a + r.gain, 0);
-  const desc = [`Dal **${fmtDay(prev.t)}** al **${fmtDay(now.t)}**`, '',
-    ...(up.length ? up.slice(0, 20).map(line) : ['Nessuno è cresciuto questa settimana… si recupera la prossima! 💪']),
-    ...(up.length > 20 ? [`…e altri ${up.length - 20}`] : [])].join('\n');
-  const fields = [];
-  if (up.length) fields.push({name: '📊 La Legione', value: `**${sgn(total)} CP** in totale · media **${sgn(Math.round(total / up.length))}** a testa · ${up.length} su ${known.length} sono cresciuti`});
-  if (still.length) fields.push({name: '😴 Fermi', value: still.map((r) => r.name).join(' · ').slice(0, 1024)});
-  if (fresh.length) fields.push({name: '🆕 Nuovi collegati', value: `${fresh.map((r) => r.name).join(' · ')}`.slice(0, 900) + '\n-# li confrontiamo dalla prossima settimana'});
-  return {title: '📈 Progressi della settimana', color: 0xe8b64a, description: desc.slice(0, 4096), fields,
-    footer: {text: 'Combat Power ufficiale NCSOFT dei personaggi collegati con /collega · ogni mercoledì alle 8'}, timestamp: new Date(now.t).toISOString()};
+  const sgn = (v) => (v > 0 ? '+' : '−') + kin(Math.abs(v));
+  const rows = Object.entries(now.rows).map(([uid, r]) => ({uid, ...r, old: prev.rows[uid]})).sort((a, b) => a.name.localeCompare(b.name, 'it'));
+  const line = (r) => {
+    if (!r.old) return `• **${r.name}** · ${r.cls} · ${kin(r.cp)} CP\n-# appena arrivato: lo confrontiamo dalla prossima settimana`;
+    const g = r.cp - r.old.cp, gs = r.il && r.old.il ? r.il - r.old.il : 0;
+    return `• **${r.name}** · ${r.cls} · ${kin(r.cp)} CP` + (g ? ` (${sgn(g)})` : '') + `\n-# ${g ? `${kin(r.old.cp)} → ${kin(r.cp)}` : 'stesso CP della settimana scorsa'}` +
+      (r.il ? ` · Gear Score ${kin(r.il)}${gs ? ` (${sgn(gs)})` : ''}` : '');
+  };
+  const total = rows.reduce((a, r) => a + (r.old ? Math.max(0, r.cp - r.old.cp) : 0), 0);
+  const head = `Dal **${fmtDay(prev.t)}** al **${fmtDay(now.t)}**\n` + (total > 0 ? `Insieme la Legione ha guadagnato **${sgn(total)} CP**. Bel lavoro a tutti! ⚔️` : 'Settimana tranquilla: si riparte! ⚔️');
+  const lines = rows.length ? rows.map(line) : ['Nessun personaggio collegato: usate `/collega` per comparire qui.'];
+  const out = [];                               // several embeds if the Legione is big (4096 chars each)
+  let cur = head + '\n';
+  for (const l of lines) { if ((cur + '\n' + l).length > 3900) { out.push(cur); cur = ''; } cur += '\n' + l; }
+  out.push(cur);
+  return out.slice(0, 9).map((d, k) => ({color: 0xe8b64a, description: d, ...(k === 0 ? {title: '📈 Come siamo cresciuti questa settimana'} : {}),
+    ...(k === out.length - 1 ? {footer: {text: `${rows.length} membri · Combat Power ufficiale NCSOFT dei personaggi collegati con /collega · ogni mercoledì alle 8`}, timestamp: new Date(now.t).toISOString()} : {})}));
 }
 async function weeklyChannel(env) {        // read-only, visible to the Legione's grades only (not Ospite / Amico)
   let ch = await env.USERS.get('cfg:week_channel');
@@ -1291,7 +1292,7 @@ async function weeklyReport(env, force) {
   if (!force && (d.dow !== WEEK_DOW || hour < WEEK_HOUR || await env.USERS.get('wk:last') === today)) return;
   const cur = {t: now, rows: await weekRows(env)}, ch = await weeklyChannel(env);
   if (!ch) return;
-  const r = await dapi(env, 'POST', `/channels/${ch}/messages`, {embeds: [weekEmbed(snap, cur)], allowed_mentions: {parse: []}});
+  const r = await dapi(env, 'POST', `/channels/${ch}/messages`, {embeds: weekEmbeds(snap, cur), allowed_mentions: {parse: []}});
   if (!r.ok) { await env.USERS.put('timer_err', `week post ${r.status} ${(await r.text()).slice(0, 200)}`); return; }
   await env.USERS.put('wk:last', today);
   await env.USERS.put('wk:snap', JSON.stringify(cur));
