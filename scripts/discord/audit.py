@@ -19,10 +19,15 @@ except Exception as e: print('timer status error', e)
 try:
     W = 'https://aion-market-bot.aion2-market.workers.dev/char/'
     rq = lambda u: json.load(urllib.request.urlopen(urllib.request.Request(W + u, headers={'User-Agent': 'Mozilla/5.0'})))
-    c = rq('search?q=Leg&s=12305')['list'][0]
-    d = rq(f"info?id={urllib.parse.quote(c['id'])}&s={c['server']}")
-    print('\n== char keys', list(d.keys()))
-    print('== profile', json.dumps(d.get('profile'), ensure_ascii=False)[:1500])
-    for k in d:
-        if 'guild' in k.lower() or 'legion' in k.lower(): print('== ', k, json.dumps(d[k], ensure_ascii=False)[:500])
+    meta = rq('meta'); mar = [x for x in meta['servers'] if x['name'] == 'Marchutan']
+    print('\n== marchutan', mar)
+    seen = 0
+    for q in ['Ben', 'Mar', 'Dark', 'Shadow', 'Lux']:
+        for c in rq(f"search?q={q}" + (f"&s={mar[0]['id']}" if mar else ''))['list']:
+            if c['level'] < 30: continue
+            d = rq(f"info?id={urllib.parse.quote(c['id'])}&s={c['server']}")['profile']
+            print('==', d['characterName'], d['serverName'], d['characterLevel'], 'region=', repr(d.get('regionName')), 'title=', d.get('titleName'))
+            seen += 1
+            if seen >= 8: break
+        if seen >= 8: break
 except Exception as e: print('char probe error', e)
