@@ -160,7 +160,7 @@ function drawCharDetail() {
   pick.hidden = facts.hidden = cd.hidden = false;
   pick.replaceChildren(charBox({name: pr.characterName, img: pr.profileImage, sub: [pr.className, 'Lv ' + pr.characterLevel, pr.raceName === 'Elyos' ? 'Elyos' : pr.raceName === 'Asmodian' ? 'Asmodian' : pr.raceName, pr.serverName].filter(Boolean).join(' · ')}, true));
   const il = stats.find((x) => x.type === 'ItemLevel')?.value;
-  const f = [['Combat Power', pr.combatPower ? fmtK(pr.combatPower) : '—'], ['Item Level', il ? fmtK(il) : '—'],
+  const f = [['Combat Power', pr.combatPower ? fmtK(pr.combatPower) : '—'], ['Gear Score', il ? fmtK(il) : '—'],
     ['Titoli', d.title?.ownedCount != null ? `${d.title.ownedCount} / ${d.title.totalCount}` : '—'], ['Titolo attivo', pr.titleName || '—']];
   facts.replaceChildren(...f.map(([k, v]) => { const x = document.createElement('div'); x.textContent = k; const b = document.createElement('b'); b.textContent = v; x.appendChild(b); return x; }));
   cd.replaceChildren();
