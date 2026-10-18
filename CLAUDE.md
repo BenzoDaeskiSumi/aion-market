@@ -168,6 +168,11 @@ Apri sul sito. Anyone can press them, each for their own account; the item is th
 KV raid:<id> (expires start+1 day); parseQuando() reads Italian time ('21', 'domani 21', 'sabato 21:30', '25/10 21:00'); the cron (raidReminders) tags the sign-ups once, ~15 min before.
 /collega <personaggio> (same autocomplete as /personaggio): KV link:<uid> = {server, id, name, cls, cp, serverName, t} + linkc:<server>:<id> = uid (one each way;
 self-declared, no NCSOFT login exists); sets nick + class role (+ 𝐂𝐋𝐀𝐒𝐒𝐈 separator). /scollega removes the keys. /personaggio with no name = own link.
+Entry gate (scripts/discord/gate.py, mode gate-plan/apply): @everyone sees only 『📌 𝐁𝐄𝐍𝐕𝐄𝐍𝐔𝐓𝐎』; Ospite also MARKET + #generale + Taverna; grade roles everything but UFFICIALI
+(only the VIEW bit of each overwrite is touched; Mauro gets a member overwrite). #benvenuto has the button lk:start -> modal lkm (name) -> pickAndLink (one match links,
+else select menu lks) -> doLink(): KV, nick, gradeByLegion (in-game Legione on Marchutan -> Recluta unless a grade already, else Ospite; removes Ospite on promotion),
+class role, note in #ufficiali (KV cfg:officer_channel). legionSweep() in the cron re-checks 4 linked members per run (profile older than 6 h): Ospite -> Recluta when
+they join in game; graded members who left the in-game legion are reported once to the officers (KV left:<uid>), never demoted automatically.
 /legione = linked characters whose in-game legion is 'Legione' on Marchutan (official profile.regionName = legion name; NCSOFT server id 2305, not the Market's 12305), by CP (refreshes entries older than 6 h). /raid lists show 'class CP' next to linked members. Described in privacy.html.
 /chisiamo answers '# LA LEGIONE' (guild joke; the bot can't read plain chat messages, slash commands only).
 Event countdown: the cron also keeps ONE message in '⏰・timer-eventi' (created by the Worker next to #annunci, read-only; KV cfg:timer_channel /

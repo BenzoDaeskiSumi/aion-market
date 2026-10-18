@@ -41,6 +41,11 @@ def build(ch, roles, cemo):
         H('Chi siamo', '⚔️'),
         'Legione **Asmodian** su **Marchutan** (EU). Facciamo **dungeon**, **raid** e **PvP** insieme e ci passiamo i prezzi del **Market**.',
         SEP,
+        H('Per entrare', '🔑'),
+        '• Premi **Collega il tuo personaggio** qui sotto e scrivi il nome che hai in gioco.',
+        '• Sei nella **Legione** su Marchutan? Diventi **Recluta** e vedi tutti i canali.',
+        '• Non ancora? Entri come **Ospite**: Market, generale e Taverna. Quando entri in gilda ti promuovo da solo.',
+        SEP,
         H('Per iniziare', '🧭'),
         f"• Leggi le **regole** in {ch('regole')}",
         f"• Scegli **classi** e **contenuti** in {ch('scegli-ruoli')}",
@@ -50,7 +55,8 @@ def build(ch, roles, cemo):
         f"➤ {ch('cerco-gruppo')}", 'trova un party per quello che vuoi fare',
         f"➤ {ch('timer-eventi')}", 'quanto manca a Spaccature, Nahma e assedi',
         f"➤ {ch('comandi')}", 'prezzi e schede dei personaggi con Mauro',
-    ])}], 'components': [{'type': 1, 'components': [link('Sito della Legione', SITE)]}]}
+    ])}], 'components': [{'type': 1, 'components': [{'type': 2, 'style': 3, 'label': 'Collega il tuo personaggio', 'emoji': {'name': '🔗'}, 'custom_id': 'lk:start'},
+                                                link('Sito della Legione', SITE)]}]}
 
     rules = {'embeds': [banner('regole', GOLD), {'color': GOLD, 'description': '\n'.join([
         H('1. Rispetto', '🤝'),

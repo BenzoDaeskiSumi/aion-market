@@ -987,55 +987,119 @@ const CLASS_ROLES = ['Gladiator', 'Templar', 'Assassin', 'Ranger', 'Sorcerer', '
 const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z]/g, '');
 const cpShort = (v) => (!v ? '' : v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v >= 1e4 ? `${Math.round(v / 1e3)}k` : kin(v));
 async function linkOf(env, uid) { return JSON.parse(await env.USERS.get('link:' + uid) || 'null'); }
-async function charProfile(server, id) {
-  const d = await charInfo(id, server), pr = d.profile || {};
+async function charProfile(server, id) {        // one official call (profile only): name, class, CP, legion
+  const pr = (await nc(`https://aion2.plaync.com/api/character/info?lang=en-US&characterId=${encodeURIComponent(id)}&serverId=${server}&region=eu`, 600))?.profile || {};
   return {server: +server, id, name: pr.characterName, cls: pr.className || '', cp: pr.combatPower || 0, serverName: pr.serverName || '', legion: pr.regionName || '', race: pr.raceName || (pr.raceId === 2 ? 'Asmodian' : ''), t: Date.now()};
 }
+const inLegion = (c) => c?.legion === LEGION.name && c?.server === LEGION.server;
+const CORE_GRADES = ['Brigade General', 'Centurion', 'Legionario', 'Recluta'], ALL_GRADES = [...CORE_GRADES, 'Amico della Legione'];
+async function officerNote(env, text) {          // a line in #ufficiali (found once by name, then remembered)
+  let ch = await env.USERS.get('cfg:officer_channel');
+  if (!ch) {
+    const list = await (await dapi(env, 'GET', `/guilds/${GUILD}/channels`)).json().catch(() => []);
+    ch = (Array.isArray(list) ? list : []).find((c) => c.type === 0 && /ufficiali$/.test(c.name))?.id;
+    if (!ch) return;
+    await env.USERS.put('cfg:officer_channel', ch);
+  }
+  await dapi(env, 'POST', `/channels/${ch}/messages`, {content: text, allowed_mentions: {parse: []}});
+}
+// grade from the in-game legion: Legione -> Recluta (unless they already have a grade), anyone else -> Ospite (unless they have a grade or Amico)
+async function gradeByLegion(env, gid, uid, have, c) {
+  const roles = await (await dapi(env, 'GET', `/guilds/${gid}/roles`)).json().catch(() => []);
+  const id = (n) => (Array.isArray(roles) ? roles : []).find((r) => r.name === n)?.id;
+  const has = (n) => have.has(id(n)), sep = (Array.isArray(roles) ? roles : []).find((r) => r.name.includes('𝐆𝐑𝐀𝐃𝐈') && r.name.includes('─'));
+  let got = null;
+  if (inLegion(c)) {
+    if (!CORE_GRADES.some(has) && id('Recluta')) { await dapi(env, 'PUT', `/guilds/${gid}/members/${uid}/roles/${id('Recluta')}`); got = 'Recluta'; }
+    if (has('Ospite')) await dapi(env, 'DELETE', `/guilds/${gid}/members/${uid}/roles/${id('Ospite')}`);
+  } else if (!ALL_GRADES.some(has) && !has('Ospite') && id('Ospite')) { await dapi(env, 'PUT', `/guilds/${gid}/members/${uid}/roles/${id('Ospite')}`); got = 'Ospite'; }
+  if (got && sep && !have.has(sep.id)) await dapi(env, 'PUT', `/guilds/${gid}/members/${uid}/roles/${sep.id}`);
+  return {got, roles: Array.isArray(roles) ? roles : []};
+}
+// the whole link: checks, KV, nickname, grade, class role, officer note. Returns the message for the user.
+async function doLink(env, i, server, id) {
+  const uid = userId(i), gid = i.guild_id || GUILD, have = new Set(i.member?.roles || []);
+  const owner = await env.USERS.get(`linkc:${server}:${id}`);
+  if (owner && owner !== uid) return {content: `Questo personaggio è già collegato a <@${owner}>. Se è tuo, scrivi a un Centurion.`};
+  const c = await charProfile(server, id);
+  if (!c.name) return {content: 'Il sito ufficiale non mi dà i dati di questo personaggio, riprova tra poco.'};
+  const old = await linkOf(env, uid);
+  if (old && (old.server !== c.server || old.id !== c.id)) await env.USERS.delete(`linkc:${old.server}:${old.id}`);
+  await env.USERS.put('link:' + uid, JSON.stringify(c));
+  await env.USERS.put(`linkc:${server}:${id}`, uid);
+  const notes = [];
+  const n = await dapi(env, 'PATCH', `/guilds/${gid}/members/${uid}`, {nick: c.name});
+  notes.push(n.ok ? `🏷️ Soprannome: **${c.name}**` : '🏷️ Non posso cambiarti il soprannome (succede col proprietario del server o con ruoli sopra Mauro): mettilo a mano.');
+  const {got, roles} = await gradeByLegion(env, gid, uid, have, c);
+  const cr = roles.find((x) => CLASS_ROLES.includes(x.name) && norm(x.name) === norm(c.cls));
+  if (cr && !have.has(cr.id)) {
+    const ok = (await dapi(env, 'PUT', `/guilds/${gid}/members/${uid}/roles/${cr.id}`)).ok;
+    const sep = roles.find((x) => x.name.includes('𝐂𝐋𝐀𝐒𝐒𝐈') && x.name.includes('─'));
+    if (ok && sep && !have.has(sep.id)) await dapi(env, 'PUT', `/guilds/${gid}/members/${uid}/roles/${sep.id}`);
+    notes.push(ok ? `🎭 Classe: **${cr.name}**` : '🎭 Non sono riuscito a darti il ruolo di classe.');
+  }
+  if (inLegion(c)) notes.push(got ? '⚔️ Sei nella **Legione** in gioco: benvenuto, sei **Recluta**! Ora vedi tutti i canali.' : '⚔️ Sei nella **Legione** in gioco: compari in `/legione`.');
+  else notes.push(`👋 In gioco ${c.legion ? `sei nella legione **${c.legion}**` : 'non sei in una legione'}${c.server !== LEGION.server ? ` (server ${c.serverName})` : ''}: sei **Ospite**${got ? '' : ' o tieni il ruolo che hai'}. Quando entri nella Legione su Marchutan ti promuovo da solo.`);
+  if (!old || old.id !== c.id) await officerNote(env, `🔗 <@${uid}> ha collegato **${c.name}** · ${c.cls} · ${kin(c.cp)} CP · ${c.serverName} · legione: ${c.legion || 'nessuna'}${got ? ` → **${got}**` : ''}`).catch(() => {});
+  const card = await charView(c.server, c.id, 'card', uid, env).catch(() => ({}));
+  return {...card, content: [`✅ **${c.name}** (${c.serverName}) è collegato al tuo account.`, ...notes].join('\n')};
+}
+const hook = (i, env, data, method = 'PATCH') => fetch(`https://discord.com/api/v10/webhooks/${i.application_id || env.DISCORD_APP_ID}/${i.token}/messages/@original`,
+  {method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify({allowed_mentions: {parse: []}, ...data})});
+async function pickAndLink(i, env, raw) {         // name typed (command or modal): link the only match, else offer a menu of matches
+  const m = raw.match(/^(\d{4}):([A-Za-z0-9_\-=]{10,80})$/);
+  if (m) return doLink(env, i, +m[1], m[2]);
+  const [r, meta] = await Promise.all([charSearch(raw, null, 1, 25), charMeta().catch(() => ({classes: {}}))]);
+  const exact = r.list.filter((c) => c.name.toLowerCase() === raw.toLowerCase());
+  const list = exact.length ? exact : r.list;
+  if (list.length === 1) return doLink(env, i, list[0].server, list[0].id);
+  if (!list.length) return {content: `Nessun personaggio **${raw}** sui server EU. Controlla il nome (come in gioco) e riprova.`};
+  list.sort((a, b) => (b.server === LEGION.server) - (a.server === LEGION.server));
+  return {content: `Ho trovato ${list.length} personaggi: qual è il tuo?`, components: [{type: 1, components: [{type: 3, custom_id: 'lks', placeholder: 'Scegli il tuo personaggio',
+    options: list.slice(0, 25).map((c) => ({label: `${c.name} · ${c.serverName}`.slice(0, 100), description: `${meta.classes[c.pcId] || ''} Lv ${c.level}`.slice(0, 100), value: `${c.server}:${c.id}`.slice(0, 100)}))}]}]};
+}
 async function collega(i, env, ctx) {
-  const raw = String(opt(i.data, 'personaggio')?.value || '').trim(), uid = userId(i);
-  const followup = (data) => fetch(`https://discord.com/api/v10/webhooks/${i.application_id || env.DISCORD_APP_ID}/${i.token}/messages/@original`,
-    {method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({allowed_mentions: {parse: []}, ...data})});
-  ctx.waitUntil((async () => {
-    try {
-      let server, id;
-      const m = raw.match(/^(\d{4}):([A-Za-z0-9_\-=]{10,80})$/);
-      if (m) [server, id] = [+m[1], m[2]];
-      else {
-        const r = await charSearch(raw, null, 1, 25), exact = r.list.filter((c) => c.name.toLowerCase() === raw.toLowerCase());
-        const pick = exact.length === 1 ? exact[0] : r.list.length === 1 ? r.list[0] : null;
-        if (!pick) return void await followup({content: r.list.length ? `Ci sono più personaggi che si chiamano così: scegli il tuo dai suggerimenti mentre scrivi (mostrano server e classe).` : `Nessun personaggio **${raw}** sui server EU.`});
-        [server, id] = [pick.server, pick.id];
-      }
-      const owner = await env.USERS.get(`linkc:${server}:${id}`);
-      if (owner && owner !== uid) return void await followup({content: `Questo personaggio è già collegato a <@${owner}>. Se è tuo, chiedi a un Centurion di sistemare.`});
-      const c = await charProfile(server, id);
-      if (!c.name) return void await followup({content: 'Il sito ufficiale non mi dà i dati di questo personaggio, riprova tra poco.'});
-      const old = await linkOf(env, uid);
-      if (old && (old.server !== c.server || old.id !== c.id)) await env.USERS.delete(`linkc:${old.server}:${old.id}`);
-      await env.USERS.put('link:' + uid, JSON.stringify(c));
-      await env.USERS.put(`linkc:${server}:${id}`, uid);
-      const notes = [];
-      if (i.guild_id) {
-        const r = await dapi(env, 'PATCH', `/guilds/${i.guild_id}/members/${uid}`, {nick: c.name});
-        notes.push(r.ok ? `🏷️ Soprannome: **${c.name}**` : `🏷️ Non posso cambiarti il soprannome (succede col proprietario del server o con ruoli sopra Mauro): mettilo a mano.`);
-        const roles = await (await dapi(env, 'GET', `/guilds/${i.guild_id}/roles`)).json().catch(() => []);
-        const cr = Array.isArray(roles) && roles.find((x) => CLASS_ROLES.includes(x.name) && norm(x.name) === norm(c.cls));
-        if (cr) {
-          const ok = (await dapi(env, 'PUT', `/guilds/${i.guild_id}/members/${uid}/roles/${cr.id}`)).ok;
-          const sep = roles.find((x) => x.name.includes('𝐂𝐋𝐀𝐒𝐒𝐈') && x.name.includes('─'));
-          if (ok && sep) await dapi(env, 'PUT', `/guilds/${i.guild_id}/members/${uid}/roles/${sep.id}`);
-          notes.push(ok ? `🎭 Ruolo: **${cr.name}**` : '🎭 Non sono riuscito a darti il ruolo di classe.');
-        }
-      }
-      const card = await charView(c.server, c.id, 'card', uid, env);
-      await followup({...card, content: [`✅ **${c.name}** (${c.serverName}) è collegato al tuo account.`, ...notes,
-        c.legion === LEGION.name && c.server === LEGION.server ? '⚔️ In gioco sei nella **Legione**: compari in `/legione`.' : `-# In gioco ${c.legion ? `sei nella legione **${c.legion}**` : 'non sei in una legione'}: non compari in \`/legione\` finché non entri nella Legione su Marchutan.`,
-        'Ora `/personaggio` senza nome mostra la tua scheda, e nei `/raid` accanto al tuo nome compaiono classe e CP.'].join('\n')});
-    } catch (e) {
-      await followup({content: 'Il sito ufficiale di NCSOFT non risponde in questo momento, riprova tra poco.'});
-    }
-  })());
+  const raw = String(opt(i.data, 'personaggio')?.value || '').trim();
+  ctx.waitUntil(pickAndLink(i, env, raw).then((d) => hook(i, env, d)).catch(() => hook(i, env, {content: 'Il sito ufficiale di NCSOFT non risponde in questo momento, riprova tra poco.'})));
   return Response.json({type: 5, data: {flags: 64}});
+}
+function linkModal() {                           // 'Collega il tuo personaggio' button in #benvenuto
+  return Response.json({type: 9, data: {custom_id: 'lkm', title: 'Collega il tuo personaggio', components: [{type: 1, components: [
+    {type: 4, custom_id: 'name', label: 'Nome del personaggio (come in gioco)', style: 1, min_length: 2, max_length: 30, required: true, placeholder: 'es. Benzo'}]}]}});
+}
+async function linkModalSubmit(i, env, ctx) {
+  const raw = String(i.data.components?.[0]?.components?.[0]?.value || '').trim();
+  ctx.waitUntil(pickAndLink(i, env, raw).then((d) => hook(i, env, d)).catch(() => hook(i, env, {content: 'Il sito ufficiale di NCSOFT non risponde in questo momento, riprova tra poco.'})));
+  return Response.json({type: 5, data: {flags: 64}});
+}
+async function linkSelect(i, env, ctx) {
+  const [server, id] = String(i.data.values?.[0] || '').split(':');
+  ctx.waitUntil(doLink(env, i, +server, id).then((d) => hook(i, env, {components: [], ...d})).catch(() => hook(i, env, {content: 'Il sito ufficiale di NCSOFT non risponde in questo momento, riprova tra poco.', components: []})));
+  return Response.json({type: 6});                // update the same (ephemeral) message when done
+}
+// cron: re-check a few linked members per run (subrequest limits): promote Ospite -> Recluta when they join the Legione in game,
+// tell the officers once when someone with a grade is no longer in the Legione (no automatic demotion)
+async function legionSweep(env) {
+  const keys = (await env.USERS.list({prefix: 'link:'})).keys.map((k) => k.name).sort();
+  if (!keys.length) return;
+  let at = +(await env.USERS.get('cfg:sweep_at') || 0) % keys.length;
+  for (let n = 0; n < Math.min(4, keys.length); n++, at = (at + 1) % keys.length) {
+    const k = keys[at], uid = k.slice(5), l = JSON.parse(await env.USERS.get(k) || 'null');
+    if (!l || Date.now() - l.t < 6 * 3600e3) continue;
+    const c = await charProfile(l.server, l.id).catch(() => null);
+    if (!c?.name) continue;
+    await env.USERS.put(k, JSON.stringify(c));
+    const mr = await dapi(env, 'GET', `/guilds/${GUILD}/members/${uid}`);
+    if (!mr.ok) continue;                           // left the server
+    const have = new Set((await mr.json()).roles || []);
+    const {got, roles} = await gradeByLegion(env, GUILD, uid, have, c);
+    if (got === 'Recluta') await officerNote(env, `⬆️ <@${uid}> (**${c.name}**) è entrato nella Legione in gioco → **Recluta**`);
+    const graded = roles.some((r) => CORE_GRADES.includes(r.name) && have.has(r.id));
+    const flag = await env.USERS.get('left:' + uid);
+    if (!inLegion(c) && graded && !flag) { await env.USERS.put('left:' + uid, '1'); await officerNote(env, `⚠️ <@${uid}> (**${c.name}**) non risulta più nella Legione in gioco (${c.legion || 'nessuna legione'}). Ha ancora il suo grado: decidete voi.`); }
+    if (inLegion(c) && flag) await env.USERS.delete('left:' + uid);
+  }
+  await env.USERS.put('cfg:sweep_at', String(at));
 }
 async function scollega(i, env) {
   const uid = userId(i), l = await linkOf(env, uid);
@@ -1048,14 +1112,15 @@ async function legione(i, env, ctx) {           // members with a linked charact
     {method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({allowed_mentions: {parse: []}, ...data})});
   ctx.waitUntil((async () => {
     const keys = (await env.USERS.list({prefix: 'link:'})).keys.map((k) => k.name);
+    let budget = 20;
     const rows = (await Promise.all(keys.map(async (k) => {
       const l = JSON.parse(await env.USERS.get(k) || 'null'); if (!l) return null;
-      if (Date.now() - l.t > 6 * 3600e3 || l.legion == null) {
+      if ((Date.now() - l.t > 6 * 3600e3 || l.legion == null) && budget-- > 0) {
         try { const f = await charProfile(l.server, l.id); if (f.name) { Object.assign(l, f); await env.USERS.put(k, JSON.stringify(l)); } } catch {}
       }
       return {...l, uid: k.slice(5)};
     }))).filter(Boolean).sort((a, b) => (b.cp || 0) - (a.cp || 0));
-    const inL = (r) => r.legion === LEGION.name && r.server === LEGION.server, out = rows.filter((r) => !inL(r));
+    const inL = inLegion, out = rows.filter((r) => !inL(r));
     rows.splice(0, rows.length, ...rows.filter(inL));
     if (!rows.length) return void await followup({content: `Nessun personaggio della Legione collegato ancora: usa \`/collega\`.${out.length ? ` (${out.length} collegati non sono nella Legione in gioco)` : ''}`});
     const medal = ['🥇', '🥈', '🥉'];
@@ -1166,7 +1231,7 @@ async function raidReminders(env) {               // cron: tag the sign-ups once
 
 // ---------- entry point ----------
 export default {
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400)))])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => env.USERS.put('sweep_err', String(e?.stack || e).slice(0, 400)))])); },
   async fetch(req, env, ctx) {
     if (new URL(req.url).pathname === '/hit') return hit(req, env);
     if (/^\/join(\/cb)?$/.test(new URL(req.url).pathname)) return join(req, env);
@@ -1226,10 +1291,13 @@ export default {
       if (i.type === 3 && i.data.custom_id?.startsWith('cr:')) return await craftButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('pc:')) return await charButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('tk:')) return await timerButton(i, env);
+      if (i.type === 3 && i.data.custom_id === 'lk:start') return linkModal();
+      if (i.type === 3 && i.data.custom_id === 'lks') return await linkSelect(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('ts:')) return await signupButton(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('rs:')) return await raidButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('rp:')) return await rolePick(i, env, ctx);
       if (i.type === 5 && i.data.custom_id?.startsWith('alm:')) return await alertSubmit(i, env);
+      if (i.type === 5 && i.data.custom_id === 'lkm') return await linkModalSubmit(i, env, ctx);
       return oops('Comando sconosciuto.');
     } catch (e) {
       return oops('Non riesco a leggere i dati del market in questo momento, riprova tra un minuto.');
