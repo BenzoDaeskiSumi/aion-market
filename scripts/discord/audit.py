@@ -1,4 +1,4 @@
-import json, os, urllib.request
+import json, os, urllib.request, urllib.parse
 T, G = os.environ['DISCORD_TOKEN'], '1553398446524731435'
 req = urllib.request.Request(f'https://discord.com/api/v10/guilds/{G}/audit-logs?action_type=12&limit=20', headers={'Authorization': f'Bot {T}', 'User-Agent': 'DiscordBot (aion-market, 1)'})
 d = json.load(urllib.request.urlopen(req))
@@ -16,3 +16,13 @@ for c in chs:
 print('\n'.join(lines))
 try: print('\n== timer status', urllib.request.urlopen(urllib.request.Request('https://aion-market-bot.aion2-market.workers.dev/timers/run', headers={'User-Agent': 'Mozilla/5.0'})).read().decode())
 except Exception as e: print('timer status error', e)
+try:
+    W = 'https://aion-market-bot.aion2-market.workers.dev/char/'
+    rq = lambda u: json.load(urllib.request.urlopen(urllib.request.Request(W + u, headers={'User-Agent': 'Mozilla/5.0'})))
+    c = rq('search?q=Leg&s=12305')['list'][0]
+    d = rq(f"info?id={urllib.parse.quote(c['id'])}&s={c['server']}")
+    print('\n== char keys', list(d.keys()))
+    print('== profile', json.dumps(d.get('profile'), ensure_ascii=False)[:1500])
+    for k in d:
+        if 'guild' in k.lower() or 'legion' in k.lower(): print('== ', k, json.dumps(d[k], ensure_ascii=False)[:500])
+except Exception as e: print('char probe error', e)
