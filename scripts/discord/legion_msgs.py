@@ -44,7 +44,7 @@ def build(ch, roles, cemo):
         H('Per entrare', '🔑'),
         '• Premi **Collega il tuo personaggio** qui sotto e scrivi il nome che hai in gioco.',
         '• Sei nella **Legione** su Marchutan? Diventi **Recluta** e vedi tutti i canali.',
-        '• Non ancora? Entri come **Ospite**: Market, generale e Taverna. Quando entri in gilda ti promuovo da solo.',
+        '• Non ancora? Entri come **Ospite** e vedi lo stesso tutti i canali, vocali comprese. Quando entri in gilda ti promuovo da solo.',
         SEP,
         H('Per iniziare', '🧭'),
         f"• Leggi le **regole** in {ch('regole')}",

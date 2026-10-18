@@ -5,7 +5,7 @@ Recluta (in the in-game Legione on Marchutan) or Ospite (anyone else). This scri
   2. gives 'Amico della Legione' to current members who have no access role yet, so nobody already here loses any channel
   3. channel permissions (only the VIEW_CHANNEL bit is touched, other bits of each overwrite are kept; UFFICIALI is left alone):
        @everyone  -> sees only BENVENUTO
-       Ospite     -> BENVENUTO + MARKET + #generale + Taverna
+       Ospite     -> everything but UFFICIALI (voice included: the user asked)
        grades     -> everything they could see before (all but UFFICIALI)
        Mauro      -> everything (member overwrite), so the bot keeps working without Administrator"""
 import json, os, re, sys, time, urllib.request, urllib.error
@@ -94,7 +94,7 @@ for c in sorted(chans, key=lambda c: (c['type'] != 4, c['position'])):
     ows = [dict(x) for x in c.get('permission_overwrites', [])]
     before = json.dumps(sorted(ows, key=lambda x: x['id']))
     public = 'benvenut' in g
-    guest = public or 'market' in g or name in ('generale', 'taverna')
+    guest = True                                                         # the user opened everything (voice included) to guests; only UFFICIALI stays closed
     set_view(ows, G, 0, None if public else False)                       # @everyone (role id = guild id)
     set_view(ows, byname['Ospite']['id'], 0, True if guest and not public else None)
     for rid in grade_ids:

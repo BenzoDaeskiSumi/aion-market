@@ -1039,7 +1039,7 @@ async function doLink(env, i, server, id) {
     notes.push(ok ? `🎭 Classe: **${cr.name}**` : '🎭 Non sono riuscito a darti il ruolo di classe.');
   }
   if (inLegion(c)) notes.push(got ? '⚔️ Sei nella **Legione** in gioco: benvenuto, sei **Recluta**! Ora vedi tutti i canali.' : '⚔️ Sei nella **Legione** in gioco: compari in `/legione`.');
-  else notes.push(`👋 In gioco ${c.legion ? `sei nella legione **${c.legion}**` : 'non sei in una legione'}${c.server !== LEGION.server ? ` (server ${c.serverName})` : ''}: sei **Ospite**${got ? '' : ' o tieni il ruolo che hai'}. Quando entri nella Legione su Marchutan ti promuovo da solo.`);
+  else notes.push(`👋 In gioco ${c.legion ? `sei nella legione **${c.legion}**` : 'non sei in una legione'}${c.server !== LEGION.server ? ` (server ${c.serverName})` : ''}: sei **Ospite**${got ? '' : ' o tieni il ruolo che hai'} e vedi tutti i canali, vocali comprese. Quando entri nella Legione su Marchutan ti promuovo a Recluta da solo.`);
   if (!old || old.id !== c.id) await officerNote(env, `🔗 <@${uid}> ha collegato **${c.name}** · ${c.cls} · ${kin(c.cp)} CP · ${c.serverName} · legione: ${c.legion || 'nessuna'}${got ? ` → **${got}**` : ''}`).catch(() => {});
   const card = await charView(c.server, c.id, 'card', uid, env).catch(() => ({}));
   return {...card, content: [`✅ **${c.name}** (${c.serverName}) è collegato al tuo account.`, ...notes].join('\n')};
