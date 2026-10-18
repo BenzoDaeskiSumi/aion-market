@@ -9,6 +9,16 @@ const EN = {
   // overlay page
   "Modalità overlay (Steam)": "Overlay mode (Steam)",
   "Installa l'app": "Install the app",
+  "Gear Score · CP": "Gear Score · CP",
+  "Carico la Legione…": "Loading the Legione…",
+  "Nessun membro collegato ancora.": "No members linked yet.",
+  "Scrivi un nome qui sopra per cercare qualunque personaggio EU. Qui sotto: i membri che hanno collegato il personaggio su Discord.": "Type a name above to search any EU character. Below: the members who linked their character on Discord.",
+  "Tu": "You",
+  "Il tuo andamento": "Your progress",
+  "Andamento": "Progress",
+  "Il grafico si riempie giorno dopo giorno.": "The chart fills up day by day.",
+  "Clicca un membro della Legione, oppure cerca un personaggio, per vedere Gear Score, Combat Power, equipaggiamento e Daevanion.": "Click a Legione member, or search a character, to see Gear Score, Combat Power, gear and Daevanion.",
+  "Dati ufficiali NCSOFT. Andamento: un punto al giorno, salvato per i membri della Legione che hanno collegato il personaggio su Discord.": "Official NCSOFT data. Progress: one point a day, saved for Legione members who linked their character on Discord.",
   "Un progetto della": "A project of the",
   ", gilda italiana Asmodian su Marchutan": ", an Italian Asmodian guild on Marchutan",
   "Entra nel nostro Discord": "Join our Discord",
@@ -217,6 +227,16 @@ const ES = {
   // overlay page
   "Modalità overlay (Steam)": "Modo overlay (Steam)",
   "Installa l'app": "Instalar la app",
+  "Gear Score · CP": "Gear Score · CP",
+  "Carico la Legione…": "Cargando la Legione…",
+  "Nessun membro collegato ancora.": "Aún no hay miembros vinculados.",
+  "Scrivi un nome qui sopra per cercare qualunque personaggio EU. Qui sotto: i membri che hanno collegato il personaggio su Discord.": "Escribe un nombre arriba para buscar cualquier personaje EU. Abajo: los miembros que vincularon su personaje en Discord.",
+  "Tu": "Tú",
+  "Il tuo andamento": "Tu progreso",
+  "Andamento": "Progreso",
+  "Il grafico si riempie giorno dopo giorno.": "El gráfico se llena día a día.",
+  "Clicca un membro della Legione, oppure cerca un personaggio, per vedere Gear Score, Combat Power, equipaggiamento e Daevanion.": "Haz clic en un miembro de la Legione, o busca un personaje, para ver Gear Score, Combat Power, equipo y Daevanion.",
+  "Dati ufficiali NCSOFT. Andamento: un punto al giorno, salvato per i membri della Legione che hanno collegato il personaggio su Discord.": "Datos oficiales de NCSOFT. Progreso: un punto al día, guardado para los miembros de la Legione que vincularon su personaje en Discord.",
   "Un progetto della": "Un proyecto de la",
   ", gilda italiana Asmodian su Marchutan": ", hermandad italiana Asmodian en Marchutan",
   "Entra nel nostro Discord": "Únete a nuestro Discord",
@@ -416,6 +436,16 @@ const FR = {
   // overlay page
   "Modalità overlay (Steam)": "Mode overlay (Steam)",
   "Installa l'app": "Installer l'appli",
+  "Gear Score · CP": "Gear Score · CP",
+  "Carico la Legione…": "Chargement de la Legione…",
+  "Nessun membro collegato ancora.": "Aucun membre lié pour l’instant.",
+  "Scrivi un nome qui sopra per cercare qualunque personaggio EU. Qui sotto: i membri che hanno collegato il personaggio su Discord.": "Tapez un nom ci-dessus pour chercher n’importe quel personnage EU. Ci-dessous : les membres qui ont lié leur personnage sur Discord.",
+  "Tu": "Vous",
+  "Il tuo andamento": "Votre progression",
+  "Andamento": "Progression",
+  "Il grafico si riempie giorno dopo giorno.": "Le graphique se remplit jour après jour.",
+  "Clicca un membro della Legione, oppure cerca un personaggio, per vedere Gear Score, Combat Power, equipaggiamento e Daevanion.": "Cliquez sur un membre de la Legione, ou cherchez un personnage, pour voir Gear Score, Combat Power, équipement et Daevanion.",
+  "Dati ufficiali NCSOFT. Andamento: un punto al giorno, salvato per i membri della Legione che hanno collegato il personaggio su Discord.": "Données officielles NCSOFT. Progression : un point par jour, enregistré pour les membres de la Legione qui ont lié leur personnage sur Discord.",
   "Un progetto della": "Un projet de la",
   ", gilda italiana Asmodian su Marchutan": ", guilde italienne Asmodienne sur Marchutan",
   "Entra nel nostro Discord": "Rejoignez notre Discord",
@@ -662,3 +692,7 @@ document.querySelectorAll('.langs button').forEach((b) => {
   b.setAttribute('aria-pressed', String(b.dataset.lang === LANG));
   b.addEventListener('click', () => { if (b.dataset.lang === LANG) return; try { localStorage.setItem('aion-lang', b.dataset.lang); } catch (e) {} location.reload(); });
 });
+
+EN_RE.push([/^La Legione su Marchutan · (\d+) membri$/, "Legione on Marchutan · $1 members"]);
+ES_RE.push([/^La Legione su Marchutan · (\d+) membri$/, "Legione en Marchutan · $1 miembros"]);
+FR_RE.push([/^La Legione su Marchutan · (\d+) membri$/, "Legione sur Marchutan · $1 membres"]);

@@ -861,6 +861,7 @@ async function timerChannel(env) {        // creates the read-only channel once 
 async function updateTimers(env) {
   const ch = await timerChannel(env); if (!ch) return;
   await callChannel(env).catch(() => null);
+  await goalChannel(env).catch(() => null);
   const msg = await timerMessage(env), id = await env.USERS.get('cfg:timer_msg');
   if (id) { const r = await dapi(env, 'PATCH', `/channels/${ch}/messages/${id}`, msg); if (r.ok) return; if (r.status !== 404) return; }
   const r = await dapi(env, 'POST', `/channels/${ch}/messages`, msg);
@@ -988,8 +989,9 @@ const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z]/g, '');
 const cpShort = (v) => (!v ? '' : v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v >= 1e4 ? `${Math.round(v / 1e3)}k` : kin(v));
 async function linkOf(env, uid) { return JSON.parse(await env.USERS.get('link:' + uid) || 'null'); }
 async function charProfile(server, id) {        // one official call (profile only): name, class, CP, legion
-  const pr = (await nc(`https://aion2.plaync.com/api/character/info?lang=en-US&characterId=${encodeURIComponent(id)}&serverId=${server}&region=eu`, 600))?.profile || {};
-  return {server: +server, id, name: pr.characterName, cls: pr.className || '', cp: pr.combatPower || 0, serverName: pr.serverName || '', legion: pr.regionName || '', race: pr.raceName || (pr.raceId === 2 ? 'Asmodian' : ''), t: Date.now()};
+  const d = await nc(`https://aion2.plaync.com/api/character/info?lang=en-US&characterId=${encodeURIComponent(id)}&serverId=${server}&region=eu`, 600), pr = d?.profile || {};
+  const il = (d?.stat?.statList || []).find((x) => x.type === 'ItemLevel')?.value || 0;
+  return {server: +server, id, name: pr.characterName, il, lv: pr.characterLevel || 0, img: pr.profileImage || '', cls: pr.className || '', cp: pr.combatPower || 0, serverName: pr.serverName || '', legion: pr.regionName || '', race: pr.raceName || (pr.raceId === 2 ? 'Asmodian' : ''), t: Date.now()};
 }
 const inLegion = (c) => c?.legion === LEGION.name && c?.server === LEGION.server;
 const CORE_GRADES = ['Brigade General', 'Centurion', 'Legionario', 'Recluta'], ALL_GRADES = [...CORE_GRADES, 'Amico della Legione'];
@@ -1026,6 +1028,7 @@ async function doLink(env, i, server, id) {
   const old = await linkOf(env, uid);
   if (old && (old.server !== c.server || old.id !== c.id)) await env.USERS.delete(`linkc:${old.server}:${old.id}`);
   await env.USERS.put('link:' + uid, JSON.stringify(c));
+  await afterRefresh(env, uid, old && old.id === c.id ? old : null, c);
   await env.USERS.put(`linkc:${server}:${id}`, uid);
   const notes = [];
   const n = await dapi(env, 'PATCH', `/guilds/${gid}/members/${uid}`, {nick: c.name});
@@ -1085,10 +1088,11 @@ async function legionSweep(env) {
   let at = +(await env.USERS.get('cfg:sweep_at') || 0) % keys.length;
   for (let n = 0; n < Math.min(4, keys.length); n++, at = (at + 1) % keys.length) {
     const k = keys[at], uid = k.slice(5), l = JSON.parse(await env.USERS.get(k) || 'null');
-    if (!l || Date.now() - l.t < 6 * 3600e3) continue;
+    if (!l || Date.now() - l.t < 3 * 3600e3) continue;
     const c = await charProfile(l.server, l.id).catch(() => null);
     if (!c?.name) continue;
     await env.USERS.put(k, JSON.stringify(c));
+    await afterRefresh(env, uid, l, c);
     const mr = await dapi(env, 'GET', `/guilds/${GUILD}/members/${uid}`);
     if (!mr.ok) continue;                           // left the server
     const have = new Set((await mr.json()).roles || []);
@@ -1116,7 +1120,7 @@ async function legione(i, env, ctx) {           // members with a linked charact
     const rows = (await Promise.all(keys.map(async (k) => {
       const l = JSON.parse(await env.USERS.get(k) || 'null'); if (!l) return null;
       if ((Date.now() - l.t > 6 * 3600e3 || l.legion == null) && budget-- > 0) {
-        try { const f = await charProfile(l.server, l.id); if (f.name) { Object.assign(l, f); await env.USERS.put(k, JSON.stringify(l)); } } catch {}
+        try { const f = await charProfile(l.server, l.id); if (f.name) { const prev = {...l}; Object.assign(l, f); await env.USERS.put(k, JSON.stringify(l)); await afterRefresh(env, k.slice(5), prev, l); } } catch {}
       }
       return {...l, uid: k.slice(5)};
     }))).filter(Boolean).sort((a, b) => (b.cp || 0) - (a.cp || 0));
@@ -1132,6 +1136,71 @@ async function legione(i, env, ctx) {           // members with a linked charact
       footer: {text: `${rows.length} membri della Legione su Marchutan collegati con /collega${out.length ? ` · ${out.length} collegati fuori dalla Legione non contati` : ''} · dati ufficiali NCSOFT, aggiornati ogni 6 ore`}}]});
   })());
   return Response.json({type: 5});
+}
+
+// ---------- history + Gear Score milestones (🏆・traguardi) + public roster for the site ----------
+// KV hist:<uid> = [[day, cp, il], …] (one point per day, last 365); goal:<uid> = highest milestone already reached (no post for what one had when linking).
+const GS_GOALS = [[1400, '🥉', 0xcd7f32, 'primo salto'], [2100, '🥈', 0xc0c8d8, 'secondo salto'], [2500, '🥇', 0xe8b64a, 'vetta']];
+async function afterRefresh(env, uid, prev, c) {
+  const day = Math.floor(Date.now() / 864e5), h = JSON.parse(await env.USERS.get('hist:' + uid) || '[]');
+  if (h.length && h[h.length - 1][0] === day) h[h.length - 1] = [day, c.cp, c.il]; else h.push([day, c.cp, c.il]);
+  await env.USERS.put('hist:' + uid, JSON.stringify(h.slice(-365)));
+  if (!c.il) return;
+  const reached = GS_GOALS.filter(([g]) => c.il >= g).pop(), got = await env.USERS.get('goal:' + uid);
+  if (!reached || (got && +got >= reached[0])) return;
+  await env.USERS.put('goal:' + uid, String(reached[0]));
+  if (!prev?.il || got == null && prev.il >= reached[0] || !inLegion(c)) return;        // first link or not in the Legione: just remember
+  const ch = await goalChannel(env); if (!ch) return;
+  const [g, medal, color, label] = reached, img = avatarProxy(c.img, env);
+  await dapi(env, 'POST', `/channels/${ch}/messages`, {content: `<@${uid}>`, allowed_mentions: {users: [uid]}, embeds: [{color,
+    title: `${medal} ${c.name} ha superato ${kin(g)} di Gear Score!`,
+    description: `${c.cls} · da **${kin(prev.il)}** a **${kin(c.il)}** · ${label}\nCombat Power **${kin(c.cp)}**`,
+    ...(img ? {thumbnail: {url: img}} : {}), footer: {text: 'Traguardi: 1.400 · 2.100 · 2.500 di Gear Score (Item Level ufficiale)'}, timestamp: new Date().toISOString()}]});
+}
+async function goalChannel(env) {          // read-only channel in the Legione category where Mauro celebrates the milestones
+  let ch = await env.USERS.get('cfg:goal_channel');
+  if (ch) return ch;
+  const list = await (await dapi(env, 'GET', `/guilds/${GUILD}/channels`)).json();
+  const found = list.find((c) => c.type === 0 && /traguardi$/.test(c.name));
+  if (found) ch = found.id;
+  else {
+    const ann = list.find((c) => c.type === 0 && /generale$/.test(c.name)), me = await (await dapi(env, 'GET', '/users/@me')).json();
+    const r = await dapi(env, 'POST', `/guilds/${GUILD}/channels`, {name: '🏆・traguardi', type: 0, parent_id: ann?.parent_id, position: (ann?.position ?? 0) + 1,
+      topic: 'Mauro festeggia chi supera 1.400, 2.100 e 2.500 di Gear Score. Collega il tuo personaggio in #benvenuto per comparire.',
+      permission_overwrites: [{id: GUILD, type: 0, allow: '0', deny: String(0x800 | 0x400)}, {id: me.id, type: 1, allow: String(0x400 | 0x800 | 0x4000 | 0x10000), deny: '0'},
+        ...(await (await dapi(env, 'GET', `/guilds/${GUILD}/roles`)).json()).filter((r) => [...ALL_GRADES, 'Ospite'].includes(r.name)).map((r) => ({id: r.id, type: 0, allow: String(0x400), deny: String(0x800)}))]});
+    if (!r.ok) { await env.USERS.put('timer_err', `goals ${r.status} ${(await r.text()).slice(0, 300)}`); return null; }
+    ch = (await r.json()).id;
+  }
+  await env.USERS.put('cfg:goal_channel', ch);
+  return ch;
+}
+const corsJson = (data, ttl = 0) => new Response(JSON.stringify(data), {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Authorization', 'Cache-Control': ttl ? `public, max-age=${ttl}` : 'no-store'}});
+async function legionApi(req, env, ctx) {
+  const url = new URL(req.url);
+  if (req.method === 'OPTIONS') return corsJson({});
+  if (url.pathname === '/legion/me') {      // the site's logged-in user (Supabase token) -> their linked character key
+    const tok = (req.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '');
+    if (!tok || !env.SUPABASE_SERVICE_KEY) return corsJson({me: null});
+    const u = await (await fetch(`${env.SUPABASE_URL}/auth/v1/user`, {headers: {apikey: env.SUPABASE_SERVICE_KEY, Authorization: `Bearer ${tok}`}})).json().catch(() => null);
+    const did = u?.identities?.find((x) => x.provider === 'discord')?.identity_data?.provider_id || u?.user_metadata?.provider_id;
+    const l = did ? await linkOf(env, did) : null;
+    return corsJson({me: l ? `${l.server}:${l.id}` : null, linked: !!l});
+  }
+  const cache = caches.default, key = new Request(url.origin + '/legion');
+  const hit = await cache.match(key);
+  if (hit) return hit;
+  const keys = (await env.USERS.list({prefix: 'link:'})).keys.map((k) => k.name);
+  const rows = (await Promise.all(keys.map(async (k) => {
+    const l = JSON.parse(await env.USERS.get(k) || 'null');
+    if (!inLegion(l)) return null;
+    const h = JSON.parse(await env.USERS.get('hist:' + k.slice(5)) || '[]');
+    return {key: `${l.server}:${l.id}`, name: l.name, cls: l.cls, lv: l.lv || null, cp: l.cp, il: l.il || null, img: avatarProxy(l.img, env), hist: h.map(([d, cp, il]) => [d, cp, il])};
+  }))).filter(Boolean).sort((a, b) => (b.il || 0) - (a.il || 0) || b.cp - a.cp);
+  const res = corsJson({legion: LEGION.name, server: 'Marchutan', updated: Date.now(), goals: GS_GOALS.map(([g]) => g), members: rows}, 600);
+  ctx.waitUntil(cache.put(key, res.clone()));
+  return res;
 }
 
 // ---------- /raid: sign-up sheet with Tank / Healer / DPS buttons; the cron tags everyone ~15 min before ----------
@@ -1238,6 +1307,7 @@ export default {
     if (new URL(req.url).pathname === '/timers/run') { try { await callChannel(env); await updateTimers(env); } catch (e) { await env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500)); } }
     if (new URL(req.url).pathname.startsWith('/timers/')) return Response.json({channel: await env.USERS.get('cfg:timer_channel'), msg: await env.USERS.get('cfg:timer_msg'), err: await env.USERS.get('timer_err')});
     if (new URL(req.url).pathname.startsWith('/char/')) return charApi(req, env);
+    if (new URL(req.url).pathname.startsWith('/legion')) return legionApi(req, env, ctx);
     if (req.method !== 'POST') return new Response('Aion 2 Market bot: ok');
     const body = await req.text();
     if (!(await verified(req, body, env))) return new Response('bad signature', {status: 401});

@@ -173,6 +173,11 @@ Entry gate (scripts/discord/gate.py, mode gate-plan/apply): @everyone sees only 
 else select menu lks) -> doLink(): KV, nick, gradeByLegion (in-game Legione on Marchutan -> Recluta unless a grade already, else Ospite; removes Ospite on promotion),
 class role, note in #ufficiali (KV cfg:officer_channel). legionSweep() in the cron re-checks 4 linked members per run (profile older than 6 h): Ospite -> Recluta when
 they join in game; graded members who left the in-game legion are reported once to the officers (KV left:<uid>), never demoted automatically.
+Profiles store il (Item Level = 'Gear Score'), lv, img. afterRefresh(): KV hist:<uid> [[day, cp, il]] (one per day, 365) and Gear Score milestones 1400/2100/2500
+(GS_GOALS; KV goal:<uid>; nothing posted for what one already had when linking, only Legione members) celebrated in read-only '🏆・traguardi' (KV cfg:goal_channel).
+Site: Worker GET /legion (public, Legione members only: key, name, cls, lv, cp, il, img, hist; 10 min cache, no Discord ids) and /legion/me (Supabase token ->
+auth/v1/user -> Discord id -> own character key). js/chars.js: Personaggi with an empty search shows the roster (sorted by Gear Score) + composition; the
+logged-in member's row is marked and opens by default; the detail adds Gear Score / CP sparklines (milestones dashed).
 /legione = linked characters whose in-game legion is 'Legione' on Marchutan (official profile.regionName = legion name; NCSOFT server id 2305, not the Market's 12305), by CP (refreshes entries older than 6 h). /raid lists show 'class CP' next to linked members. Described in privacy.html.
 /chisiamo answers '# LA LEGIONE' (guild joke; the bot can't read plain chat messages, slash commands only).
 Event countdown: the cron also keeps ONE message in '⏰・timer-eventi' (created by the Worker next to #annunci, read-only; KV cfg:timer_channel /
