@@ -51,3 +51,20 @@ try:
     L = json.load(urllib.request.urlopen(urllib.request.Request('https://aion-market-bot.aion2-market.workers.dev/legion', headers={'User-Agent': 'Mozilla/5.0'})))
     print('\n== legion', len(L['members']), 'membri', [(m['name'], m['il'], m['cp']) for m in L['members']][:10])
 except Exception as e: print('legion error', e)
+try:
+    sys_path = os.path.join(os.path.dirname(__file__), '..')
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('rec', os.path.join(sys_path, 'recipes.py')); rec = importlib.util.module_from_spec(spec); spec.loader.exec_module(rec)
+    t = rec.rsc(rec.fetch(rec.BASE + '/en/aion-2/crafting')); i = t.find('{"lang":"en","recipes":')
+    data, _ = json.JSONDecoder().raw_decode(t[i:])
+    items = data['items']; nm = lambda k: (items.get(str(k)) or data.get('gather', {}).get(str(k)) or {}).get('name')
+    print('\n== rec top keys', list(data.keys()))
+    print('== rec keys', sorted({k for r in data['recipes'] for k in r}))
+    for r in data['recipes']:
+        p = nm(r['product']) or ''
+        if str(r['id'])[1] == '2' and p in ('Splendent Star Dragon Lord Bow', 'Star Dragon Lord Bow', "Artisan's Asvata Bow", 'Asvata Bow'):
+            print('== rec', p, json.dumps({k: v for k, v in r.items() if k != 'parts'}, ensure_ascii=False)[:500], [(nm(k), q) for k, q in r['parts']])
+    it = next(v for v in items.values() if v.get('name') == 'Splendent Star Dragon Lord Bow')
+    print('== item', json.dumps(it, ensure_ascii=False)[:400])
+except Exception as e:
+    import traceback; print('rec probe error', traceback.format_exc()[-600:])
