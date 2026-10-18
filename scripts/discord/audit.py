@@ -25,3 +25,9 @@ try:
     print('\n== mauro perms admin=%s manage_nicknames=%s manage_roles=%s top_role_pos=%s' % (bool(p & 8), bool(p & 0x8000000), bool(p & 0x10000000), top))
     print('== roles above mauro:', [r['name'] for r in sorted(rs, key=lambda r: -r['position']) if r['position'] > top])
 except Exception as e: print('perm check error', e)
+try:
+    ben = next(c for c in chs if c['type'] == 0 and c['name'].endswith('benvenuto'))
+    req = urllib.request.Request(f"https://discord.com/api/v10/channels/{ben['id']}/invites", method='POST', data=json.dumps({'max_age': 0, 'max_uses': 0, 'unique': False}).encode(),
+                                 headers={'Authorization': f'Bot {T}', 'Content-Type': 'application/json', 'User-Agent': 'DiscordBot (aion-market, 1)'})
+    print('\n== invite https://discord.gg/' + json.load(urllib.request.urlopen(req))['code'])
+except Exception as e: print('invite error', e)
