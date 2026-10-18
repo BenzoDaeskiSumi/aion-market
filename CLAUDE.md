@@ -164,6 +164,8 @@ Card buttons (row under /info and its chart views): ⭐ Preferito (fa:<sid>, tog
 alm:<sid>:<item>; direction is automatic: target above the current price = 'above', else 'below'), 🔨 Craft (cr:<sid>, only for craftable items),
 Apri sul sito. Anyone can press them, each for their own account; the item is the embed title. /preferiti has a 🔔 button too.
 /craft <oggetto> (autocomplete from data/recipes.json products) ports craftEngine() from js/craft.js — keep the two in sync. /aiuto lists all commands.
+/raid <titolo> <quando> [posti=8] [ruolo] [note]: sign-up embed with buttons rs:<id>:tank|heal|dps|out|del (beyond 'posti' -> riserve; del = creator or admin);
+KV raid:<id> (expires start+1 day); parseQuando() reads Italian time ('21', 'domani 21', 'sabato 21:30', '25/10 21:00'); the cron (raidReminders) tags the sign-ups once, ~15 min before.
 /chisiamo answers '# LA LEGIONE' (guild joke; the bot can't read plain chat messages, slash commands only).
 Event countdown: the cron also keeps ONE message in '⏰・timer-eventi' (created by the Worker next to #annunci, read-only; KV cfg:timer_channel /
 cfg:timer_msg) with Discord timestamps <t:…:R> (they count down live). Schedule in data/timers.json (EU server time Europe/Berlin, 'every/offset',

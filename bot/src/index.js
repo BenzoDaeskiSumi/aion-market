@@ -498,6 +498,9 @@ function aiuto(env) {
     '`/avviso aggiungi` · `/avviso lista` — ti avviso quando un oggetto scende o sale a un prezzo (anche 250k, 1.5m).',
     '`/server <server>` — registra il tuo server: gli altri comandi lo useranno in automatico.',
     '',
+    '**Legione**',
+    '`/raid <titolo> <quando>` — iscrizioni a un raid con i pulsanti Tank / Healer / DPS; Mauro tagga gli iscritti 15 minuti prima. Quando: `21:00`, `domani 21`, `sabato 21:30`, `25/10 21:00`.',
+    '',
     '**Altro**',
     '`/chisiamo` — Mauro, chi siamo?',
     '`/aiuto` — questa guida.',
@@ -902,9 +905,102 @@ async function join(req, env) {
   }
 }
 
+// ---------- /raid: sign-up sheet with Tank / Healer / DPS buttons; the cron tags everyone ~15 min before ----------
+// KV raid:<id> = {title, t, slots, by, ch, note, list: {tank: [uid], heal: [], dps: []}, pinged}; expires a day after the start.
+const RAID_TZ = 'Europe/Rome', RAID_ROLES = [['tank', 'Tank', '🛡️'], ['heal', 'Healer', '✚'], ['dps', 'DPS', '⚔️']];
+const GIORNI = {dom: 0, domenica: 0, lun: 1, lunedi: 1, 'lunedì': 1, mar: 2, martedi: 2, 'martedì': 2, mer: 3, mercoledi: 3, 'mercoledì': 3,
+  gio: 4, giovedi: 4, 'giovedì': 4, ven: 5, venerdi: 5, 'venerdì': 5, sab: 6, sabato: 6};
+function parseQuando(txt, now = Date.now()) {    // '21', '21:30', 'oggi 21', 'domani 21:00', 'sabato 21', '25/10 21:00' (Italian time)
+  const t = String(txt || '').toLowerCase().trim().replace(/\s+alle\s+|\s+ore\s+/g, ' ');
+  const tm = t.match(/(\d{1,2})(?:[:.](\d{2}))?\s*$/);
+  if (!tm || +tm[1] > 23 || +(tm[2] || 0) > 59) return null;
+  const min = +tm[1] * 60 + +(tm[2] || 0), head = t.slice(0, tm.index).trim();
+  const today = localDay(now, RAID_TZ);
+  let day = null;
+  const dm = head.match(/^(\d{1,2})[/-](\d{1,2})$/);
+  if (dm) {
+    let y = today.y, ts = atLocal(y, +dm[2], +dm[1], min, RAID_TZ);
+    if (ts < now - 864e5) ts = atLocal(y + 1, +dm[2], +dm[1], min, RAID_TZ);
+    return ts;
+  }
+  if (!head || head === 'oggi' || head === 'stasera') day = 0;
+  else if (head === 'domani') day = 1;
+  else if (head in GIORNI) day = (GIORNI[head] - today.dow + 7) % 7;
+  else return null;
+  const d = localDay(now + day * 864e5, RAID_TZ);
+  let ts = atLocal(d.y, d.m, d.d, min, RAID_TZ);
+  if (ts < now - 5 * 6e4) {                                       // already past: bare time -> tomorrow, weekday -> next week, oggi -> error
+    if (head === 'oggi' || head === 'stasera') return null;
+    const d2 = localDay(now + (head ? day + 7 : 1) * 864e5, RAID_TZ);
+    ts = atLocal(d2.y, d2.m, d2.d, min, RAID_TZ);
+  }
+  return ts;
+}
+function raidMessage(id, r) {
+  const n = RAID_ROLES.reduce((a, [k]) => a + r.list[k].length, 0), past = Date.now() > r.t;
+  const fields = RAID_ROLES.map(([k, label, emo]) => ({name: `${emo} ${label} (${r.list[k].length})`, value: r.list[k].map((u) => `<@${u}>`).join('\n') || '—', inline: true}));
+  if (r.list.res?.length) fields.push({name: `🪑 Riserve (${r.list.res.length})`, value: r.list.res.map((u) => `<@${u}>`).join('\n'), inline: false});
+  const btn = (k, label, emo, style = 2) => ({type: 2, style, custom_id: `rs:${id}:${k}`, label, emoji: {name: emo}, disabled: past});
+  return {
+    embeds: [{title: `⚔️ ${r.title}`, color: past ? 0x5c5f66 : 0xe8b64a,
+      description: [`🕘 <t:${Math.floor(r.t / 1000)}:F> · <t:${Math.floor(r.t / 1000)}:R>`, r.note ? `\n${r.note}` : '', `\n**${n}/${r.slots}** iscritti${n >= r.slots ? ' · pieno, chi arriva va in riserva' : ''}`].join(''),
+      fields, footer: {text: past ? 'Iscrizioni chiuse' : `Organizza ${r.byName} · Mauro tagga gli iscritti 15 minuti prima`}}],
+    components: [{type: 1, components: [btn('tank', 'Tank', '🛡️', 1), btn('heal', 'Healer', '✚', 3), btn('dps', 'DPS', '⚔️', 4), btn('out', 'Esci', '✖️')]},
+      {type: 1, components: [btn('del', 'Annulla raid', '🗑️')]}],
+    allowed_mentions: {parse: []},
+  };
+}
+async function raidCreate(i, env) {
+  const o = Object.fromEntries((i.data.options || []).map((x) => [x.name, x.value]));
+  if (!i.guild_id) return oops('Il comando funziona solo nel server.');
+  const t = parseQuando(o.quando);
+  if (!t) return oops('Non ho capito quando. Esempi: `21:00`, `domani 21`, `sabato 21:30`, `25/10 21:00` (ora italiana).');
+  if (t < Date.now() - 5 * 6e4) return oops('Quell\'ora è già passata.');
+  const id = crypto.randomUUID().slice(0, 8), u = i.member?.user || i.user;
+  const r = {title: String(o.titolo).slice(0, 80), t, slots: Math.max(1, Math.min(40, o.posti || 8)), note: o.note ? String(o.note).slice(0, 300) : '',
+    by: u.id, byName: i.member?.nick || u.global_name || u.username, ch: i.channel_id, ping: o.ruolo || null, list: {tank: [], heal: [], dps: [], res: []}, pinged: false};
+  await env.USERS.put('raid:' + id, JSON.stringify(r), {expiration: Math.floor(t / 1000) + 86400});
+  const msg = raidMessage(id, r);
+  if (r.ping) { msg.content = `<@&${r.ping}> nuovo raid: iscriviti qui sotto!`; msg.allowed_mentions = {roles: [r.ping]}; }
+  return Response.json({type: 4, data: msg});
+}
+async function raidButton(i, env) {
+  const [, id, k] = i.data.custom_id.split(':'), key = 'raid:' + id;
+  const r = JSON.parse(await env.USERS.get(key) || 'null');
+  if (!r) return oops('Questo raid non esiste più.');
+  const uid = (i.member?.user || i.user).id, perms = BigInt(i.member?.permissions || 0);
+  if (k === 'del') {
+    if (uid !== r.by && !(perms & 8n) && !(perms & 32n)) return oops(`Solo chi l'ha creato (${r.byName}) o un admin può annullare il raid.`);
+    await env.USERS.delete(key);
+    return Response.json({type: 7, data: {content: '', embeds: [{title: `~~${r.title}~~`, color: 0x5c5f66, description: `Raid annullato da <@${uid}>.`}], components: [], allowed_mentions: {parse: []}}});
+  }
+  if (Date.now() > r.t) return oops('Le iscrizioni sono chiuse: il raid è già iniziato.');
+  for (const g of Object.keys(r.list)) r.list[g] = r.list[g].filter((x) => x !== uid);
+  if (k !== 'out') {
+    const n = RAID_ROLES.reduce((a, [g]) => a + r.list[g].length, 0);
+    (n >= r.slots ? r.list.res : r.list[k]).push(uid);
+  }
+  await env.USERS.put(key, JSON.stringify(r), {expiration: Math.floor(r.t / 1000) + 86400});
+  return Response.json({type: 7, data: raidMessage(id, r)});
+}
+async function raidReminders(env) {               // cron: tag the sign-ups once, 0-20 minutes before the start
+  const now = Date.now();
+  for (const {name} of (await env.USERS.list({prefix: 'raid:'})).keys) {
+    const r = JSON.parse(await env.USERS.get(name) || 'null');
+    if (!r || r.pinged || r.t - now > 20 * 6e4 || r.t < now - 5 * 6e4) continue;
+    const who = [...r.list.tank, ...r.list.heal, ...r.list.dps];
+    r.pinged = true;
+    await env.USERS.put(name, JSON.stringify(r), {expiration: Math.floor(r.t / 1000) + 86400});
+    if (!who.length) continue;
+    const res = r.list.res.length ? `\nRiserve: ${r.list.res.map((u) => `<@${u}>`).join(' ')} (entrate se manca qualcuno)` : '';
+    await dapi(env, 'POST', `/channels/${r.ch}/messages`, {content: `⏰ **${r.title}** inizia <t:${Math.floor(r.t / 1000)}:R>!\n${who.map((u) => `<@${u}>`).join(' ')}${res}`,
+      allowed_mentions: {users: [...who, ...r.list.res].slice(0, 100)}});
+  }
+}
+
 // ---------- entry point ----------
 export default {
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500)))])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {})])); },
   async fetch(req, env, ctx) {
     if (new URL(req.url).pathname === '/hit') return hit(req, env);
     if (/^\/join(\/cb)?$/.test(new URL(req.url).pathname)) return join(req, env);
@@ -949,6 +1045,7 @@ export default {
         if (i.data.name === 'preferiti') return await preferiti(i, env);
         if (i.data.name === 'craft') return await craft(i, env);
         if (i.data.name === 'aiuto') return aiuto(env);
+        if (i.data.name === 'raid') return await raidCreate(i, env);
         if (i.data.name === 'personaggio') return await personaggio(i, env, ctx);
       }
       if (i.type === 3 && i.data.custom_id?.startsWith('fav:')) return await favButton(i, env);
@@ -959,6 +1056,7 @@ export default {
       if (i.type === 3 && i.data.custom_id?.startsWith('cr:')) return await craftButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('pc:')) return await charButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('tk:')) return await timerButton(i, env);
+      if (i.type === 3 && i.data.custom_id?.startsWith('rs:')) return await raidButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('rp:')) return await rolePick(i, env, ctx);
       if (i.type === 5 && i.data.custom_id?.startsWith('alm:')) return await alertSubmit(i, env);
       return oops('Comando sconosciuto.');

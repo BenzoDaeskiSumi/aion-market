@@ -30,6 +30,12 @@ const commands = [
   {name: 'personaggio', description: 'Scheda di un personaggio EU: Combat Power, equipaggiamento, Daevanion (dati ufficiali NCSOFT)', options: [
     {type: 3, name: 'nome', description: 'Nome del personaggio: scegli dai suggerimenti (mostrano server e classe)', required: true, autocomplete: true},
     {type: 3, name: 'server', description: 'Server EU, per restringere la ricerca', required: false, autocomplete: true}]},
+  {name: 'raid', description: 'Organizza un raid: iscrizioni Tank / Healer / DPS e promemoria 15 minuti prima', dm_permission: false, options: [
+    {type: 3, name: 'titolo', description: 'Cosa si fa (es. Nahma, Dungeon X, Assedio)', required: true, max_length: 80},
+    {type: 3, name: 'quando', description: 'Ora italiana: 21:00 · domani 21 · sabato 21:30 · 25/10 21:00', required: true},
+    {type: 4, name: 'posti', description: 'Quanti posti (predefinito 8)', required: false, min_value: 1, max_value: 40},
+    {type: 8, name: 'ruolo', description: 'Ruolo da taggare quando pubblico il raid (es. Dungeon e Raid)', required: false},
+    {type: 3, name: 'note', description: 'Requisiti o dettagli (CP minimo, punto di ritrovo…)', required: false, max_length: 300}]},
   {name: 'preferiti', description: 'I tuoi preferiti del sito (accedi con Discord), uno alla volta con le frecce', options: [
     {...server, description: 'Server (predefinito: /server, poi quello scelto sul sito)'}]},
 ];
