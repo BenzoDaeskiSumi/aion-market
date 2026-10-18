@@ -499,6 +499,8 @@ function aiuto(env) {
     '`/server <server>` — registra il tuo server: gli altri comandi lo useranno in automatico.',
     '',
     '**Legione**',
+    '`/collega <personaggio>` — collega il tuo personaggio: soprannome e ruolo di classe automatici, `/personaggio` senza nome mostra il tuo. `/scollega` per toglierlo.',
+    '`/legione` — i personaggi collegati della Legione in ordine di Combat Power.',
     '`/raid <titolo> <quando>` — iscrizioni a un raid con i pulsanti Tank / Healer / DPS; Mauro tagga gli iscritti 15 minuti prima. Quando: `21:00`, `domani 21`, `sabato 21:30`, `25/10 21:00`.',
     '',
     '**Altro**',
@@ -707,10 +709,12 @@ async function personaggio(i, env, ctx) {
   const raw = String(opt(i.data, 'nome')?.value || '').trim(), srv0 = String(opt(i.data, 'server')?.value || ''), srv = /^\d{4}$/.test(srv0) ? srv0 : null;
   const followup = (data) => fetch(`https://discord.com/api/v10/webhooks/${i.application_id || env.DISCORD_APP_ID}/${i.token}/messages/@original`,
     {method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({allowed_mentions: {parse: []}, ...data})});
+  const mine = !raw ? await linkOf(env, userId(i)) : null;
+  if (!raw && !mine) return oops('Scrivi il nome di un personaggio, oppure collega il tuo con `/collega` e poi basta `/personaggio`.');
   ctx.waitUntil((async () => {
     try {
       let server, id;
-      const m = raw.match(/^(\d{4}):([A-Za-z0-9_\-=]{10,80})$/);          // picked from the suggestions
+      const m = mine ? [0, mine.server, mine.id] : raw.match(/^(\d{4}):([A-Za-z0-9_\-=]{10,80})$/);          // own character, or picked from the suggestions
       if (m) [server, id] = [+m[1], m[2]];
       else {
         const r = await charSearch(raw, srv ? +srv : null, 1, 25);
@@ -976,6 +980,91 @@ async function join(req, env) {
   }
 }
 
+// ---------- /collega: link a Discord account to an EU character (self-declared; one character per account, one account per character) ----------
+// KV link:<uid> = {server, id, name, cls, cp, serverName, t}; linkc:<server>:<id> = uid. Sets the nickname and the class role (+ CLASSI separator).
+const CLASS_ROLES = ['Gladiator', 'Templar', 'Assassin', 'Ranger', 'Sorcerer', 'Spiritmaster', 'Cleric', 'Chanter'];
+const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z]/g, '');
+const cpShort = (v) => (!v ? '' : v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v >= 1e4 ? `${Math.round(v / 1e3)}k` : kin(v));
+async function linkOf(env, uid) { return JSON.parse(await env.USERS.get('link:' + uid) || 'null'); }
+async function charProfile(server, id) {
+  const d = await charInfo(id, server), pr = d.profile || {};
+  return {server: +server, id, name: pr.characterName, cls: pr.className || '', cp: pr.combatPower || 0, serverName: pr.serverName || '', race: pr.raceName || (pr.raceId === 2 ? 'Asmodian' : ''), t: Date.now()};
+}
+async function collega(i, env, ctx) {
+  const raw = String(opt(i.data, 'personaggio')?.value || '').trim(), uid = userId(i);
+  const followup = (data) => fetch(`https://discord.com/api/v10/webhooks/${i.application_id || env.DISCORD_APP_ID}/${i.token}/messages/@original`,
+    {method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({allowed_mentions: {parse: []}, ...data})});
+  ctx.waitUntil((async () => {
+    try {
+      let server, id;
+      const m = raw.match(/^(\d{4}):([A-Za-z0-9_\-=]{10,80})$/);
+      if (m) [server, id] = [+m[1], m[2]];
+      else {
+        const r = await charSearch(raw, null, 1, 25), exact = r.list.filter((c) => c.name.toLowerCase() === raw.toLowerCase());
+        const pick = exact.length === 1 ? exact[0] : r.list.length === 1 ? r.list[0] : null;
+        if (!pick) return void await followup({content: r.list.length ? `Ci sono più personaggi che si chiamano così: scegli il tuo dai suggerimenti mentre scrivi (mostrano server e classe).` : `Nessun personaggio **${raw}** sui server EU.`});
+        [server, id] = [pick.server, pick.id];
+      }
+      const owner = await env.USERS.get(`linkc:${server}:${id}`);
+      if (owner && owner !== uid) return void await followup({content: `Questo personaggio è già collegato a <@${owner}>. Se è tuo, chiedi a un Centurion di sistemare.`});
+      const c = await charProfile(server, id);
+      if (!c.name) return void await followup({content: 'Il sito ufficiale non mi dà i dati di questo personaggio, riprova tra poco.'});
+      const old = await linkOf(env, uid);
+      if (old && (old.server !== c.server || old.id !== c.id)) await env.USERS.delete(`linkc:${old.server}:${old.id}`);
+      await env.USERS.put('link:' + uid, JSON.stringify(c));
+      await env.USERS.put(`linkc:${server}:${id}`, uid);
+      const notes = [];
+      if (i.guild_id) {
+        const r = await dapi(env, 'PATCH', `/guilds/${i.guild_id}/members/${uid}`, {nick: c.name});
+        notes.push(r.ok ? `🏷️ Soprannome: **${c.name}**` : `🏷️ Non posso cambiarti il soprannome (succede col proprietario del server o con ruoli sopra Mauro): mettilo a mano.`);
+        const roles = await (await dapi(env, 'GET', `/guilds/${i.guild_id}/roles`)).json().catch(() => []);
+        const cr = Array.isArray(roles) && roles.find((x) => CLASS_ROLES.includes(x.name) && norm(x.name) === norm(c.cls));
+        if (cr) {
+          const ok = (await dapi(env, 'PUT', `/guilds/${i.guild_id}/members/${uid}/roles/${cr.id}`)).ok;
+          const sep = roles.find((x) => x.name.includes('𝐂𝐋𝐀𝐒𝐒𝐈') && x.name.includes('─'));
+          if (ok && sep) await dapi(env, 'PUT', `/guilds/${i.guild_id}/members/${uid}/roles/${sep.id}`);
+          notes.push(ok ? `🎭 Ruolo: **${cr.name}**` : '🎭 Non sono riuscito a darti il ruolo di classe.');
+        }
+      }
+      const card = await charView(c.server, c.id, 'card', uid, env);
+      await followup({...card, content: [`✅ **${c.name}** (${c.serverName}) è collegato al tuo account.`, ...notes,
+        'Ora `/personaggio` senza nome mostra la tua scheda, e nei `/raid` accanto al tuo nome compaiono classe e CP.'].join('\n')});
+    } catch (e) {
+      await followup({content: 'Il sito ufficiale di NCSOFT non risponde in questo momento, riprova tra poco.'});
+    }
+  })());
+  return Response.json({type: 5, data: {flags: 64}});
+}
+async function scollega(i, env) {
+  const uid = userId(i), l = await linkOf(env, uid);
+  if (!l) return oops('Non hai nessun personaggio collegato.');
+  await env.USERS.delete('link:' + uid); await env.USERS.delete(`linkc:${l.server}:${l.id}`);
+  return oops(`Ok, **${l.name}** non è più collegato. Soprannome e ruoli restano come sono.`);
+}
+async function legione(i, env, ctx) {           // members with a linked character, by Combat Power (refreshed from the official site)
+  const followup = (data) => fetch(`https://discord.com/api/v10/webhooks/${i.application_id || env.DISCORD_APP_ID}/${i.token}/messages/@original`,
+    {method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({allowed_mentions: {parse: []}, ...data})});
+  ctx.waitUntil((async () => {
+    const keys = (await env.USERS.list({prefix: 'link:'})).keys.map((k) => k.name);
+    const rows = (await Promise.all(keys.map(async (k) => {
+      const l = JSON.parse(await env.USERS.get(k) || 'null'); if (!l) return null;
+      if (Date.now() - l.t > 6 * 3600e3) {
+        try { const f = await charProfile(l.server, l.id); if (f.name) { Object.assign(l, f); await env.USERS.put(k, JSON.stringify(l)); } } catch {}
+      }
+      return {...l, uid: k.slice(5)};
+    }))).filter(Boolean).sort((a, b) => (b.cp || 0) - (a.cp || 0));
+    if (!rows.length) return void await followup({content: 'Nessuno ha ancora collegato un personaggio: usa `/collega`.'});
+    const medal = ['🥇', '🥈', '🥉'];
+    const lines = rows.map((r, k) => `${medal[k] || `\`${String(k + 1).padStart(2)}\``} **${r.name}** · ${r.cls} · **${kin(r.cp)}** CP · <@${r.uid}>`);
+    const byCls = {};
+    for (const r of rows) byCls[r.cls] = (byCls[r.cls] || 0) + 1;
+    await followup({embeds: [{title: '⚔️ La Legione per Combat Power', color: 0xe8b64a, description: lines.join('\n').slice(0, 4000),
+      fields: [{name: 'Classi', value: Object.entries(byCls).sort((a, b) => b[1] - a[1]).map(([c, n]) => `${c} ${n}`).join(' · ') || '—'}],
+      footer: {text: `${rows.length} personaggi collegati con /collega · dati ufficiali NCSOFT`}}]});
+  })());
+  return Response.json({type: 5});
+}
+
 // ---------- /raid: sign-up sheet with Tank / Healer / DPS buttons; the cron tags everyone ~15 min before ----------
 // KV raid:<id> = {title, t, slots, by, ch, note, list: {tank: [uid], heal: [], dps: []}, pinged}; expires a day after the start.
 const RAID_TZ = 'Europe/Rome', RAID_ROLES = [['tank', 'Tank', '🛡️'], ['heal', 'Healer', '✚'], ['dps', 'DPS', '⚔️']];
@@ -1007,10 +1096,12 @@ function parseQuando(txt, now = Date.now()) {    // '21', '21:30', 'oggi 21', 'd
   }
   return ts;
 }
-function raidMessage(id, r) {
+async function raidMessage(id, r, env) {
+  const all = [...new Set(Object.values(r.list).flat())], info = Object.fromEntries(await Promise.all(all.map(async (u) => [u, await linkOf(env, u)])));
+  const who = (u) => `<@${u}>${info[u] ? ` · ${info[u].cls} ${cpShort(info[u].cp)}` : ''}`;
   const n = RAID_ROLES.reduce((a, [k]) => a + r.list[k].length, 0), past = Date.now() > r.t;
-  const fields = RAID_ROLES.map(([k, label, emo]) => ({name: `${emo} ${label} (${r.list[k].length})`, value: r.list[k].map((u) => `<@${u}>`).join('\n') || '—', inline: true}));
-  if (r.list.res?.length) fields.push({name: `🪑 Riserve (${r.list.res.length})`, value: r.list.res.map((u) => `<@${u}>`).join('\n'), inline: false});
+  const fields = RAID_ROLES.map(([k, label, emo]) => ({name: `${emo} ${label} (${r.list[k].length})`, value: r.list[k].map(who).join('\n') || '—', inline: true}));
+  if (r.list.res?.length) fields.push({name: `🪑 Riserve (${r.list.res.length})`, value: r.list.res.map(who).join('\n'), inline: false});
   const btn = (k, label, emo, style = 2) => ({type: 2, style, custom_id: `rs:${id}:${k}`, label, emoji: {name: emo}, disabled: past});
   return {
     embeds: [{title: `⚔️ ${r.title}`, color: past ? 0x5c5f66 : 0xe8b64a,
@@ -1031,7 +1122,7 @@ async function raidCreate(i, env) {
   const r = {title: String(o.titolo).slice(0, 80), t, slots: Math.max(1, Math.min(40, o.posti || 8)), note: o.note ? String(o.note).slice(0, 300) : '',
     by: u.id, byName: i.member?.nick || u.global_name || u.username, ch: i.channel_id, ping: o.ruolo || null, list: {tank: [], heal: [], dps: [], res: []}, pinged: false};
   await env.USERS.put('raid:' + id, JSON.stringify(r), {expiration: Math.floor(t / 1000) + 86400});
-  const msg = raidMessage(id, r);
+  const msg = await raidMessage(id, r, env);
   if (r.ping) { msg.content = `<@&${r.ping}> nuovo raid: iscriviti qui sotto!`; msg.allowed_mentions = {roles: [r.ping]}; }
   return Response.json({type: 4, data: msg});
 }
@@ -1052,7 +1143,7 @@ async function raidButton(i, env) {
     (n >= r.slots ? r.list.res : r.list[k]).push(uid);
   }
   await env.USERS.put(key, JSON.stringify(r), {expiration: Math.floor(r.t / 1000) + 86400});
-  return Response.json({type: 7, data: raidMessage(id, r)});
+  return Response.json({type: 7, data: await raidMessage(id, r, env)});
 }
 async function raidReminders(env) {               // cron: tag the sign-ups once, 0-20 minutes before the start
   const now = Date.now();
@@ -1091,6 +1182,7 @@ export default {
           return Response.json({type: 8, data: {choices: list.filter((x) => x.name.toLowerCase().includes(q2)).slice(0, 25)
             .map((x) => ({name: `${x.name} · ${x.race === 1 ? 'Elyos' : 'Asmodian'}`, value: String(x.id)}))}});
         }
+        if (i.data.name === 'collega') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), null)}});
         if (i.data.name === 'personaggio') {
           const srv = /^\d{4}$/.test(String(opt(i.data, 'server')?.value || '')) ? opt(i.data, 'server').value : null;
           return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), srv)}});
@@ -1117,6 +1209,9 @@ export default {
         if (i.data.name === 'craft') return await craft(i, env);
         if (i.data.name === 'aiuto') return aiuto(env);
         if (i.data.name === 'raid') return await raidCreate(i, env);
+        if (i.data.name === 'collega') return await collega(i, env, ctx);
+        if (i.data.name === 'scollega') return await scollega(i, env);
+        if (i.data.name === 'legione') return await legione(i, env, ctx);
         if (i.data.name === 'personaggio') return await personaggio(i, env, ctx);
       }
       if (i.type === 3 && i.data.custom_id?.startsWith('fav:')) return await favButton(i, env);

@@ -28,8 +28,12 @@ const commands = [
     {type: 3, name: 'oggetto', description: 'Oggetto da craftare (in inglese)', required: true, autocomplete: true}, server]},
   {name: 'aiuto', description: 'Tutti i comandi del bot spiegati'},
   {name: 'personaggio', description: 'Scheda di un personaggio EU: Combat Power, equipaggiamento, Daevanion (dati ufficiali NCSOFT)', options: [
-    {type: 3, name: 'nome', description: 'Nome del personaggio: scegli dai suggerimenti (mostrano server e classe)', required: true, autocomplete: true},
+    {type: 3, name: 'nome', description: 'Nome del personaggio (vuoto = il tuo, se l’hai collegato con /collega)', required: false, autocomplete: true},
     {type: 3, name: 'server', description: 'Server EU, per restringere la ricerca', required: false, autocomplete: true}]},
+  {name: 'collega', description: 'Collega il tuo personaggio al tuo account Discord (soprannome e ruolo di classe automatici)', dm_permission: false, options: [
+    {type: 3, name: 'personaggio', description: 'Il tuo personaggio: sceglilo dai suggerimenti (mostrano server e classe)', required: true, autocomplete: true}]},
+  {name: 'scollega', description: 'Scollega il tuo personaggio dal tuo account Discord'},
+  {name: 'legione', description: 'I personaggi collegati della Legione, in ordine di Combat Power', dm_permission: false},
   {name: 'raid', description: 'Organizza un raid: iscrizioni Tank / Healer / DPS e promemoria 15 minuti prima', dm_permission: false, options: [
     {type: 3, name: 'titolo', description: 'Cosa si fa (es. Nahma, Dungeon X, Assedio)', required: true, max_length: 80},
     {type: 3, name: 'quando', description: 'Ora italiana: 21:00 · domani 21 · sabato 21:30 · 25/10 21:00', required: true},

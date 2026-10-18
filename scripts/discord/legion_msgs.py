@@ -151,7 +151,9 @@ def build(ch, roles, cemo):
         H('Profilo', '👤'),
         '➤ `/preferiti` i tuoi preferiti del sito',
         '➤ `/server` il server da usare di default',
-        '➤ `/personaggio` scheda di un personaggio',
+        '➤ `/collega` collega il tuo personaggio: soprannome e ruolo di classe automatici',
+        '➤ `/personaggio` scheda di un personaggio (vuoto = il tuo)',
+        '➤ `/legione` la Legione in ordine di Combat Power',
         '➤ `/aiuto` tutti i comandi spiegati',
     ]), 'footer': {'text': 'Prezzi: aion2.exchange · dati di gioco: NCSOFT · ricette e mappa: MetaBot.GG · non affiliato a NCSOFT'}}],
         'components': [{'type': 1, 'components': [link('Apri il sito', SITE), link('Mappa', SITE + '/map.html')]}]}
