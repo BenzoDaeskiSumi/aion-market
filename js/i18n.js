@@ -9,6 +9,9 @@ const EN = {
   // overlay page
   "Modalità overlay (Steam)": "Overlay mode (Steam)",
   "Installa l'app": "Install the app",
+  "Media 7g": "7d avg",
+  "Prezzo medio degli ultimi 7 giorni, e quanto costa craftarlo rispetto a quello": "Average price over the last 7 days, and how crafting compares to it",
+  "I file di gioco non indicano una probabilità di fallimento per questa ricetta: è calcolata come sempre riuscita.": "The game files give no failure chance for this recipe: it is counted as always successful.",
   "Media 7 giorni": "7-day average",
   "Craft rispetto alla media": "Craft vs average",
   "Potenziamento: i file di gioco non indicano una probabilità di fallimento, quindi è calcolato come sempre riuscito.": "Upgrade: the game files give no failure chance, so it is counted as always successful.",
@@ -231,6 +234,9 @@ const ES = {
   // overlay page
   "Modalità overlay (Steam)": "Modo overlay (Steam)",
   "Installa l'app": "Instalar la app",
+  "Media 7g": "Media 7d",
+  "Prezzo medio degli ultimi 7 giorni, e quanto costa craftarlo rispetto a quello": "Precio medio de los últimos 7 días y cuánto cuesta craftearlo frente a él",
+  "I file di gioco non indicano una probabilità di fallimento per questa ricetta: è calcolata come sempre riuscita.": "Los archivos del juego no indican probabilidad de fallo para esta receta: se cuenta como siempre exitosa.",
   "Media 7 giorni": "Media 7 días",
   "Craft rispetto alla media": "Craft frente a la media",
   "Potenziamento: i file di gioco non indicano una probabilità di fallimento, quindi è calcolato come sempre riuscito.": "Mejora: los archivos del juego no indican probabilidad de fallo, así que se cuenta como siempre exitosa.",
@@ -444,6 +450,9 @@ const FR = {
   // overlay page
   "Modalità overlay (Steam)": "Mode overlay (Steam)",
   "Installa l'app": "Installer l'appli",
+  "Media 7g": "Moy. 7j",
+  "Prezzo medio degli ultimi 7 giorni, e quanto costa craftarlo rispetto a quello": "Prix moyen des 7 derniers jours, et le coût du craft par rapport à lui",
+  "I file di gioco non indicano una probabilità di fallimento per questa ricetta: è calcolata come sempre riuscita.": "Les fichiers du jeu n’indiquent pas de chance d’échec pour cette recette : elle est comptée comme toujours réussie.",
   "Media 7 giorni": "Moyenne 7 jours",
   "Craft rispetto alla media": "Craft par rapport à la moyenne",
   "Potenziamento: i file di gioco non indicano una probabilità di fallimento, quindi è calcolato come sempre riuscito.": "Amélioration : les fichiers du jeu n’indiquent pas de chance d’échec, elle est donc comptée comme toujours réussie.",

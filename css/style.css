@@ -650,3 +650,6 @@ footer .guild a.discord:hover, footer .guild a.discord:focus-visible { backgroun
 /* craft table: weekly average vs craft cost */
 #crows .vs7 { font-size: 12px; font-weight: 600; }
 #crows .vs7.up { color: var(--up, #3fbf7f); } #crows .vs7.down { color: var(--down, #e5484d); }
+
+/* the profession is already under each item name: its column only on wide screens */
+@media (max-width: 1700px) { #crafttab .hsk { display: none; } }

@@ -66,7 +66,7 @@ function craftBox(r, noFav) {
   const txt = document.createElement('div');
   const nm = document.createElement('span'); nm.className = 'nm g-' + r.grade; nm.textContent = r.name;
   const ct = document.createElement('span'); ct.className = 'ct';
-  ct.textContent = [r.skill, r.mode === 'combo' ? 'esce con la combo' : r.way.r.m ? 'maestria ' + r.way.r.m : 'potenziamento', r.level ? 'Lv ' + r.level : null].filter(Boolean).join(' · ');
+  ct.textContent = [r.skill, r.mode === 'combo' ? 'esce con la combo' : r.way.r.m ? 'maestria ' + r.way.r.m : r.way.r.base ? 'potenziamento' : null, r.level ? 'Lv ' + r.level : null].filter(Boolean).join(' · ');
   txt.append(nm, ct); noFav ? it.append(slot, txt) : it.append(favBtn(r.name), slot, txt); return it;
 }
 const signed = (v) => (v > 0 ? '+' : v < 0 ? '−' : '') + fmtC(Math.abs(Math.round(v)));
@@ -89,8 +89,8 @@ function drawCraft() {
     const tr = document.createElement('tr'); tr.dataset.craft = r.name; if (r.name === pickedCraft) tr.classList.add('sel');
     const td0 = document.createElement('td'); td0.appendChild(craftBox(r)); tr.appendChild(td0);
     const cell = (t, c) => { const td = document.createElement('td'); if (c) td.className = c; td.textContent = t; tr.appendChild(td); return td; };
-    cell(r.skill, 'hn');
-    coinCell(tr, r.cost, 'dim'); coinCell(tr, r.est, '');
+    cell(r.skill, 'hn hsk');
+    coinCell(tr, r.cost, 'dim hsk'); coinCell(tr, r.est, '');
     if (r.market != null) coinCell(tr, r.market, ''); else cell('Non in vendita', '');
     { const td = cell('', 'hm'); if (r.avg7 == null) td.textContent = '—'; else {          // weekly average + how much cheaper/dearer crafting is
       const c = document.createElement('span'); c.className = 'coin'; td.append(c, document.createTextNode(fmtC(r.avg7)));
@@ -159,7 +159,7 @@ function drawCraftDetail() {
     const est = tbl.insertRow(); est.className = 'est'; const e1 = est.insertCell(); e1.textContent = estLabel(w) + (w.mode !== 'combo' && w.r.q > 1 ? ', a pezzo' : ''); const e2 = est.insertCell(); e2.className = 'n'; e2.textContent = w.est == null ? '—' : fmtK(Math.round(w.est));
     const info = document.createElement('p'); info.className = 'stepinfo';
     info.textContent = w.mode === 'combo' ? `Esce solo con la combo (${Math.round(w.r.c * 100)}%) di un craft riuscito (${fmtPct(w.r.ok)}): in media 1 craft su ${d3.format('.1f')(1 / w.per)}.`
-      : w.r.nr ? 'Potenziamento: i file di gioco non indicano una probabilità di fallimento, quindi è calcolato come sempre riuscito.' + (w.r.base ? ` Consuma un ${w.r.base}, contato tra gli ingredienti.` : '')
+      : w.r.nr ? (w.r.base ? `Potenziamento: consuma un ${w.r.base}, contato tra gli ingredienti. ` : '') + 'I file di gioco non indicano una probabilità di fallimento per questa ricetta: è calcolata come sempre riuscita.'
       : `Il craft riesce il ${fmtPct(w.r.ok)} delle volte: il costo stimato conta anche i tentativi falliti.` + (w.r.q > 1 ? ` Ogni craft ne produce ${w.r.q}.` : '');
     box.append(head, tbl, info); cd.appendChild(box);
   });
