@@ -169,7 +169,9 @@ KV raid:<id> (expires start+1 day); parseQuando() reads Italian time ('21', 'dom
 /chisiamo answers '# LA LEGIONE' (guild joke; the bot can't read plain chat messages, slash commands only).
 Event countdown: the cron also keeps ONE message in '⏰・timer-eventi' (created by the Worker next to #annunci, read-only; KV cfg:timer_channel /
 cfg:timer_msg) with Discord timestamps <t:…:R> (they count down live). Schedule in data/timers.json (EU server time Europe/Berlin, 'every/offset',
-'days'+'at', 'windows', or 'respawn' = minutes after a kill: Gartua, set by the 💀 button tk:<id>, KV timer:<id>). Global times are community estimates.
+'days'+'at', 'windows', or 'respawn' = minutes after a kill, 💀 button tk:<id>, KV timer:<id>; Gartua removed at the user's request). Global times are community estimates.
+'signup' events (Nahma, siege = Corridoi) get a 'Ci sono' button ts:<id>:<startSec> (toggle, ephemeral answer; KV sig:<id>:<startSec>); signupCalls() in the cron
+tags them once ~15 min before in the read-only '📣・adunate' (KV cfg:call_channel, created under the timer channel) and deletes the call 30 min after the end (KV sigp:).
 Discord server scripts (workflow 'Discord setup', mode X-plan / X-apply; output on the temporary 'probe' branch): msg = Mauro's fixed messages
 (scripts/discord/legion_msgs.py content + messages.py; banner images img/discord/*.png drawn from bg/*.svg with Cormorant Garamond), chan = channel names
 in the server style: categories 『📢 𝐋𝐄𝐆𝐈𝐎𝐍𝐄』 (Unicode Mathematical Bold), channels plain '📜・regole' / voice '🍻 Taverna' (searchable); scripts match channels with base(), which also maps bold letters back to ASCII.

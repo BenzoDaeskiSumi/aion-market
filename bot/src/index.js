@@ -771,7 +771,7 @@ async function rolePick(i, env, ctx) {
 
 
 // ---------- event countdown channel: one message edited by the cron, with Discord timestamps (<t:…:R> counts down live) ----------
-// Schedule in data/timers.json on the site (EU server time). Gartua respawns 12 h after a kill: members press the button when it dies.
+// Schedule in data/timers.json on the site (EU server time). 'signup' events get a 'Ci sono' button; calls go to #adunate.
 const GUILD = '1553398446524731435', TIMER_CH = '⏰・timer-eventi';
 function tzOffset(ts, tz) {               // minutes the zone is ahead of UTC at ts
   const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', {timeZone: tz, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'})
@@ -803,7 +803,7 @@ function windows(ev, tz, now) {
 const T = (ms, f = 'R') => `<t:${Math.floor(ms / 1000)}:${f}>`;
 async function timerMessage(env) {
   const cfg = await (await fetch(`${env.SITE}/data/timers.json`, {cf: {cacheTtl: 300}})).json();
-  const now = Date.now(), tz = cfg.tz || 'Europe/Berlin', fields = [];
+  const now = Date.now(), tz = cfg.tz || 'Europe/Berlin', fields = [], signups = [];
   for (const ev of cfg.events) {
     let v;
     if (ev.respawn) {
@@ -816,15 +816,24 @@ async function timerMessage(env) {
     } else {
       const w = windows(ev, tz, now), open = w.find(([a, b]) => a <= now && now < b), next = w.find(([a]) => a > now);
       v = (open ? `🟢 **In corso** · finisce ${T(open[1])}\n` : '') + (next ? `${open ? 'Poi' : 'Prossimo'} ${T(next[0])} · ${T(next[0], next[0] - now > 864e5 ? 'f' : 't')}` : '—');
+      if (ev.signup && next) {
+        const k = Math.floor(next[0] / 1000), who = JSON.parse(await env.USERS.get(`sig:${ev.id}:${k}`) || '[]');
+        signups.push({ev, k});
+        v += `\n👥 **${who.length}** ${who.length === 1 ? 'iscritto' : 'iscritti'} al prossimo`;
+      }
     }
     fields.push({name: `${ev.emoji} ${ev.name}${ev.unconfirmed ? ' ❔' : ''}`, value: `${v}\n-# ${ev.note || ''}`.slice(0, 1024), inline: false});
   }
   const gartua = cfg.events.filter((e) => e.respawn);
-  return {embeds: [{color: 0xb06cff, title: '⏰ Timer degli eventi', description: 'Conto alla rovescia degli eventi principali (gli orari si vedono nel tuo fuso orario).\n​', fields,
+  const rows = [];
+  if (signups.length) rows.push({type: 1, components: signups.map(({ev, k}) => ({type: 2, style: 3, label: `Ci sono: ${ev.signup}`, emoji: {name: ev.emoji}, custom_id: `ts:${ev.id}:${k}`}))});
+  if (gartua.length) rows.push({type: 1, components: gartua.flatMap((e) => [
+    {type: 2, style: 4, label: `${e.name.split(' ').pop()} è morto adesso`, emoji: {name: '💀'}, custom_id: `tk:${e.id}`},
+    {type: 2, style: 2, label: 'Annulla', custom_id: `tk:${e.id}:x`}])});
+  const calls = signups.length ? `\nPremi **Ci sono** per ${signups.map(({ev}) => ev.signup).join(' o ')}: Mauro ti tagga in <#${await env.USERS.get('cfg:call_channel') || ''}> 15 minuti prima. Premi di nuovo per toglierti.` : '';
+  return {embeds: [{color: 0xb06cff, title: '⏰ Timer degli eventi', description: `Conto alla rovescia degli eventi principali (gli orari si vedono nel tuo fuso orario).${calls}\n​`, fields,
     footer: {text: 'Orari del server EU stimati dalla community: NCSOFT non li ha pubblicati. Aggiornato ogni 15 minuti.'}, timestamp: new Date(now).toISOString()}],
-    components: gartua.length ? [{type: 1, components: gartua.flatMap((e) => [
-      {type: 2, style: 4, label: `${e.name.split(' ').pop()} è morto adesso`, emoji: {name: '💀'}, custom_id: `tk:${e.id}`},
-      {type: 2, style: 2, label: 'Annulla', custom_id: `tk:${e.id}:x`}])}] : []};
+    components: rows, allowed_mentions: {parse: []}};
 }
 const dapi = (env, method, path, body) => fetch(`https://discord.com/api/v10${path}`, {method,
   headers: {Authorization: `Bot ${env.DISCORD_TOKEN}`, 'Content-Type': 'application/json', 'X-Audit-Log-Reason': 'Canale timer degli eventi'}, body: body ? JSON.stringify(body) : undefined});
@@ -837,7 +846,7 @@ async function timerChannel(env) {        // creates the read-only channel once 
   else {
     const ann = list.find((c) => c.type === 0 && /annunci$/.test(c.name)), me = await (await dapi(env, 'GET', '/users/@me')).json();
     const r = await dapi(env, 'POST', `/guilds/${GUILD}/channels`, {name: TIMER_CH, type: 0, parent_id: ann?.parent_id, position: (ann?.position ?? 0) + 1,
-      topic: 'Countdown di Spaccature, Assedio/Corridoi dell\'Abisso, Nahma, Battlefield e Gartua. Aggiornato da Mauro.',
+      topic: 'Countdown di Spaccature, Assedio/Corridoi dell\'Abisso, Nahma e Battlefield. Aggiornato da Mauro.',
       permission_overwrites: [{id: GUILD, type: 0, allow: '0', deny: String(0x800 | 0x40)}, {id: me.id, type: 1, allow: String(0x400 | 0x800 | 0x4000 | 0x10000), deny: '0'}]});
     if (!r.ok) { await env.USERS.put('timer_err', `create ${r.status} ${(await r.text()).slice(0, 300)}`); return null; }
     ch = (await r.json()).id;
@@ -847,6 +856,7 @@ async function timerChannel(env) {        // creates the read-only channel once 
 }
 async function updateTimers(env) {
   const ch = await timerChannel(env); if (!ch) return;
+  await callChannel(env).catch(() => null);
   const msg = await timerMessage(env), id = await env.USERS.get('cfg:timer_msg');
   if (id) { const r = await dapi(env, 'PATCH', `/channels/${ch}/messages/${id}`, msg); if (r.ok) return; if (r.status !== 404) return; }
   const r = await dapi(env, 'POST', `/channels/${ch}/messages`, msg);
@@ -858,6 +868,67 @@ async function timerButton(i, env) {      // 💀 "is dead now" / Annulla, then 
   if (x) await env.USERS.delete('timer:' + id);
   else await env.USERS.put('timer:' + id, JSON.stringify({t: Date.now(), by: i.member?.nick || i.member?.user?.global_name || i.member?.user?.username || 'qualcuno'}));
   return Response.json({type: 7, data: await timerMessage(env)});
+}
+
+// ---------- 'Ci sono' sign-ups for timer events (signup in data/timers.json): KV sig:<id>:<startSec> = [uid]; calls in #adunate ----------
+async function callChannel(env) {         // read-only channel right under the timer channel, where Mauro tags the sign-ups
+  let ch = await env.USERS.get('cfg:call_channel');
+  if (ch) return ch;
+  const list = await (await dapi(env, 'GET', `/guilds/${GUILD}/channels`)).json();
+  const found = list.find((c) => c.type === 0 && /adunate$/.test(c.name));
+  if (found) ch = found.id;
+  else {
+    const tid = await env.USERS.get('cfg:timer_channel'), tch = list.find((c) => c.id === tid) || list.find((c) => /timer-eventi$/.test(c.name));
+    const me = await (await dapi(env, 'GET', '/users/@me')).json();
+    const r = await dapi(env, 'POST', `/guilds/${GUILD}/channels`, {name: '📣・adunate', type: 0, parent_id: tch?.parent_id, position: (tch?.position ?? 0) + 1,
+      topic: 'Mauro tagga qui chi si è iscritto a Nahma e ai Corridoi dal canale timer, 15 minuti prima. I messaggi spariscono a evento finito.',
+      permission_overwrites: [{id: GUILD, type: 0, allow: '0', deny: String(0x800)}, {id: me.id, type: 1, allow: String(0x400 | 0x800 | 0x2000 | 0x4000 | 0x10000), deny: '0'}]});
+    if (!r.ok) { await env.USERS.put('timer_err', `calls ${r.status} ${(await r.text()).slice(0, 300)}`); return null; }
+    ch = (await r.json()).id;
+    if (tch) await dapi(env, 'PATCH', `/channels/${tch.id}`, {topic: 'Countdown di Spaccature, Assedio/Corridoi dell\'Abisso, Nahma e Battlefield. Premi Ci sono per farti taggare in #adunate. Aggiornato da Mauro.'});
+  }
+  await env.USERS.put('cfg:call_channel', ch);
+  return ch;
+}
+async function signupButton(i, env, ctx) {
+  const [, id, k] = i.data.custom_id.split(':'), key = `sig:${id}:${k}`, uid = (i.member?.user || i.user).id;
+  if (Date.now() > +k * 1000) return oops('Questo evento è già iniziato: aspetta che il messaggio si aggiorni e iscriviti al prossimo.');
+  const cfg = await (await fetch(`${env.SITE}/data/timers.json`, {cf: {cacheTtl: 300}})).json(), ev = cfg.events.find((e) => e.id === id);
+  let who = JSON.parse(await env.USERS.get(key) || '[]');
+  const was = who.includes(uid);
+  who = was ? who.filter((x) => x !== uid) : [...who, uid];
+  await env.USERS.put(key, JSON.stringify(who), {expiration: +k + 86400});
+  ctx.waitUntil(updateTimers(env).catch(() => {}));
+  const ch = await callChannel(env);
+  return oops(was ? `Ok, non sei più iscritto a **${ev?.signup || id}** di ${T(+k * 1000, 'F')}.`
+    : `✅ Iscritto a **${ev?.signup || id}** di ${T(+k * 1000, 'F')} (${who.length} in tutto). Ti taggo${ch ? ` in <#${ch}>` : ''} 15 minuti prima. Premi di nuovo per toglierti.`);
+}
+async function signupCalls(env) {         // cron: tag once ~15 min before; delete the call when the event is over
+  const cfg = await (await fetch(`${env.SITE}/data/timers.json`, {cf: {cacheTtl: 300}})).json(), now = Date.now(), tz = cfg.tz || 'Europe/Berlin';
+  for (const ev of cfg.events.filter((e) => e.signup)) {
+    const w = windows(ev, tz, now).find(([a]) => a > now - 5 * 6e4 && a - now <= 20 * 6e4);
+    if (!w) continue;
+    const k = Math.floor(w[0] / 1000);
+    if (await env.USERS.get(`sigp:${ev.id}:${k}`)) continue;
+    const who = JSON.parse(await env.USERS.get(`sig:${ev.id}:${k}`) || '[]');
+    let msg = null;
+    if (who.length) {
+      const ch = await callChannel(env);
+      if (ch) {
+        const r = await dapi(env, 'POST', `/channels/${ch}/messages`, {content: `${ev.emoji} **${ev.name}** inizia ${T(w[0])}! (${T(w[0], 't')})\n${who.map((u) => `<@${u}>`).join(' ')}`,
+          allowed_mentions: {users: who.slice(0, 100)}});
+        if (r.ok) msg = {ch, id: (await r.json()).id};
+      }
+    }
+    await env.USERS.put(`sigp:${ev.id}:${k}`, JSON.stringify({msg, end: w[1]}), {expiration: k + 86400 * 2});
+  }
+  for (const {name} of (await env.USERS.list({prefix: 'sigp:'})).keys) {
+    const p = JSON.parse(await env.USERS.get(name) || 'null');
+    if (p?.msg && now > p.end + 30 * 6e4) {
+      await dapi(env, 'DELETE', `/channels/${p.msg.ch}/messages/${p.msg.id}`);
+      await env.USERS.put(name, JSON.stringify({msg: null, end: p.end}), {expiration: Math.floor(p.end / 1000) + 86400});
+    }
+  }
 }
 
 // ---------- "Entra nel Discord" from the site: /join -> Discord login (identify + guilds.join) -> the Worker adds the user with the 'Ospite' role ----------
@@ -1000,11 +1071,11 @@ async function raidReminders(env) {               // cron: tag the sign-ups once
 
 // ---------- entry point ----------
 export default {
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {})])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400)))])); },
   async fetch(req, env, ctx) {
     if (new URL(req.url).pathname === '/hit') return hit(req, env);
     if (/^\/join(\/cb)?$/.test(new URL(req.url).pathname)) return join(req, env);
-    if (new URL(req.url).pathname === '/timers/run') { try { await updateTimers(env); } catch (e) { await env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500)); } }
+    if (new URL(req.url).pathname === '/timers/run') { try { await callChannel(env); await updateTimers(env); } catch (e) { await env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500)); } }
     if (new URL(req.url).pathname.startsWith('/timers/')) return Response.json({channel: await env.USERS.get('cfg:timer_channel'), msg: await env.USERS.get('cfg:timer_msg'), err: await env.USERS.get('timer_err')});
     if (new URL(req.url).pathname.startsWith('/char/')) return charApi(req, env);
     if (req.method !== 'POST') return new Response('Aion 2 Market bot: ok');
@@ -1056,6 +1127,7 @@ export default {
       if (i.type === 3 && i.data.custom_id?.startsWith('cr:')) return await craftButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('pc:')) return await charButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('tk:')) return await timerButton(i, env);
+      if (i.type === 3 && i.data.custom_id?.startsWith('ts:')) return await signupButton(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('rs:')) return await raidButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('rp:')) return await rolePick(i, env, ctx);
       if (i.type === 5 && i.data.custom_id?.startsWith('alm:')) return await alertSubmit(i, env);
