@@ -982,13 +982,14 @@ async function join(req, env) {
 
 // ---------- /collega: link a Discord account to an EU character (self-declared; one character per account, one account per character) ----------
 // KV link:<uid> = {server, id, name, cls, cp, serverName, t}; linkc:<server>:<id> = uid. Sets the nickname and the class role (+ CLASSI separator).
+const LEGION = {name: 'Legione', server: 2305};      // in-game legion (profile.regionName in the official data) on Marchutan
 const CLASS_ROLES = ['Gladiator', 'Templar', 'Assassin', 'Ranger', 'Sorcerer', 'Spiritmaster', 'Cleric', 'Chanter'];
 const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z]/g, '');
 const cpShort = (v) => (!v ? '' : v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v >= 1e4 ? `${Math.round(v / 1e3)}k` : kin(v));
 async function linkOf(env, uid) { return JSON.parse(await env.USERS.get('link:' + uid) || 'null'); }
 async function charProfile(server, id) {
   const d = await charInfo(id, server), pr = d.profile || {};
-  return {server: +server, id, name: pr.characterName, cls: pr.className || '', cp: pr.combatPower || 0, serverName: pr.serverName || '', race: pr.raceName || (pr.raceId === 2 ? 'Asmodian' : ''), t: Date.now()};
+  return {server: +server, id, name: pr.characterName, cls: pr.className || '', cp: pr.combatPower || 0, serverName: pr.serverName || '', legion: pr.regionName || '', race: pr.raceName || (pr.raceId === 2 ? 'Asmodian' : ''), t: Date.now()};
 }
 async function collega(i, env, ctx) {
   const raw = String(opt(i.data, 'personaggio')?.value || '').trim(), uid = userId(i);
@@ -1028,6 +1029,7 @@ async function collega(i, env, ctx) {
       }
       const card = await charView(c.server, c.id, 'card', uid, env);
       await followup({...card, content: [`✅ **${c.name}** (${c.serverName}) è collegato al tuo account.`, ...notes,
+        c.legion === LEGION.name && c.server === LEGION.server ? '⚔️ In gioco sei nella **Legione**: compari in `/legione`.' : `-# In gioco ${c.legion ? `sei nella legione **${c.legion}**` : 'non sei in una legione'}: non compari in \`/legione\` finché non entri nella Legione su Marchutan.`,
         'Ora `/personaggio` senza nome mostra la tua scheda, e nei `/raid` accanto al tuo nome compaiono classe e CP.'].join('\n')});
     } catch (e) {
       await followup({content: 'Il sito ufficiale di NCSOFT non risponde in questo momento, riprova tra poco.'});
@@ -1048,19 +1050,21 @@ async function legione(i, env, ctx) {           // members with a linked charact
     const keys = (await env.USERS.list({prefix: 'link:'})).keys.map((k) => k.name);
     const rows = (await Promise.all(keys.map(async (k) => {
       const l = JSON.parse(await env.USERS.get(k) || 'null'); if (!l) return null;
-      if (Date.now() - l.t > 6 * 3600e3) {
+      if (Date.now() - l.t > 6 * 3600e3 || l.legion == null) {
         try { const f = await charProfile(l.server, l.id); if (f.name) { Object.assign(l, f); await env.USERS.put(k, JSON.stringify(l)); } } catch {}
       }
       return {...l, uid: k.slice(5)};
     }))).filter(Boolean).sort((a, b) => (b.cp || 0) - (a.cp || 0));
-    if (!rows.length) return void await followup({content: 'Nessuno ha ancora collegato un personaggio: usa `/collega`.'});
+    const inL = (r) => r.legion === LEGION.name && r.server === LEGION.server, out = rows.filter((r) => !inL(r));
+    rows.splice(0, rows.length, ...rows.filter(inL));
+    if (!rows.length) return void await followup({content: `Nessun personaggio della Legione collegato ancora: usa \`/collega\`.${out.length ? ` (${out.length} collegati non sono nella Legione in gioco)` : ''}`});
     const medal = ['🥇', '🥈', '🥉'];
     const lines = rows.map((r, k) => `${medal[k] || `\`${String(k + 1).padStart(2)}\``} **${r.name}** · ${r.cls} · **${kin(r.cp)}** CP · <@${r.uid}>`);
     const byCls = {};
     for (const r of rows) byCls[r.cls] = (byCls[r.cls] || 0) + 1;
     await followup({embeds: [{title: '⚔️ La Legione per Combat Power', color: 0xe8b64a, description: lines.join('\n').slice(0, 4000),
       fields: [{name: 'Classi', value: Object.entries(byCls).sort((a, b) => b[1] - a[1]).map(([c, n]) => `${c} ${n}`).join(' · ') || '—'}],
-      footer: {text: `${rows.length} personaggi collegati con /collega · dati ufficiali NCSOFT`}}]});
+      footer: {text: `${rows.length} membri della Legione su Marchutan collegati con /collega${out.length ? ` · ${out.length} collegati fuori dalla Legione non contati` : ''} · dati ufficiali NCSOFT, aggiornati ogni 6 ore`}}]});
   })());
   return Response.json({type: 5});
 }

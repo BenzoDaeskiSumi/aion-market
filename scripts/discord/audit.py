@@ -16,18 +16,3 @@ for c in chs:
 print('\n'.join(lines))
 try: print('\n== timer status', urllib.request.urlopen(urllib.request.Request('https://aion-market-bot.aion2-market.workers.dev/timers/run', headers={'User-Agent': 'Mozilla/5.0'})).read().decode())
 except Exception as e: print('timer status error', e)
-try:
-    W = 'https://aion-market-bot.aion2-market.workers.dev/char/'
-    rq = lambda u: json.load(urllib.request.urlopen(urllib.request.Request(W + u, headers={'User-Agent': 'Mozilla/5.0'})))
-    meta = rq('meta'); mar = [x for x in meta['servers'] if x['name'] == 'Marchutan']
-    print('\n== marchutan', mar)
-    seen = 0
-    for q in ['Ben', 'Mar', 'Dark', 'Shadow', 'Lux']:
-        for c in rq(f"search?q={q}" + (f"&s={mar[0]['id']}" if mar else ''))['list']:
-            if c['level'] < 30: continue
-            d = rq(f"info?id={urllib.parse.quote(c['id'])}&s={c['server']}")['profile']
-            print('==', d['characterName'], d['serverName'], d['characterLevel'], 'region=', repr(d.get('regionName')), 'title=', d.get('titleName'))
-            seen += 1
-            if seen >= 8: break
-        if seen >= 8: break
-except Exception as e: print('char probe error', e)
