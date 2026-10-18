@@ -197,7 +197,7 @@ def item_stats(rs, real, settings, snap=None):
             'ch': price - prev if prev else None, 'cp': round((price - prev) / prev, 4) if prev else None,
             'ov': round((price - avg) / avg, 4) if avail and avg else None, 'ar': bool(real and real.get('avg')),
             'q': conf, 'x': anomaly, 'cc': len(rs), 'lo': min(week) if week else None, 'hi': max(week) if week else None,
-            't7': round(trend, 4) if trend is not None else None, 'v': round(vol, 4) if vol is not None else None, 'lq': liq,
+            't7': round(trend, 4) if trend is not None else None, 'a7': round(statistics.mean(week)) if week else None, 'v': round(vol, 4) if vol is not None else None, 'lq': liq,
             'rp': round(min(1, max(0, pos)), 3) if pos is not None else None, 'lo30': lo30, 'hi30': hi30,
             't': (snap if snap and last.get('screenshot') == 'aion2.exchange' and snap > lt else lt).isoformat()}
 

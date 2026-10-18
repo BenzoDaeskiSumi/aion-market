@@ -25,6 +25,21 @@ def rsc(page):
     return ''.join(json.loads('"' + c + '"') for c in chunks)
 
 
+def fix_recipes(out):
+    """MetaBot lists the 'Splendent X' upgrades (mastery 0, no success curve) without the item they upgrade: in game the
+    upgrade consumes X itself, so it is added as the first ingredient ('base' marks it). Recipes without a success curve
+    get 'nr' (success rate not in the game files: counted as 100%)."""
+    prods = {r['p'] for r in out}
+    for r in out:
+        if r['m'] == 0 and r['p'].startswith('Splendent ') and not r.get('base'):
+            x = r['p'][len('Splendent '):]
+            if x in prods and all(n != x for n, _ in r['parts']):
+                r['parts'] = [[x, 1]] + r['parts']; r['base'] = x
+        if r['m'] == 0:
+            r['nr'] = 1
+    return out
+
+
 def main():
     t = rsc(fetch(BASE + '/en/aion-2/crafting'))
     i = t.find('{"lang":"en","recipes":')
@@ -67,6 +82,7 @@ def main():
             it = items.get(str(k))
             if it and it.get('grade') in GRADE:
                 grades.setdefault(it['name'], GRADE[it['grade']])
+    fix_recipes(out)
     # NPC shop prices of the ingredients nobody sells on the Market
     npc = {}
     shop_only = sorted({n for r in out for n, _ in r['parts'] if '(Bound)' in n})
@@ -92,4 +108,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    if sys.argv[1:] == ['--fix']:                 # re-apply fix_recipes() to the saved file
+        d = json.load(open('data/recipes.json', encoding='utf-8')); fix_recipes(d['recipes'])
+        json.dump(d, open('data/recipes.json', 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
+    else:
+        main()

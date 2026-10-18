@@ -457,7 +457,7 @@ async function craftEmbed(name, sid, env) {
     name: `${steps.length > 1 ? `Passo ${no.get(x.name)} · ` : ''}${x.mode === 'combo' ? 1 : x.r.q} × ${x.name}`.slice(0, 256),
     value: `${lines(x)}\nTotale **${x.cost == null ? '—' : kin(x.cost)}** · ${estLabel(x)} **${x.est == null ? '—' : kin(x.est)}**${x.mode !== 'combo' && x.r.q > 1 ? ' a pezzo' : ''}`.slice(0, 1024)}));
   const [gname, color] = GRADE[rec.grades?.[name] || sum[name]?.g] || GRADE.white;
-  const how = w.mode === 'combo' ? `esce solo con la combo (${Math.round(w.r.c * 100)}%) di un craft riuscito (${fmtPct(w.r.ok)})`
+  const how = w.r.nr && w.mode !== 'combo' ? 'potenziamento (sempre riuscito)' : w.mode === 'combo' ? `esce solo con la combo (${Math.round(w.r.c * 100)}%) di un craft riuscito (${fmtPct(w.r.ok)})`
     : `riesce il ${fmtPct(w.r.ok)} delle volte${w.r.q > 1 ? `, ne fa ${w.r.q}` : ''}`;
   return {
     title: `🔨 ${name}`, url: itemUrl(env, sid, name), color, thumbnail: {url: `${env.SITE}/${ico[name] || `icons/${slug(name)}.png`}`},
@@ -465,6 +465,8 @@ async function craftEmbed(name, sid, env) {
       `Costo di 1 craft: **${w.cost == null ? '—' : kin(w.cost)}**`,
       `Costo ${estLabel(w)}: **${w.est == null ? '—' : kin(w.est)}**`,
       `Prezzo Market: **${market == null ? 'non in vendita' : kin(market)}**` + (market != null && w.est != null ? ` · se lo rivendi ${market * (1 - tax) - w.est >= 0 ? '+' : '−'}${kin(Math.abs(market * (1 - tax) - w.est))} (dopo tasse)` : ''),
+      ...(sum[name]?.a7 ? [`Media 7 giorni: **${kin(sum[name].a7)}**` + (w.est != null ? ` · craftarlo costa ${w.est <= sum[name].a7 ? `il ${Math.round((1 - w.est / sum[name].a7) * 100)}% in meno` : `il ${Math.round((w.est / sum[name].a7 - 1) * 100)}% in più`}` : '')] : []),
+      ...(w.r.base ? [`-# Potenziamento: consuma un ${w.r.base} (contato tra gli ingredienti).`] : []),
       verdict].join('\n'),
     fields: [...(steps.length > 4 ? [{name: '…', value: `${steps.length - 4} passi precedenti: vedili sul sito (Crafting).`}] : []), ...fields],
     footer: {text: `${serverName(srv, sid)} · ingredienti al prezzo più basso tra Market, NPC e craft · ricette MetaBot.GG`},

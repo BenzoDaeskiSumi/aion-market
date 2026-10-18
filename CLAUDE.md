@@ -78,6 +78,8 @@ The same run saves data/s/<id>/crafts.json (aion2.exchange's 19 Splendent lines;
 Crafting view: data/recipes.json, from the weekly 'Recipes' workflow (scripts/recipes.py): all 256 Asmodian recipes of MetaBot.GG's
 crafting calculator (game files; recipe id 2nd digit 2 = Asmodian), success at max mastery, combo %, combo product ('Splendent X',
 which is what the next tier needs, e.g. Truth Orb recipe -> combo -> Splendent Truth Orb), and NPC prices of '(Bound)' shop items.
+'Splendent X' upgrades (mastery 0) get X added as first ingredient ('base') by recipes.py fix_recipes(); mastery-0 recipes have 'nr' (no success curve: 100%).
+Summary 'a7' = mean of the last 7 days' lowest prices (troll prices dropped): craft table column 'Media 7 giorni' + 'craft −x%', detail facts, bot /craft line.
 craftEngine() in index.html: each item's unit price = cheapest of Market / NPC shop / crafting it (recursive); 'Costo 1 craft' =
 recipe parts at those prices; 'Costo stimato' = cost / (success x qty) for the product, / (success x combo) for the combo product.
 The detail shows the chain (ingredients cheaper to craft get their own closed step). MetaBot.GG is credited with a followed link.

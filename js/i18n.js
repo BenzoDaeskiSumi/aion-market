@@ -9,6 +9,10 @@ const EN = {
   // overlay page
   "Modalità overlay (Steam)": "Overlay mode (Steam)",
   "Installa l'app": "Install the app",
+  "Media 7 giorni": "7-day average",
+  "Craft rispetto alla media": "Craft vs average",
+  "Potenziamento: i file di gioco non indicano una probabilità di fallimento, quindi è calcolato come sempre riuscito.": "Upgrade: the game files give no failure chance, so it is counted as always successful.",
+  "potenziamento": "upgrade",
   "Gear Score · CP": "Gear Score · CP",
   "Carico la Legione…": "Loading the Legione…",
   "Nessun membro collegato ancora.": "No members linked yet.",
@@ -227,6 +231,10 @@ const ES = {
   // overlay page
   "Modalità overlay (Steam)": "Modo overlay (Steam)",
   "Installa l'app": "Instalar la app",
+  "Media 7 giorni": "Media 7 días",
+  "Craft rispetto alla media": "Craft frente a la media",
+  "Potenziamento: i file di gioco non indicano una probabilità di fallimento, quindi è calcolato come sempre riuscito.": "Mejora: los archivos del juego no indican probabilidad de fallo, así que se cuenta como siempre exitosa.",
+  "potenziamento": "mejora",
   "Gear Score · CP": "Gear Score · CP",
   "Carico la Legione…": "Cargando la Legione…",
   "Nessun membro collegato ancora.": "Aún no hay miembros vinculados.",
@@ -436,6 +444,10 @@ const FR = {
   // overlay page
   "Modalità overlay (Steam)": "Mode overlay (Steam)",
   "Installa l'app": "Installer l'appli",
+  "Media 7 giorni": "Moyenne 7 jours",
+  "Craft rispetto alla media": "Craft par rapport à la moyenne",
+  "Potenziamento: i file di gioco non indicano una probabilità di fallimento, quindi è calcolato come sempre riuscito.": "Amélioration : les fichiers du jeu n’indiquent pas de chance d’échec, elle est donc comptée comme toujours réussie.",
+  "potenziamento": "amélioration",
   "Gear Score · CP": "Gear Score · CP",
   "Carico la Legione…": "Chargement de la Legione…",
   "Nessun membro collegato ancora.": "Aucun membre lié pour l’instant.",
@@ -696,3 +708,6 @@ document.querySelectorAll('.langs button').forEach((b) => {
 EN_RE.push([/^La Legione su Marchutan · (\d+) membri$/, "Legione on Marchutan · $1 members"]);
 ES_RE.push([/^La Legione su Marchutan · (\d+) membri$/, "Legione en Marchutan · $1 miembros"]);
 FR_RE.push([/^La Legione su Marchutan · (\d+) membri$/, "Legione sur Marchutan · $1 membres"]);
+EN_RE.push([/^craft ([−+])(\d+)%$/, 'craft $1$2%'], [/^Consuma un (.+), contato tra gli ingredienti\.$/, 'Uses one $1, counted among the ingredients.']);
+ES_RE.push([/^Consuma un (.+), contato tra gli ingredienti\.$/, 'Consume un $1, contado entre los ingredientes.']);
+FR_RE.push([/^Consuma un (.+), contato tra gli ingredienti\.$/, 'Consomme un $1, compté parmi les ingrédients.']);
