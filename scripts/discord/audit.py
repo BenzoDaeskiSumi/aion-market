@@ -16,3 +16,12 @@ for c in chs:
 print('\n'.join(lines))
 try: print('\n== timer status', urllib.request.urlopen(urllib.request.Request('https://aion-market-bot.aion2-market.workers.dev/timers/run', headers={'User-Agent': 'Mozilla/5.0'})).read().decode())
 except Exception as e: print('timer status error', e)
+try:
+    me = get('/users/@me'); mm = get(f"/guilds/{G}/members/{me['id']}"); rs = get(f'/guilds/{G}/roles')
+    p = 0
+    for r in rs:
+        if r['id'] in mm['roles'] or r['id'] == G: p |= int(r['permissions'])
+    top = max((r['position'] for r in rs if r['id'] in mm['roles']), default=0)
+    print('\n== mauro perms admin=%s manage_nicknames=%s manage_roles=%s top_role_pos=%s' % (bool(p & 8), bool(p & 0x8000000), bool(p & 0x10000000), top))
+    print('== roles above mauro:', [r['name'] for r in sorted(rs, key=lambda r: -r['position']) if r['position'] > top])
+except Exception as e: print('perm check error', e)
