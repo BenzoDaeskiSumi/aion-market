@@ -9,6 +9,11 @@ const EN = {
   // overlay page
   "Modalità overlay (Steam)": "Overlay mode (Steam)",
   "Installa l'app": "Install the app",
+  "Transfer": "Transfer",
+  "Oggetti fatti da materiali": "Items made from materials",
+  "Equipaggiamento fatto da un altro pezzo di equipaggiamento (Transfer in gioco)": "Gear made from another piece of gear (Transfer in game)",
+  "Sezione del crafting": "Crafting section",
+  "Niente in questa categoria.": "Nothing in this category.",
   "Media 7g": "7d avg",
   "Prezzo medio degli ultimi 7 giorni, e quanto costa craftarlo rispetto a quello": "Average price over the last 7 days, and how crafting compares to it",
   "I file di gioco non indicano una probabilità di fallimento per questa ricetta: è calcolata come sempre riuscita.": "The game files give no failure chance for this recipe: it is counted as always successful.",
@@ -234,6 +239,11 @@ const ES = {
   // overlay page
   "Modalità overlay (Steam)": "Modo overlay (Steam)",
   "Installa l'app": "Instalar la app",
+  "Transfer": "Transfer",
+  "Oggetti fatti da materiali": "Objetos hechos con materiales",
+  "Equipaggiamento fatto da un altro pezzo di equipaggiamento (Transfer in gioco)": "Equipo hecho a partir de otra pieza de equipo (Transfer en el juego)",
+  "Sezione del crafting": "Sección de crafteo",
+  "Niente in questa categoria.": "Nada en esta categoría.",
   "Media 7g": "Media 7d",
   "Prezzo medio degli ultimi 7 giorni, e quanto costa craftarlo rispetto a quello": "Precio medio de los últimos 7 días y cuánto cuesta craftearlo frente a él",
   "I file di gioco non indicano una probabilità di fallimento per questa ricetta: è calcolata come sempre riuscita.": "Los archivos del juego no indican probabilidad de fallo para esta receta: se cuenta como siempre exitosa.",
@@ -450,6 +460,11 @@ const FR = {
   // overlay page
   "Modalità overlay (Steam)": "Mode overlay (Steam)",
   "Installa l'app": "Installer l'appli",
+  "Transfer": "Transfert",
+  "Oggetti fatti da materiali": "Objets fabriqués à partir de matériaux",
+  "Equipaggiamento fatto da un altro pezzo di equipaggiamento (Transfer in gioco)": "Équipement fabriqué à partir d’une autre pièce d’équipement (Transfert en jeu)",
+  "Sezione del crafting": "Section d’artisanat",
+  "Niente in questa categoria.": "Rien dans cette catégorie.",
   "Media 7g": "Moy. 7j",
   "Prezzo medio degli ultimi 7 giorni, e quanto costa craftarlo rispetto a quello": "Prix moyen des 7 derniers jours, et le coût du craft par rapport à lui",
   "I file di gioco non indicano una probabilità di fallimento per questa ricetta: è calcolata come sempre riuscita.": "Les fichiers du jeu n’indiquent pas de chance d’échec pour cette recette : elle est comptée comme toujours réussie.",
@@ -723,3 +738,6 @@ FR_RE.push([/^Consuma un (.+), contato tra gli ingredienti\.$/, 'Consomme un $1,
 EN_RE.push([/^Accesso con Discord non riuscito: (.+)$/, 'Discord login failed: $1']);
 ES_RE.push([/^Accesso con Discord non riuscito: (.+)$/, 'Error al iniciar sesión con Discord: $1']);
 FR_RE.push([/^Accesso con Discord non riuscito: (.+)$/, 'Échec de la connexion Discord : $1']);
+EN_RE.push([/^Nessun oggetto contiene "(.+)" in questa sezione\.$/, 'No item contains "$1" in this section.'], [/^Transfer: trasforma il pezzo di equipaggiamento della ricetta in uno di livello superiore\. Riesce il (.+) delle volte\.$/, 'Transfer: turns the recipe\'s piece of gear into a higher-tier one. Succeeds $1 of the time.']);
+ES_RE.push([/^Nessun oggetto contiene "(.+)" in questa sezione\.$/, 'Ningún objeto contiene "$1" en esta sección.'], [/^Transfer: trasforma il pezzo di equipaggiamento della ricetta in uno di livello superiore\. Riesce il (.+) delle volte\.$/, 'Transfer: convierte la pieza de equipo de la receta en una de nivel superior. Sale bien el $1 de las veces.']);
+FR_RE.push([/^Nessun oggetto contiene "(.+)" in questa sezione\.$/, 'Aucun objet ne contient « $1 » dans cette section.'], [/^Transfer: trasforma il pezzo di equipaggiamento della ricetta in uno di livello superiore\. Riesce il (.+) delle volte\.$/, 'Transfert : transforme la pièce d\'équipement de la recette en une de niveau supérieur. Réussit $1 du temps.']);

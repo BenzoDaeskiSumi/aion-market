@@ -14,11 +14,11 @@ function drawCraftCats() {
     const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.setAttribute('aria-pressed', String(pressed));
     b.append(document.createTextNode(label)); const sp = document.createElement('span'); sp.textContent = fmtK(n); b.appendChild(sp); return b;
   };
-  const all = mk('all', 'Tutti', CROWS.length, CSEL.type === 'all');
+  const all = mk('all', 'Tutti', KROWS().length, CSEL.type === 'all');
   all.addEventListener('click', () => { CSEL = {type: 'all'}; drawCats(); drawCraft(); });
   nav.appendChild(all);
   CRAFT_GROUPS.forEach((g) => {
-    const counts = d3.rollup(CROWS, (v) => v.length, g.key);
+    const counts = d3.rollup(KROWS(), (v) => v.length, g.key);
     const items = g.items.filter(([k]) => counts.get(k));
     if (!items.length) return;
     const open = COPEN.has(g.id) || CSEL.type === g.id;
@@ -86,6 +86,8 @@ function drawTable() {
   document.getElementById('win').classList.toggle('craftview', craft || db);
   document.getElementById('win').classList.toggle('dbview', db);
   document.getElementById('dealfilter').hidden = VIEW !== 'deals';
+  document.getElementById('craftkind').hidden = !craft;
+  document.querySelectorAll('#craftkind button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.kind === CKIND)));
   document.querySelectorAll('.tabs [role="tab"]').forEach((t) => t.setAttribute('aria-selected', String(t.dataset.view === VIEW)));
   document.querySelectorAll('#dealfilter button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.deal === DEAL)));
   document.getElementById('grades').style.display = craft || ch ? 'none' : ''; naBtn.style.display = craft || db || ch ? 'none' : '';

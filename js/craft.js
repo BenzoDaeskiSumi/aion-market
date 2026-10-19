@@ -52,7 +52,7 @@ function buildCraftRows() {
     const w = CRAFT.craftBest(name); if (!w) continue;
     const it = ITEMS.find((x) => x.item === name);
     const market = CRAFT.market.get(name) ?? null, est = w.est, avg7 = it?.avg7 ?? null;
-    rows.push({name, way: w, skill: w.r.s, mode: w.mode, cost: w.cost, est, market, avg7, vs7: avg7 != null && est != null ? (avg7 - est) / avg7 : null,
+    rows.push({name, way: w, kind: w.r.tr ? 'transfer' : 'craft', skill: w.r.s, mode: w.mode, cost: w.cost, est, market, avg7, vs7: avg7 != null && est != null ? (avg7 - est) / avg7 : null,
       grade: it?.grade || RECIPES.grades?.[name] || 'white', level: it?.level ?? null, group: it ? CAT_GROUP[it.category] || 'other' : 'other',
       diff: market != null && est != null ? market - est : null, sell: market != null && est != null ? market * (1 - tax) - est : null,
       verdict: est == null ? 'Prezzi mancanti' : market == null ? 'Solo crafting' : market > est ? 'Craftalo' : 'Compralo'});
@@ -72,7 +72,7 @@ function craftBox(r, noFav) {
 const signed = (v) => (v > 0 ? '+' : v < 0 ? '−' : '') + fmtC(Math.abs(Math.round(v)));
 function drawCraft() {
   const term = fold(document.getElementById('q').value.trim());
-  const rows = CROWS.filter((r) => inCSel(r) && (!onlyFav || FAVS.has(r.name))).filter((r) => !term || fold(r.name + ' ' + (NAMES[r.name] || '') + ' ' + r.skill).includes(term)).sort((a, b) => {
+  const rows = KROWS().filter((r) => inCSel(r) && (!onlyFav || FAVS.has(r.name))).filter((r) => !term || fold(r.name + ' ' + (NAMES[r.name] || '') + ' ' + r.skill).includes(term)).sort((a, b) => {
     const x = a[cSortK], y = b[cSortK];
     if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
     return (typeof x === 'string' ? x.localeCompare(y) : x - y) * cSortDir;
@@ -83,7 +83,7 @@ function drawCraft() {
     th.querySelector('button').classList.toggle('on', k === cSortK);
   });
   const tb = document.getElementById('crows');
-  if (!rows.length) { const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 8; td.className = 'empty'; td.textContent = onlyFav && !term ? 'Nessun oggetto craftabile tra i preferiti: clicca la stellina accanto a un oggetto per aggiungerlo.' : CROWS.length ? `Nessun oggetto craftabile contiene "${term}".` : 'Dati di crafting non ancora disponibili.'; tr.appendChild(td); tb.replaceChildren(tr); return; }
+  if (!rows.length) { const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 8; td.className = 'empty'; td.textContent = onlyFav && !term ? 'Nessun oggetto craftabile tra i preferiti: clicca la stellina accanto a un oggetto per aggiungerlo.' : CROWS.length ? (term ? `Nessun oggetto contiene "${term}" in questa sezione.` : 'Niente in questa categoria.') : 'Dati di crafting non ancora disponibili.'; tr.appendChild(td); tb.replaceChildren(tr); return; }
   const coinCell = (tr, v, cls) => { const td = document.createElement('td'); if (cls) td.className = cls; if (v == null) td.textContent = '—'; else { const c = document.createElement('span'); c.className = 'coin'; td.append(c, document.createTextNode(fmtC(Math.round(v)))); } tr.appendChild(td); };
   tb.replaceChildren(...rows.map((r) => {
     const tr = document.createElement('tr'); tr.dataset.craft = r.name; if (r.name === pickedCraft) tr.classList.add('sel');
@@ -159,6 +159,7 @@ function drawCraftDetail() {
     const est = tbl.insertRow(); est.className = 'est'; const e1 = est.insertCell(); e1.textContent = estLabel(w) + (w.mode !== 'combo' && w.r.q > 1 ? ', a pezzo' : ''); const e2 = est.insertCell(); e2.className = 'n'; e2.textContent = w.est == null ? '—' : fmtK(Math.round(w.est));
     const info = document.createElement('p'); info.className = 'stepinfo';
     info.textContent = w.mode === 'combo' ? `Esce solo con la combo (${Math.round(w.r.c * 100)}%) di un craft riuscito (${fmtPct(w.r.ok)}): in media 1 craft su ${d3.format('.1f')(1 / w.per)}.`
+      : w.r.tr && !w.r.nr ? `Transfer: trasforma il pezzo di equipaggiamento della ricetta in uno di livello superiore. Riesce il ${fmtPct(w.r.ok)} delle volte.`
       : w.r.nr ? (w.r.base ? `Potenziamento: consuma un ${w.r.base}, contato tra gli ingredienti. ` : '') + 'I file di gioco non indicano una probabilità di fallimento per questa ricetta: è calcolata come sempre riuscita.'
       : `Il craft riesce il ${fmtPct(w.r.ok)} delle volte: il costo stimato conta anche i tentativi falliti.` + (w.r.q > 1 ? ` Ogni craft ne produce ${w.r.q}.` : '');
     box.append(head, tbl, info); cd.appendChild(box);

@@ -25,7 +25,8 @@ const GRADES_ON = new Set(Object.keys(GRADE));
 const store = {get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }};
 let RANGE = +(store.get('aion-range') || 7);
 let SNAP = null, SYNCED = null;   // time of the latest aion2.exchange snapshot of this server (meta.json)
-let CROWS = [], cSortK = 'diff', cSortDir = -1, pickedCraft = null;
+let CROWS = [], cSortK = 'diff', cSortDir = -1, pickedCraft = null, CKIND = 'craft';
+const KROWS = () => CROWS.filter((r) => r.kind === CKIND);   // the Crafting / Transfer section shown
 let ITEMS = [], S = {}, ICONS = {}, SEL = {type: 'all'}, sortK = 'grade_rank', sortDir = -1, picked = null;
 let showNA = store.get('aion-na') === 'show';
 let FAVS = new Set((() => { try { return JSON.parse(store.get('aion-favs') || '[]'); } catch (e) { return []; } })()), onlyFav = false;

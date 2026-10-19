@@ -8,6 +8,7 @@ function urlState() {
   p.set('s', SERVER);
   if (VIEW !== 'market') p.set('v', VIEW);
   if (VIEW === 'deals' && DEAL === 'sell') p.set('d', 'sell');
+  if (VIEW === 'craft' && CKIND === 'transfer') p.set('k', 'transfer');
   const sel = VIEW === 'craft' ? CSEL : VIEW === 'db' ? DSEL : SEL;
   if (sel.type !== 'all') p.set('c', sel.type + (sel.id != null ? ':' + sel.id : ''));
   const q = document.getElementById('q').value.trim(); if (q) p.set('q', q);
@@ -30,6 +31,7 @@ function readURL(p) {
   CPICK = /^\d{4}:[A-Za-z0-9_\-=]{10,80}$/.test(p.get('ch') || '') ? p.get('ch') : null;
   CS_URL = /^\d{4}$/.test(p.get('cs') || '') ? p.get('cs') : ''; if (CMETA) charSrv.value = CS_URL;
   DEAL = p.get('d') === 'sell' ? 'sell' : 'buy';
+  CKIND = p.get('k') === 'transfer' ? 'transfer' : 'craft';
   const c = p.get('c'), [type, ...rest] = (c || 'all').split(':'), sel = type === 'all' ? {type: 'all'} : {type, id: rest.join(':') || undefined};
   if (VIEW === 'craft') { CSEL = sel; COPEN = sel.type === 'all' ? new Set() : new Set([sel.type]); }
   else if (VIEW === 'db') { DSEL = sel; DOPEN = sel.type === 'group' ? new Set([sel.id]) : sel.type === 'cat' ? new Set([DB_GROUP_OF[sel.id] || 'other']) : new Set(); }
@@ -43,6 +45,7 @@ function applyItemFromURL(p) {
   const it = p.get('item'), cr = p.get('craft');
   picked = it && ITEMS.some((r) => r.item === it) ? it : null;
   pickedCraft = cr && CROWS.some((r) => r.name === cr) ? cr : null;
+  if (pickedCraft) CKIND = CROWS.find((r) => r.name === pickedCraft).kind;      // open the section the linked recipe is in
   const id = +p.get('id') || null;
   if (DB) DPICK = id && DB.some((x) => x.id === id) ? id : null; else { DPICK = null; DB_URL_ID = id; }
 }

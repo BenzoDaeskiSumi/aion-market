@@ -28,8 +28,12 @@ def rsc(page):
 def fix_recipes(out):
     """MetaBot lists the 'Splendent X' upgrades (mastery 0, no success curve) without the item they upgrade: in game the
     upgrade consumes X itself, so it is added as the first ingredient ('base' marks it). Recipes without a success curve
-    get 'nr' (success rate not in the game files: counted as 100%)."""
+    get 'nr' (success rate not in the game files: counted as 100%). Gear made from another piece of gear gets 'tr' (Transfer)."""
     prods = {r['p'] for r in out}
+    gear = re.compile(r'(Longsword|Greatsword|Dagger|Knife|Bow|Spellbook|Orb|Mace|Staff|Guard|Helm|Pauldrons|Breastplate|Greaves|Gloves|Boots|Cloak|Necklace|Earrings|Ring|Bracelet|Belt)$')
+    for r in out:                                # 'tr' = transfer: a piece of gear made from another piece of gear (the in-game Transfer tab)
+        if gear.search(r['p']) and any(gear.search(n) for n, _ in r['parts']):
+            r['tr'] = 1
     for r in out:
         if r['m'] == 0 and r['p'].startswith('Splendent ') and not r.get('base'):
             x = r['p'][len('Splendent '):]

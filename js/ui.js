@@ -72,6 +72,11 @@ function setView(v, deal) {
 }
 document.querySelectorAll('.tabs [role="tab"]').forEach((t) => t.addEventListener('click', () => setView(t.dataset.view)));
 document.querySelectorAll('[data-deal]').forEach((b) => b.addEventListener('click', () => setView('deals', b.dataset.deal)));
+document.querySelectorAll('[data-kind]').forEach((b) => b.addEventListener('click', () => {    // Crafting / Transfer sections of the Crafting view
+  CKIND = b.dataset.kind; CSEL = {type: 'all'};
+  if (pickedCraft && !KROWS().some((r) => r.name === pickedCraft)) pickedCraft = null;
+  drawCats(); drawTable(); drawChart();
+}));
 document.getElementById('takeaway').addEventListener('click', (e) => {
   const d = e.target.closest('.deal'); if (!d) return;
   SEL = {type: 'all'}; if (VIEW !== 'market') setView('market');
