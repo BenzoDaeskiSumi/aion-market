@@ -87,6 +87,12 @@ def set_view(ows, oid, typ, allow=None):
     if allow is True: a |= VIEW
     if allow is False: d |= VIEW
     o['allow'], o['deny'] = str(a), str(d)
+# soundboard: everyone may also play sounds from other servers (Use External Sounds), not just the server's own
+EVERY = next(r for r in roles if r['id'] == G)
+if not int(EVERY['permissions']) & (1 << 45):
+    say('  @everyone: attivo "Usa suoni esterni" della soundboard')
+    if APPLY: api('PATCH', f'/guilds/{G}/roles/{G}', {'permissions': str(int(EVERY['permissions']) | (1 << 45))})
+
 # #assistenza: only for who has not linked yet (no access role) + the officers who help them
 STAFF = ['Brigade General', 'Centurion']
 help_ch = next((c for c in chans if c['type'] == 0 and plain(c['name']).endswith('assistenza')), None)
