@@ -1159,7 +1159,7 @@ async function legione(i, env, ctx) {           // members with a linked charact
     rows.splice(0, rows.length, ...rows.filter(inL));
     if (!rows.length) return void await followup({content: `Nessun personaggio della Legione collegato ancora: usa \`/collega\`.${out.length ? ` (${out.length} collegati non sono nella Legione in gioco)` : ''}`});
     const medal = ['🥇', '🥈', '🥉'];
-    const lines = rows.map((r, k) => `${medal[k] || `\`${String(k + 1).padStart(2)}\``} **${r.name}** · ${r.cls} · **${kin(r.cp)}** CP · <@${r.uid}>`);
+    const lines = rows.map((r, k) => `${medal[k] || `\`${String(k + 1).padStart(2)}\``} **${r.name}** · ${r.cls} · **${kin(r.cp)}** CP`);
     const byCls = {};
     for (const r of rows) byCls[r.cls] = (byCls[r.cls] || 0) + 1;
     await followup({embeds: [{title: '⚔️ La Legione per Combat Power', color: 0xe8b64a, description: lines.join('\n').slice(0, 4000),
@@ -1331,7 +1331,7 @@ function parseQuando(txt, now = Date.now()) {    // '21', '21:30', 'oggi 21', 'd
 }
 async function raidMessage(id, r, env) {
   const all = [...new Set(Object.values(r.list).flat())], info = Object.fromEntries(await Promise.all(all.map(async (u) => [u, await linkOf(env, u)])));
-  const who = (u) => `<@${u}>${info[u] ? ` · ${info[u].cls} ${cpShort(info[u].cp)}` : ''}`;
+  const who = (u) => (info[u] ? `**${info[u].name}** · ${info[u].cls} ${cpShort(info[u].cp)}` : `<@${u}>`);   // linked members by character name, no @ tag
   const n = RAID_ROLES.reduce((a, [k]) => a + r.list[k].length, 0), past = Date.now() > r.t;
   const fields = RAID_ROLES.map(([k, label, emo]) => ({name: `${emo} ${label} (${r.list[k].length})`, value: r.list[k].map(who).join('\n') || '—', inline: true}));
   if (r.list.res?.length) fields.push({name: `🪑 Riserve (${r.list.res.length})`, value: r.list.res.map(who).join('\n'), inline: false});
