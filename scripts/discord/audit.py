@@ -68,3 +68,19 @@ try:
     print('== item', json.dumps(it, ensure_ascii=False)[:400])
 except Exception as e:
     import traceback; print('rec probe error', traceback.format_exc()[-600:])
+try:
+    SB, EXT, SPEAK, VAD = 1 << 42, 1 << 45, 1 << 21, 1 << 25
+    rs = get(f'/guilds/{G}/roles')
+    print('\n== soundboard perms per role (soundboard, external sounds, speak, voice activity)')
+    for r in sorted(rs, key=lambda r: -r['position']):
+        p = int(r['permissions'])
+        print('  ', r['name'], bool(p & SB), bool(p & EXT), bool(p & SPEAK), bool(p & VAD), 'admin' if p & 8 else '')
+    rn = {r['id']: r['name'] for r in rs}
+    for c in chs:
+        if c['type'] in (2, 13, 4):
+            for o in c.get('permission_overwrites', []):
+                a, d = int(o['allow']), int(o['deny'])
+                bits = [n for n, b in (('SB', SB), ('EXT', EXT), ('SPEAK', SPEAK), ('VAD', VAD)) if (a | d) & b]
+                if bits: print('  ov', c['name'], rn.get(o['id'], o['id']), 'allow', [n for n, b in (('SB', SB), ('EXT', EXT), ('SPEAK', SPEAK), ('VAD', VAD)) if a & b], 'deny', [n for n, b in (('SB', SB), ('EXT', EXT), ('SPEAK', SPEAK), ('VAD', VAD)) if d & b])
+    g = get(f'/guilds/{G}'); print('== guild features', g.get('features'))
+except Exception as e: print('sb probe error', e)
