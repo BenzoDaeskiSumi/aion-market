@@ -87,10 +87,26 @@ def set_view(ows, oid, typ, allow=None):
     if allow is True: a |= VIEW
     if allow is False: d |= VIEW
     o['allow'], o['deny'] = str(a), str(d)
+# #assistenza: only for who has not linked yet (no access role) + the officers who help them
+STAFF = ['Brigade General', 'Centurion']
+help_ch = next((c for c in chans if c['type'] == 0 and plain(c['name']).endswith('assistenza')), None)
+ben = next((c for c in chans if c['type'] == 0 and plain(c['name']).endswith('benvenuto')), None)
+help_ows = [{'id': G, 'type': 0, 'allow': str(VIEW | 0x800 | 0x10000 | 0x8000), 'deny': '0'},           # view, send, read history, attach files
+            {'id': me['id'], 'type': 1, 'allow': str(VIEW | 0x800 | 0x2000 | 0x10000), 'deny': '0'}] + \
+           [{'id': byname[n]['id'], 'type': 0, 'allow': '0', 'deny': str(VIEW)} for n in ['Ospite'] + [g for g in GRADES if g not in STAFF] if n in byname] + \
+           [{'id': byname[n]['id'], 'type': 0, 'allow': str(VIEW | 0x800 | 0x2000), 'deny': '0'} for n in STAFF if n in byname]
+if not help_ch:
+    say('  creo il canale 🆘・assistenza (solo per chi deve ancora collegarsi, più Brigade General e Centurion)')
+    if APPLY and ben:
+        help_ch = api('POST', f'/guilds/{G}/channels', {'name': '🆘・assistenza', 'type': 0, 'parent_id': ben.get('parent_id'), 'position': ben['position'] + 1,
+              'topic': 'Non riesci a collegare il personaggio? Scrivi qui: un Centurion ti aiuta. Sparisce quando hai collegato.', 'permission_overwrites': help_ows})
+elif APPLY:
+    api('PATCH', f"/channels/{help_ch['id']}", {'permission_overwrites': help_ows})
+
 changed = 0
 for c in sorted(chans, key=lambda c: (c['type'] != 4, c['position'])):
     g, name = group(c), plain(c['name'])
-    if 'uffici' in g: continue
+    if 'uffici' in g or name.endswith('assistenza'): continue
     ows = [dict(x) for x in c.get('permission_overwrites', [])]
     before = json.dumps(sorted(ows, key=lambda x: x['id']))
     public = 'benvenut' in g

@@ -44,7 +44,7 @@ def plain(n):
 # plain name -> (emoji, display name)
 CH = {
     'benvenuto': ('👋', 'Benvenuto'), 'regole': ('📜', 'Regole'), 'scegli-ruoli': ('🎭', 'Scegli-ruoli'), 'annunci': ('📢', 'Annunci'),
-    'timer-eventi': ('⏰', 'Timer-eventi'), 'adunate': ('📣', 'Adunate'), 'traguardi': ('🏆', 'Traguardi'), 'progressi': ('📈', 'Progressi'), 'generale': ('💬', 'Generale'), 'filmati-e-highlights': ('🎬', 'Filmati-e-highlights'),
+    'timer-eventi': ('⏰', 'Timer-eventi'), 'adunate': ('📣', 'Adunate'), 'traguardi': ('🏆', 'Traguardi'), 'progressi': ('📈', 'Progressi'), 'assistenza': ('🆘', 'Assistenza'), 'generale': ('💬', 'Generale'), 'filmati-e-highlights': ('🎬', 'Filmati-e-highlights'),
     'info': ('📌', 'Info'), 'patch-market': ('🧾', 'Patch-market'), 'comandi': ('🤖', 'Comandi'), 'avvisi': ('🔔', 'Avvisi'), 'feedback': ('💡', 'Feedback'),
     'dungeon-e-raid': ('🏰', 'Dungeon-e-raid'), 'pvp-abyss-arena': ('⚔️', 'PvP-abyss-arena'), 'guide': ('📚', 'Guide'), 'cerco-gruppo': ('🔎', 'Cerco-gruppo'),
     'ufficiali': ('🛡️', 'Ufficiali'), 'log-moderazione': ('🧹', 'Log-moderazione'), 'reclutamento': ('📋', 'Reclutamento'),

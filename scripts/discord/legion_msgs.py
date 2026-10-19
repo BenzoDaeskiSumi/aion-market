@@ -45,6 +45,7 @@ def build(ch, roles, cemo):
         '• Premi **Collega il tuo personaggio** qui sotto e scrivi il nome che hai in gioco.',
         '• Sei nella **Legione** su Marchutan? Diventi **Recluta** e vedi tutti i canali.',
         '• Non ancora? Entri come **Ospite** e vedi lo stesso tutti i canali, vocali comprese. Quando entri in gilda ti promuovo da solo.',
+        f"• Non trovi il personaggio o qualcosa non va? Scrivi in {ch('assistenza')}: un Centurion ti aiuta.",
         SEP,
         H('Per iniziare', '🧭'),
         f"• Leggi le **regole** in {ch('regole')}",

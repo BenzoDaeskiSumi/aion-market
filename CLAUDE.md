@@ -174,7 +174,8 @@ self-declared, no NCSOFT login exists); sets nick + class role (+ 𝐂𝐋𝐀�
 /collega has 'server' (autocomplete; filters the name suggestions) and admin-only 'utente' (Administrator/Manage Server/Manage Roles: links someone else, may take a
 character over from another account); /scollega 'utente' (admin) too; both noted in #ufficiali. The #benvenuto modal has a 'Server' field (default Marchutan, empty = all EU).
 Entry gate (scripts/discord/gate.py, mode gate-plan/apply): @everyone sees only 『📌 𝐁𝐄𝐍𝐕𝐄𝐍𝐔𝐓𝐎』; Ospite and grade roles everything but UFFICIALI (guests got voice and all channels at the user's request)
-(only the VIEW bit of each overwrite is touched; Mauro gets a member overwrite). #benvenuto has the button lk:start -> modal lkm (name) -> pickAndLink (one match links,
+(only the VIEW bit of each overwrite is touched; Mauro gets a member overwrite). gate.py also keeps '🆘・assistenza' (BENVENUTO): @everyone can view/write,
+Ospite and non-staff grades are denied (it disappears once linked), Brigade General + Centurion see it to help; gate skips it in the main loop. #benvenuto has the button lk:start -> modal lkm (name) -> pickAndLink (one match links,
 else select menu lks) -> doLink(): KV, nick, gradeByLegion (in-game Legione on Marchutan -> Recluta unless a grade already, else Ospite; removes Ospite on promotion),
 class role, note in #ufficiali (KV cfg:officer_channel). legionSweep() in the cron re-checks 4 linked members per run (profile older than 6 h): Ospite -> Recluta when
 they join in game; graded members who left the in-game legion are reported once to the officers (KV left:<uid>), never demoted automatically.
