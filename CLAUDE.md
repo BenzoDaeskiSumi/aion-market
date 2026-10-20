@@ -79,7 +79,9 @@ Crafting view: data/recipes.json, from the weekly 'Recipes' workflow (scripts/re
 crafting calculator (game files; recipe id 2nd digit 2 = Asmodian), success at max mastery, combo %, combo product ('Splendent X',
 which is what the next tier needs, e.g. Truth Orb recipe -> combo -> Splendent Truth Orb), and NPC prices of '(Bound)' shop items.
 'Splendent X' upgrades (mastery 0) get X added as first ingredient ('base') by recipes.py fix_recipes(); mastery-0 recipes have 'nr' (no success curve: 100%).
-Crafting view has two sections (#craftkind, CKIND craft|transfer, URL k=transfer): 'tr' recipes = gear made from another piece of gear, except blue gear (Expert's, Chaser: Crafting tab in game, the user said); KROWS() = rows of the section.
+Crafting view has two sections (#craftkind, CKIND craft|transfer, URL k=transfer): 'tr' recipes = gear made from another piece of gear, except blue gear (Expert's, Chaser) and anything of item level <= 62 (the user said: Crafting tab in game; level from the Market data, else HIGH_TIER name regex); KROWS() = rows of the section.
+Craft sidebar group 'Classe' (first): weapons by class from the name (classOf: Greatsword Gladiator, Longsword Templar, Guard shield Templar/Cleric, Dagger Assassin,
+Bow Ranger, Spellbook Sorcerer, Orb Spiritmaster, Mace Cleric, Staff Chanter), armor and accessories are shared by every class.
 Summary 'a7' = mean of the last 7 days' lowest prices (troll prices dropped): craft table column 'Media 7 giorni' + 'craft −x%', detail facts, bot /craft line.
 craftEngine() in index.html: each item's unit price = cheapest of Market / NPC shop / crafting it (recursive); 'Costo 1 craft' =
 recipe parts at those prices; 'Costo stimato' = cost / (success x qty) for the product, / (success x combo) for the combo product.

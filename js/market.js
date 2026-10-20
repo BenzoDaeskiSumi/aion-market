@@ -3,6 +3,9 @@
 const inSel = (r) => SEL.type === 'all' || (SEL.type === 'group' && CAT_GROUP[r.category] === SEL.id) || (SEL.type === 'cat' && r.category === SEL.id);
 const selEq = (t, id) => SEL.type === t && (t === 'all' || SEL.id === id);
 const CRAFT_GROUPS = [
+  {id: 'cls', name: 'Classe', key: (r) => r.wcls, items: [['Gladiator', 'Gladiator · spadone'], ['Templar', 'Templar · spada'], ['shield', 'Scudo · Templar, Cleric'],
+    ['Assassin', 'Assassin · pugnali'], ['Ranger', 'Ranger · arco'], ['Sorcerer', 'Sorcerer · libro'], ['Spiritmaster', 'Spiritmaster · globo'], ['Cleric', 'Cleric · mazza'],
+    ['Chanter', 'Chanter · bastone'], ['armor', 'Armature · tutte le classi'], ['acc', 'Accessori · tutte le classi']]},
   {id: 'cat', name: 'Tipo', key: (r) => r.group, items: [['weapons', 'Armi'], ['armor', 'Armature'], ['accessories', 'Accessori'], ['consumables', 'Consumabili'], ['materials', 'Materiali'], ['other', 'Altro']]},
   {id: 'mode', name: 'Esito', key: (r) => r.mode, items: [['normal', 'Craft normale'], ['combo', 'Con la combo (Splendent)']]},
   {id: 'skill', name: 'Professione', key: (r) => r.skill, items: [['Blacksmithing', 'Blacksmithing'], ['Armorsmithing', 'Armorsmithing'], ['Handicrafting', 'Handicrafting'], ['Alchemy', 'Alchemy'], ['Cooking', 'Cooking']]},

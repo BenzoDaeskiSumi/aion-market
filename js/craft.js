@@ -44,6 +44,13 @@ function craftEngine() {
   }
   return {ways, unit, craftBest, market};
 }
+// which class uses a piece of gear (weapons by type; armor and accessories are the same for every class)
+const WEAPON_CLASS = [[/Greatsword$/, 'Gladiator'], [/Longsword$/, 'Templar'], [/Guard$/, 'shield'], [/(Dagger|Knife)$/, 'Assassin'], [/Bow$/, 'Ranger'],
+  [/Spellbook$/, 'Sorcerer'], [/Orb$/, 'Spiritmaster'], [/Mace$/, 'Cleric'], [/Staff$/, 'Chanter'],
+  [/(Helm|Pauldrons|Breastplate|Greaves|Gloves|Boots|Cloak)$/, 'armor'], [/(Necklace|Earrings|Ring|Bracelet|Belt)$/, 'acc']];
+// Transfer = gear above item level 62; when the Market has no level for it, the tier from the name (Star Dragon Lord is 62, its Splendent 70, Dark 78, Ebony 94…)
+const HIGH_TIER = /^(Splendent Star|(Splendent )?Dark|(Splendent )?Ebony) Dragon Lord /;
+const classOf = (n) => WEAPON_CLASS.find(([re]) => re.test(n))?.[1] || 'none';
 function buildCraftRows() {
   if (!RECIPES) return [];
   CRAFT = craftEngine();
@@ -52,7 +59,8 @@ function buildCraftRows() {
     const w = CRAFT.craftBest(name); if (!w) continue;
     const it = ITEMS.find((x) => x.item === name);
     const market = CRAFT.market.get(name) ?? null, est = w.est, avg7 = it?.avg7 ?? null;
-    rows.push({name, way: w, kind: w.r.tr ? 'transfer' : 'craft', skill: w.r.s, mode: w.mode, cost: w.cost, est, market, avg7, vs7: avg7 != null && est != null ? (avg7 - est) / avg7 : null,
+    const lv = it?.level ?? null;
+    rows.push({name, way: w, kind: w.r.tr && (lv != null ? lv > 62 : HIGH_TIER.test(name)) ? 'transfer' : 'craft', wcls: classOf(name), skill: w.r.s, mode: w.mode, cost: w.cost, est, market, avg7, vs7: avg7 != null && est != null ? (avg7 - est) / avg7 : null,
       grade: it?.grade || RECIPES.grades?.[name] || 'white', level: it?.level ?? null, group: it ? CAT_GROUP[it.category] || 'other' : 'other',
       diff: market != null && est != null ? market - est : null, sell: market != null && est != null ? market * (1 - tax) - est : null,
       verdict: est == null ? 'Prezzi mancanti' : market == null ? 'Solo crafting' : market > est ? 'Craftalo' : 'Compralo'});
