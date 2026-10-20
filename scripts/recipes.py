@@ -25,14 +25,15 @@ def rsc(page):
     return ''.join(json.loads('"' + c + '"') for c in chunks)
 
 
-def fix_recipes(out):
+def fix_recipes(out, grades=None):
     """MetaBot lists the 'Splendent X' upgrades (mastery 0, no success curve) without the item they upgrade: in game the
     upgrade consumes X itself, so it is added as the first ingredient ('base' marks it). Recipes without a success curve
     get 'nr' (success rate not in the game files: counted as 100%). Gear made from another piece of gear gets 'tr' (Transfer)."""
     prods = {r['p'] for r in out}
     gear = re.compile(r'(Longsword|Greatsword|Dagger|Knife|Bow|Spellbook|Orb|Mace|Staff|Guard|Helm|Pauldrons|Breastplate|Greaves|Gloves|Boots|Cloak|Necklace|Earrings|Ring|Bracelet|Belt)$')
     for r in out:                                # 'tr' = transfer: a piece of gear made from another piece of gear (the in-game Transfer tab)
-        if gear.search(r['p']) and any(gear.search(n) for n, _ in r['parts']):
+        r.pop('tr', None)
+        if gear.search(r['p']) and any(gear.search(n) for n, _ in r['parts']) and (grades or {}).get(r['p']) != 'blue':   # blue gear (Expert's, Chaser) is in the Crafting tab in game
             r['tr'] = 1
     for r in out:
         if r['m'] == 0 and r['p'].startswith('Splendent ') and not r.get('base'):
@@ -86,7 +87,7 @@ def main():
             it = items.get(str(k))
             if it and it.get('grade') in GRADE:
                 grades.setdefault(it['name'], GRADE[it['grade']])
-    fix_recipes(out)
+    fix_recipes(out, grades)
     # NPC shop prices of the ingredients nobody sells on the Market
     npc = {}
     shop_only = sorted({n for r in out for n, _ in r['parts'] if '(Bound)' in n})
@@ -113,7 +114,7 @@ def main():
 
 if __name__ == '__main__':
     if sys.argv[1:] == ['--fix']:                 # re-apply fix_recipes() to the saved file
-        d = json.load(open('data/recipes.json', encoding='utf-8')); fix_recipes(d['recipes'])
+        d = json.load(open('data/recipes.json', encoding='utf-8')); fix_recipes(d['recipes'], d.get('grades'))
         json.dump(d, open('data/recipes.json', 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
     else:
         main()
