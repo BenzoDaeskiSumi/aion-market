@@ -2,41 +2,58 @@
 /* ---------- sidebar accordion ---------- */
 const inSel = (r) => SEL.type === 'all' || (SEL.type === 'group' && CAT_GROUP[r.category] === SEL.id) || (SEL.type === 'cat' && r.category === SEL.id);
 const selEq = (t, id) => SEL.type === t && (t === 'all' || SEL.id === id);
-const CRAFT_GROUPS = [
-  {id: 'cls', name: 'Classe', key: (r) => r.wcls, items: [['Gladiator', 'Gladiator · spadone'], ['Templar', 'Templar · spada'], ['shield', 'Scudo · Templar, Cleric'],
-    ['Assassin', 'Assassin · pugnali'], ['Ranger', 'Ranger · arco'], ['Sorcerer', 'Sorcerer · libro'], ['Spiritmaster', 'Spiritmaster · globo'], ['Cleric', 'Cleric · mazza'],
-    ['Chanter', 'Chanter · bastone'], ['armor', 'Armature · tutte le classi'], ['acc', 'Accessori · tutte le classi']]},
-  {id: 'cat', name: 'Tipo', key: (r) => r.group, items: [['weapons', 'Armi'], ['armor', 'Armature'], ['accessories', 'Accessori'], ['consumables', 'Consumabili'], ['materials', 'Materiali'], ['other', 'Altro']]},
+// Crafting sidebar: the Market's groups and sub-categories (GROUPS) + 'Altro', then two extra filters (outcome, profession)
+const CRAFT_EXTRA = [
   {id: 'mode', name: 'Esito', key: (r) => r.mode, items: [['normal', 'Craft normale'], ['combo', 'Con la combo (Splendent)']]},
   {id: 'skill', name: 'Professione', key: (r) => r.skill, items: [['Blacksmithing', 'Blacksmithing'], ['Armorsmithing', 'Armorsmithing'], ['Handicrafting', 'Handicrafting'], ['Alchemy', 'Alchemy'], ['Cooking', 'Cooking']]},
 ];
-const inCSel = (r) => CSEL.type === 'all' || CRAFT_GROUPS.find((g) => g.id === CSEL.type).key(r) === CSEL.id;
+const inCSel = (r) => CSEL.type === 'all' || (CSEL.type === 'group' ? r.group === CSEL.id : CSEL.type === 'cat' ? r.cat === CSEL.id
+  : CRAFT_EXTRA.find((g) => g.id === CSEL.type)?.key(r) === CSEL.id);
 function drawCraftCats() {
   const nav = document.getElementById('cats'); nav.replaceChildren();
+  const rows = KROWS(), redraw = () => { drawCats(); drawCraft(); };
   const mk = (cls, label, n, pressed) => {
     const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.setAttribute('aria-pressed', String(pressed));
     b.append(document.createTextNode(label)); const sp = document.createElement('span'); sp.textContent = fmtK(n); b.appendChild(sp); return b;
   };
-  const all = mk('all', 'Tutti', KROWS().length, CSEL.type === 'all');
-  all.addEventListener('click', () => { CSEL = {type: 'all'}; drawCats(); drawCraft(); });
+  const all = mk('all', 'Tutti', rows.length, CSEL.type === 'all');
+  all.addEventListener('click', () => { CSEL = {type: 'all'}; COPEN.clear(); redraw(); });
   nav.appendChild(all);
-  CRAFT_GROUPS.forEach((g) => {
-    const counts = d3.rollup(KROWS(), (v) => v.length, g.key);
-    const items = g.items.filter(([k]) => counts.get(k));
-    if (!items.length) return;
-    const open = COPEN.has(g.id) || CSEL.type === g.id;
+  // gid = accordion id; sel = what clicking the head selects (null = only opens/closes); items = [[selection, label, count]]
+  const group = (gid, name, sel, total, items) => {
+    if (!total) return;
+    const open = COPEN.has(gid), on = sel && CSEL.type === sel.type && CSEL.id === sel.id;
     const wrap = document.createElement('div'); wrap.className = 'grp' + (open ? ' open' : '');
-    const head = document.createElement('button'); head.type = 'button'; head.className = 'head'; head.setAttribute('aria-expanded', String(open));
+    const head = document.createElement('button'); head.type = 'button'; head.className = 'head';
+    head.setAttribute('aria-expanded', String(open)); if (sel) head.setAttribute('aria-pressed', String(on));
     const chev = document.createElement('i'); chev.className = 'chev';
-    head.append(chev, document.createTextNode(g.name));
-    head.addEventListener('click', () => { if (open) { COPEN.delete(g.id); if (CSEL.type === g.id) CSEL = {type: 'all'}; } else COPEN = new Set([g.id]); drawCats(); drawCraft(); });
+    const n = document.createElement('span'); n.className = 'n'; n.textContent = fmtK(total);
+    head.append(chev, document.createTextNode(name), n);
+    head.addEventListener('click', () => {
+      if (open && (!sel || on)) { COPEN.delete(gid); if (on) CSEL = {type: 'all'}; } else { COPEN = new Set([gid]); if (sel) CSEL = sel; }
+      redraw();
+    });
     const sub = document.createElement('div'); sub.className = 'sub';
-    items.forEach(([k, label]) => {
-      const b = mk('', label, counts.get(k), CSEL.type === g.id && CSEL.id === k);
-      b.addEventListener('click', () => { CSEL = {type: g.id, id: k}; COPEN = new Set([g.id]); drawCats(); drawCraft(); });
+    items.forEach(([s2, label, c]) => {
+      const b = mk('', label, c, CSEL.type === s2.type && CSEL.id === s2.id);
+      b.addEventListener('click', () => { CSEL = s2; COPEN = new Set([gid]); redraw(); });
       sub.appendChild(b);
     });
-    wrap.append(head, sub); nav.appendChild(wrap);
+    if (items.length) wrap.append(head, sub); else wrap.append(head);
+    nav.appendChild(wrap);
+  };
+  const byCat = d3.rollup(rows, (v) => v.length, (r) => r.cat);
+  GROUPS.forEach((g) => {
+    const cats = g.cats.filter(([c]) => byCat.get(c));
+    group(g.id, g.name, {type: 'group', id: g.id}, d3.sum(cats, ([c]) => byCat.get(c)), cats.map(([c, label]) => [{type: 'cat', id: c}, label, byCat.get(c)]));
+  });
+  const other = rows.filter((r) => r.group === 'other').length;
+  if (other) { const b = mk('', 'Altro', other, CSEL.type === 'group' && CSEL.id === 'other'); b.classList.add('all');
+    b.addEventListener('click', () => { CSEL = {type: 'group', id: 'other'}; COPEN.clear(); redraw(); }); nav.appendChild(b); }
+  CRAFT_EXTRA.forEach((g) => {
+    const counts = d3.rollup(rows, (v) => v.length, g.key);
+    const items = g.items.filter(([k]) => counts.get(k));
+    group(g.id, g.name, null, d3.sum(items, ([k]) => counts.get(k)), items.map(([k, label]) => [{type: g.id, id: k}, label, counts.get(k)]));
   });
 }
 function drawCats() {

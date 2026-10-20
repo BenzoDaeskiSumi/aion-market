@@ -9,6 +9,7 @@ const EN = {
   // overlay page
   "Modalità overlay (Steam)": "Overlay mode (Steam)",
   "Installa l'app": "Install the app",
+  "Ordina per livello oggetto": "Sort by item level",
   "Classe": "Class",
   "Gladiator · spadone": "Gladiator · greatsword",
   "Templar · spada": "Templar · sword",
@@ -251,6 +252,7 @@ const ES = {
   // overlay page
   "Modalità overlay (Steam)": "Modo overlay (Steam)",
   "Installa l'app": "Instalar la app",
+  "Ordina per livello oggetto": "Ordenar por nivel de objeto",
   "Classe": "Clase",
   "Gladiator · spadone": "Gladiator · mandoble",
   "Templar · spada": "Templar · espada",
@@ -484,6 +486,7 @@ const FR = {
   // overlay page
   "Modalità overlay (Steam)": "Mode overlay (Steam)",
   "Installa l'app": "Installer l'appli",
+  "Ordina per livello oggetto": "Trier par niveau d'objet",
   "Classe": "Classe",
   "Gladiator · spadone": "Gladiator · espadon",
   "Templar · spada": "Templar · épée",

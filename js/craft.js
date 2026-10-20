@@ -44,13 +44,16 @@ function craftEngine() {
   }
   return {ways, unit, craftBest, market};
 }
-// which class uses a piece of gear (weapons by type; armor and accessories are the same for every class)
-const WEAPON_CLASS = [[/Greatsword$/, 'Gladiator'], [/Longsword$/, 'Templar'], [/Guard$/, 'shield'], [/(Dagger|Knife)$/, 'Assassin'], [/Bow$/, 'Ranger'],
-  [/Spellbook$/, 'Sorcerer'], [/Orb$/, 'Spiritmaster'], [/Mace$/, 'Cleric'], [/Staff$/, 'Chanter'],
-  [/(Helm|Pauldrons|Breastplate|Greaves|Gloves|Boots|Cloak)$/, 'armor'], [/(Necklace|Earrings|Ring|Bracelet|Belt)$/, 'acc']];
-// Transfer = gear above item level 62; when the Market has no level for it, the tier from the name (Star Dragon Lord is 62, its Splendent 70, Dark 78, Ebony 94…)
-const HIGH_TIER = /^(Splendent Star|(Splendent )?Dark|(Splendent )?Ebony) Dragon Lord /;
-const classOf = (n) => WEAPON_CLASS.find(([re]) => re.test(n))?.[1] || 'none';
+// Market sub-category from the name, for products the Market has never listed (same sub-categories as the Market sidebar)
+const NAME_CAT = [[/Greatsword$/, 'Greatsword'], [/Longsword$/, 'Longsword'], [/Guard$/, 'Guard'], [/(Dagger|Knife)$/, 'Dagger'], [/Bow$/, 'Bow'],
+  [/Spellbook$/, 'Spellbook'], [/Orb$/, 'Orb'], [/Mace$/, 'Mace'], [/Staff$/, 'Staff'], [/Helm$/, 'Helm'], [/Pauldrons$/, 'Pauldrons'], [/Breastplate$/, 'Top'],
+  [/Greaves$/, 'Legs'], [/Gloves$/, 'Gloves'], [/Boots$/, 'Shoes'], [/Cloak$/, 'Cloak'], [/Necklace$/, 'Necklace'], [/Earrings$/, 'Earrings'], [/Ring$/, 'Ring'],
+  [/Bracelet$/, 'Bracelet'], [/(Potion|Serum)( \(Bound\))?$/, 'Potions'], [/Scroll$/, 'Scroll'], [/(Manastone|Soulstone)$/, 'Manastone/Soulstone']];
+const nameCat = (n) => NAME_CAT.find(([re]) => re.test(n))?.[1] || null;
+// item level by name tier, when the Market has no level for it (values read from the Market's own rows)
+const TIER_LV = [[/^Splendent Ebony Dragon Lord /, 102], [/^Ebony Dragon Lord /, 94], [/^Splendent Dark Dragon Lord /, 86], [/^Dark Dragon Lord /, 78],
+  [/^Splendent Star Dragon Lord /, 70], [/^Star Dragon Lord /, 62], [/^Artisan's Splendent /, 44], [/^Artisan's /, 39], [/^Expert's Splendent /, 35], [/^Expert's /, 28], [/^Splendent /, 22]];
+const tierLv = (n) => TIER_LV.find(([re]) => re.test(n))?.[1] ?? null;
 function buildCraftRows() {
   if (!RECIPES) return [];
   CRAFT = craftEngine();
@@ -59,9 +62,9 @@ function buildCraftRows() {
     const w = CRAFT.craftBest(name); if (!w) continue;
     const it = ITEMS.find((x) => x.item === name);
     const market = CRAFT.market.get(name) ?? null, est = w.est, avg7 = it?.avg7 ?? null;
-    const lv = it?.level ?? null;
-    rows.push({name, way: w, kind: w.r.tr && (lv != null ? lv > 62 : HIGH_TIER.test(name)) ? 'transfer' : 'craft', wcls: classOf(name), skill: w.r.s, mode: w.mode, cost: w.cost, est, market, avg7, vs7: avg7 != null && est != null ? (avg7 - est) / avg7 : null,
-      grade: it?.grade || RECIPES.grades?.[name] || 'white', level: it?.level ?? null, group: it ? CAT_GROUP[it.category] || 'other' : 'other',
+    const cat = it?.category || nameCat(name), lv = it?.level ?? (CAT_GROUP[cat] && ['weapons', 'armor', 'accessories'].includes(CAT_GROUP[cat]) ? tierLv(name) : null);
+    rows.push({name, way: w, kind: w.r.tr && (lv ?? 0) > 62 ? 'transfer' : 'craft', cat: CAT_GROUP[cat] ? cat : 'other', skill: w.r.s, mode: w.mode, cost: w.cost, est, market, avg7, vs7: avg7 != null && est != null ? (avg7 - est) / avg7 : null,
+      grade: it?.grade || RECIPES.grades?.[name] || 'white', level: lv, group: CAT_GROUP[cat] || 'other',
       diff: market != null && est != null ? market - est : null, sell: market != null && est != null ? market * (1 - tax) - est : null,
       verdict: est == null ? 'Prezzi mancanti' : market == null ? 'Solo crafting' : market > est ? 'Craftalo' : 'Compralo'});
   }
@@ -82,8 +85,8 @@ function drawCraft() {
   const term = fold(document.getElementById('q').value.trim());
   const rows = KROWS().filter((r) => inCSel(r) && (!onlyFav || FAVS.has(r.name))).filter((r) => !term || fold(r.name + ' ' + (NAMES[r.name] || '') + ' ' + r.skill).includes(term)).sort((a, b) => {
     const x = a[cSortK], y = b[cSortK];
-    if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
-    return (typeof x === 'string' ? x.localeCompare(y) : x - y) * cSortDir;
+    if (x == null && y == null) return a.name.localeCompare(b.name); if (x == null) return 1; if (y == null) return -1;
+    return ((typeof x === 'string' ? x.localeCompare(y) : x - y) * cSortDir) || a.name.localeCompare(b.name);
   });
   document.querySelectorAll('#crafttab th').forEach((th) => {
     const k = th.querySelector('button').dataset.c;
@@ -180,7 +183,7 @@ function drawCraftDetail() {
   cd.append(n1, n2);
 }
 document.querySelectorAll('#crafttab th button').forEach((b) => b.addEventListener('click', () => {
-  const k = b.dataset.c; if (cSortK === k) cSortDir = -cSortDir; else { cSortK = k; cSortDir = (k === 'name' || k === 'skill' || k === 'verdict') ? 1 : -1; } drawCraft();
+  const k = b.dataset.c; if (cSortK === k) cSortDir = -cSortDir; else { cSortK = k; cSortDir = (k === 'name' || k === 'level' || k === 'skill' || k === 'verdict') ? 1 : -1; } drawCraft();
 }));
 document.getElementById('crows').addEventListener('click', (e) => {
   const tr = e.target.closest('tr[data-craft]'); if (!tr) return;

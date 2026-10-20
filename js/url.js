@@ -33,7 +33,7 @@ function readURL(p) {
   DEAL = p.get('d') === 'sell' ? 'sell' : 'buy';
   CKIND = p.get('k') === 'transfer' ? 'transfer' : 'craft';
   const c = p.get('c'), [type, ...rest] = (c || 'all').split(':'), sel = type === 'all' ? {type: 'all'} : {type, id: rest.join(':') || undefined};
-  if (VIEW === 'craft') { CSEL = sel; COPEN = sel.type === 'all' ? new Set() : new Set([sel.type]); }
+  if (VIEW === 'craft') { CSEL = sel; COPEN = sel.type === 'all' || sel.id === 'other' ? new Set() : new Set([sel.type === 'group' ? sel.id : sel.type === 'cat' ? CAT_GROUP[sel.id] : sel.type]); }
   else if (VIEW === 'db') { DSEL = sel; DOPEN = sel.type === 'group' ? new Set([sel.id]) : sel.type === 'cat' ? new Set([DB_GROUP_OF[sel.id] || 'other']) : new Set(); }
   else { SEL = sel; OPEN = sel.type === 'group' ? new Set([sel.id]) : sel.type === 'cat' ? new Set([CAT_GROUP[sel.id]]) : new Set(); }
   document.getElementById('q').value = p.get('q') || '';
