@@ -1115,14 +1115,20 @@ async function legionSweep(env) {
   if (!keys.length) return;
   let at = +(await env.USERS.get('cfg:sweep_at') || 0) % keys.length;
   for (let n = 0; n < Math.min(4, keys.length); n++, at = (at + 1) % keys.length) {
-    const k = keys[at], uid = k.slice(5), l = JSON.parse(await env.USERS.get(k) || 'null');
-    if (!l || Date.now() - l.t < 3 * 3600e3) continue;
+    try { await sweepOne(env, keys[at]); } catch (e) { await env.USERS.put('sweep_err', String(e?.stack || e).slice(0, 400)); }
+  }
+  await env.USERS.put('cfg:sweep_at', String(at));
+}
+async function sweepOne(env, k) {
+  {
+    const uid = k.slice(5), l = JSON.parse(await env.USERS.get(k) || 'null');
+    if (!l || Date.now() - l.t < 3 * 3600e3) return;
     const c = await charProfile(l.server, l.id).catch(() => null);
-    if (!c?.name) continue;
+    if (!c?.name) return;
     await env.USERS.put(k, JSON.stringify(c));
     await afterRefresh(env, uid, l, c);
     const mr = await dapi(env, 'GET', `/guilds/${GUILD}/members/${uid}`);
-    if (!mr.ok) continue;                           // left the server
+    if (!mr.ok) return;                           // left the server
     const have = new Set((await mr.json()).roles || []);
     const {got, roles} = await gradeByLegion(env, GUILD, uid, have, c);
     if (got === 'Recluta') await officerNote(env, `⬆️ <@${uid}> (**${c.name}**) è entrato nella Legione in gioco → **Recluta**`);
@@ -1131,7 +1137,6 @@ async function legionSweep(env) {
     if (!inLegion(c) && graded && !flag) { await env.USERS.put('left:' + uid, '1'); await officerNote(env, `⚠️ <@${uid}> (**${c.name}**) non risulta più nella Legione in gioco (${c.legion || 'nessuna legione'}). Ha ancora il suo grado: decidete voi.`); }
     if (inLegion(c) && flag) await env.USERS.delete('left:' + uid);
   }
-  await env.USERS.put('cfg:sweep_at', String(at));
 }
 async function scollega(i, env) {
   const who = opt(i.data, 'utente')?.value, uid = who || userId(i), other = uid !== userId(i);
@@ -1289,7 +1294,19 @@ async function weeklyReport(env, force) {
   const snap = JSON.parse(await env.USERS.get('wk:snap') || 'null');
   if (!snap) { await env.USERS.put('wk:snap', JSON.stringify({t: now, rows: await weekRows(env)})); await weeklyChannel(env); return; }  // first run: baseline
   const today = `${d.y}-${d.m}-${d.d}`;
-  if (!force && (d.dow !== WEEK_DOW || hour < WEEK_HOUR || await env.USERS.get('wk:last') === today)) return;
+  if (!force && (d.dow !== WEEK_DOW || hour < WEEK_HOUR - 1 || await env.USERS.get('wk:last') === today)) return;
+  const early = hour < WEEK_HOUR;
+  if (!force) {                                 // fresh numbers first: the stored profiles can be hours old
+    const since = now - (hour - WEEK_HOUR + 1) * 3600e3 - (now / 6e4 + tzOffset(now, WEEK_TZ)) % 60 * 6e4;   // today 07:00 Italian time
+    let budget = 8, stale = 0;
+    for (const {name} of (await env.USERS.list({prefix: 'link:'})).keys) {
+      const l = JSON.parse(await env.USERS.get(name) || 'null');
+      if (!inLegion(l) || l.t >= since) continue;
+      if (budget-- <= 0) { stale++; continue; }
+      try { const c = await charProfile(l.server, l.id); if (c?.name) { await env.USERS.put(name, JSON.stringify(c)); await afterRefresh(env, name.slice(5), l, c); } else stale++; } catch { stale++; }
+    }
+    if (early || (stale && hour < WEEK_HOUR + 1)) return;  // the next cron runs refresh the rest; post anyway from 09:00
+  }
   const cur = {t: now, rows: await weekRows(env)}, ch = await weeklyChannel(env);
   if (!ch) return;
   const r = await dapi(env, 'POST', `/channels/${ch}/messages`, {embeds: weekEmbeds(snap, cur), allowed_mentions: {parse: []}});
