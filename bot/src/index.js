@@ -179,7 +179,7 @@ async function rpc(env, fn, args) {
       // legacy service_role keys are JWTs and go in Authorization too; new sb_secret_ keys only in apikey
       ...(env.SUPABASE_SERVICE_KEY.startsWith('eyJ') ? {Authorization: `Bearer ${env.SUPABASE_SERVICE_KEY}`} : {})},
     body: JSON.stringify(args)});
-  if (!r.ok) throw new Error(`supabase ${fn} ${r.status}`);
+  if (!r.ok) throw new Error(`supabase ${fn} ${r.status} ${(await r.text().catch(() => "")).slice(0, 200)}`);
   return r.json();
 }
 const profile = async (env, uid) => (await rpc(env, 'favorites_by_discord', {did: uid}))[0] || null;
@@ -1442,12 +1442,12 @@ async function raidReminders(env) {               // cron: tag the sign-ups once
 
 // ---------- entry point ----------
 export default {
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => env.USERS.put('sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300))), weekFix(env).catch((e) => env.USERS.put('timer_err', 'weekfix ' + String(e?.stack || e).slice(0, 300)))])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.allSettled([checkAlerts(env).catch((e) => env.USERS.put('alert_err', String(e?.message || e).slice(0, 300))), checkStale(env).catch(() => {}), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => env.USERS.put('sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300))), weekFix(env).catch((e) => env.USERS.put('timer_err', 'weekfix ' + String(e?.stack || e).slice(0, 300)))])); },
   async fetch(req, env, ctx) {
     if (new URL(req.url).pathname === '/hit') return hit(req, env);
     if (/^\/join(\/cb)?$/.test(new URL(req.url).pathname)) return join(req, env);
     if (new URL(req.url).pathname === '/timers/run') { try { await callChannel(env); await updateTimers(env); } catch (e) { await env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500)); } }
-    if (new URL(req.url).pathname.startsWith('/timers/')) return Response.json({channel: await env.USERS.get('cfg:timer_channel'), msg: await env.USERS.get('cfg:timer_msg'), err: await env.USERS.get('timer_err'), sweep: await env.USERS.get('sweep_err'), sweepAt: await env.USERS.get('cfg:sweep_at')});
+    if (new URL(req.url).pathname.startsWith('/timers/')) return Response.json({channel: await env.USERS.get('cfg:timer_channel'), msg: await env.USERS.get('cfg:timer_msg'), err: await env.USERS.get('timer_err'), alerts: await env.USERS.get('alert_err'), sweep: await env.USERS.get('sweep_err'), sweepAt: await env.USERS.get('cfg:sweep_at')});
     if (new URL(req.url).pathname.startsWith('/char/')) return charApi(req, env);
     if (new URL(req.url).pathname.startsWith('/legion')) return legionApi(req, env, ctx);
     if (req.method !== 'POST') return new Response('Aion 2 Market bot: ok');
