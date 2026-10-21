@@ -267,6 +267,10 @@ def sync_server(server, name, catalog, fam, health):
     for e in log:
         last[e['item']] = e
     added = new = 0
+    nameless = [it for it in items if not it.get('name')]
+    if nameless:     # the API sometimes lists an item without its English name yet: skip it until it has one
+        print(f"{name}: {len(nameless)} items without a name skipped (ids {', '.join(str(it.get('id') or it.get('item_id')) for it in nameless[:5])})")
+    items = [it for it in items if it.get('name')]
     for it in items:
         nm = it['name']
         listed = bool(it['listed']) and it['price']
