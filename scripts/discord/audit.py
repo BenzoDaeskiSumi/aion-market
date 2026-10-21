@@ -9,7 +9,7 @@ for c in chs:
         for m in get(f"/channels/{c['id']}/messages?limit=3"):
             print('== report', m['timestamp']); [print(e.get('description')) for e in m.get('embeds', [])]
 L = json.load(urllib.request.urlopen(urllib.request.Request('https://aion-market-bot.aion2-market.workers.dev/legion', headers={'User-Agent': 'Mozilla/5.0'})))
-print('\n== /legion now')
-for r in (L.get('list') or L.get('members') or L if isinstance(L, list) else L.get('rows', [])):
-    print(r.get('name'), 'cp', r.get('cp'), 'il', r.get('il'), 'hist', r.get('hist'))
-print(json.dumps(L)[:300] if not isinstance(L, list) else '')
+import datetime
+print('\n== /legion now', datetime.datetime.utcfromtimestamp(L['updated']/1000))
+for m in sorted(L['members'], key=lambda m: m['name'].lower()):
+    print(m['name'], m['cp'], m['il'], [(datetime.date.fromordinal(719163 + h[0]).isoformat(), h[1]) for h in m.get('hist', [])][-6:])
