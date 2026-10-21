@@ -21,11 +21,12 @@ jobs:
           python-version: '3.12'
       - run: cp -r _data/data/. data/
       - run: python -m unittest scripts/test_summary.py
-      - run: python scripts/sync.py
+      - run: set -o pipefail; python -u scripts/sync.py 2>&1 | tee /tmp/sync_log.txt
       - name: Save the data (replaces the single commit of the data branch; Publish site runs after this)
         run: |
           rsync -a --delete data/s/ _data/data/s/
           cp data/catalog.json data/servers.json _data/data/
+          tail -c 20000 /tmp/sync_log.txt > _data/data/sync_log.txt   # last run's output, readable without the Actions log
           cd _data
           git config user.name "BenzoDaeskiSumi"
           git config user.email "173538282+BenzoDaeskiSumi@users.noreply.github.com"
