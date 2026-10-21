@@ -1,0 +1,41 @@
+# Diagnostics: records the Worker's live log (wrangler tail) for ~17 minutes, so at least one cron run is captured, and saves it on the 'probe' branch.
+name: Bot log
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  tail:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: cd bot && (timeout 1020 npx -y wrangler@3 tail aion-market-bot --format json > /tmp/tail.json 2>/tmp/tail.err || true)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Keep only cron runs and errors (no request bodies)
+        run: |
+          python3 - <<'PY' > /tmp/run.txt
+          import json, re
+          txt = open('/tmp/tail.json').read()
+          dec, i, out = json.JSONDecoder(), 0, []
+          while True:
+              m = re.compile(r'\S').search(txt, i)
+              if not m: break
+              try: o, i = dec.raw_decode(txt, m.start())
+              except Exception: break
+              ev = o.get('event') or {}
+              if 'cron' in ev or o.get('outcome') != 'ok' or o.get('exceptions'):
+                  out.append(json.dumps({'outcome': o.get('outcome'), 'cron': ev.get('cron'), 'exceptions': o.get('exceptions'),
+                                         'logs': [l.get('message') for l in o.get('logs', [])][:20], 'url': (ev.get('request') or {}).get('url', '')[:80]}, ensure_ascii=False))
+          print('\n'.join(out) or 'nessun evento'); print(open('/tmp/tail.err').read()[-1500:])
+          PY
+      - name: Save the output on the temporary 'probe' branch
+        run: |
+          git config user.name "BenzoDaeskiSumi"
+          git config user.email "173538282+BenzoDaeskiSumi@users.noreply.github.com"
+          cp /tmp/run.txt /tmp/p.txt
+          git checkout --orphan probe && git rm -rfq . && cp /tmp/p.txt probe.txt
+          git add -A && git commit -qm "bot log" && git push -f origin probe
