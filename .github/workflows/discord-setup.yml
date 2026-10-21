@@ -23,6 +23,8 @@ jobs:
           if [[ "$MODE" == gate* ]]; then python3 scripts/discord/gate.py > /tmp/run.txt 2>&1 || true; elif [[ "$MODE" == banner* ]]; then python3 scripts/discord/banner.py > /tmp/run.txt 2>&1 || true; elif [[ "$MODE" == roles* ]]; then python3 scripts/discord/roles.py > /tmp/run.txt 2>&1 || true; elif [[ "$MODE" == chan* ]]; then python3 scripts/discord/channels.py > /tmp/run.txt 2>&1 || true; elif [[ "$MODE" == msg* ]]; then python3 scripts/discord/messages.py > /tmp/run.txt 2>&1 || true; elif [[ "$MODE" == info* ]]; then python3 scripts/discord/info.py > /tmp/run.txt 2>&1 || true; elif [[ "$MODE" == audit ]]; then python3 scripts/discord/audit.py > /tmp/run.txt 2>&1 || true; elif [[ "$MODE" == style* ]]; then python3 scripts/discord/style.py > /tmp/run.txt 2>&1 || true; else node scripts/discord/setup.mjs > /tmp/run.txt 2>&1 || true; fi
         env:
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           MODE: ${{ inputs.mode }}
       - name: Save the output on the temporary 'probe' branch
         run: |
