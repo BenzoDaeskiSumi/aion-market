@@ -191,7 +191,7 @@ logged-in member's row is marked and opens by default; the detail adds Gear Scor
 Weekly report: weeklyReport() in the cron, Wednesday 08:00 Europe/Rome, posts weekEmbeds(everyone alphabetically, no ranking/medals at the user's request; KV wk:snap vs now; stored link profiles, kept fresh by legionSweep) in '📈・progressi'
 (KV cfg:week_channel; read-only, visible to CORE_GRADES only: gate.py keeps Ospite and Amico out of it); first cron run only stores the baseline (KV wk:last = day posted).
 From 07:00 on Wednesday the cron refreshes every Legione member from the official site (8 per run) and posts once all are fresh (09:00 at the latest):
-the stored link profiles alone were up to 2 days old (first report, 21 Oct, rewritten by the one-off weekFix, KV wk:fix1). /timers/status also shows sweep_err / cfg:sweep_at.
+the stored link profiles alone were up to 2 days old (first report, 21 Oct, rewritten by the one-off weekFix, KV wk:fix1). /timers/status also shows sweep_err / cfg:sweep_at / alert_err. Cron tasks run in Promise.allSettled, each with its own catch: one rejection used to end the whole run (Supabase all_alerts 404 stopped sweep + report). Workflow 'Bot log' (tail.yml) records 17 min of wrangler tail on the probe branch.
 /chisiamo answers '# LA LEGIONE' (guild joke; the bot can't read plain chat messages, slash commands only).
 Event countdown: the cron also keeps ONE message in '⏰・timer-eventi' (created by the Worker next to #annunci, read-only; KV cfg:timer_channel /
 cfg:timer_msg) with Discord timestamps <t:…:R> (they count down live). Schedule in data/timers.json (EU server time Europe/Berlin, 'every/offset',
