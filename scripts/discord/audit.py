@@ -13,3 +13,4 @@ import datetime
 print('\n== /legion now', datetime.datetime.utcfromtimestamp(L['updated']/1000))
 for m in sorted(L['members'], key=lambda m: m['name'].lower()):
     print(m['name'], m['cp'], m['il'], [(datetime.date.fromordinal(719163 + h[0]).isoformat(), h[1]) for h in m.get('hist', [])][-6:])
+print('\n== status', urllib.request.urlopen(urllib.request.Request('https://aion-market-bot.aion2-market.workers.dev/timers/status', headers={'User-Agent': 'Mozilla/5.0'})).read().decode())

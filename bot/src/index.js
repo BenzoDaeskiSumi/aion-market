@@ -1400,7 +1400,7 @@ export default {
     if (new URL(req.url).pathname === '/hit') return hit(req, env);
     if (/^\/join(\/cb)?$/.test(new URL(req.url).pathname)) return join(req, env);
     if (new URL(req.url).pathname === '/timers/run') { try { await callChannel(env); await updateTimers(env); } catch (e) { await env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500)); } }
-    if (new URL(req.url).pathname.startsWith('/timers/')) return Response.json({channel: await env.USERS.get('cfg:timer_channel'), msg: await env.USERS.get('cfg:timer_msg'), err: await env.USERS.get('timer_err')});
+    if (new URL(req.url).pathname.startsWith('/timers/')) return Response.json({channel: await env.USERS.get('cfg:timer_channel'), msg: await env.USERS.get('cfg:timer_msg'), err: await env.USERS.get('timer_err'), sweep: await env.USERS.get('sweep_err'), sweepAt: await env.USERS.get('cfg:sweep_at')});
     if (new URL(req.url).pathname.startsWith('/char/')) return charApi(req, env);
     if (new URL(req.url).pathname.startsWith('/legion')) return legionApi(req, env, ctx);
     if (req.method !== 'POST') return new Response('Aion 2 Market bot: ok');
