@@ -1,10 +1,8 @@
-# probe: aion2.exchange /items per server (why some servers stopped updating)
-import json, time, urllib.request
-for s in [12305, 12301, 12310]:
-    t = time.time()
-    try:
-        r = urllib.request.urlopen(urllib.request.Request(f'https://aion2.exchange/api/items?server={s}&limit=1000', headers={'User-Agent': 'aion-market-sync (github.com/BenzoDaeskiSumi/aion-market)', 'Accept': 'application/json'}), timeout=60)
-        d = json.load(r); it = d.get('items', [])
-        print(s, 'ok', len(it), round(time.time() - t, 1), 's', 'keys', list(d)[:8], 'newest', max((x.get('captured_at') or '') for x in it) if it else None)
-    except urllib.error.HTTPError as e: print(s, 'HTTP', e.code, e.read()[:300], round(time.time() - t, 1))
-    except Exception as e: print(s, 'error', e, round(time.time() - t, 1))
+# probe: roles, positions and nickname permissions
+import json, os, urllib.request
+T, G = os.environ['DISCORD_TOKEN'], '1553398446524731435'
+get = lambda p: json.load(urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v10' + p, headers={'Authorization': f'Bot {T}', 'User-Agent': 'DiscordBot (aion-market, 1)'})))
+for r in sorted(get(f'/guilds/{G}/roles'), key=lambda r: -r['position']):
+    p = int(r['permissions'])
+    print(r['position'], repr(r['name']), r['id'], 'admin' if p & 8 else '', 'manage_nick' if p & 0x8000000 else '', 'change_nick' if p & 0x4000000 else '', 'manage_roles' if p & 0x10000000 else '', 'managed' if r.get('managed') else '')
+g = get(f'/guilds/{G}'); print('owner', g['owner_id'])
