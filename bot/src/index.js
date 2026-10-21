@@ -1315,6 +1315,36 @@ async function weeklyReport(env, force) {
   await env.USERS.put('wk:snap', JSON.stringify(cur));
 }
 
+// one-off (21 Oct 2026): the first report used profiles that were up to 2 days old. Refresh everyone (8 per cron run), then rewrite that message
+// with today's numbers against the same baseline (the stored values of 18 Oct = the 'hist' point of that day) and keep them as next week's baseline.
+async function weekFix(env) {
+  if (await env.USERS.get('wk:fix1')) return;
+  const start = Date.UTC(2026, 9, 21, 11, 0), base = Math.floor(Date.UTC(2026, 9, 18) / 864e5);
+  if (Date.now() < start || Date.now() > start + 864e5) return;
+  let budget = 8, stale = 0;
+  const keys = (await env.USERS.list({prefix: 'link:'})).keys.map((k) => k.name);
+  for (const name of keys) {
+    const l = JSON.parse(await env.USERS.get(name) || 'null');
+    if (!inLegion(l) || l.t >= start) continue;
+    if (budget-- <= 0) { stale++; continue; }
+    try { const c = await charProfile(l.server, l.id); if (c?.name) { await env.USERS.put(name, JSON.stringify(c)); await afterRefresh(env, name.slice(5), l, c); } else stale++; } catch { stale++; }
+  }
+  if (stale) return;
+  const ch = await env.USERS.get('cfg:week_channel'); if (!ch) return;
+  const me = await (await dapi(env, 'GET', '/users/@me')).json();
+  const msg = (await (await dapi(env, 'GET', `/channels/${ch}/messages?limit=10`)).json()).find((m) => m.author?.id === me.id && m.embeds?.length);
+  if (!msg) return;
+  const cur = {t: Date.now(), rows: await weekRows(env)}, prev = {t: Date.UTC(2026, 9, 19, 12), rows: {}};
+  for (const uid of Object.keys(cur.rows)) {
+    const p = JSON.parse(await env.USERS.get('hist:' + uid) || '[]').find((x) => x[0] === base);
+    if (p) prev.rows[uid] = {cp: p[1], il: p[2]};
+  }
+  const r = await dapi(env, 'PATCH', `/channels/${ch}/messages/${msg.id}`, {embeds: weekEmbeds(prev, cur), allowed_mentions: {parse: []}});
+  if (!r.ok) { await env.USERS.put('timer_err', `weekfix ${r.status} ${(await r.text()).slice(0, 200)}`); return; }
+  await env.USERS.put('wk:snap', JSON.stringify(cur));
+  await env.USERS.put('wk:fix1', '1');
+}
+
 // ---------- /raid: sign-up sheet with Tank / Healer / DPS buttons; the cron tags everyone ~15 min before ----------
 // KV raid:<id> = {title, t, slots, by, ch, note, list: {tank: [uid], heal: [], dps: []}, pinged}; expires a day after the start.
 const RAID_TZ = 'Europe/Rome', RAID_ROLES = [['tank', 'Tank', '🛡️'], ['heal', 'Healer', '✚'], ['dps', 'DPS', '⚔️']];
@@ -1412,7 +1442,7 @@ async function raidReminders(env) {               // cron: tag the sign-ups once
 
 // ---------- entry point ----------
 export default {
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => env.USERS.put('sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300)))])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([checkAlerts(env), checkStale(env), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => env.USERS.put('sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300))), weekFix(env).catch((e) => env.USERS.put('timer_err', 'weekfix ' + String(e?.stack || e).slice(0, 300)))])); },
   async fetch(req, env, ctx) {
     if (new URL(req.url).pathname === '/hit') return hit(req, env);
     if (/^\/join(\/cb)?$/.test(new URL(req.url).pathname)) return join(req, env);
