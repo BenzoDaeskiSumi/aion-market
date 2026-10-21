@@ -67,7 +67,7 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 `.github/workflows/sync.yml` runs `scripts/sync.py` every hour (triggered at :00 by cron-job.org; sync.py first waits, up to 25 min,
 for aion2.exchange's new hourly snapshot (~:07) so the site gets this hour's prices): it reads the public API https://aion2.exchange/api (docs at /api/docs,
 shared by its developers on their Discord; every EU Asmodian server, list in data/servers.json; 12305 = Marchutan, the user's server and the default) into data/s/<id>/ and appends a row only when price/listings changed
-(or every 12 h). Rows from the API have `screenshot: "aion2.exchange"`. The API has no grade/level/icon: new items get the grade of
+(or every 12 h); items the API lists without a name are skipped (they broke the sync on 21 Oct). Output of the last run: data/sync_log.txt on the data branch. Rows from the API have `screenshot: "aion2.exchange"`. The API has no grade/level/icon: new items get the grade of
 their name family, no level and no icon — videos fill those in. Credit aion2.exchange in the page footer.
 Icons: the 'Official icons' workflow (scripts/official_icons.py) maps item name -> id (aion2.exchange) -> official icon URL
 (NCSOFT dictionary tw.ncsoft.com/aion2_tw/v2.0/dict/search/item, paged, size 50) and saves transparent 96x96 PNGs from
