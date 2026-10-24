@@ -1,0 +1,54 @@
+snapshot 2026-10-24T15:07:55+02:00 (waited 95 s)
+Israphel: 2 items without a name skipped (ids None, None)
+Israphel: 940 items, 0 rows added (0 new items), log 43698 rows
+Zikel: 2 items without a name skipped (ids None, None)
+Zikel: 943 items, 0 rows added (0 new items), log 43386 rows
+Triniel: 2 items without a name skipped (ids None, None)
+Triniel: 970 items, 0 rows added (0 new items), log 43931 rows
+Lumiel: 2 items without a name skipped (ids None, None)
+Lumiel: 942 items, 0 rows added (0 new items), log 44369 rows
+Marchutan: 2 items without a name skipped (ids None, None)
+Marchutan: 905 items, 447 rows added (0 new items), log 41853 rows
+Marchutan: crafts 19 lines
+Azphel: 2 items without a name skipped (ids None, None)
+Azphel: 907 items, 0 rows added (0 new items), log 39355 rows
+Ereshkigal: 2 items without a name skipped (ids None, None)
+Ereshkigal: 883 items, 0 rows added (0 new items), log 37370 rows
+Beritra: 2 items without a name skipped (ids None, None)
+Beritra: 840 items, 0 rows added (0 new items), log 36200 rows
+Nemon: 2 items without a name skipped (ids None, None)
+Nemon: 817 items, 0 rows added (0 new items), log 33156 rows
+Hadala: 2 items without a name skipped (ids None, None)
+Hadala: 724 items, 0 rows added (0 new items), log 27531 rows
+Ludra: 2 items without a name skipped (ids None, None)
+Ludra: 786 items, 0 rows added (0 new items), log 32673 rows
+/crafts/110730014?server=12311: HTTP Error 503: Service Unavailable, retrying
+/crafts/110730014?server=12311: HTTP Error 503: Service Unavailable, retrying
+Ludra: crafts 19 lines
+Ulgorn: 2 items without a name skipped (ids None, None)
+Ulgorn: 745 items, 0 rows added (0 new items), log 28724 rows
+Munin: 2 items without a name skipped (ids None, None)
+Munin: 726 items, 0 rows added (0 new items), log 27854 rows
+Odar: 1 items without a name skipped (ids None)
+Odar: 728 items, 0 rows added (0 new items), log 26673 rows
+Zemurru: 2 items without a name skipped (ids None, None)
+Zemurru: 779 items, 0 rows added (0 new items), log 32549 rows
+Kromede: 2 items without a name skipped (ids None, None)
+Kromede: 799 items, 0 rows added (0 new items), log 32326 rows
+Quai: 1 items without a name skipped (ids None)
+Quai: 709 items, 0 rows added (0 new items), log 26475 rows
+Quai: crafts 19 lines
+Baba: 2 items without a name skipped (ids None, None)
+Baba: 761 items, 0 rows added (0 new items), log 30956 rows
+Fafnir: 2 items without a name skipped (ids None, None)
+Fafnir: 677 items, 0 rows added (0 new items), log 23579 rows
+Indnath: 2 items without a name skipped (ids None, None)
+Indnath: 642 items, 0 rows added (0 new items), log 21633 rows
+Agnita: 2 items without a name skipped (ids None, None)
+Agnita: 687 items, 0 rows added (0 new items), log 22480 rows
+Atiel: 705 items, 0 rows added (0 new items), log 24007 rows
+Tassin: 1 items without a name skipped (ids None)
+Tassin: 572 items, 0 rows added (0 new items), log 17315 rows
+/crafts?server=12323: HTTP Error 503: Service Unavailable, retrying
+/crafts/110230014?server=12323: HTTP Error 503: Service Unavailable, retrying
+Tassin: crafts 19 lines
