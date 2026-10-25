@@ -2,7 +2,7 @@
   "name": "Aion 2 Market",
   "short_name": "Aion Market",
   "description": "Prezzi del Market di Aion 2 per i server EU, crafting, database oggetti e personaggi.",
-  "start_url": "./",
+  "start_url": "market.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0b0f18",

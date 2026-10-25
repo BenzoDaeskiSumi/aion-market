@@ -56,7 +56,7 @@ function spark(pts) {
   const p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.setAttribute('d', d); p.setAttribute('fill', 'none'); p.setAttribute('stroke', 'var(--accent)'); p.setAttribute('stroke-width', '2.5'); p.setAttribute('vector-effect', 'non-scaling-stroke');
   s.appendChild(p); return s;
 }
-const siteLink = (q) => { const a = el('a', 'link', 'Apri sul sito completo →'); a.href = './?' + q; a.target = '_blank'; a.rel = 'noopener'; return a; };
+const siteLink = (q) => { const a = el('a', 'link', 'Apri sul sito completo →'); a.href = 'market.html?' + q; a.target = '_blank'; a.rel = 'noopener'; return a; };
 
 // ---------- prices / deals ----------
 function itemRow(name, r) {

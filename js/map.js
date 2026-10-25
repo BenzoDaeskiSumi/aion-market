@@ -55,7 +55,7 @@ function itemInfo(id) {
 const itemLi = (id, extra) => {
   const it = itemInfo(id); if (!it) return '';
   const p = PRICES?.[it.name], price = p && p.p > 0 ? `<span class="pr" title="Prezzo più basso sul Market">${fmt(p.p)}</span>` : '';
-  const label = PRICES?.[it.name] ? `<a class="g-${it.grade}" href="./?s=${SID}&item=${encodeURIComponent(it.name)}" target="_blank">${esc(it.name)}</a>` : `<span class="g-${it.grade}">${esc(it.name)}</span>`;
+  const label = PRICES?.[it.name] ? `<a class="g-${it.grade}" href="market.html?s=${SID}&item=${encodeURIComponent(it.name)}" target="_blank">${esc(it.name)}</a>` : `<span class="g-${it.grade}">${esc(it.name)}</span>`;
   return `<li>${it.icon ? `<img src="${esc(it.icon)}" alt="" loading="lazy">` : ''}${label}${extra ? ` <small>${extra}</small>` : ''}${price}</li>`;
 };
 // the names/prices files are only needed by gathering popups: fetched the first time one opens

@@ -34,6 +34,7 @@ jobs:
           if [ -d _tiles/map ]; then mkdir -p map && cp -r _tiles/map/. map/; fi
           rm -rf _data _tiles .git .github
           python3 scripts/selfhost.py index.html
+          python3 scripts/selfhost.py market.html
           python3 scripts/selfhost.py privacy.html
           python3 scripts/selfhost.py overlay.html
           python3 scripts/selfhost.py map.html

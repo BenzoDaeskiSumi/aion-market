@@ -148,7 +148,7 @@ async function itemView(name, sid, view, env) {
   return chartEmbed(name, r, hs[name], view, sid, sname, ico, env);
 }
 
-const itemUrl = (env, sid, name) => `${env.SITE}/?s=${sid}&item=${encodeURIComponent(name)}`;
+const itemUrl = (env, sid, name) => `${env.SITE}/market.html?s=${sid}&item=${encodeURIComponent(name)}`;
 const serverName = (srv, sid) => srv.find((s) => s.id === sid)?.name || String(sid);
 
 // ---------- /info ----------

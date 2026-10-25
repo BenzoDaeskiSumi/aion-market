@@ -3,7 +3,13 @@
 Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 
 ## Layout (read first)
-- Code on main: index.html (markup only) + css/style.css + js/{i18n,core,market,craft,ui,alerts,account,main}.js (classic scripts,
+- Home page: index.html + css/home.css + js/home.js (hero with the presentation video media/intro.mp4 + poster, live numbers of the saved server from
+  meta.json/summary.json, section cards with img/home/*.jpg, Discord bot + Legione panels). Any query string or a login hash (#access_token/error)
+  is redirected to market.html with the same search/hash, so old links (bot cards, shared ?s=&item=) still open the tracker. Uses js/i18n.js (home strings at the top of EN/ES/FR).
+- Video: Remotion project on the 'video' branch (scenes in src/, original synthesised music music.py -> public/music.mp3, live-site screenshots + measured boxes
+  by scripts/shots.mjs -> public/rects.json); workflow 'Video' (inputs shots=yes retakes the screenshots, stills_only=yes for a quick check) renders it to the
+  'video-out' branch; media/intro.mp4 on main = that MP4 re-encoded (crf 27, faststart). sw.js never caches media/.
+- Tracker code on main: market.html (markup only; was index.html until 25 Oct 2026) + css/style.css + js/{i18n,core,market,craft,ui,alerts,account,main}.js (classic scripts,
   shared globals, loaded in that order) + privacy.html. Bot in bot/. Scripts in scripts/.
 - Market data is NOT on main: it lives on the 'data' branch as ONE commit that every writer replaces (git checkout --orphan +
   push -f), so the repository does not grow every hour: data/s/<id>/*, data/catalog.json, data/servers.json (ignored on main).
@@ -21,7 +27,7 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
   30-day range); table columns '7 giorni' and 'ROI' (flip_margin), detail facts, bot card fields.
 - Shareable links (js/url.js): the URL mirrors s, v, d, c (category), q, g (grades), fav, item/craft; pushState for big moves,
   Back/Forward via popstate; drawTable/drawChart are wrapped to call writeURL().
-- Link preview: Open Graph/Twitter meta in index.html, image img/og.png (1200x630, drawn with PIL from the logo).
+- Link preview: Open Graph/Twitter meta in index.html and market.html, image img/og.png (1200x630, drawn with PIL from the logo).
 - Visit stats: js/main.js countVisit() sends one beacon per session to the bot's /hit (language, server, phone) -> KV daily
   counters st:YYYY-MM-DD (no cookies, no IP); admins read them with /statistiche. Described in privacy.html.
 - Phone layout (<= 760 px): menu button for header controls, bottom tab bar, details as a bottom sheet (showDetail/closeSheet in js/ui.js).
@@ -84,7 +90,7 @@ Craft sidebar = the Market's GROUPS/sub-categories (row.cat = Market category, e
 (CSEL {type: group|cat|mode|skill, id}). Craft rows sort by item level by default (cSortK 'level', the Oggetto header; level = Market level, else tierLv() by name tier:
 Splendent 22, Expert's 28/35, Artisan's 39/44, Star 62/70, Dark 78/86, Ebony 94/102).
 Summary 'a7' = mean of the last 7 days' lowest prices (troll prices dropped): craft table column 'Media 7 giorni' + 'craft −x%', detail facts, bot /craft line.
-craftEngine() in index.html: each item's unit price = cheapest of Market / NPC shop / crafting it (recursive); 'Costo 1 craft' =
+craftEngine() in js/craft.js: each item's unit price = cheapest of Market / NPC shop / crafting it (recursive); 'Costo 1 craft' =
 recipe parts at those prices; 'Costo stimato' = cost / (success x qty) for the product, / (success x combo) for the combo product.
 The detail shows the chain (ingredients cheaper to craft get their own closed step). MetaBot.GG is credited with a followed link.
 Sales: the sync saves data/s/<id>/sales.json (real 28-day units sold / avg price, only for items the API has stats for — none on
@@ -122,7 +128,7 @@ the chart extends the last price to it, and the status line '#upd' at the top sh
      Armor tab: "Helm", "Pauldrons", "Top" (Breastplate), "Legs" (Greaves), "Gloves", "Shoes" (Boots), "Cloak". Accessories tab: "Necklace", "Earrings", "Ring", "Bracelet".
      Consumables tab: "Potions", "Food", "Scroll", "Candy", "Manastone/Soulstone", "Theostone", "Wings", "Pantheon", "Duration Ticket", "Chest", "Consumable Miscellaneous".
      Skins tab (Armor/Decoration): "Skin Armor", "Skin Decoration". Materials tab: "Gathering Material", "Crafting Material", "Substance Morph Material", "Special Material", "Miscellaneous".
-     A new category also needs an entry in GROUPS in index.html (sidebar accordion).
+     A new category also needs an entry in GROUPS in js/core.js (sidebar accordion).
    - Consecutive screenshots overlap: never add the same item twice from one batch of screenshots.
    - Flag rows only half visible at the bottom of a screenshot that never appear fully in the next one.
 3. For every new item, crop its icon (then run scripts/clean_icon.py's clean() on it: it inpaints the in-game overlays — red 'book' marker, '?' scroll badge bottom-left, white dash top-left) from the screenshot or video frame (icon box ≈ x 446–528 px on a 2560×1440 frame, centred on the row), save 96×96 PNG to icons/<slug>.png and add it to data/icons.json.
@@ -137,7 +143,7 @@ Expert's Splendent X, Artisan's X, Discipline, Order, Illusion, Pragmatist, Elde
 Chaos, Luminous, Vagabond, Splendent X, Expert's X, Tempest, Ethereal, Comet, Rainy Forest, Frontline, Intruder | Riverside, Shade, Phantasm, X, Earth, Forgotten
 (X = Orichalcum for swords/daggers/maces/guards, Asvata for bows/staves, Truth for spellbooks/orbs). Append new rows in that order.
 Views: tabs Market / Affari (VIEW 'deals': only Compra or Vendi rows, DEAL 'buy'|'sell', also opened by the header counters) / Crafting (VIEW 'craft', sidebar hidden). Sidebar accordion keeps only the selected group open; unavailable items hidden by default ('aion-na'). Detail pane: hero (price + flip), facts, chart ranges ('aion-range'), help collapsed behind '?'.
-Accounts: 'Accedi con Discord' via Supabase (project xmtenkcpocwwqcpfhkgr, anon key in index.html is public by design). Table public.profiles (id = auth uid, discord_name, server_id, favorites text[], alerts jsonb) with RLS: each user only their own row. Favourites (star next to each item, 'Preferiti' filter) work without login in localStorage 'aion-favs' and merge into the profile on login; server choice 'aion-server' too.
+Accounts: 'Accedi con Discord' via Supabase (project xmtenkcpocwwqcpfhkgr, anon key in js/account.js is public by design). Table public.profiles (id = auth uid, discord_name, server_id, favorites text[], alerts jsonb) with RLS: each user only their own row. Favourites (star next to each item, 'Preferiti' filter) work without login in localStorage 'aion-favs' and merge into the profile on login; server choice 'aion-server' too.
 Language: IT/EN/ES/FR buttons in the header (localStorage 'aion-lang', page reloads). The page is written in Italian; in EN/ES/FR a
 MutationObserver translator (EN/ES/FR dictionaries + EN_RE/ES_RE/FR_RE patterns + ' · ' parts, near the top of the script) rewrites text nodes and
 placeholder/title/aria-label. Any new Italian UI text needs an EN, ES and FR entry (or pattern). Logic keys (signals etc.) stay Italian.
