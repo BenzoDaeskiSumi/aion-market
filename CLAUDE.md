@@ -204,7 +204,7 @@ cfg:timer_msg) with Discord timestamps <t:…:R> (they count down live). Schedul
 'days'+'at', 'windows', or 'respawn' = minutes after a kill, 💀 button tk:<id>, KV timer:<id>; Gartua removed at the user's request). Global times are community estimates.
 'signup' events (Nahma, siege = Corridoi) get a 'Ci sono' button ts:<id>:<startSec> (toggle, ephemeral answer; KV sig:<id>:<startSec>); signupCalls() in the cron
 tags them once ~15 min before in the read-only '📣・adunate' (KV cfg:call_channel, created under the timer channel) and deletes the call 30 min after the end (KV sigp:).
-Discord server scripts (workflow 'Discord setup', mode X-plan / X-apply; output on the temporary 'probe' branch): msg = Mauro's fixed messages
+Discord server scripts (workflow 'Discord setup', mode X-plan / X-apply; output on the temporary 'probe' branch): news = one announcement in #annunci (scripts/discord/news.py, skipped if already posted; edit TITLE/text for the next one), msg = Mauro's fixed messages
 (scripts/discord/legion_msgs.py content + messages.py; banner images img/discord/*.png drawn from bg/*.svg with Cormorant Garamond), chan = channel names
 in the server style: categories 『📢 𝐋𝐄𝐆𝐈𝐎𝐍𝐄』 (Unicode Mathematical Bold), channels plain '📜・regole' / voice '🍻 Taverna' (searchable); scripts match channels with base(), which also maps bold letters back to ASCII.
 'Entra nel nostro Discord' (index footer, guild line 'Un progetto della Legione…'): links the Worker's /join -> Discord OAuth (identify guilds.join, redirect
