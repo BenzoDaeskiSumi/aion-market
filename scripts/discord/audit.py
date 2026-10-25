@@ -1,8 +1,8 @@
-# probe: roles, positions and nickname permissions
-import json, os, urllib.request
-T, G = os.environ['DISCORD_TOKEN'], '1553398446524731435'
-get = lambda p: json.load(urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v10' + p, headers={'Authorization': f'Bot {T}', 'User-Agent': 'DiscordBot (aion-market, 1)'})))
-for r in sorted(get(f'/guilds/{G}/roles'), key=lambda r: -r['position']):
-    p = int(r['permissions'])
-    print(r['position'], repr(r['name']), r['id'], 'admin' if p & 8 else '', 'manage_nick' if p & 0x8000000 else '', 'change_nick' if p & 0x4000000 else '', 'manage_roles' if p & 0x10000000 else '', 'managed' if r.get('managed') else '')
-g = get(f'/guilds/{G}'); print('owner', g['owner_id'])
+# probe: the published home page and tracker
+import urllib.request
+B = 'https://benzodaeskisumi.github.io/aion-market/'
+for u in ['', 'market.html', 'media/intro.mp4', 'css/home.css', 'js/home.js', 'fonts/fonts.css', 'img/home/chars.jpg', 'map.html']:
+    try:
+        r = urllib.request.urlopen(urllib.request.Request(B + u, headers={'User-Agent': 'Mozilla/5.0'}), timeout=30); b = r.read()
+        print(u or '/', r.status, len(b), (b'fonts/fonts.css' in b) if u in ('', 'market.html') else '')
+    except Exception as e: print(u, 'error', e)
