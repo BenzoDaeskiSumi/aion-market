@@ -16,6 +16,9 @@ SERVER = HOME             # used by backfill.py
 REGION, FACTION = 'EU', 'Asmodian'
 CRAFT_EVERY = 6           # hours between full crafting refreshes of a server (Marchutan: every run)
 KEEPALIVE = timedelta(hours=12)
+# names (and grade) for items the API has no name for yet, by item_key: {"514310198": {"name": "Artwork: …", "grade": "orange"}}
+OVERRIDE = json.load(open('data/names_override.json', encoding='utf-8')) if os.path.exists('data/names_override.json') else {}
+placeholder = lambda it: f"{(it.get('category') or {}).get('name') or 'Item'} #{it.get('item_key')}"
 ROME = ZoneInfo('Europe/Rome')
 UA = 'aion-market-tracker (+https://benzodaeskisumi.github.io/aion-market)'
 
@@ -267,10 +270,21 @@ def sync_server(server, name, catalog, fam, health):
     for e in log:
         last[e['item']] = e
     added = new = 0
-    nameless = [it for it in items if not it.get('name')]
-    if nameless:     # the API sometimes lists an item without its English name yet: skip it until it has one
-        print(f"{name}: {len(nameless)} items without a name skipped (ids {', '.join(str(it.get('id') or it.get('item_id')) for it in nameless[:5])})")
-    items = [it for it in items if it.get('name')]
+    # The API lists brand-new items without their English name for a while (e.g. new Artworks on 25 Oct): keep them under a
+    # placeholder '<Category> #<item_key>' (or the name in data/names_override.json), and move their rows to the real name once it appears.
+    for it in items:
+        ph, ov = placeholder(it), OVERRIDE.get(str(it.get('item_key')), {})
+        it['name'] = it.get('name') or ov.get('name') or ph
+        if it['name'] != ph and ph in last and it['name'] not in last:
+            for e in log:
+                if e['item'] == ph: e['item'] = it['name']
+            last[it['name']] = last.pop(ph); catalog.pop(ph, None); print(f"{name}: {ph} is now '{it['name']}'")
+        if ov.get('grade'):
+            if it['name'] in catalog: catalog[it['name']]['grade'] = ov['grade']
+            for e in log:
+                if e['item'] == it['name']: e['grade'] = ov['grade']
+    if any(it['name'] == placeholder(it) for it in items):
+        print(f"{name}: without a name yet: {', '.join(it['name'] for it in items if it['name'] == placeholder(it))}")
     for it in items:
         nm = it['name']
         listed = bool(it['listed']) and it['price']
@@ -286,7 +300,8 @@ def sync_server(server, name, catalog, fam, health):
         c = catalog.get(nm)
         if not c:
             g = fam.get(' '.join(nm.split()[:-1]))
-            c = catalog[nm] = {'category': CAT.get(it['category']['name'], 'Miscellaneous'), 'grade': max(g, key=g.get) if g else 'white'}
+            ov = OVERRIDE.get(str(it.get('item_key')), {})
+            c = catalog[nm] = {'category': CAT.get(it['category']['name'], 'Miscellaneous'), 'grade': ov.get('grade') or (max(g, key=g.get) if g else 'white')}
             new += 1
         row = {'checked_at': t.isoformat(), 'item': nm, 'category': c['category'], 'grade': c['grade'],
                'lowest_price': price, 'listings': n}
