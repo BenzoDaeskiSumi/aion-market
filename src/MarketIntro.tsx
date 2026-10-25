@@ -1,7 +1,7 @@
 import {Audio} from '@remotion/media';
 import {TransitionSeries, linearTiming} from '@remotion/transitions';
 import {fade} from '@remotion/transitions/fade';
-import {AbsoluteFill, Sequence, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Sequence, staticFile, useVideoConfig} from 'remotion';
 import {Bot, Crafting, DbMap, Deals, Detail, Intro, Market, Outro, Overview} from './scenes';
 
 // Scene lengths (seconds) and the cross-fade between them; total = sum - 8 fades.
@@ -31,9 +31,11 @@ export const MarketIntro = () => {
         <TransitionSeries.Transition presentation={fade()} timing={linearTiming({durationInFrames: T})} />
         <TransitionSeries.Sequence name="Fine" durationInFrames={6 * fps}><Outro /></TransitionSeries.Sequence>
       </TransitionSeries>
+      {/* original track synthesised by music.py (no samples, free to use) */}
+      <Audio src={staticFile('music.mp3')} volume={0.6} />
       {WHOOSH_AT.map((s, i) => (
         <Sequence key={s} name={`Whoosh ${i + 1}`} from={Math.round(s * fps - (i + 1) * T)} durationInFrames={fps}>
-          <Audio src="https://remotion.media/whoosh.wav" volume={0.3} />
+          <Audio src="https://remotion.media/whoosh.wav" volume={0.22} />
         </Sequence>
       ))}
     </AbsoluteFill>
