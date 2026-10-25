@@ -86,19 +86,19 @@ export const Crafting = () => (
   </AbsoluteFill>
 );
 
-const Shot = ({src, label, delay, top}: {readonly src: string; readonly label: string; readonly delay: number; readonly top: number}) => {
+const Shot = ({src, label, delay, top, left}: {readonly src: string; readonly label: string; readonly delay: number; readonly top: number; readonly left: number}) => {
   const frame = useCurrentFrame();
   return (
     <div
       style={{
-        position: 'absolute', left: 820, top, width: 960, height: 540 + 56, borderRadius: 18, overflow: 'hidden',
+        position: 'absolute', left, top, width: 800, height: 450 + 52, borderRadius: 18, overflow: 'hidden',
         border: `2px solid ${C.line}`, backgroundColor: C.panel, boxShadow: '0 30px 80px rgba(0,0,0,0.55)',
         opacity: interpolate(frame, [delay, delay + 16], [0, 1], clamp),
         translate: interpolate(frame, [delay, delay + 26], ['80px 0px', '0px 0px'], {...clamp, easing: Easing.bezier(0.16, 1, 0.3, 1)}),
       }}
     >
-      <div style={{height: 56, display: 'flex', alignItems: 'center', paddingLeft: 24, fontFamily: inter, fontWeight: 600, fontSize: 28, color: C.text, backgroundColor: C.card}}>{label}</div>
-      <Img src={staticFile(src)} style={{width: 960, height: 540, scale: interpolate(frame, [delay, delay + 200], [1, 1.08], clamp)}} />
+      <div style={{height: 52, display: 'flex', alignItems: 'center', paddingLeft: 24, fontFamily: inter, fontWeight: 600, fontSize: 28, color: C.text, backgroundColor: C.card}}>{label}</div>
+      <Img src={staticFile(src)} style={{width: 800, height: 450, scale: interpolate(frame, [delay, delay + 200], [1, 1.08], clamp)}} />
     </div>
   );
 };
@@ -107,8 +107,8 @@ export const DbMap = () => (
   <AbsoluteFill>
     <Backdrop />
     <Caption kicker="E non solo" title="Database e Mappa" lines={['Tutti gli oggetti ufficiali del gioco', 'Mappa con raccolta, boss e cubi nascosti']} />
-    <Shot src="db.jpg" label="Database" delay={20} top={60} />
-    <Shot src="map.jpg" label="Mappa" delay={60} top={430} />
+    <Shot src="db.jpg" label="Database" delay={20} top={110} left={780} />
+    <Shot src="map.jpg" label="Mappa" delay={60} top={480} left={1020} />
   </AbsoluteFill>
 );
 
@@ -125,12 +125,12 @@ export const Bot = () => (
   <AbsoluteFill>
     <Backdrop />
     <Caption kicker="Discord" title="Il Market nel tuo server" lines={['Un bot con i dati del sito', 'Avvisi di prezzo con il tuo account']} />
-    <div style={{position: 'absolute', left: 820, top: 150, width: 980, display: 'flex', flexDirection: 'column', gap: 22}}>
+    <div style={{position: 'absolute', left: 790, top: 150, width: 1030, display: 'flex', flexDirection: 'column', gap: 22}}>
       {COMMANDS.map(([cmd, what], i) => (
         <Rise key={cmd} delay={16 + i * 10}>
           <div style={{display: 'flex', alignItems: 'center', gap: 32, padding: '26px 36px', borderRadius: 20, backgroundColor: 'rgba(22,27,38,0.9)', border: `2px solid ${C.line}`}}>
-            <div style={{fontFamily: inter, fontWeight: 700, fontSize: 46, color: C.accent, width: 330}}>{cmd}</div>
-            <div style={{fontFamily: inter, fontSize: 40, color: C.text}}>{what}</div>
+            <div style={{fontFamily: inter, fontWeight: 700, fontSize: 44, color: C.accent, width: 310, flexShrink: 0}}>{cmd}</div>
+            <div style={{fontFamily: inter, fontSize: 38, color: C.text}}>{what}</div>
           </div>
         </Rise>
       ))}
