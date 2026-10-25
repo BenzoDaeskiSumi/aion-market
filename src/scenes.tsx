@@ -96,14 +96,14 @@ const Shot = ({src, label, delay, top, left}: {readonly src: string; readonly la
   return (
     <div
       style={{
-        position: 'absolute', left, top, width: 680, height: 383 + 48, borderRadius: 18, overflow: 'hidden',
+        position: 'absolute', left, top, width: 720, height: 405 + 48, borderRadius: 18, overflow: 'hidden',
         border: `2px solid ${C.line}`, backgroundColor: C.panel, boxShadow: '0 30px 80px rgba(0,0,0,0.55)',
         opacity: interpolate(frame, [delay, delay + 16], [0, 1], clamp),
         translate: interpolate(frame, [delay, delay + 26], ['80px 0px', '0px 0px'], {...clamp, easing: Easing.bezier(0.16, 1, 0.3, 1)}),
       }}
     >
       <div style={{height: 48, display: 'flex', alignItems: 'center', paddingLeft: 22, fontFamily: inter, fontWeight: 600, fontSize: 26, color: C.text, backgroundColor: C.card}}>{label}</div>
-      <Img src={staticFile(src)} style={{width: 680, height: 383, scale: interpolate(frame, [delay, delay + 200], [1, 1.08], clamp)}} />
+      <Img src={staticFile(src)} style={{width: 720, height: 405, scale: interpolate(frame, [delay, delay + 200], [1, 1.08], clamp)}} />
     </div>
   );
 };
@@ -112,9 +112,9 @@ export const DbMap = () => (
   <AbsoluteFill>
     <Backdrop />
     <Caption kicker="E non solo" title="Database, Mappa, Personaggi" lines={['Tutti gli oggetti ufficiali del gioco', 'Mappa con raccolta, boss e cubi nascosti', 'La Legione con Gear Score e progressi']} />
-    <Shot src="db.jpg" label="Database" delay={20} top={90} left={770} />
-    <Shot src="map.jpg" label="Mappa" delay={50} top={330} left={950} />
-    <Shot src="chars.jpg" label="Personaggi" delay={80} top={570} left={1130} />
+    <Shot src="db.jpg" label="Database" delay={20} top={70} left={800} />
+    <Shot src="map.jpg" label="Mappa" delay={50} top={300} left={960} />
+    <Shot src="chars.jpg" label="Personaggi" delay={80} top={530} left={1120} />
   </AbsoluteFill>
 );
 
