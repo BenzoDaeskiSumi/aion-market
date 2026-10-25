@@ -75,8 +75,12 @@ export const ScreenPan = ({src, from, to, startAt = 20, moveFor = 90, highlight}
   const frame = useCurrentFrame();
   const W = 1080, H = 720;
   const t = interpolate(frame, [startAt, startAt + moveFor], [0, 1], {...clamp, easing: Easing.bezier(0.65, 0, 0.35, 1)});
-  const f = {x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t, w: from.w + (to.w - from.w) * t};
-  const s = W / f.w;
+  const w = Math.min(1920, from.w + (to.w - from.w) * t), s = W / w;
+  const f = {
+    w,
+    x: Math.max(0, Math.min(1920 - w, from.x + (to.x - from.x) * t)),
+    y: Math.max(0, Math.min(1080 - H / s, from.y + (to.y - from.y) * t)),
+  };
   return (
     <div
       style={{

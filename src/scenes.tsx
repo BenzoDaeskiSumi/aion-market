@@ -1,6 +1,11 @@
 import {AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame} from 'remotion';
 import {Backdrop, Caption, Logo, Rise, ScreenPan} from './parts';
 import {C, inter, marcellus} from './theme';
+import R from '../public/rects.json';
+
+// boxes measured on the live page by scripts/shots.mjs (CSS px of the 1920x1080 screenshot)
+const pad = (r: {x: number; y: number; w: number; h: number}, p: number) => ({x: r.x - p, y: r.y - p, w: r.w + 2 * p, h: r.h + 2 * p});
+const span = (a: {x: number; w: number}, b: {x: number; w: number}) => ({x: a.x, w: b.x + b.w - a.x});
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 
@@ -56,8 +61,8 @@ export const Market = () => (
   <AbsoluteFill>
     <Backdrop />
     <Caption kicker="Market" title="Ogni prezzo, a colpo d'occhio" lines={['Prezzo più basso, media e trend a 7 giorni', 'Filtri per categoria, grado e preferiti', 'Segnale: Compra, Vendi o Tieni']} />
-    <ScreenPan src="market.jpg" from={{x: 0, y: 0, w: 1920}} to={{x: 300, y: 360, w: 1180}} startAt={30} moveFor={100}
-      highlight={{x: 870, y: 400, w: 470, h: 52, at: 140}} />
+    <ScreenPan src="market.jpg" from={{x: 0, y: 0, w: 1920}} to={{x: R.market.table.x - 16, y: R.market.table.y - 16, w: R.market.table.w + 32}} startAt={30} moveFor={100}
+      highlight={{...pad({...R.market.row1, ...span(R.market.latest, R.market.trend7)}, 4), at: 140}} />
   </AbsoluteFill>
 );
 
@@ -65,7 +70,7 @@ export const Detail = () => (
   <AbsoluteFill>
     <Backdrop />
     <Caption kicker="Dettaglio" title="La storia di ogni oggetto" lines={['Grafico a 24 ore, 7, 30 e 90 giorni', 'Affidabilità, liquidità e volatilità', 'Quanto guadagni se lo rivendi']} />
-    <ScreenPan src="detail.jpg" from={{x: 1470, y: 270, w: 460}} to={{x: 1470, y: 650, w: 460}} startAt={60} moveFor={90} />
+    <ScreenPan src="detail.jpg" from={{x: R.detail.aside.x - 24, y: R.detail.aside.y - 16, w: R.detail.aside.w + 48}} to={{x: R.detail.aside.x - 24, y: 1080, w: R.detail.aside.w + 48}} startAt={60} moveFor={90} />
   </AbsoluteFill>
 );
 
@@ -73,8 +78,8 @@ export const Deals = () => (
   <AbsoluteFill>
     <Backdrop />
     <Caption kicker="Affari" title="Le occasioni del momento" lines={['Cosa comprare sotto la media', 'Cosa rivendere, con il profitto stimato', 'Calcoli già al netto della tassa']} />
-    <ScreenPan src="deals.jpg" from={{x: 0, y: 0, w: 1920}} to={{x: 300, y: 370, w: 1180}} startAt={30} moveFor={100}
-      highlight={{x: 1160, y: 405, w: 150, h: 650, at: 140}} />
+    <ScreenPan src="deals.jpg" from={{x: 0, y: 0, w: 1920}} to={{x: R.deals.table.x - 16, y: R.deals.table.y - 16, w: R.deals.table.w + 32}} startAt={30} moveFor={100}
+      highlight={{...pad(R.deals.flip, 4), at: 140}} />
   </AbsoluteFill>
 );
 
@@ -82,7 +87,7 @@ export const Crafting = () => (
   <AbsoluteFill>
     <Backdrop />
     <Caption kicker="Crafting" title="Craftarlo o comprarlo?" lines={['Costo stimato con i prezzi di oggi', 'Ricetta passo per passo', 'Confronto con la media dei 7 giorni']} />
-    <ScreenPan src="craft_detail.jpg" from={{x: 300, y: 380, w: 1180}} to={{x: 1440, y: 290, w: 480}} startAt={70} moveFor={100} />
+    <ScreenPan src="craft_detail.jpg" from={{x: R.craft.table.x - 16, y: R.craft.table.y - 16, w: R.craft.table.w + 32}} to={{x: R.craft.aside.x - 24, y: R.craft.aside.y - 16, w: R.craft.aside.w + 48}} startAt={70} moveFor={100} />
   </AbsoluteFill>
 );
 
@@ -91,14 +96,14 @@ const Shot = ({src, label, delay, top, left}: {readonly src: string; readonly la
   return (
     <div
       style={{
-        position: 'absolute', left, top, width: 800, height: 450 + 52, borderRadius: 18, overflow: 'hidden',
+        position: 'absolute', left, top, width: 680, height: 383 + 48, borderRadius: 18, overflow: 'hidden',
         border: `2px solid ${C.line}`, backgroundColor: C.panel, boxShadow: '0 30px 80px rgba(0,0,0,0.55)',
         opacity: interpolate(frame, [delay, delay + 16], [0, 1], clamp),
         translate: interpolate(frame, [delay, delay + 26], ['80px 0px', '0px 0px'], {...clamp, easing: Easing.bezier(0.16, 1, 0.3, 1)}),
       }}
     >
-      <div style={{height: 52, display: 'flex', alignItems: 'center', paddingLeft: 24, fontFamily: inter, fontWeight: 600, fontSize: 28, color: C.text, backgroundColor: C.card}}>{label}</div>
-      <Img src={staticFile(src)} style={{width: 800, height: 450, scale: interpolate(frame, [delay, delay + 200], [1, 1.08], clamp)}} />
+      <div style={{height: 48, display: 'flex', alignItems: 'center', paddingLeft: 22, fontFamily: inter, fontWeight: 600, fontSize: 26, color: C.text, backgroundColor: C.card}}>{label}</div>
+      <Img src={staticFile(src)} style={{width: 680, height: 383, scale: interpolate(frame, [delay, delay + 200], [1, 1.08], clamp)}} />
     </div>
   );
 };
@@ -106,9 +111,10 @@ const Shot = ({src, label, delay, top, left}: {readonly src: string; readonly la
 export const DbMap = () => (
   <AbsoluteFill>
     <Backdrop />
-    <Caption kicker="E non solo" title="Database e Mappa" lines={['Tutti gli oggetti ufficiali del gioco', 'Mappa con raccolta, boss e cubi nascosti']} />
-    <Shot src="db.jpg" label="Database" delay={20} top={110} left={780} />
-    <Shot src="map.jpg" label="Mappa" delay={60} top={480} left={1020} />
+    <Caption kicker="E non solo" title="Database, Mappa, Personaggi" lines={['Tutti gli oggetti ufficiali del gioco', 'Mappa con raccolta, boss e cubi nascosti', 'La Legione con Gear Score e progressi']} />
+    <Shot src="db.jpg" label="Database" delay={20} top={90} left={770} />
+    <Shot src="map.jpg" label="Mappa" delay={50} top={330} left={950} />
+    <Shot src="chars.jpg" label="Personaggi" delay={80} top={570} left={1130} />
   </AbsoluteFill>
 );
 
