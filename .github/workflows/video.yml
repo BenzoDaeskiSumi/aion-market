@@ -23,7 +23,7 @@ jobs:
       - name: Stills
         run: |
           mkdir -p out
-          for f in 40 230 520 760 930 1190 1300 1480 1640; do npx remotion still MarketIntro out/f$f.jpg --frame=$f --image-format=jpeg --scale=0.5 2>&1 | tail -3 | tee -a /tmp/log.txt; done
+          for f in 40 230 520 760 930 1190 1300 1480 1640; do npx remotion still MarketIntro out/f$f.jpg --frame=$f --image-format=jpeg --scale=0.5 >> /tmp/log.txt 2>&1 || true; done
       - name: Video
         if: inputs.stills_only != 'yes'
         run: npx remotion render MarketIntro out/aion-market-intro.mp4 --codec=h264 --crf=20 2>&1 | tail -20 | tee -a /tmp/log.txt
