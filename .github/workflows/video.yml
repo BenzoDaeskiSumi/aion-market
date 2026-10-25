@@ -6,6 +6,9 @@ on:
       stills_only:
         description: 'yes = only a few still frames (quick check)'
         default: 'no'
+      shots:
+        description: 'yes = first retake the screenshots from the live site (saved on the video branch)'
+        default: 'no'
 permissions:
   contents: write
 jobs:
@@ -19,6 +22,14 @@ jobs:
         with: {node-version: '22'}
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq fonts-noto-color-emoji >/dev/null || true
       - run: npm i --no-audit --no-fund
+      - name: Screenshots of the live site
+        if: inputs.shots == 'yes'
+        run: |
+          npm i --no-save playwright@1.56.1 >/dev/null && npx playwright install --with-deps chromium >/dev/null
+          node scripts/shots.mjs | tee /tmp/shots.txt
+          git config user.name "BenzoDaeskiSumi"
+          git config user.email "173538282+BenzoDaeskiSumi@users.noreply.github.com"
+          git add public && git commit -qm "Schermate dal sito" && git push -q origin HEAD:video || true
       - run: npx tsc -p . 2>&1 | tee /tmp/log.txt || true
       - name: Stills
         run: |
@@ -32,7 +43,7 @@ jobs:
         env:
           TOKEN: ${{ github.token }}
         run: |
-          mkdir -p out && cp /tmp/log.txt out/log.txt || true
+          mkdir -p out && cp /tmp/log.txt out/log.txt || true; cp /tmp/shots.txt out/ 2>/dev/null || true; cp public/*.jpg out/ 2>/dev/null || true
           cd out && git init -q && git checkout -q -b video-out
           git config user.name "BenzoDaeskiSumi"
           git config user.email "173538282+BenzoDaeskiSumi@users.noreply.github.com"
