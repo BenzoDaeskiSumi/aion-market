@@ -837,6 +837,9 @@ let NAMES = {};
 const iname = (n) => NAMES[n] || n;
 const fold = (t) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 if (LANG === 'fr') RE.unshift([/^(\d+) × (.+)$/, (m, q, n) => `${q} × ${iname(n)}`]);
+Object.assign(EN, {"Guide": "Guides", "Tutte le guide": "All guides"});
+Object.assign(ES, {"Guide": "Guías", "Tutte le guide": "Todas las guías"});
+Object.assign(FR, {"Guide": "Guides", "Tutte le guide": "Tous les guides"});
 function tr(text) {
   const core = text.trim();
   if (!core || !/[a-zà-ú]/i.test(core)) return text;

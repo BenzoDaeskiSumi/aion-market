@@ -46,6 +46,18 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 - Official web API behind aion2.plaync.com Character Info (undocumented, may change): /en-us/api/gameinfo/servers|classes|pcdata?lang=en-US&region=eu,
   /api/character/info|equipment|daevanion/detail?characterId&serverId, search on api-search.plaync.com .../search/v2/character. No public developer API for the global yet.
 
+## Class guides (wiki)
+- guide.html = index of the guides (link 'Guide' in the header pills of index/map/guide pages and in the footer of market.html; not in market.html's tab bar: phone bottom bar is full).
+  One page per class, flat file in the root: guida-<classe>.html (first one: guida-spiritmaster.html). Shared style css/guide.css (home.css tokens, three themes, Inter + Marcellus).
+- Guides are REWRITTEN from a community guide (never copy-paste; the user's rule), more readable and accessible: 'In breve' box first, sticky section nav, tables in
+  .table-scroll (scroll on phone), long lists in <details>. Credit + link to the original author in the head and footer (Spiritmaster: Sirin, Google Doc, updated 16.10.2026).
+  Not yet asked: the author's permission (MetaBot.GG data is used with permission, this one is only credited).
+- Fonts: scripts/selfhost.py writes ONE fonts/fonts.css for the whole site, so every page must use the SAME Google Fonts URL as map.html (Inter + Marcellus), and every new page
+  needs its 'python3 scripts/selfhost.py <page>' line in pages.yml (after map.html). Do not add other families.
+- Language: guide text is Italian only; i18n.js is loaded just for the header pills and footer language buttons ('Guide', 'Tutte le guide' have EN/ES/FR entries).
+- Spiritmaster source gaps (images / cut-off in the original): names of active skills at 12-14 and passives B/C, the skill-specialty colour table, macro command text,
+  title names/stats and late-game titles, the PvP section. Listed on the page under 'Ancora da completare'; fill them when the user supplies them.
+
 ## Official odds page: REMOVED (Oct 2026, the user asked). The 'odds' branch still holds the old KR data; nothing publishes it.
 
 ## Interactive map (MetaBot.GG data, reused with permission: keep the followed credit link, no rel=nofollow)

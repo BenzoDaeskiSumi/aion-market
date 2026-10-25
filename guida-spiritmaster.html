@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+  try { const t = localStorage.getItem('aion-theme'); if (['abyss', 'elyos', 'asmodian'].includes(t)) document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<title>Guida Spiritmaster · Aion 2 Market</title>
+<meta name="description" content="Guida allo Spiritmaster di Aion 2 Global (Stagione 1): skill, stigmi, rotazione, macro, mana, statistiche ed equipaggiamento.">
+<meta name="theme-color" content="#5b8cff">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="apple-touch-icon" href="img/favicon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Marcellus&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/guide.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="./"><img src="img/favicon-48.png" alt="" width="34" height="34">Aion 2 Market</a>
+  <nav aria-label="Sezioni">
+    <a href="market.html">Market</a><a href="market.html?v=deals">Affari</a><a href="market.html?v=craft">Crafting</a><a href="market.html?v=db">Database</a><a href="market.html?v=char">Personaggi</a><a href="map.html">Mappa</a><a href="guide.html" aria-current="page">Guide</a>
+  </nav>
+</header>
+
+<main>
+  <div class="ghead">
+    <p class="crumb"><a href="guide.html">Guide</a> › Spiritmaster</p>
+    <span class="eyebrow">Aion 2 · Global · Stagione 1</span>
+    <h1>Spiritmaster</h1>
+    <p class="lead">Danni magici a distanza, con spiriti elementali evocati. Facile da imparare, resistente, fortissimo in PvE.</p>
+    <div class="facts">
+      <span class="chip accent">Ruolo: DPS a distanza</span>
+      <span class="chip">Livello di partenza: 45</span>
+      <span class="chip">Focus: PvE</span>
+      <span class="chip">PvP: nella media</span>
+    </div>
+    <p class="credit">Riscritta e riorganizzata dalla guida di <a href="https://docs.google.com/document/u/0/d/16RBdqrTCKJ4TZJNEkYri9hLYcMv-Hle2pW6HXSNCX7c/mobilebasic" target="_blank" rel="noopener">Sirin</a> (aggiornata al 16.10.2026), a cura della Legione.</p>
+  </div>
+
+  <nav class="snav" aria-label="Sezioni della guida">
+    <a href="#inbreve">In breve</a><a href="#skill">Skill</a><a href="#stigmi">Stigmi</a><a href="#rotazione">Rotazione</a><a href="#macro">Macro</a><a href="#mana">Mana e CDR</a><a href="#stats">Statistiche</a><a href="#equip">Equipaggiamento</a><a href="#titoli">Titoli</a>
+  </nav>
+
+  <section id="inbreve">
+    <div class="quick">
+      <span class="eyebrow">Cinque cose da sapere</span>
+      <ol>
+        <li><b>Ancient Spirit al livello 15, il prima possibile.</b> Sotto il 15 c'è un bug: lo spirito non usa la sua skill e non genera Elemental Fusion.</li>
+        <li><b>Prima i buff, poi Ancient Spirit.</b> Le tue statistiche vengono copiate sugli spiriti nel momento in cui li evochi.</li>
+        <li><b>Combustion, Elemental Fusion e Rapid Scattershot a 16.</b> Sono le prime skill su cui spendere livelli.</li>
+        <li><b>Spirit Strike e Mental Focus al massimo.</b> Sono i due passivi di fascia S.</li>
+        <li><b>Il mana è il tuo limite.</b> Quasi sempre serve una pozione. Se non regge, passa alla macro a 3 spiriti: la perdita di danno è minima.</li>
+      </ol>
+    </div>
+    <p>La classe ottiene la maggior parte del danno da <b>Ancient Spirit</b>. Quando è in ricarica il danno cala molto, e su Global la riduzione dei cooldown è molto più bassa che su Taiwan e Corea. Gran parte della guida serve a gestire questo limite.</p>
+  </section>
+
+  <section id="skill">
+    <span class="eyebrow">Livellamento</span>
+    <h2>Skill</h2>
+    <p class="lead">I livelli sono pochi. Conviene concentrarli su poche skill e lasciare il resto in secondo piano.</p>
+
+    <h3>Skill attive</h3>
+    <div class="table-scroll"><table>
+      <thead><tr><th>Livello</th><th>Skill</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td class="num">20</td><td>Solo due skill</td><td>La guida chiede di portarne a 20 soltanto due, per risparmiare livelli per i passivi. Nel resto del testo i riferimenti sono Spirit's Benediction e Ancient Spirit.</td></tr>
+        <tr><td class="num">16</td><td>Combustion<br>Elemental Fusion<br>Rapid Scattershot</td><td>Priorità alta. Rapid Scattershot a 16 riduce di 1 secondo il cooldown di tutte le skill a ogni colpo: molto utile all'inizio, quando la riduzione cooldown è scarsa.</td></tr>
+        <tr><td class="num">16 (20 opzionale)</td><td>Cold Shock<br>Fire Spirit</td><td>Possono restare a 16. Cold Shock a 20 non serve, anche se la cura passiva è comoda. Fire Spirit a 20 è facoltativo.</td></tr>
+        <tr><td class="num">da alzare</td><td><span class="el v">Wind Spirit</span></td><td>Fa parte della rotazione, ha tempi morti e aiuta a costruire gli stack di Elemental Fusion.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Skill passive</h3>
+    <p>Solo quattro passivi sono utili. Alzali quanto permettono equipaggiamento e arcana.</p>
+    <div class="cards">
+      <div class="card"><span class="tag s">Fascia S</span><h3>Spirit Strike</h3><p class="sub">Aumenta il danno in PvE e PvP e dà probabilità di Perfect.</p></div>
+      <div class="card"><span class="tag s">Fascia S</span><h3>Mental Focus</h3><p class="sub">Aumenta la probabilità di Smite (danno doppio).</p></div>
+      <div class="card"><span class="tag a">Fascia A</span><h3>Element Unification</h3><p class="sub">Aumenta il danno critico a ogni evocazione di spirito.</p></div>
+      <div class="card"><span class="tag a">Fascia A</span><h3>Spirit Revitalization</h3><p class="sub">Riduce il cooldown delle evocazioni degli spiriti.</p></div>
+    </div>
+    <p class="lead">Gli altri passivi non vale la pena inseguirli: resteranno intorno ai livelli 14-16.</p>
+    <div class="callout warn">Nella Stagione 1 l'equipaggiamento ha 4-5 linee di statistiche e le arcana utilizzabili sono 5. Questo limita il livello a cui puoi portare sia le attive sia i passivi.</div>
+  </section>
+
+  <section id="stigmi">
+    <span class="eyebrow">Quattro slot, massimo livello 20</span>
+    <h2>Stigmi</h2>
+    <p class="lead">Parti con 32 Stigma Shard al livello 45. Le shard sono poche, quindi conta l'ordine in cui le spendi.</p>
+    <div class="table-scroll"><table>
+      <thead><tr><th>Stigma</th><th>A cosa serve</th><th>Come livellarlo</th></tr></thead>
+      <tbody>
+        <tr><td><b>Ancient Spirit</b></td><td>La tua fonte di danno più grande.</td><td>Almeno 15 appena possibile. All'inizio puoi tenerlo a 5, ma il bug sotto 15 lo rende poco efficace.</td></tr>
+        <tr><td><b>Corrode</b><br><span class="sub">Jointstrike: Corrode</span></td><td>Aumenta il danno dei tuoi spiriti sul bersaglio.</td><td>Tutto o niente: 5 e poi fermo, finché non puoi portarlo a 20 per la durata. Con abbastanza riduzione cooldown resta sul bersaglio senza interruzioni.</td></tr>
+        <tr><td><b>Spirit's Benediction</b></td><td>Il buff principale, sempre sulla barra.</td><td>10 per primo, poi 20.</td></tr>
+        <tr><td><b>Destruction</b><br><span class="sub">Jointstrike: Destruction</span></td><td>La skill principale per lo stagger. Si carica a 5.</td><td>10 all'inizio, 15 a metà gioco.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Ordine di spesa</h3>
+    <div class="table-scroll"><table>
+      <thead><tr><th>Fase</th><th class="num">Ancient Spirit</th><th class="num">Corrode</th><th class="num">Benediction</th><th class="num">Destruction</th></tr></thead>
+      <tbody>
+        <tr><td>Inizio</td><td class="num">15</td><td class="num">5</td><td class="num">5</td><td class="num">5-10</td></tr>
+        <tr><td>Metà gioco</td><td class="num">15-20</td><td class="num">5</td><td class="num">10</td><td class="num">15</td></tr>
+        <tr><td>Fine gioco</td><td class="num">20</td><td class="num">20</td><td class="num">20</td><td class="num">19</td></tr>
+      </tbody>
+    </table></div>
+    <p>A fine gioco l'ordine è: Benediction, Ancient Spirit, Corrode, Destruction. Destruction resta a 19 finché il problema non viene corretto.</p>
+
+    <h3>Alternative</h3>
+    <ul class="tight">
+      <li><b>Secondo buff (Flame Blessing):</b> su Corea e Taiwan è obbligatorio, ma a livello 20 rende meno. L'autore preferisce Destruction. Se lo usi, almeno al 15.</li>
+      <li><b>Stigma di sopravvivenza:</b> a livello 15 dà uno scudo pari al 30% degli HP massimi. Probabilmente non avrai uno slot libero.</li>
+    </ul>
+    <div class="callout"><b>Shard:</b> si guadagnano piano. Gli acquisti settimanali dipendono dal tetto di Abyss Point: con 500.000 AP a settimana si comprano 20 shard. Azzerare i livelli degli stigmi è gratuito, quindi puoi provare configurazioni diverse senza paura di sprecare risorse.</div>
+  </section>
+
+  <section id="rotazione">
+    <span class="eyebrow">In combattimento</span>
+    <h2>Rotazione</h2>
+    <ol class="steps">
+      <li><div><b>Buff</b>Spirit's Benediction (e Flame Blessing, se la usi) prima di evocare Ancient Spirit.</div></li>
+      <li><div><b>Debuff sul boss</b>Jointstrike: Corrode, così gli spiriti infliggono più danno.</div></li>
+      <li><div><b>Ruota gli spiriti</b><span class="el w">Acqua</span>, <span class="el e">Terra</span>, <span class="el v">Vento</span> e <span class="el f">Fuoco</span> in continuazione, per costruire gli elementi.</div></li>
+      <li><div><b>Inserisci le altre skill</b>Tra un'evocazione e l'altra: Cold Shock, Combustion, Dimensional Control e Jointstrike: Curse. Dimensional Control si sblocca a ogni evocazione di uno spirito base. Il bonus d'attacco di Cold Shock arriva a 5 stack sulla terza skill della catena. Element Unification dà un bonus al danno critico a ogni evocazione, fino a 5 stack.</div></li>
+      <li><div><b>Usa la skill di Ancient Spirit</b>Ogni volta che la usa, si sblocca Elemental Fusion.</div></li>
+    </ol>
+    <div class="callout warn"><b>Dove si perde danno:</b> quando Ancient Spirit è in ricarica, se muori subito dopo averlo evocato e se sbagli i tempi delle meccaniche del boss.</div>
+    <h3>Come si costruisce Elemental Fusion</h3>
+    <p>Ha due fonti: gli elementi accumulati ruotando i quattro spiriti base e gli usi della skill di Ancient Spirit. Sotto il livello 15 di Ancient Spirit non ottieni la seconda fonte (vedi il bug negli stigmi).</p>
+  </section>
+
+  <section id="macro">
+    <span class="eyebrow">Meno tasti, rotazione più stabile</span>
+    <h2>Macro</h2>
+    <p class="lead">Tre opzioni, più una macro per i buff. I buff restano manuali: tieni Spirit's Benediction finché Ancient Spirit non è di nuovo pronto.</p>
+    <div class="cards">
+      <div class="card"><span class="tag">Opzione 1</span><h3>Macro in-game, 4 spiriti</h3>
+        <p class="sub">Non richiede software esterno, quindi regge meglio con FPS bassi o variabili.</p>
+        <ul class="tight"><li>Click sinistro: Cold Shock</li><li>Click destro: macro in-game</li><li>Q: Jointstrike: Destruction (manuale)</li><li>E: Rapid Scattershot durante lo stagger, se a 16</li></ul>
+        <p class="sub">Tieni premuti insieme click sinistro e destro. Prova la Skill Queue sia attiva sia disattivata.</p></div>
+      <div class="card"><span class="tag">Opzione 2</span><h3>Macro esterna</h3>
+        <p class="sub">Rende un po' meglio dell'opzione 1, ma con FPS bassi non parte in modo corretto. Skill Queue disattivata.</p>
+        <ul class="tight"><li>[ = click sinistro</li><li>] = click destro</li><li>= = macro in-game</li><li>6 = Elemental Fusion</li><li>Q = Destruction, da tenere premuto fino alla carica 3: parte da sola al massimo</li></ul></div>
+      <div class="card"><span class="tag">Opzione 3</span><h3>Macro a 3 spiriti</h3>
+        <p class="sub">Per problemi di mana che non riesci a gestire. La perdita di danno è minima.</p>
+        <p class="sub">Stessi tasti dell'opzione 1. Puoi adattare anche la macro esterna dell'opzione 2 allo stesso modo.</p></div>
+      <div class="card"><span class="tag s">Buff e summon</span><h3>Macro buff + Ancient Spirit</h3>
+        <p class="sub">Concatena Spirit's Benediction, Flame Blessing (se usata) e Ancient Spirit su un unico tasto (il 5, in una macro Razer), così lo spirito arriva il prima possibile. Compatibile con tutte e tre le opzioni.</p></div>
+    </div>
+  </section>
+
+  <section id="mana">
+    <span class="eyebrow">I due limiti di Global</span>
+    <h2>Mana e riduzione cooldown</h2>
+    <h3>Mana</h3>
+    <ul class="tight">
+      <li>La classe consuma molto mana.</li>
+      <li>Su Global manca la statistica Wisdom: ogni 10 punti danno 1% di riduzione del costo, quindi risparmi meno.</li>
+      <li>Per ora quasi sempre ti servirà una pozione di mana.</li>
+      <li>La macro a 4 spiriti è la più costosa. Se non reggi, passa a quella a 3.</li>
+    </ul>
+    <h3>Riduzione cooldown (CDR)</h3>
+    <div class="compare">
+      <div><span class="big">34<small>%</small></span><span class="lbl">Taiwan/Corea senza arcana Illusion</span></div>
+      <div><span class="big">40<small>%</small></span><span class="lbl">Taiwan/Corea con arcana Illusion</span></div>
+      <div class="hl"><span class="big">19-21<small>%</small></span><span class="lbl">Global, con equipaggiamento, ali e arcana al meglio</span></div>
+    </div>
+    <p>Ancient Spirit ha 90 secondi di cooldown. Con la CDR di Global resterà spesso in ricarica e potrebbe non coincidere con Spirit's Benediction.</p>
+    <ul class="tight">
+      <li><b>Rapid Scattershot a 16</b> nei momenti di stagger del boss, per riportare prima Ancient Spirit e i buff. Alzalo con arcana e anelli.</li>
+      <li><b>Illusion:</b> è la statistica divina della CDR. Su Global 10 punti valgono 1%.</li>
+      <li><b>Ali Talisra</b> (Season Shop): la fonte principale di CDR a fine gioco.</li>
+    </ul>
+  </section>
+
+  <section id="stats">
+    <span class="eyebrow">Riferimento</span>
+    <h2>Statistiche</h2>
+    <div class="callout"><b>Novità di Global:</b> le statistiche divine si convertono a metà velocità. Prima 5 punti valevano 1%, ora ne servono 10. Cambia i tetti raggiungibili e l'equilibrio tra le classi.</div>
+
+    <details>
+      <summary>Statistiche base</summary>
+      <div><div class="table-scroll"><table>
+        <thead><tr><th>Statistica</th><th>Cosa fa</th></tr></thead>
+        <tbody>
+          <tr><td>Attacco</td><td>Danno di base di attacchi e skill.</td></tr>
+          <tr><td>Bonus attacco</td><td>Attacco fisso in più. Va bene con i modificatori percentuali.</td></tr>
+          <tr><td>Attacco massimo</td><td>Alza il limite alto dell'intervallo di danno. Conta soprattutto con Perfect Chance, perché i colpi Perfect usano il massimo. Lo Spiritmaster ne beneficia molto: la sua arma ha il limite più alto.</td></tr>
+          <tr><td>Precisione (Accuracy)</td><td>Contrasta Evasione e Parata. Con poca precisione in PvE perdi molto danno.</td></tr>
+          <tr><td>Colpo critico</td><td>Probabilità di critico. Contrastata dalla resistenza ai critici.</td></tr>
+          <tr><td>Smite / Double Chance</td><td>Probabilità di danno doppio. La guida la considera una delle statistiche offensive più preziose.</td></tr>
+          <tr><td>Perfect Chance</td><td>Probabilità di un colpo Perfect, che usa il danno massimo.</td></tr>
+          <tr><td>Bonus danno arma</td><td>Moltiplica il danno legato all'arma. Si abbina bene all'attacco massimo.</td></tr>
+          <tr><td>Bonus danno</td><td>Moltiplicatore generale. Contrastato dalla tolleranza al danno.</td></tr>
+          <tr><td>Bonus danno critico</td><td>Aumenta il danno dei critici.</td></tr>
+          <tr><td>Velocità di combattimento</td><td>Aumenta velocità di attacco e delle animazioni.</td></tr>
+          <tr><td>Endurance</td><td>Probabilità di subire metà danno.</td></tr>
+          <tr><td>Rigenerazione</td><td>Recupera parte del danno subito come HP.</td></tr>
+        </tbody>
+      </table></div></div>
+    </details>
+
+    <details>
+      <summary>Attributi primari</summary>
+      <div><div class="table-scroll"><table>
+        <thead><tr><th>Attributo</th><th>Ogni 10 punti</th></tr></thead>
+        <tbody>
+          <tr><td>Might</td><td>1% attacco</td></tr>
+          <tr><td>Precision</td><td>1% colpo critico e 1% precisione</td></tr>
+          <tr><td>Dexterity</td><td>1% evasione, 1% blocco, 1% resistenza al danno critico</td></tr>
+          <tr><td>Intelligence</td><td>1% probabilità di effetti di stato</td></tr>
+          <tr><td>Constitution</td><td>1% HP</td></tr>
+          <tr><td>Willpower</td><td>1% resistenza agli effetti di stato</td></tr>
+        </tbody>
+      </table></div></div>
+    </details>
+
+    <details>
+      <summary>Statistiche divine</summary>
+      <div><p class="dim">Su Global servono 10 punti per ogni 1%.</p>
+      <div class="table-scroll"><table>
+        <thead><tr><th>Divina</th><th>Ogni 10 punti</th></tr></thead>
+        <tbody>
+          <tr><td>Destruction</td><td>1% attacco e 1% resistenza Perfect</td></tr>
+          <tr><td>Death</td><td>1% colpo critico e 1% penetrazione rigenerazione</td></tr>
+          <tr><td>Wisdom</td><td>1% Smite/Double Chance e 1% riduzione costo MP</td></tr>
+          <tr><td>Destiny</td><td>1% MP e 1% probabilità di Endurance</td></tr>
+          <tr><td>Space</td><td>1% velocità di movimento e 1% blocco</td></tr>
+          <tr><td>Time</td><td>1% velocità di combattimento e 1% resistenza a Smite/Double Chance</td></tr>
+          <tr><td>Life</td><td>1% HP e 1% rigenerazione</td></tr>
+          <tr><td>Illusion</td><td>1% riduzione cooldown e 1% penetrazione Endurance</td></tr>
+          <tr><td>Freedom</td><td>1% precisione e 1% evasione</td></tr>
+          <tr><td>Justice</td><td>1% difesa e 1% Perfect Chance</td></tr>
+        </tbody>
+      </table></div></div>
+    </details>
+  </section>
+
+  <section id="equip">
+    <span class="eyebrow">Priorità per slot</span>
+    <h2>Equipaggiamento</h2>
+    <p class="lead">In ogni elenco la statistica a sinistra è la più importante.</p>
+    <ul class="tight">
+      <li>L'equipaggiamento craftato PvE è sempre il migliore, perché ha una linea in più.</li>
+      <li>Nella Stagione 1 non esiste equipaggiamento heroic: il craftato arriva a 5 slot. All'inizio l'equipaggiamento da dungeon ha 4 linee (3 con un'arma estendibile).</li>
+      <li>Più avanti i craftati heroic avranno 6 slot, e le philostone aggiungono una linea a tutto: 7 linee per i craftati heroic, 6 per gli heroic da dungeon, 5 per gli unique da dungeon.</li>
+      <li>Su Global puoi craftare direttamente solo l'equipaggiamento T1. È legato all'account, non si vende e si migliora con il Transfer Crafting.</li>
+      <li>Il Bonus danno PvE è stato tolto da armi, guard e accessori; la Tolleranza al danno PvE dall'armatura. Si possono comunque potenziare, ma il meccanismo non è chiaro.</li>
+    </ul>
+
+    <details open>
+      <summary>Arma e guard</summary>
+      <div><p>Stessa priorità per entrambi.</p>
+      <ol class="pri"><li>Combat Speed</li><li>Weapon Damage Boost</li><li>Damage Boost</li><li>Might</li><li>Precision</li><li>Multi-hit Chance</li><li>Attack</li></ol>
+      <p class="dim">Solo PvP: Status Effect Chance. Se giochi PvP e hai una sola arma o guard, devi sacrificare una linea per averla.</p></div>
+    </details>
+
+    <details>
+      <summary>Armatura</summary>
+      <div><div class="table-scroll"><table>
+        <thead><tr><th>Slot</th><th>Priorità</th></tr></thead>
+        <tbody>
+          <tr><td>Elmo</td><td>Double Chance, Attack Increase, Attack, Spirit Strike, Mental Focus, Element Unification, Spirit Revitalization</td></tr>
+          <tr><td>Torso</td><td>Damage Boost, Perfect Chance, Attack, Spirit Strike, Mental Focus, Element Unification, Spirit Revitalization</td></tr>
+          <tr><td>Pantaloni</td><td>Attack Increase, Damage Tolerance, Perfect Chance, Attack, Spirit Strike, Mental Focus, Element Unification</td></tr>
+          <tr><td>Mantello</td><td>Double Chance, Attack Increase, Attack, Spirit Strike, Mental Focus, Element Unification, Spirit Revitalization</td></tr>
+          <tr><td>Spalline</td><td>Double Chance, Critical Damage Boost, Attack, Spirit Strike, Mental Focus, Element Unification, Spirit Revitalization</td></tr>
+          <tr><td>Guanti</td><td>Combat Speed, Perfect Chance, Attack, Spirit Strike, Mental Focus, Element Unification, Spirit Revitalization</td></tr>
+          <tr><td>Scarpe</td><td>Movement Speed, Perfect Chance, Attack, Spirit Strike, Mental Focus, Element Unification, Spirit Revitalization</td></tr>
+        </tbody>
+      </table></div></div>
+    </details>
+
+    <details>
+      <summary>Accessori e bracciali</summary>
+      <div><div class="table-scroll"><table>
+        <thead><tr><th>Slot</th><th>Priorità</th></tr></thead>
+        <tbody>
+          <tr><td>Orecchino</td><td>Move Speed, Might, Precision, Spirit Strike, Mental Focus, Element Unification, Spirit Revitalization</td></tr>
+          <tr><td>Collana</td><td>Combat Speed, Spirit Strike, Mental Focus, Element Unification, Spirit Revitalization, Attack</td></tr>
+          <tr><td>Anello</td><td>Might, Precision, skill attive (dipende dalle arcana e dai livelli che ti mancano). Se non c'è spazio, scarta Precision.</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Bracciali</h3>
+      <ul class="tight">
+        <li>Missione principale: un bracciale unique con statistiche fisse.</li>
+        <li>Secondo slot: il bracciale blu delle missioni secondarie.</li>
+        <li>Sanctuary: l'opzione migliore. Può avere statistiche divine ed essere amplificato per un ulteriore 5% di attacco.</li>
+      </ul>
+      <p>Priorità divine:</p>
+      <ol class="pri"><li>Wisdom</li><li>Destruction</li><li>Time</li><li>Illusion</li><li>Justice</li><li>Death / Freedom</li></ol></div>
+    </details>
+
+    <details>
+      <summary>Amuleto, cintura, rune</summary>
+      <div>
+        <ul class="tight">
+          <li><b>Amuleto:</b> sali di livello con il monolito e usa le pergamene ricompensa per portare l'amuleto verde iniziale al grado unique.</li>
+          <li><b>Cintura:</b> si ottiene completando le Stronghold di Verteron e di Altgard.</li>
+          <li><b>Rune:</b> sono l'unico equipaggiamento che può rompersi nel potenziamento: se fallisce, l'oggetto è distrutto. Potenzia solo le copie di scorta, mai quelle che usi.</li>
+          <li><b>Rune PvE:</b> ne trovi almeno 2 con le missioni secondarie mentre sali di livello.</li>
+          <li><b>Rune PvP:</b> soprattutto da Abyss Trade Shop e Season Shop.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Manastone, theostone, ali</summary>
+      <div>
+        <h3>Manastone</h3>
+        <p>Il roll è una scommessa: non puoi bloccare le linee. All'inizio punta su Attacco e Critico/Precisione. A fine gioco cerca roll migliori solo se te lo puoi permettere: i +100 [1%] di bonus danno sono i migliori ma costano molte pietre.</p>
+        <ol class="pri"><li>Front/Back Damage Boost</li><li>Weapon Damage Boost</li><li>Critical Damage Boost</li><li>Damage Boost</li><li>Attack</li><li>Critical Hit</li><li>Accuracy</li></ol>
+        <h3>Theostone</h3>
+        <p>In PvE sono secondarie, scegli quelle che preferisci. In PvP la guida consiglia Paralyse, Seal, Stun e Blind.</p>
+        <h3>Ali</h3>
+        <ul class="tight">
+          <li>Le ali hanno statistiche attive (equipaggiate) e passive (possedute): raccogli tutte quelle disponibili per i passivi.</li>
+          <li>Non si possono più ottenere con la Substance Morph e le piume: cadono solo dai cubi dei dungeon, con probabilità bassa.</li>
+          <li>Il potenziamento non è disponibile nella Stagione 1, quindi ignora il prefisso +10.</li>
+          <li><b>Inizio:</b> cubo di Vakron Sky Garden (drop raro). <b>Metà:</b> Nightmare Trade Shop. <b>Fine:</b> Season Shop.</li>
+          <li><b>Obiettivo finale: Talisra.</b> Danno e statistiche complete, ma soprattutto riduzione cooldown. Dalla Season Shop appena possibile.</li>
+        </ul>
+      </div>
+    </details>
+
+    <h3>Cosa fare in ogni fase</h3>
+    <div class="cards">
+      <div class="card"><span class="tag">Livellamento</span>
+        <ul class="tight"><li>Equipaggiamento da dungeon, seguendo le priorità sopra</li><li>Bracciale della storia e bracciale blu delle secondarie</li><li>Rune PvE dalle missioni secondarie</li><li>Manastone su Attacco e Critico/Precisione</li><li>Amuleto del monolito</li><li>Prime ali dal cubo di Vakron</li></ul></div>
+      <div class="card"><span class="tag s">Fine gioco</span>
+        <ul class="tight"><li>Equipaggiamento craftato (heroic quando uscirà)</li><li>Manastone da +100 [1%] solo se hai le risorse</li><li>Ali Talisra dalla Season Shop</li><li>Rune PvP da Abyss Trade Shop e Season Shop, se giochi PvP</li></ul></div>
+    </div>
+  </section>
+
+  <section id="titoli">
+    <span class="eyebrow">Parziale</span>
+    <h2>Titoli</h2>
+    <div class="callout warn">Su Global Smite/Double Chance è stata tolta da tutti i titoli e Combat Speed e Cooldown Reduction sono state ridotte di circa il 30%. Esistono anche titoli nuovi da valutare.</div>
+    <div class="table-scroll"><table>
+      <thead><tr><th>Fase</th><th>Tipo</th><th>Come ottenerlo</th></tr></thead>
+      <tbody>
+        <tr><td>Inizio</td><td>Offensivo</td><td>Monolito di Verteron/Altgard al livello 20</td></tr>
+        <tr><td>Inizio</td><td>Difensivo</td><td>Monolito di Verteron/Altgard al livello 30</td></tr>
+        <tr><td>Inizio</td><td>Altro</td><td>Completare il Sealed Dungeon: Ruins of the Ancient City of Roah</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="mancano">
+    <span class="eyebrow">Work in progress</span>
+    <h2>Ancora da completare</h2>
+    <p>Questa guida cresce con il gioco. Mancano ancora:</p>
+    <ul class="tight">
+      <li>le skill attive a livello 12-14 e i passivi di fascia B e C;</li>
+      <li>la tabella con le priorità delle specializzazioni delle skill;</li>
+      <li>i comandi esatti da scrivere nelle macro;</li>
+      <li>i titoli di fine gioco, con nomi e statistiche;</li>
+      <li>una sezione PvP di base.</li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <p>Guida basata su quella di <a href="https://docs.google.com/document/u/0/d/16RBdqrTCKJ4TZJNEkYri9hLYcMv-Hle2pW6HXSNCX7c/mobilebasic" target="_blank" rel="noopener">Sirin</a> per Aion 2 Global, riscritta e riorganizzata dalla Legione. I numeri valgono per la Stagione 1 e possono cambiare con le patch. Non affiliato a NCSOFT.</p>
+  <p><a href="guide.html">Tutte le guide</a> · <a href="privacy.html">Privacy</a> · <span class="langs"><button type="button" data-lang="it" title="Italiano">IT</button><button type="button" data-lang="en" title="English">EN</button><button type="button" data-lang="es" title="Español">ES</button><button type="button" data-lang="fr" title="Français">FR</button></span></p>
+</footer>
+
+<script src="js/i18n.js"></script>
+</body>
+</html>
