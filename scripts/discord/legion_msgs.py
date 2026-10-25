@@ -54,7 +54,10 @@ def build(ch, roles, cemo):
         H('Dove trovi cosa', '📍'),
         f"➤ {ch('annunci')}", 'raid, assedi e novità della Legione',
         f"➤ {ch('cerco-gruppo')}", 'trova un party per quello che vuoi fare',
-        f"➤ {ch('timer-eventi')}", 'quanto manca a Spaccature, Nahma e assedi',
+        f"➤ {ch('timer-eventi')}", 'quanto manca a Spaccature, Nahma e assedi: premi **Ci sono** per esserci',
+        f"➤ {ch('adunate')}", 'chi ha premuto **Ci sono** viene chiamato 15 minuti prima',
+        f"➤ {ch('traguardi')}", 'festeggiamo i Gear Score **1400**, **2100** e **2500**',
+        f"➤ {ch('progressi')}", 'ogni mercoledì quanto è cresciuto il Combat Power della Legione',
         f"➤ {ch('comandi')}", 'prezzi e schede dei personaggi con Mauro',
     ])}], 'components': [{'type': 1, 'components': [{'type': 2, 'style': 3, 'label': 'Collega il tuo personaggio', 'emoji': {'name': '🔗'}, 'custom_id': 'lk:start'},
                                                 link('Sito della Legione', SITE)]}]}
@@ -125,13 +128,14 @@ def build(ch, roles, cemo):
     info = {'embeds': [banner('guida', TEAL), {'color': TEAL, 'description': '\n'.join([
         H('Il sito della Legione', '🌐'),
         'Prezzi del Market di **tutti i server Asmodian EU**, aggiornati **ogni ora**. Gratis, senza pubblicità, in 4 lingue.',
+        '• Nella **home** c\'è un video di un minuto che spiega tutto.',
         SEP,
         H('Cosa trovi', '📚'),
         '➤ **Market** prezzo più basso, media, vendite al giorno e grafico fino a 90 giorni',
         '➤ **Affari** cosa comprare per rivendere e cosa vendere, con il guadagno già **al netto della tassa**',
-        '➤ **Crafting** quanto costa craftare ai prezzi di oggi, fallimenti compresi, e se conviene comprare',
+        '➤ **Crafting** e **Transfer** come in gioco: quanto costa craftare ai prezzi di oggi, fallimenti compresi, confronto con la **media dei 7 giorni**',
         '➤ **Database** gli oltre **11.000 oggetti** del gioco con statistiche e prezzo',
-        '➤ **Personaggi** Combat Power, equipaggiamento e Daevanion di chiunque in EU',
+        '➤ **Personaggi** Combat Power, equipaggiamento e Daevanion di chiunque in EU, e la **Legione** con Gear Score e progressi',
         '➤ **Mappa** boss, Kisk, cubi nascosti e raccolta con il prezzo di quello che raccogli',
         SEP,
         H('Preferiti e avvisi', '⭐'),
@@ -158,12 +162,12 @@ def build(ch, roles, cemo):
         H('Profilo', '👤'),
         '➤ `/preferiti` i tuoi preferiti del sito',
         '➤ `/server` il server da usare di default',
-        '➤ `/collega` collega il tuo personaggio: soprannome e ruolo di classe automatici',
+        '➤ `/collega` collega il tuo personaggio (anche di altri server EU): soprannome e ruolo di classe automatici',
         '➤ `/personaggio` scheda di un personaggio (vuoto = il tuo)',
         '➤ `/legione` la Legione in ordine di Combat Power',
         '➤ `/aiuto` tutti i comandi spiegati',
     ]), 'footer': {'text': 'Prezzi: aion2.exchange · dati di gioco: NCSOFT · ricette e mappa: MetaBot.GG · non affiliato a NCSOFT'}}],
-        'components': [{'type': 1, 'components': [link('Apri il sito', SITE), link('Mappa', SITE + '/map.html')]}]}
+        'components': [{'type': 1, 'components': [link('Apri il sito', SITE + '/'), link('Market', SITE + '/market.html'), link('Mappa', SITE + '/map.html')]}]}
 
     return [('benvenuto', welcome), ('regole', rules), ('scegli-ruoli', picker), ('info', info)]
 
