@@ -74,7 +74,7 @@ export const Deals = () => (
     <Backdrop />
     <Caption kicker="Affari" title="Le occasioni del momento" lines={['Cosa comprare sotto la media', 'Cosa rivendere, con il profitto stimato', 'Calcoli già al netto della tassa']} />
     <ScreenPan src="deals.jpg" from={{x: 0, y: 0, w: 1920}} to={{x: 300, y: 370, w: 1180}} startAt={30} moveFor={100}
-      highlight={{x: 1150, y: 410, w: 300, h: 640, at: 140}} />
+      highlight={{x: 1160, y: 405, w: 150, h: 650, at: 140}} />
   </AbsoluteFill>
 );
 
@@ -82,7 +82,7 @@ export const Crafting = () => (
   <AbsoluteFill>
     <Backdrop />
     <Caption kicker="Crafting" title="Craftarlo o comprarlo?" lines={['Costo stimato con i prezzi di oggi', 'Ricetta passo per passo', 'Confronto con la media dei 7 giorni']} />
-    <ScreenPan src="craft_detail.jpg" from={{x: 300, y: 380, w: 1180}} to={{x: 1470, y: 290, w: 460}} startAt={70} moveFor={100} />
+    <ScreenPan src="craft_detail.jpg" from={{x: 300, y: 380, w: 1180}} to={{x: 1440, y: 290, w: 480}} startAt={70} moveFor={100} />
   </AbsoluteFill>
 );
 
