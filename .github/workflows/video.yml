@@ -1,0 +1,38 @@
+# Renders the Remotion presentation video kept on the 'video' branch; result (MP4 + a few still frames) on the orphan branch 'video-out'.
+name: Video
+on:
+  workflow_dispatch:
+    inputs:
+      stills_only:
+        description: 'yes = only a few still frames (quick check)'
+        default: 'no'
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: video}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq fonts-noto-color-emoji >/dev/null || true
+      - run: npm i --no-audit --no-fund
+      - run: npx tsc -p . 2>&1 | tee /tmp/log.txt || true
+      - name: Stills
+        run: |
+          mkdir -p out
+          for f in 40 230 520 760 930 1190 1300 1480 1640; do npx remotion still MarketIntro out/f$f.jpg --frame=$f --image-format=jpeg --scale=0.5 2>&1 | tail -3 | tee -a /tmp/log.txt; done
+      - name: Video
+        if: inputs.stills_only != 'yes'
+        run: npx remotion render MarketIntro out/aion-market-intro.mp4 --codec=h264 --crf=20 2>&1 | tail -20 | tee -a /tmp/log.txt
+      - name: Save on 'video-out'
+        if: always()
+        run: |
+          cp /tmp/log.txt out/log.txt || true
+          mkdir /tmp/o && cp -r out/. /tmp/o/
+          git config user.name "BenzoDaeskiSumi"
+          git config user.email "173538282+BenzoDaeskiSumi@users.noreply.github.com"
+          git checkout --orphan vo && git rm -rfq . && cp -r /tmp/o/. .
+          git add -A && git commit -qm "video output" && git push -f origin vo:video-out
