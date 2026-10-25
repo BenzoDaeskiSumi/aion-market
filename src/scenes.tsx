@@ -65,7 +65,7 @@ export const Detail = () => (
   <AbsoluteFill>
     <Backdrop />
     <Caption kicker="Dettaglio" title="La storia di ogni oggetto" lines={['Grafico a 24 ore, 7, 30 e 90 giorni', 'Affidabilità, liquidità e volatilità', 'Quanto guadagni se lo rivendi']} />
-    <ScreenPan src="detail.jpg" from={{x: 1380, y: 270, w: 540}} to={{x: 1380, y: 690, w: 540}} startAt={60} moveFor={90} />
+    <ScreenPan src="detail.jpg" from={{x: 1470, y: 270, w: 460}} to={{x: 1470, y: 650, w: 460}} startAt={60} moveFor={90} />
   </AbsoluteFill>
 );
 
@@ -82,7 +82,7 @@ export const Crafting = () => (
   <AbsoluteFill>
     <Backdrop />
     <Caption kicker="Crafting" title="Craftarlo o comprarlo?" lines={['Costo stimato con i prezzi di oggi', 'Ricetta passo per passo', 'Confronto con la media dei 7 giorni']} />
-    <ScreenPan src="craft_detail.jpg" from={{x: 300, y: 380, w: 1180}} to={{x: 1380, y: 300, w: 540}} startAt={70} moveFor={100} />
+    <ScreenPan src="craft_detail.jpg" from={{x: 300, y: 380, w: 1180}} to={{x: 1470, y: 290, w: 460}} startAt={70} moveFor={100} />
   </AbsoluteFill>
 );
 
