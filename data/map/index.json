@@ -215,6 +215,26 @@
     "updraft",
     "abyss_portal"
    ]
+  },
+  {
+   "key": "Abyss_Reshanta_D",
+   "slug": "chaotic-upper-reshanta",
+   "name": "Chaotic Upper Reshanta",
+   "race": "All",
+   "kind": "abyss",
+   "tileDir": "worldmap/abyss_reshanta_d",
+   "geometry": {
+    "P": 2,
+    "maxZoom": 3,
+    "size": 2048
+   },
+   "layers": [
+    "kibelisk",
+    "monster",
+    "service",
+    "flight_ring",
+    "updraft"
+   ]
   }
  ]
 }
