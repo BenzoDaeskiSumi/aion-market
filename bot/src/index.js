@@ -1468,6 +1468,14 @@ async function verifyClean(env) {
     const cfg = JSON.parse(await env.USERS.get(k.name) || 'null'); if (!cfg?.ch) continue;
     const msgs = await (await dapi(env, 'GET', `/channels/${cfg.ch}/messages?limit=50`)).json().catch(() => []);
     for (const m of Array.isArray(msgs) ? msgs : []) if (m.author?.id !== me && !m.pinned) await dapi(env, 'DELETE', `/channels/${cfg.ch}/messages/${m.id}`).catch(() => {});
+    if (!cfg.mod) continue;   // moderators' channel: drop cards of members already verified (approved earlier, or a duplicate request)
+    const reqs = await (await dapi(env, 'GET', `/channels/${cfg.mod}/messages?limit=100`)).json().catch(() => []);
+    for (const m of Array.isArray(reqs) ? reqs : []) {
+      if (m.author?.id !== me) continue;
+      const uid = (JSON.stringify(m.components || []).match(/vf:(?:ok|no):(\d+)/) || [])[1];
+      const done = m.embeds?.[0]?.footer?.text === 'Approved' || (uid && await env.USERS.get(`vlink:${k.name.slice(5)}:${uid}`));
+      if (done) await dapi(env, 'DELETE', `/channels/${cfg.mod}/messages/${m.id}`).catch(() => {});
+    }
   }
 }
 async function dmUser(env, uid, content) {
@@ -1497,7 +1505,9 @@ async function verifyDecide(i, env, ctx, reason) {
       await env.USERS.delete(`vreq:${g}:${uid}`);
       await dmUser(env, uid, `✅ You are verified as **${req.name}** (${req.sn}). Welcome!`);
     })());
-    return Response.json({type: 7, data: {embeds: [{...embed, color: 0x34d399, footer: {text: 'Approved'}, description: `${embed.description || ''}\n\n✅ Approved by <@${by}>`}], components: []}});
+    // approved requests leave the moderators' channel (the user asked): delete the card, the moderator gets a private confirmation
+    ctx.waitUntil(dapi(env, 'DELETE', `/channels/${i.channel_id}/messages/${i.message.id}`).catch(() => {}));
+    return Response.json({type: 4, data: {flags: 64, content: `✅ <@${uid}> verified as **${req.name}**.`, allowed_mentions: {parse: []}}});
   }
   ctx.waitUntil((async () => {
     await env.USERS.delete(`vreq:${g}:${uid}`);
