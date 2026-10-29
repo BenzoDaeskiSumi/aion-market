@@ -1445,7 +1445,8 @@ async function verifyRequest(i, env, ctx) {
   if (!att || !/^image\//.test(att.content_type || '')) return oops('Attach a **screenshot** (image) where your character name is readable.');
   if ((i.member?.roles || []).includes(cfg.role)) return oops('You are already verified. 👍');
   const pend = JSON.parse(await env.USERS.get(`vreq:${g}:${uid}`) || 'null');   // one open request per person: no spam in the moderators' channel
-  if (pend && Date.now() - pend.t < 2 * 86400e3) return oops(`Your request for **${pend.name}** is already waiting for a moderator. You'll get a DM when it is checked.`);
+  // a request only blocks a new one while its card is still in the moderators' channel (a lost or deleted card lets the member send again)
+  if (pend && Date.now() - pend.t < 2 * 86400e3 && (!pend.msg || (await dapi(env, 'GET', `/channels/${cfg.mod}/messages/${pend.msg}`)).ok)) return oops(`Your request for **${pend.name}** is already waiting for a moderator. You'll get a DM when it is checked.`);
   const owner = await env.USERS.get(`vchar:${g}:${server}:${id}`);
   if (owner && owner !== uid) return oops('This character is already verified by another account. If it is yours, message a moderator.');
   ctx.waitUntil((async () => {
@@ -1457,8 +1458,13 @@ async function verifyRequest(i, env, ctx) {
       description: `<@${uid}> says they are **${c.name}**\n${c.cls || '?'} · Lv ${c.lv || '?'} · ${c.serverName || ''}${c.legion ? ` · Legion: ${c.legion}` : ''}${c.cp ? ` · CP ${kin(c.cp)}` : ''}\n\nCheck that the screenshot shows **${c.name}**.`,
       thumbnail: avatarProxy(c.img, env) ? {url: avatarProxy(c.img, env)} : undefined, image: {url: att.url}, timestamp: new Date().toISOString()}],
       components: [{type: 1, components: [{type: 2, style: 3, label: 'Approve', emoji: {name: '✅'}, custom_id: `vf:ok:${uid}`}, {type: 2, style: 4, label: 'Reject', emoji: {name: '❌'}, custom_id: `vf:no:${uid}`}]}]});
+    if (r.ok) await env.USERS.put(`vreq:${g}:${uid}`, JSON.stringify({...req, msg: (await r.clone().json().catch(() => ({}))).id}), {expirationTtl: 14 * 86400});
+    else { await env.USERS.delete(`vreq:${g}:${uid}`); await env.USERS.put('verify_err', `${new Date().toISOString()} post ${r.status} ${(await r.text().catch(() => '')).slice(0, 300)}`); }
     await hook(i, env, {content: r.ok ? `📨 Request sent to the moderators for **${c.name}** (${c.serverName}). I'll DM you as soon as they check it.` : 'I cannot write in the moderators\' channel: tell an admin.'});
-  })());
+  })().catch(async (e) => {   // never leave the member without an answer
+    await env.USERS.put('verify_err', `${new Date().toISOString()} ${String(e?.stack || e).slice(0, 300)}`).catch(() => {});
+    await hook(i, env, {content: 'Something went wrong while sending your request: please try again, or ask in the help channel.'}).catch(() => {});
+  }));
   return Response.json({type: 5, data: {flags: 64}});
 }
 // #verify must let newcomers write (Discord hides the command box otherwise), so the cron deletes plain messages there (everything but Mauro's and pinned ones).
