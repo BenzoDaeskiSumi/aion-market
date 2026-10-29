@@ -33,7 +33,11 @@ jobs:
           printf '%s' "$PUBKEY" | npx -y wrangler@4 secret put DISCORD_PUBLIC_KEY > s.txt 2>&1 || { report s.txt error; exit 1; }
           printf '%s' "$TOKEN" | npx -y wrangler@4 secret put DISCORD_TOKEN > s.txt 2>&1 || { report s.txt error; exit 1; }
       - name: Register the slash commands
-        run: node verify/register.mjs 2>&1 | tee reg.txt; s=${PIPESTATUS[0]}; [ $s -eq 0 ] || sed 's/^/::error::/' reg.txt; exit $s
+        run: |
+          echo "::notice::app id length ${#DISCORD_APP_ID}, token length ${#DISCORD_TOKEN}"
+          node verify/register.mjs > reg.txt 2>&1; s=$?
+          while IFS= read -r l; do echo "::warning::$l"; done < reg.txt
+          exit $s
         shell: bash
         env:
           DISCORD_TOKEN: ${{ secrets.VERIFY_DISCORD_TOKEN }}
