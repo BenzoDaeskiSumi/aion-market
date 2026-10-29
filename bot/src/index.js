@@ -1444,6 +1444,8 @@ async function verifyRequest(i, env, ctx) {
   const attId = opt(i.data, 'screenshot')?.value, att = i.data.resolved?.attachments?.[attId];
   if (!att || !/^image\//.test(att.content_type || '')) return oops('Attach a **screenshot** (image) where your character name is readable.');
   if ((i.member?.roles || []).includes(cfg.role)) return oops('You are already verified. 👍');
+  const pend = JSON.parse(await env.USERS.get(`vreq:${g}:${uid}`) || 'null');   // one open request per person: no spam in the moderators' channel
+  if (pend && Date.now() - pend.t < 2 * 86400e3) return oops(`Your request for **${pend.name}** is already waiting for a moderator. You'll get a DM when it is checked.`);
   const owner = await env.USERS.get(`vchar:${g}:${server}:${id}`);
   if (owner && owner !== uid) return oops('This character is already verified by another account. If it is yours, message a moderator.');
   ctx.waitUntil((async () => {
