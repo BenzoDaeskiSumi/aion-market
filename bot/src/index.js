@@ -1031,15 +1031,17 @@ async function doLink(env, i, server, id, tgt) {
   const uid = tgt.uid, gid = i.guild_id || GUILD, have = new Set(tgt.roles), you = tgt.self ? 'ti' : 'gli', by = userId(i);
   const owner = await env.USERS.get(`linkc:${server}:${id}`);
   if (owner && owner !== uid && !isAdmin(i)) return {content: `Questo personaggio è già collegato a <@${owner}>. Se è tuo, scrivi a un Centurion.`};
-  if (owner && owner !== uid) { await env.USERS.delete('link:' + owner); }       // an admin moves it to the right person
+  let kvFail = false; const kv = (p) => p.catch(() => { kvFail = true; });   // KV may refuse writes (free daily limit): the link still sets nick/roles
+  if (owner && owner !== uid) { await kv(env.USERS.delete('link:' + owner)); }       // an admin moves it to the right person
   const c = await charProfile(server, id);
   if (!c.name) return {content: 'Il sito ufficiale non mi dà i dati di questo personaggio, riprova tra poco.'};
   const old = await linkOf(env, uid);
-  if (old && (old.server !== c.server || old.id !== c.id)) await env.USERS.delete(`linkc:${old.server}:${old.id}`);
-  await env.USERS.put('link:' + uid, JSON.stringify(c));
-  await afterRefresh(env, uid, old && old.id === c.id ? old : null, c);
-  await env.USERS.put(`linkc:${server}:${id}`, uid);
+  if (old && (old.server !== c.server || old.id !== c.id)) await kv(env.USERS.delete(`linkc:${old.server}:${old.id}`));
+  await kv(env.USERS.put('link:' + uid, JSON.stringify(c)));
+  await kv(afterRefresh(env, uid, old && old.id === c.id ? old : null, c));
+  await kv(env.USERS.put(`linkc:${server}:${id}`, uid));
   const notes = [];
+  if (kvFail) notes.push('⚠️ Ruoli e soprannome fatti, ma oggi non riesco a salvare il collegamento (limite giornaliero del database): rifai `/collega` dopo l\'01:00 perché tu compaia in `/legione`.');
   const n = await dapi(env, 'PATCH', `/guilds/${gid}/members/${uid}`, {nick: c.name});
   notes.push(n.ok ? `🏷️ Soprannome: **${c.name}**` : `🏷️ Non posso cambiar${you} il soprannome (succede col proprietario del server o con ruoli sopra Mauro): va messo a mano.`);
   const {got, roles} = await gradeByLegion(env, gid, uid, have, c);
@@ -1081,6 +1083,8 @@ async function pickAndLink(i, env, raw, srv, tgt) {   // name typed (command or 
     options: list.slice(0, 25).map((c) => ({label: `${c.name} · ${c.serverName}`.slice(0, 100), description: `${meta.classes[c.pcId] || ''} Lv ${c.level}`.slice(0, 100), value: `${c.server}:${c.id}`.slice(0, 100)}))}]}]};
 }
 const OFFLINE = {content: 'Il sito ufficiale di NCSOFT non risponde in questo momento, riprova tra poco.'};
+// the real reason, not always 'NCSOFT is down': KV's daily write limit also lands here
+const linkErr = (e) => /limit|429|KV/i.test(String(e?.message || e)) ? 'Il database di Mauro ha raggiunto il limite giornaliero: riprova dopo l\'01:00.' : `Qualcosa è andato storto (${String(e?.message || e).slice(0, 120)}). Riprova tra poco.`;
 async function collega(i, env, ctx) {
   const raw = String(opt(i.data, 'personaggio')?.value || '').trim(), who = opt(i.data, 'utente')?.value;
   if (who && who !== userId(i) && !isAdmin(i)) return oops('Solo gli amministratori possono collegare il personaggio di un altro.');
@@ -1088,7 +1092,7 @@ async function collega(i, env, ctx) {
     const tgt = await linkTarget(env, i, who);
     if (!tgt) return hook(i, env, {content: 'Non trovo quell\'utente nel server.'});
     return hook(i, env, await pickAndLink(i, env, raw, await serverFrom(opt(i.data, 'server')?.value), tgt));
-  })().catch(() => hook(i, env, OFFLINE)));
+  })().catch((e) => hook(i, env, {content: linkErr(e)})));
   return Response.json({type: 5, data: {flags: 64}});
 }
 function linkModal() {                           // 'Collega il tuo personaggio' button in #benvenuto
@@ -1098,13 +1102,13 @@ function linkModal() {                           // 'Collega il tuo personaggio'
 }
 async function linkModalSubmit(i, env, ctx) {
   const val = (k) => String((i.data.components || []).flatMap((r) => r.components || []).find((c) => c.custom_id === k)?.value || '').trim();
-  ctx.waitUntil((async () => hook(i, env, await pickAndLink(i, env, val('name'), await serverFrom(val('server')))))().catch(() => hook(i, env, OFFLINE)));
+  ctx.waitUntil((async () => hook(i, env, await pickAndLink(i, env, val('name'), await serverFrom(val('server')))))().catch((e) => hook(i, env, {content: linkErr(e)})));
   return Response.json({type: 5, data: {flags: 64}});
 }
 async function linkSelect(i, env, ctx) {
   const [server, id] = String(i.data.values?.[0] || '').split(':'), who = i.data.custom_id.split(':')[1];
   if (who && !isAdmin(i)) return oops('Solo gli amministratori possono collegare il personaggio di un altro.');
-  ctx.waitUntil(linkTarget(env, i, who).then((tgt) => doLink(env, i, +server, id, tgt)).then((d) => hook(i, env, {components: [], ...d})).catch(() => hook(i, env, {content: 'Il sito ufficiale di NCSOFT non risponde in questo momento, riprova tra poco.', components: []})));
+  ctx.waitUntil(linkTarget(env, i, who).then((tgt) => doLink(env, i, +server, id, tgt)).then((d) => hook(i, env, {components: [], ...d})).catch((e) => hook(i, env, {content: linkErr(e), components: []})));
   return Response.json({type: 6});                // update the same (ephemeral) message when done
 }
 // cron: re-check a few linked members per run (subrequest limits): promote Ospite -> Recluta when they join the Legione in game,
