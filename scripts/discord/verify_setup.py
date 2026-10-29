@@ -81,6 +81,24 @@ if not mod:
             'permission_overwrites': [{'id': G, 'type': 0, 'allow': '0', 'deny': str(VIEW)}, {'id': me['id'], 'type': 1, 'allow': str(VIEW | SEND), 'deny': '0'}] +
                                      [{'id': byname[n]['id'], 'type': 0, 'allow': str(VIEW | SEND), 'deny': '0'} for n in MODS if n in byname]})
 
+# 1b) help channel for people stuck on verification: only who has no role yet (Marchutans can't see it) + Admins/Moderator to answer
+hlp = find('verify-help')
+mods_ow = [{'id': byname[n]['id'], 'type': 0, 'allow': str(VIEW | SEND | 0x8000 | 0x10000), 'deny': '0'} for n in MODS if n in byname]
+if not hlp:
+    say('  create #🆘・verify-help (newcomers + Admins/Moderator)')
+    if APPLY:
+        hlp = api('POST', f'/guilds/{G}/channels', {'name': '🆘・verify-help', 'type': 0, 'position': 1, 'rate_limit_per_user': 30,
+            'topic': "Can't verify? Ask here and a moderator will help you.",
+            'permission_overwrites': [{'id': G, 'type': 0, 'allow': str(VIEW | SEND | 0x8000 | 0x10000), 'deny': str(THREADS)},
+                                      {'id': role['id'], 'type': 0, 'allow': '0', 'deny': str(VIEW)},
+                                      {'id': me['id'], 'type': 1, 'allow': str(VIEW | SEND), 'deny': '0'}] + mods_ow})
+        api('POST', f"/channels/{hlp['id']}/messages", {'embeds': [{'color': 0xf2c94c, 'title': '🆘 Need help with verification?', 'description': '\n'.join([
+            'Write here what went wrong (for example: your character does not show up in the suggestions, or the screenshot was rejected).',
+            'A moderator will answer as soon as possible. Please include your **character name** and **server**.',
+            '', 'How to verify: see <#' + ch['id'] + '>.'])}]})
+    # keep it right under #verify
+    if APPLY and ch: api('PATCH', f'/guilds/{G}/channels', [{'id': ch['id'], 'position': 0}, {'id': hlp['id'], 'position': 1}])
+
 # 2) config for the Worker
 if APPLY:
     cf = lambda m, p, data=None, ctype='application/json': json.load(urllib.request.urlopen(urllib.request.Request(
@@ -120,7 +138,7 @@ for c in [] if not FIRST else sorted(chans, key=lambda c: (c['type'] != 4, c['po
     if c['type'] != 4 and c.get('parent_id'): continue                       # channels inside a category follow the category
     name = c['name'].lower()
     if c['type'] == 4 and any(x in name for x in OPEN_CATS): continue
-    if c['type'] != 4 and (name.endswith('verify') or name.endswith('verify-requests') or 'staff' in name): continue
+    if c['type'] != 4 and (name.endswith('verify') or name.endswith('verify-requests') or name.endswith('verify-help') or 'staff' in name): continue
     ows = [dict(x) for x in c.get('permission_overwrites', [])]
     if any(x['type'] == 1 and x['id'] != me['id'] for x in ows): continue    # private channels set up by hand
     set_view(ows, G, 0, False); set_view(ows, role['id'], 0, True)
