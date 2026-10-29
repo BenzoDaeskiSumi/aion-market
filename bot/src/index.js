@@ -1488,6 +1488,15 @@ async function dmUser(env, uid, content) {
   const ch = await (await dapi(env, 'POST', '/users/@me/channels', {recipient_id: uid})).json().catch(() => null);
   if (ch?.id) await dapi(env, 'POST', `/channels/${ch.id}/messages`, {content, allowed_mentions: {parse: []}}).catch(() => {});
 }
+// 'Get temporary access' button in #verify (MarchutanEU, 29 Oct): gives the temporary role (vcfg.temp), which opens the server like Marchutans until they verify
+async function tempAccess(i, env, ctx) {
+  const g = i.guild_id, cfg = JSON.parse(await env.USERS.get('vcfg:' + g) || 'null'), uid = userId(i);
+  if (!cfg?.temp) return oops('Temporary access is closed: please verify with `/verify`.');
+  if ((i.member?.roles || []).includes(cfg.role)) return oops('You are already verified. 👍');
+  if ((i.member?.roles || []).includes(cfg.temp)) return oops('You already have temporary access. Please verify with `/verify` when you can.');
+  const r = await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${cfg.temp}`);
+  return oops(r.ok ? '✅ Temporary access granted: the server is open for you. Please verify your character with `/verify` when you can.' : 'I could not give you the role: please ask in the help channel.');
+}
 // what an approval does (✅ on a request, or a moderator's /verify-user): role, in-game nickname, class role, KV links, DM
 async function applyVerify(env, g, cfg, uid, req, by) {
   const prevOwner = await env.USERS.get(`vchar:${g}:${req.server}:${req.id}`);
@@ -1495,6 +1504,7 @@ async function applyVerify(env, g, cfg, uid, req, by) {
   const old = JSON.parse(await env.USERS.get(`vlink:${g}:${uid}`) || 'null');
   if (old && (old.server !== req.server || old.id !== req.id)) await env.USERS.delete(`vchar:${g}:${old.server}:${old.id}`);
   await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${cfg.role}`);
+  if (cfg.temp) await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${cfg.temp}`).catch(() => {});   // verified: the temporary role is no longer needed
   await dapi(env, 'PATCH', `/guilds/${g}/members/${uid}`, {nick: req.name}).catch(() => {});   // nickname = in-game name (the class shows as the class role's icon next to it)
   // class role: a role of the server named like the character's class (Templar, Gladiator, … on MarchutanEU); other class roles are removed
   const roles = await (await dapi(env, 'GET', `/guilds/${g}/roles`)).json().catch(() => []), mem = await (await dapi(env, 'GET', `/guilds/${g}/members/${uid}`)).json().catch(() => ({}));
@@ -1716,6 +1726,7 @@ export default {
       if (i.type === 3 && i.data.custom_id?.startsWith('ts:')) return await signupButton(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('rs:')) return await raidButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('rp:')) return await rolePick(i, env, ctx);
+      if (i.type === 3 && i.data.custom_id === 'vt:get') return await tempAccess(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('vf:')) return await verifyDecide(i, env, ctx);
       if (i.type === 5 && i.data.custom_id?.startsWith('vfm:')) return await verifyDecide({...i, data: {...i.data, custom_id: i.data.custom_id.replace('vfm:', 'vf:')}}, env, ctx, String(i.data.components?.[0]?.components?.[0]?.value || '').trim());
       if (i.type === 5 && i.data.custom_id?.startsWith('alm:')) return await alertSubmit(i, env);
