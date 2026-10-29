@@ -64,11 +64,12 @@ if not ch:
 else:   # channel already there: refresh its topic and Mauro's instructions message
     say('  update #verify: topic + instructions')
     if APPLY:
-        ows = [o for o in ch.get('permission_overwrites', []) if o['id'] not in (G, me['id'])]
+        ows = [o for o in ch.get('permission_overwrites', []) if o['id'] not in (G, me['id'], *[byname[n]['id'] for n in MODS if n in byname])]
         api('PATCH', f"/channels/{ch['id']}", {'topic': 'New here? Verify your character with /verify to see the rest of the server. Other messages are deleted.',
             'rate_limit_per_user': 300,   # newcomers need Send Messages to see the command box; Mauro's cron deletes plain messages
             'permission_overwrites': ows + [{'id': G, 'type': 0, 'allow': str(VIEW | SEND | 0x8000 | 0x10000 | 0x80000000), 'deny': str(THREADS)},
-                                            {'id': me['id'], 'type': 1, 'allow': str(VIEW | SEND | 0x2000), 'deny': '0'}]})
+                                            {'id': me['id'], 'type': 1, 'allow': str(VIEW | SEND | 0x2000), 'deny': '0'}] +
+                                           [{'id': byname[n]['id'], 'type': 0, 'allow': str(VIEW | SEND), 'deny': '0'} for n in MODS if n in byname]})   # mods see it (role allows beat the Marchutans deny)
         msgs = [m for m in api('GET', f"/channels/{ch['id']}/messages?limit=50") if m['author']['id'] == me['id']]
         if msgs: api('PATCH', f"/channels/{ch['id']}/messages/{msgs[-1]['id']}", guide)
         else: api('POST', f"/channels/{ch['id']}/messages", guide)
