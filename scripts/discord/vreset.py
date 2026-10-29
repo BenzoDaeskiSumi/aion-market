@@ -22,6 +22,33 @@ cf = lambda p, m='GET', data=None: urllib.request.urlopen(urllib.request.Request
 ns = next(n['id'] for n in json.loads(cf('/storage/kv/namespaces?per_page=100'))['result'] if n['title'].endswith('aion-market-bot-users'))
 verified = {k['name'].split(':')[2] for k in json.loads(cf(f'/storage/kv/namespaces/{ns}/keys?prefix=vlink:{G}:'))['result']}
 
+if os.environ.get('MODE', '').startswith('vresetcls'):   # unverified members lose their class roles too (the user asked; Admins/Moderator and bots keep theirs)
+    roles = api('GET', f'/guilds/{G}/roles'); rn = {r['id']: r['name'] for r in roles}; byn = {r['name']: r['id'] for r in roles}
+    CL = {byn[n] for n in ('Gladiator', 'Templar', 'Assassin', 'Ranger', 'Sorcerer', 'Spiritmaster', 'Cleric', 'Chanter') if n in byn}
+    keep = {byn[n] for n in ('Admins', 'Moderator') if n in byn}
+    members, after = [], '0'
+    while True:
+        page = api('GET', f'/guilds/{G}/members?limit=1000&after={after}'); members += page
+        if len(page) < 1000: break
+        after = page[-1]['user']['id']
+    n = 0
+    for m in members:
+        if m['user'].get('bot') or m['user']['id'] in verified or keep & set(m['roles']): continue
+        for r in CL & set(m['roles']):
+            n += 1
+            if APPLY: api('DELETE', f"/guilds/{G}/members/{m['user']['id']}/roles/{r}")
+    print(f'  class roles removed from unverified members: {n}')
+    other = {}
+    for m in members:
+        if m['user'].get('bot') or m['user']['id'] in verified or keep & set(m['roles']): continue
+        for r in m['roles']:
+            if r not in CL and rn.get(r) != 'Marchutans': other[rn.get(r, r)] = other.get(rn.get(r, r), 0) + 1
+    print('  other roles still held by unverified members:', other)
+    for c in api('GET', f'/guilds/{G}/channels'):   # does any role besides Marchutans/mods open a channel?
+        for o in c.get('permission_overwrites', []):
+            if o['type'] == 0 and o['id'] != G and int(o['allow']) & VIEW and rn.get(o['id']) not in ('Marchutans', 'Admins', 'Moderator', 'bot', None):
+                print(f"   channel {c['name']}: {rn.get(o['id'])} has View")
+    raise SystemExit(print('done'))
 if os.environ.get('MODE', '').startswith('vresetfix'):   # already-verified members: in-game nickname + class role (what approval does since 29 Oct)
     roles = api('GET', f'/guilds/{G}/roles'); CL = {r['name'].lower(): r['id'] for r in roles if r['name'] in ('Gladiator', 'Templar', 'Assassin', 'Ranger', 'Sorcerer', 'Spiritmaster', 'Cleric', 'Chanter')}
     for uid in verified:
