@@ -1424,7 +1424,7 @@ async function verifySetup(i, env) {
   let ch = chans.find((c) => c.type === 0 && /verif(y|ica)$/.test(c.name));
   if (!ch) ch = await (await dapi(env, 'POST', `/guilds/${g}/channels`, {name: '✅・verify', type: 0, position: 0,
     topic: 'Link your character and send a screenshot: a moderator checks it and gives you access.',
-    permission_overwrites: [{id: g, type: 0, allow: String(VIEWB), deny: String(SENDB)}, {id: me.id, type: 1, allow: String(VIEWB | SENDB), deny: '0'}]})).json();
+    rate_limit_per_user: 300, permission_overwrites: [{id: g, type: 0, allow: String(VIEWB | SENDB | 0x8000 | 0x10000 | 0x80000000), deny: String(0x4800000000)}, {id: me.id, type: 1, allow: String(VIEWB | SENDB | 0x2000), deny: '0'}]})).json();
   let mod = chans.find((c) => c.type === 0 && /(verify-requests|verifiche-mod)$/.test(c.name));
   if (!mod) mod = await (await dapi(env, 'POST', `/guilds/${g}/channels`, {name: '🛡️・verify-requests', type: 0,
     topic: 'Verification requests: check that the name in the screenshot matches the character, then ✅ or ❌.',
@@ -1460,6 +1460,15 @@ async function verifyRequest(i, env, ctx) {
     await hook(i, env, {content: r.ok ? `📨 Request sent to the moderators for **${c.name}** (${c.serverName}). I'll DM you as soon as they check it.` : 'I cannot write in the moderators\' channel: tell an admin.'});
   })());
   return Response.json({type: 5, data: {flags: 64}});
+}
+// #verify must let newcomers write (Discord hides the command box otherwise), so the cron deletes plain messages there (everything but Mauro's and pinned ones).
+async function verifyClean(env) {
+  const me = await env.USERS.get('cfg:me_id') || (await (await dapi(env, 'GET', '/users/@me')).json()).id;
+  for (const k of (await env.USERS.list({prefix: 'vcfg:'})).keys) {
+    const cfg = JSON.parse(await env.USERS.get(k.name) || 'null'); if (!cfg?.ch) continue;
+    const msgs = await (await dapi(env, 'GET', `/channels/${cfg.ch}/messages?limit=50`)).json().catch(() => []);
+    for (const m of Array.isArray(msgs) ? msgs : []) if (m.author?.id !== me && !m.pinned) await dapi(env, 'DELETE', `/channels/${cfg.ch}/messages/${m.id}`).catch(() => {});
+  }
 }
 async function dmUser(env, uid, content) {
   const ch = await (await dapi(env, 'POST', '/users/@me/channels', {recipient_id: uid})).json().catch(() => null);
@@ -1589,7 +1598,7 @@ async function raidReminders(env) {               // cron: tag the sign-ups once
 
 // ---------- entry point ----------
 export default {
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.allSettled([checkAlerts(env).catch((e) => env.USERS.put('alert_err', String(e?.message || e).slice(0, 300))), checkStale(env).catch(() => {}), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => env.USERS.put('sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300))), weekFix(env).catch((e) => env.USERS.put('timer_err', 'weekfix ' + String(e?.stack || e).slice(0, 300))), artChallenge(env).catch((e) => env.USERS.put('art_err', String(e?.stack || e).slice(0, 300)))])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.allSettled([checkAlerts(env).catch((e) => env.USERS.put('alert_err', String(e?.message || e).slice(0, 300))), checkStale(env).catch(() => {}), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => env.USERS.put('sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300))), weekFix(env).catch((e) => env.USERS.put('timer_err', 'weekfix ' + String(e?.stack || e).slice(0, 300))), artChallenge(env).catch((e) => env.USERS.put('art_err', String(e?.stack || e).slice(0, 300))), verifyClean(env).catch(() => {})])); },
   async fetch(req, env, ctx) {
     if (new URL(req.url).pathname === '/hit') return hit(req, env);
     if (/^\/join(\/cb)?$/.test(new URL(req.url).pathname)) return join(req, env);

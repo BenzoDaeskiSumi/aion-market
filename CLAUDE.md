@@ -240,7 +240,7 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   Moderators = Administrator / Manage Server / Manage Roles / Manage Messages / Moderate Members / Kick Members. No AI check yet (would need an API key secret). In privacy.html.
 
 - Live on MarchutanEU AION2 (guild 1564968231410864160, English server): set up by scripts/discord/verify_setup.py (mode vsetup-plan/apply), texts in English
-  (commands /verify and /verify-setup, English only, no Italian localizations). Approval gives the existing role 'Marchutans'; #✅・verify (top, read-only, hidden from Marchutans) and
+  (commands /verify and /verify-setup, English only, no Italian localizations). Approval gives the existing role 'Marchutans'; #✅・verify (top, hidden from Marchutans; @everyone CAN send — Discord hides the command box otherwise — slowmode 5 min, the cron's verifyClean() deletes every message not by Mauro) and
   #🛡️・verify-requests (Admins, Moderator). All categories but 'News' are hidden from @everyone and visible to Marchutans; current members all got Marchutans.
   Carl-bot was giving Marchutans to everyone (autorole / reaction role, seen in the audit log): that must be switched off on carl.gg, otherwise nobody needs to verify.
 

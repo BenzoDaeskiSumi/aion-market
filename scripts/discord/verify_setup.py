@@ -57,14 +57,18 @@ if not ch:
     if APPLY:
         ch = api('POST', f'/guilds/{G}/channels', {'name': '✅・verify', 'type': 0, 'position': 0,
             'topic': 'New here? Verify your character with /verify to see the rest of the server.',
-            'permission_overwrites': [{'id': G, 'type': 0, 'allow': str(VIEW), 'deny': str(SEND | THREADS)},
+            'rate_limit_per_user': 300, 'permission_overwrites': [{'id': G, 'type': 0, 'allow': str(VIEW | SEND | 0x8000 | 0x10000 | 0x80000000), 'deny': str(THREADS)},
                                       {'id': role['id'], 'type': 0, 'allow': '0', 'deny': str(VIEW)},       # verified members don't need it any more
                                       {'id': me['id'], 'type': 1, 'allow': str(VIEW | SEND), 'deny': '0'}]})
         api('POST', f"/channels/{ch['id']}/messages", guide)
 else:   # channel already there: refresh its topic and Mauro's instructions message
     say('  update #verify: topic + instructions')
     if APPLY:
-        api('PATCH', f"/channels/{ch['id']}", {'topic': 'New here? Verify your character with /verify to see the rest of the server.'})
+        ows = [o for o in ch.get('permission_overwrites', []) if o['id'] not in (G, me['id'])]
+        api('PATCH', f"/channels/{ch['id']}", {'topic': 'New here? Verify your character with /verify to see the rest of the server. Other messages are deleted.',
+            'rate_limit_per_user': 300,   # newcomers need Send Messages to see the command box; Mauro's cron deletes plain messages
+            'permission_overwrites': ows + [{'id': G, 'type': 0, 'allow': str(VIEW | SEND | 0x8000 | 0x10000 | 0x80000000), 'deny': str(THREADS)},
+                                            {'id': me['id'], 'type': 1, 'allow': str(VIEW | SEND | 0x2000), 'deny': '0'}]})
         msgs = [m for m in api('GET', f"/channels/{ch['id']}/messages?limit=50") if m['author']['id'] == me['id']]
         if msgs: api('PATCH', f"/channels/{ch['id']}/messages/{msgs[-1]['id']}", guide)
         else: api('POST', f"/channels/{ch['id']}/messages", guide)
@@ -111,7 +115,7 @@ def set_view(ows, oid, typ, allow):
     else: d |= VIEW
     o['allow'], o['deny'] = str(a), str(d)
 changed = 0
-for c in sorted(chans, key=lambda c: (c['type'] != 4, c['position'])):
+for c in [] if not FIRST else sorted(chans, key=lambda c: (c['type'] != 4, c['position'])):
     if c['type'] != 4 and c.get('parent_id'): continue                       # channels inside a category follow the category
     name = c['name'].lower()
     if c['type'] == 4 and any(x in name for x in OPEN_CATS): continue
@@ -123,7 +127,7 @@ for c in sorted(chans, key=lambda c: (c['type'] != 4, c['position'])):
     say(f"  {'category' if c['type'] == 4 else 'channel'} {c['name']}: hidden from @everyone, visible to {ROLE}")
     if APPLY: api('PATCH', f"/channels/{c['id']}", {'permission_overwrites': ows})
 # channels inside those categories with their own (unsynced) overwrites: add the same two bits so they follow
-for c in chans:
+for c in (chans if FIRST else []):
     if c['type'] == 4 or not c.get('parent_id'): continue
     cat = next((x for x in chans if x['id'] == c['parent_id']), None)
     if not cat or any(x in cat['name'].lower() for x in OPEN_CATS): continue
