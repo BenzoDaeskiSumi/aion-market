@@ -238,6 +238,10 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   in the mod channel with ✅ vf:ok:<uid> / ❌ vf:no:<uid> (modal vfm: with an optional reason). Approve = card deleted from the mod channel (verifyClean also drops cards of already-verified members) + role + nick (in-game name) + class role (server role named like the class, CLASS_ROLES; others removed) + DM; reject = DM with reason.
   /verify-user user:<member> character:<autocomplete> (moderators; command visible to Manage Roles by default): verifies someone directly, no screenshot,
   may move a character from another account (old vlink dropped). Both paths go through applyVerify().
+  KV FREE LIMIT 1,000 writes/day was hit on 29 Oct (sweep every 3 h + error notes every run): now putErr() writes error notes only when they change,
+  the legion sweep rotates by clock (no cfg:sweep_at) and refreshes a member every 12 h, hist is written only on change; verification no longer needs
+  KV writes (the ✅ button carries vf:ok:<uid>:<server>:<id>, all KV writes in it are best effort).
+  'Temporary Access' role (vcfg.temp, 29 Oct): button vt:get in #verify gives it; it has the same overwrites as Marchutans (not on #verify); approval removes it.
   vreq stores the card's message id (msg): a request blocks a new /verify only while that card still exists; failures go to KV verify_err
   (the background part is wrapped in a catch that answers the member).
   KV vreq:<g>:<uid> (14 days), vlink:<g>:<uid>, vchar:<g>:<server>:<id> (one character per account), separate from the Legione's link:/linkc:.

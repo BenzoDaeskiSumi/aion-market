@@ -1109,19 +1109,20 @@ async function linkSelect(i, env, ctx) {
 }
 // cron: re-check a few linked members per run (subrequest limits): promote Ospite -> Recluta when they join the Legione in game,
 // tell the officers once when someone with a grade is no longer in the Legione (no automatic demotion)
+// KV free plan: 1,000 writes a day (hit on 29 Oct). Error notes are written only when they change; the sweep rotates by clock, not by a stored counter.
+async function putErr(env, k, v) { try { if ((await env.USERS.get(k)) !== v) await env.USERS.put(k, v); } catch (e) {} }
 async function legionSweep(env) {
   const keys = (await env.USERS.list({prefix: 'link:'})).keys.map((k) => k.name).sort();
   if (!keys.length) return;
-  let at = +(await env.USERS.get('cfg:sweep_at') || 0) % keys.length;
+  let at = (Math.floor(Date.now() / 900e3) * 4) % keys.length;      // 4 members per 15-minute run, by clock
   for (let n = 0; n < Math.min(4, keys.length); n++, at = (at + 1) % keys.length) {
-    try { await sweepOne(env, keys[at]); } catch (e) { await env.USERS.put('sweep_err', String(e?.stack || e).slice(0, 400)); }
+    try { await sweepOne(env, keys[at]); } catch (e) { await putErr(env, 'sweep_err', String(e?.stack || e).slice(0, 400)); }
   }
-  await env.USERS.put('cfg:sweep_at', String(at));
 }
 async function sweepOne(env, k) {
   {
     const uid = k.slice(5), l = JSON.parse(await env.USERS.get(k) || 'null');
-    if (!l || Date.now() - l.t < 3 * 3600e3) return;
+    if (!l || Date.now() - l.t < 12 * 3600e3) return;            // twice a day (was 3 h: too many KV writes)
     const c = await charProfile(l.server, l.id).catch(() => null);
     if (!c?.name) return;
     await env.USERS.put(k, JSON.stringify(c));
@@ -1178,8 +1179,11 @@ async function legione(i, env, ctx) {           // members with a linked charact
 const GS_GOALS = [[1400, '🥉', 0xcd7f32, 'primo salto'], [2100, '🥈', 0xc0c8d8, 'secondo salto'], [2500, '🥇', 0xe8b64a, 'vetta']];
 async function afterRefresh(env, uid, prev, c) {
   const day = Math.floor(Date.now() / 864e5), h = JSON.parse(await env.USERS.get('hist:' + uid) || '[]');
-  if (h.length && h[h.length - 1][0] === day) h[h.length - 1] = [day, c.cp, c.il]; else h.push([day, c.cp, c.il]);
-  await env.USERS.put('hist:' + uid, JSON.stringify(h.slice(-365)));
+  const last = h[h.length - 1];
+  if (!last || last[0] !== day || last[1] !== c.cp || last[2] !== c.il) {      // write only when something changed
+    if (last && last[0] === day) h[h.length - 1] = [day, c.cp, c.il]; else h.push([day, c.cp, c.il]);
+    await env.USERS.put('hist:' + uid, JSON.stringify(h.slice(-365)));
+  }
   if (!c.il) return;
   const reached = GS_GOALS.filter(([g]) => c.il >= g).pop(), got = await env.USERS.get('goal:' + uid);
   if (!reached || (got && +got >= reached[0])) return;
@@ -1453,13 +1457,12 @@ async function verifyRequest(i, env, ctx) {
     const c = await charProfile(+server, id).catch(() => null);
     if (!c?.name) return void await hook(i, env, {content: 'The official NCSOFT site is not answering: try again in a few minutes.'});
     const req = {server: +server, id, name: c.name, cls: c.cls, lv: c.lv, sn: c.serverName, t: Date.now()};
-    await env.USERS.put(`vreq:${g}:${uid}`, JSON.stringify(req), {expirationTtl: 14 * 86400});
     const r = await dapi(env, 'POST', `/channels/${cfg.mod}/messages`, {allowed_mentions: {parse: []}, embeds: [{color: 0xf2c94c, title: `Verification request · ${c.name}`,
       description: `<@${uid}> says they are **${c.name}**\n${c.cls || '?'} · Lv ${c.lv || '?'} · ${c.serverName || ''}${c.legion ? ` · Legion: ${c.legion}` : ''}${c.cp ? ` · CP ${kin(c.cp)}` : ''}\n\nCheck that the screenshot shows **${c.name}**.`,
       thumbnail: avatarProxy(c.img, env) ? {url: avatarProxy(c.img, env)} : undefined, image: {url: att.url}, timestamp: new Date().toISOString()}],
-      components: [{type: 1, components: [{type: 2, style: 3, label: 'Approve', emoji: {name: '✅'}, custom_id: `vf:ok:${uid}`}, {type: 2, style: 4, label: 'Reject', emoji: {name: '❌'}, custom_id: `vf:no:${uid}`}]}]});
-    if (r.ok) await env.USERS.put(`vreq:${g}:${uid}`, JSON.stringify({...req, msg: (await r.clone().json().catch(() => ({}))).id}), {expirationTtl: 14 * 86400});
-    else { await env.USERS.delete(`vreq:${g}:${uid}`); await env.USERS.put('verify_err', `${new Date().toISOString()} post ${r.status} ${(await r.text().catch(() => '')).slice(0, 300)}`); }
+      components: [{type: 1, components: [{type: 2, style: 3, label: 'Approve', emoji: {name: '✅'}, custom_id: `vf:ok:${uid}:${server}:${id}`.slice(0, 100)}, {type: 2, style: 4, label: 'Reject', emoji: {name: '❌'}, custom_id: `vf:no:${uid}`}]}]});
+    if (r.ok) await env.USERS.put(`vreq:${g}:${uid}`, JSON.stringify({...req, msg: (await r.clone().json().catch(() => ({}))).id}), {expirationTtl: 14 * 86400}).catch(() => {});
+    else { await putErr(env, 'verify_err', `${new Date().toISOString()} post ${r.status} ${(await r.text().catch(() => '')).slice(0, 300)}`); }
     await hook(i, env, {content: r.ok ? `📨 Request sent to the moderators for **${c.name}** (${c.serverName}). I'll DM you as soon as they check it.` : 'I cannot write in the moderators\' channel: tell an admin.'});
   })().catch(async (e) => {   // never leave the member without an answer
     await env.USERS.put('verify_err', `${new Date().toISOString()} ${String(e?.stack || e).slice(0, 300)}`).catch(() => {});
@@ -1500,9 +1503,9 @@ async function tempAccess(i, env, ctx) {
 // what an approval does (✅ on a request, or a moderator's /verify-user): role, in-game nickname, class role, KV links, DM
 async function applyVerify(env, g, cfg, uid, req, by) {
   const prevOwner = await env.USERS.get(`vchar:${g}:${req.server}:${req.id}`);
-  if (prevOwner && prevOwner !== uid) await env.USERS.delete(`vlink:${g}:${prevOwner}`);       // a moderator moved the character to another account
+  if (prevOwner && prevOwner !== uid) await env.USERS.delete(`vlink:${g}:${prevOwner}`).catch(() => {});       // a moderator moved the character to another account
   const old = JSON.parse(await env.USERS.get(`vlink:${g}:${uid}`) || 'null');
-  if (old && (old.server !== req.server || old.id !== req.id)) await env.USERS.delete(`vchar:${g}:${old.server}:${old.id}`);
+  if (old && (old.server !== req.server || old.id !== req.id)) await env.USERS.delete(`vchar:${g}:${old.server}:${old.id}`).catch(() => {});
   await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${cfg.role}`);
   if (cfg.temp) await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${cfg.temp}`).catch(() => {});   // verified: the temporary role is no longer needed
   await dapi(env, 'PATCH', `/guilds/${g}/members/${uid}`, {nick: req.name}).catch(() => {});   // nickname = in-game name (the class shows as the class role's icon next to it)
@@ -1511,9 +1514,9 @@ async function applyVerify(env, g, cfg, uid, req, by) {
   const cls = Array.isArray(roles) ? roles.filter((r) => CLASS_ROLES.includes(r.name)) : [], want = cls.find((r) => norm(r.name) === norm(req.cls || ''));
   for (const r of cls) if (r !== want && (mem.roles || []).includes(r.id)) await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${r.id}`).catch(() => {});
   if (want) await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${want.id}`).catch(() => {});
-  await env.USERS.put(`vlink:${g}:${uid}`, JSON.stringify({...req, by, t: Date.now()}));
-  await env.USERS.put(`vchar:${g}:${req.server}:${req.id}`, uid);
-  await env.USERS.delete(`vreq:${g}:${uid}`);
+  await env.USERS.put(`vlink:${g}:${uid}`, JSON.stringify({...req, by, t: Date.now()})).catch(() => {});   // best effort: KV can hit its daily write limit
+  await env.USERS.put(`vchar:${g}:${req.server}:${req.id}`, uid).catch(() => {});
+  await env.USERS.delete(`vreq:${g}:${uid}`).catch(() => {});
   await dmUser(env, uid, `✅ You are verified as **${req.name}** (${req.sn}). Welcome!`);
 }
 // /verify-user user:<member> character:<autocomplete>: a moderator links someone's character directly (no screenshot); may move a character from another account
@@ -1541,7 +1544,12 @@ async function verifyDecide(i, env, ctx, reason) {
   const [, act, uid] = (i.data.custom_id || '').split(':'), g = i.guild_id, cfg = JSON.parse(await env.USERS.get('vcfg:' + g) || 'null');
   const pm = BigInt(i.member?.permissions || 0);   // admins, or moderators: Manage Messages / Moderate Members / Kick Members
   if (!isAdmin(i) && !(pm & 0x2000n || pm & (1n << 40n) || pm & 2n)) return oops('Only moderators can approve or reject verifications.');
-  const req = JSON.parse(await env.USERS.get(`vreq:${g}:${uid}`) || 'null');
+  let req = JSON.parse(await env.USERS.get(`vreq:${g}:${uid}`) || 'null');
+  const [, , , bs, bid] = (i.data.custom_id || '').split(':');
+  if (!req && act === 'ok' && bs && bid) {          // card made while KV refused writes: the character is in the button
+    const c = await charProfile(+bs, bid).catch(() => null);
+    if (c?.name) req = {server: +bs, id: bid, name: c.name, cls: c.cls, lv: c.lv, sn: c.serverName, t: Date.now()};
+  }
   if (act === 'no' && reason === undefined) return Response.json({type: 9, data: {custom_id: `vfm:no:${uid}`, title: 'Reject verification', components: [{type: 1, components: [
     {type: 4, custom_id: 'why', label: 'Reason (sent to the user)', style: 2, required: false, max_length: 300, placeholder: 'e.g. the name in the screenshot is not readable'}]}]}});
   const by = userId(i), embed = {...(i.message?.embeds?.[0] || {})};
@@ -1656,7 +1664,7 @@ async function raidReminders(env) {               // cron: tag the sign-ups once
 
 // ---------- entry point ----------
 export default {
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.allSettled([checkAlerts(env).catch((e) => env.USERS.put('alert_err', String(e?.message || e).slice(0, 300))), checkStale(env).catch(() => {}), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => env.USERS.put('sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300))), weekFix(env).catch((e) => env.USERS.put('timer_err', 'weekfix ' + String(e?.stack || e).slice(0, 300))), artChallenge(env).catch((e) => env.USERS.put('art_err', String(e?.stack || e).slice(0, 300))), verifyClean(env).catch(() => {})])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.allSettled([checkAlerts(env).catch((e) => putErr(env, 'alert_err', String(e?.message || e).slice(0, 300))), checkStale(env).catch(() => {}), updateTimers(env).catch((e) => putErr(env, 'timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => putErr(env, 'sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300))), weekFix(env).catch((e) => env.USERS.put('timer_err', 'weekfix ' + String(e?.stack || e).slice(0, 300))), artChallenge(env).catch((e) => putErr(env, 'art_err', String(e?.stack || e).slice(0, 300))), verifyClean(env).catch(() => {})])); },
   async fetch(req, env, ctx) {
     if (new URL(req.url).pathname === '/hit') return hit(req, env);
     if (/^\/join(\/cb)?$/.test(new URL(req.url).pathname)) return join(req, env);
