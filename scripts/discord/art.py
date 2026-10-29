@@ -71,6 +71,7 @@ for c in chans:
     if new and c['name'] != new:
         say(f"  rinomino {c['name']} -> {new}")
         if APPLY: c.update(api('PATCH', f"/channels/{c['id']}", {'name': new}))
+        else: c['name'] = new
 
 # 2) specialty roles (coloured, not shown apart)
 for n, e, color in SPECS:
@@ -88,7 +89,7 @@ for pos, (cat_name, items) in enumerate(LAYOUT):
     cat = find(4, cat_name)
     if not cat:
         say(f'  creo la categoria {cat_name}')
-        cat = api('POST', f'/guilds/{G}/channels', {'name': cat_name, 'type': 4, 'position': pos}) if APPLY else {'id': 'new', 'name': cat_name}
+        cat = api('POST', f'/guilds/{G}/channels', {'name': cat_name, 'type': 4, 'position': pos}) if APPLY else {'id': 'new', 'name': cat_name, 'type': 4}
         chans.append(cat)
     elif APPLY: api('PATCH', f"/channels/{cat['id']}", {'position': pos})
     for k, (kind, name, topic) in enumerate(items):
@@ -108,6 +109,7 @@ for pos, (cat_name, items) in enumerate(LAYOUT):
                     body = {k2: v for k2, v in body.items() if k2 not in ('available_tags', 'default_reaction_emoji')}; body['type'] = 0
                     c = api('POST', f'/guilds/{G}/channels', body)
                 chans.append(c)
+            else: chans.append({'id': 'new', 'name': name, 'type': kind})
         else:
             patch = {'parent_id': cat['id'], 'position': k, **({'topic': topic} if topic and kind in (0, 15) and not c.get('topic') else {}), **({'permission_overwrites': ows} if ows else {})}
             say(f"  sistemo {c['name']} ({cat_name})" + (' · sola lettura' if ro else ''))
