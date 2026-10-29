@@ -1568,7 +1568,7 @@ async function verifyDecide(i, env, ctx, reason) {
     return Response.json({type: 4, data: {flags: 64, content: `✅ <@${uid}> verified as **${req.name}**.`, allowed_mentions: {parse: []}}});
   }
   ctx.waitUntil((async () => {
-    await env.USERS.delete(`vreq:${g}:${uid}`);
+    await env.USERS.delete(`vreq:${g}:${uid}`).catch(() => {});
     await dmUser(env, uid, `❌ Your verification${req ? ` as **${req.name}**` : ''} was not approved.${reason ? `\nReason: ${reason}` : ''}\nYou can try again with \`/verify\` and a screenshot where the name is clearly readable.`);
   })());
   return Response.json({type: 7, data: {embeds: [{...embed, color: 0xf87171, footer: {text: 'Rejected'}, description: `${embed.description || ''}\n\n❌ Rejected by <@${by}>${reason ? `: ${reason}` : ''}`}], components: []}});
