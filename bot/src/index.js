@@ -1494,7 +1494,9 @@ async function dmUser(env, uid, content) {
 // 'Get temporary access' button in #verify (MarchutanEU, 29 Oct): gives the temporary role (vcfg.temp), which opens the server like Marchutans until they verify
 async function tempAccess(i, env, ctx) {
   const g = i.guild_id, cfg = JSON.parse(await env.USERS.get('vcfg:' + g) || 'null'), uid = userId(i);
-  if (!cfg?.temp) return oops('Temporary access is closed: please verify with `/verify`.');
+  const temp = cfg?.temp || (await (await dapi(env, 'GET', `/guilds/${g}/roles`)).json().catch(() => [])).find?.((r) => r.name === 'Temporary Access')?.id;
+  if (!cfg || !temp) return oops('Temporary access is closed: please verify with `/verify`.');
+  cfg.temp = temp;
   if ((i.member?.roles || []).includes(cfg.role)) return oops('You are already verified. 👍');
   if ((i.member?.roles || []).includes(cfg.temp)) return oops('You already have temporary access. Please verify with `/verify` when you can.');
   const r = await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${cfg.temp}`);
@@ -1507,11 +1509,12 @@ async function applyVerify(env, g, cfg, uid, req, by) {
   const old = JSON.parse(await env.USERS.get(`vlink:${g}:${uid}`) || 'null');
   if (old && (old.server !== req.server || old.id !== req.id)) await env.USERS.delete(`vchar:${g}:${old.server}:${old.id}`).catch(() => {});
   await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${cfg.role}`);
-  if (cfg.temp) await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${cfg.temp}`).catch(() => {});   // verified: the temporary role is no longer needed
   await dapi(env, 'PATCH', `/guilds/${g}/members/${uid}`, {nick: req.name}).catch(() => {});   // nickname = in-game name (the class shows as the class role's icon next to it)
   // class role: a role of the server named like the character's class (Templar, Gladiator, … on MarchutanEU); other class roles are removed
   const roles = await (await dapi(env, 'GET', `/guilds/${g}/roles`)).json().catch(() => []), mem = await (await dapi(env, 'GET', `/guilds/${g}/members/${uid}`)).json().catch(() => ({}));
   const cls = Array.isArray(roles) ? roles.filter((r) => CLASS_ROLES.includes(r.name)) : [], want = cls.find((r) => norm(r.name) === norm(req.cls || ''));
+  const tmp = Array.isArray(roles) && roles.find((r) => r.id === cfg.temp || r.name === 'Temporary Access');   // verified: the temporary role goes away
+  if (tmp && (mem.roles || []).includes(tmp.id)) await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${tmp.id}`).catch(() => {});
   for (const r of cls) if (r !== want && (mem.roles || []).includes(r.id)) await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${r.id}`).catch(() => {});
   if (want) await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${want.id}`).catch(() => {});
   await env.USERS.put(`vlink:${g}:${uid}`, JSON.stringify({...req, by, t: Date.now()})).catch(() => {});   // best effort: KV can hit its daily write limit
