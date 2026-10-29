@@ -34,11 +34,10 @@ const commands = [
     {type: 3, name: 'personaggio', description: 'Il tuo personaggio: sceglilo dai suggerimenti (mostrano server e classe)', required: true, autocomplete: true},
     {type: 3, name: 'server', description: 'Server EU, per restringere la ricerca (scegli prima questo)', required: false, autocomplete: true},
     {type: 6, name: 'utente', description: 'Solo admin: collega il personaggio di questo utente', required: false}]},
-  {name: 'verifica', description: 'Verify your character: pick it and attach a screenshot where the name is readable', dm_permission: false,
-    description_localizations: {it: 'Verifica il tuo personaggio: scegli il personaggio e allega uno screenshot dove si legge il nome'}, options: [
-    {type: 3, name: 'personaggio', description: 'Your character: pick it from the suggestions', description_localizations: {it: 'Il tuo personaggio: sceglilo dai suggerimenti'}, required: true, autocomplete: true},
-    {type: 11, name: 'screenshot', description: 'In-game screenshot where your character name is readable', description_localizations: {it: 'Screenshot del gioco dove si legge il nome del personaggio'}, required: true}]},
-  {name: 'verifica-setup', description: 'Admin: turn on screenshot verification on this server (role and channels)', description_localizations: {it: 'Admin: attiva la verifica con screenshot su questo server (ruolo e canali)'}, default_member_permissions: '32', dm_permission: false},
+  {name: 'verify', description: 'Verify your character: pick it and attach a screenshot where the name is readable', dm_permission: false, options: [
+    {type: 3, name: 'character', description: 'Your character: pick it from the suggestions (EU servers)', required: true, autocomplete: true},
+    {type: 11, name: 'screenshot', description: 'In-game screenshot where your character name is readable', required: true}]},
+  {name: 'verify-setup', description: 'Admin: turn on screenshot verification on this server (role and channels)', default_member_permissions: '32', dm_permission: false},
   {name: 'scollega', description: 'Scollega il tuo personaggio dal tuo account Discord', dm_permission: false, options: [
     {type: 6, name: 'utente', description: 'Solo admin: scollega il personaggio di questo utente', required: false}]},
   {name: 'legione', description: 'I membri della Legione (in gioco) collegati con /collega, in ordine di Combat Power', dm_permission: false},

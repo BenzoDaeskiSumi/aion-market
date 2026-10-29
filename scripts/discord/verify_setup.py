@@ -44,9 +44,10 @@ find = lambda suffix: next((c for c in chans if c['type'] == 0 and c['name'].end
 
 # 1) channels
 ch, mod = find('verify'), find('verify-requests')
+FIRST = ch is None   # re-runs only refresh texts/permissions: they never hand the role to people who joined since
 guide = {'embeds': [{'color': 0x34d399, 'title': '✅ Verify your character', 'description': '\n'.join([
-    '**1.** Type `/verifica` in this channel.',
-    '**2.** In **personaggio**, pick your character from the suggestions (they show server and class).',
+    '**1.** Type `/verify` in this channel.',
+    '**2.** In **character**, start typing your name and pick your character from the suggestions (EU servers: they show server, class and level).',
     '**3.** In **screenshot**, attach an in-game image where your **character name** is readable, e.g. the character window (P).',
     '',
     'A moderator checks that the name matches and gives you access to the server. You get a DM as soon as it is done.']),
@@ -55,11 +56,18 @@ if not ch:
     say('  create #✅・verify (top of the server, read-only, instructions)')
     if APPLY:
         ch = api('POST', f'/guilds/{G}/channels', {'name': '✅・verify', 'type': 0, 'position': 0,
-            'topic': 'New here? Verify your character with /verifica to see the rest of the server.',
+            'topic': 'New here? Verify your character with /verify to see the rest of the server.',
             'permission_overwrites': [{'id': G, 'type': 0, 'allow': str(VIEW), 'deny': str(SEND | THREADS)},
                                       {'id': role['id'], 'type': 0, 'allow': '0', 'deny': str(VIEW)},       # verified members don't need it any more
                                       {'id': me['id'], 'type': 1, 'allow': str(VIEW | SEND), 'deny': '0'}]})
         api('POST', f"/channels/{ch['id']}/messages", guide)
+else:   # channel already there: refresh its topic and Mauro's instructions message
+    say('  update #verify: topic + instructions')
+    if APPLY:
+        api('PATCH', f"/channels/{ch['id']}", {'topic': 'New here? Verify your character with /verify to see the rest of the server.'})
+        msgs = [m for m in api('GET', f"/channels/{ch['id']}/messages?limit=50") if m['author']['id'] == me['id']]
+        if msgs: api('PATCH', f"/channels/{ch['id']}/messages/{msgs[-1]['id']}", guide)
+        else: api('POST', f"/channels/{ch['id']}/messages", guide)
 if not mod:
     say('  create #🛡️・verify-requests (Admins, Moderator, Mauro)')
     if APPLY:
@@ -88,7 +96,7 @@ while True:
     if len(page) < 1000: break
     after = page[-1]['user']['id']
 humans = [m for m in members if not m['user'].get('bot')]
-todo = [m for m in humans if role['id'] not in m['roles']]
+todo = [m for m in humans if role['id'] not in m['roles']] if FIRST else []
 say(f'  members: {len(humans)} · without {ROLE}: {len(todo)} -> they get it now (current members keep seeing everything)')
 for m in todo:
     say('    ·', m.get('nick') or m['user'].get('global_name') or m['user']['username'])

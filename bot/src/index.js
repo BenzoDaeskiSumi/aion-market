@@ -736,8 +736,8 @@ async function personaggio(i, env, ctx) {
   })());
   return Response.json({type: 5});                                     // "thinking…", replaced by the card
 }
-async function charChoices(q, srv) {
-  if (q.length < 2) return [{name: 'Scrivi almeno 2 lettere del nome', value: q || '-'}];
+async function charChoices(q, srv, en) {
+  if (q.length < 2) return [{name: en ? 'Type at least 2 letters of the name' : 'Scrivi almeno 2 lettere del nome', value: q || '-'}];
   const [r, meta] = await Promise.all([charSearch(q, srv ? +srv : null, 1, 25), charMeta().catch(() => ({classes: {}}))]);
   return r.list.map((c) => ({name: `${c.name} · ${c.serverName} · ${meta.classes[c.pcId] || ''} Lv ${c.level}`.slice(0, 100), value: `${c.server}:${c.id}`.slice(0, 100)}));
 }
@@ -1402,13 +1402,13 @@ async function artChallenge(env, force) {
   await env.USERS.put('art:last', today); await env.USERS.put('art:n', String(n + 1));
 }
 
-// ---------- screenshot verification for any server (built for the Marchutan community server): /verifica-setup, /verifica, ✅/❌ by a moderator ----------
+// ---------- screenshot verification for any server (built for the Marchutan community server): /verify-setup, /verify, ✅/❌ by a moderator ----------
 // KV vcfg:<guild> = {role, ch, mod}; vreq:<guild>:<uid> = pending request; vlink:<guild>:<uid> = {server, id, name, by, t}; vchar:<guild>:<server>:<id> = uid.
 // Kept apart from the Legione's link:/linkc: keys, so verifying on another server never touches the Legione's links.
 const VIEWB = 0x400, SENDB = 0x800;
 const verifyGuide = () => ({embeds: [{color: 0x34d399, title: '✅ Verify your character', description: [
-  '**1.** Type `/verifica` in this channel.',
-  '**2.** In **personaggio**, pick your character from the suggestions (they show server and class).',
+  '**1.** Type `/verify` in this channel.',
+  '**2.** In **character**, start typing your name and pick your character from the suggestions (EU servers: they show server, class and level).',
   '**3.** In **screenshot**, attach an in-game image where your **character name** is readable, e.g. the character window (P).',
   '',
   'A moderator checks that the name matches and gives you access to the server. You get a DM as soon as it is done.',
@@ -1417,14 +1417,14 @@ async function verifySetup(i, env) {
   if (!isAdmin(i)) return oops('Only admins can set up verification.');
   const g = i.guild_id, me = await (await dapi(env, 'GET', '/users/@me')).json();
   const roles = await (await dapi(env, 'GET', `/guilds/${g}/roles`)).json(), chans = await (await dapi(env, 'GET', `/guilds/${g}/channels`)).json();
-  const role = roles.find((r) => r.name === 'Verificato') || await (await dapi(env, 'POST', `/guilds/${g}/roles`, {name: 'Verificato', color: 0x34d399, hoist: false, mentionable: false, permissions: '0'})).json();
+  const role = roles.find((r) => r.name === 'Verified') || await (await dapi(env, 'POST', `/guilds/${g}/roles`, {name: 'Verified', color: 0x34d399, hoist: false, mentionable: false, permissions: '0'})).json();
   const mods = roles.filter((r) => BigInt(r.permissions) & (8n | 32n | 0x10000000n) && !r.managed).map((r) => r.id);
-  let ch = chans.find((c) => c.type === 0 && /verifica$/.test(c.name));
-  if (!ch) ch = await (await dapi(env, 'POST', `/guilds/${g}/channels`, {name: '✅・verifica', type: 0, position: 0,
+  let ch = chans.find((c) => c.type === 0 && /verif(y|ica)$/.test(c.name));
+  if (!ch) ch = await (await dapi(env, 'POST', `/guilds/${g}/channels`, {name: '✅・verify', type: 0, position: 0,
     topic: 'Link your character and send a screenshot: a moderator checks it and gives you access.',
     permission_overwrites: [{id: g, type: 0, allow: String(VIEWB), deny: String(SENDB)}, {id: me.id, type: 1, allow: String(VIEWB | SENDB), deny: '0'}]})).json();
-  let mod = chans.find((c) => c.type === 0 && /verifiche-mod$/.test(c.name));
-  if (!mod) mod = await (await dapi(env, 'POST', `/guilds/${g}/channels`, {name: '🛡️・verifiche-mod', type: 0,
+  let mod = chans.find((c) => c.type === 0 && /(verify-requests|verifiche-mod)$/.test(c.name));
+  if (!mod) mod = await (await dapi(env, 'POST', `/guilds/${g}/channels`, {name: '🛡️・verify-requests', type: 0,
     topic: 'Verification requests: check that the name in the screenshot matches the character, then ✅ or ❌.',
     permission_overwrites: [{id: g, type: 0, allow: '0', deny: String(VIEWB)}, {id: me.id, type: 1, allow: String(VIEWB | SENDB), deny: '0'},
       ...mods.map((id) => ({id, type: 0, allow: String(VIEWB | SENDB), deny: '0'}))]})).json();
@@ -1436,8 +1436,8 @@ async function verifySetup(i, env) {
 }
 async function verifyRequest(i, env, ctx) {
   const g = i.guild_id, cfg = JSON.parse(await env.USERS.get('vcfg:' + g) || 'null');
-  if (!cfg) return oops('Verification is not active on this server (an admin has to run `/verifica-setup`).');
-  const uid = userId(i), [server, id] = String(opt(i.data, 'personaggio')?.value || '').split(':');
+  if (!cfg) return oops('Verification is not active on this server (an admin has to run `/verify-setup`).');
+  const uid = userId(i), [server, id] = String(opt(i.data, 'character')?.value || '').split(':');
   if (!/^\d{4}$/.test(server || '') || !id) return oops('Pick your character from the **suggestions** that appear while you type the name.');
   const attId = opt(i.data, 'screenshot')?.value, att = i.data.resolved?.attachments?.[attId];
   if (!att || !/^image\//.test(att.content_type || '')) return oops('Attach a **screenshot** (image) where your character name is readable.');
@@ -1483,7 +1483,7 @@ async function verifyDecide(i, env, ctx, reason) {
   }
   ctx.waitUntil((async () => {
     await env.USERS.delete(`vreq:${g}:${uid}`);
-    await dmUser(env, uid, `❌ Your verification${req ? ` as **${req.name}**` : ''} was not approved.${reason ? `\nReason: ${reason}` : ''}\nYou can try again with \`/verifica\` and a screenshot where the name is clearly readable.`);
+    await dmUser(env, uid, `❌ Your verification${req ? ` as **${req.name}**` : ''} was not approved.${reason ? `\nReason: ${reason}` : ''}\nYou can try again with \`/verify\` and a screenshot where the name is clearly readable.`);
   })());
   return Response.json({type: 7, data: {embeds: [{...embed, color: 0xf87171, footer: {text: 'Rejected'}, description: `${embed.description || ''}\n\n❌ Rejected by <@${by}>${reason ? `: ${reason}` : ''}`}], components: []}});
 }
@@ -1606,7 +1606,7 @@ export default {
           return Response.json({type: 8, data: {choices: list.filter((x) => x.name.toLowerCase().includes(q2)).slice(0, 25)
             .map((x) => ({name: `${x.name} · ${x.race === 1 ? 'Elyos' : 'Asmodian'}`, value: String(x.id)}))}});
         }
-        if (i.data.name === 'verifica') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), null)}});
+        if (i.data.name === 'verify') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), null, true)}});
         if (i.data.name === 'collega') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), /^\d{4}$/.test(String(opt(i.data, 'server')?.value || '')) ? opt(i.data, 'server').value : null)}});
         if (i.data.name === 'personaggio') {
           const srv = /^\d{4}$/.test(String(opt(i.data, 'server')?.value || '')) ? opt(i.data, 'server').value : null;
@@ -1635,8 +1635,8 @@ export default {
         if (i.data.name === 'aiuto') return aiuto(env);
         if (i.data.name === 'raid') return await raidCreate(i, env);
         if (i.data.name === 'collega') return await collega(i, env, ctx);
-        if (i.data.name === 'verifica') return await verifyRequest(i, env, ctx);
-        if (i.data.name === 'verifica-setup') return await verifySetup(i, env);
+        if (i.data.name === 'verify') return await verifyRequest(i, env, ctx);
+        if (i.data.name === 'verify-setup') return await verifySetup(i, env);
         if (i.data.name === 'scollega') return await scollega(i, env);
         if (i.data.name === 'legione') return await legione(i, env, ctx);
         if (i.data.name === 'personaggio') return await personaggio(i, env, ctx);

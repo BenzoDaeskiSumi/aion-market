@@ -232,15 +232,15 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   Mauro's Aion slash commands are global, so they also show there (hide them in that server's Integrations settings).
 
 ## Screenshot verification (on Mauro: the user couldn't reset a new bot's token; the separate verify/ Worker was removed again)
-- /verifica-setup (admin, in that server): creates role 'Verificato', '✅・verifica' (everyone reads, can't write; instructions message) and '🛡️・verifiche-mod'
-  (hidden; admin roles + Mauro). KV vcfg:<guild> = {role, ch, mod}. It does NOT hide the rest of the server (the admins decide: remove View Channels from @everyone, give it to Verificato).
-- /verifica personaggio:<autocomplete server:id> screenshot:<attachment>: Mauro posts the official character (name, class, level, server, legion, CP, avatar) + the screenshot
+- /verify-setup (admin, in that server; English only, renamed from /verifica on 29 Oct): creates role 'Verified', '✅・verify' (everyone reads, can't write; instructions message) and '🛡️・verify-requests'
+  (hidden; admin roles + Mauro). KV vcfg:<guild> = {role, ch, mod}. It does NOT hide the rest of the server (the admins decide: remove View Channels from @everyone, give it to the verified role).
+- /verify character:<autocomplete server:id, EU servers> screenshot:<attachment>: Mauro posts the official character (name, class, level, server, legion, CP, avatar) + the screenshot
   in the mod channel with ✅ vf:ok:<uid> / ❌ vf:no:<uid> (modal vfm: with an optional reason). Approve = role + nick + DM; reject = DM with reason.
   KV vreq:<g>:<uid> (14 days), vlink:<g>:<uid>, vchar:<g>:<server>:<id> (one character per account), separate from the Legione's link:/linkc:.
   Moderators = Administrator / Manage Server / Manage Roles / Manage Messages / Moderate Members / Kick Members. No AI check yet (would need an API key secret). In privacy.html.
 
 - Live on MarchutanEU AION2 (guild 1564968231410864160, English server): set up by scripts/discord/verify_setup.py (mode vsetup-plan/apply), texts in English
-  (commands have Italian description_localizations). Approval gives the existing role 'Marchutans'; #✅・verify (top, read-only, hidden from Marchutans) and
+  (commands /verify and /verify-setup, English only, no Italian localizations). Approval gives the existing role 'Marchutans'; #✅・verify (top, read-only, hidden from Marchutans) and
   #🛡️・verify-requests (Admins, Moderator). All categories but 'News' are hidden from @everyone and visible to Marchutans; current members all got Marchutans.
   Carl-bot was giving Marchutans to everyone (autorole / reaction role, seen in the audit log): that must be switched off on carl.gg, otherwise nobody needs to verify.
 
