@@ -247,6 +247,7 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   #🏰・legion is a FORUM since 29 Oct (Faction-Leaders create posts, Marchutans read/reply, tags Recruiting/Event/News/Info); the old text channel is '🗄️・legion-archive' (read-only).
   Language channels in '🌍 INTERNATIONAL CHANNELS' (hidden from @everyone, Marchutans see it): 🪆 russian, 💃 spanish, 🥐 french, 🥨 german, 🥟 polish, 🍕 italian — typical emojis, not flags (Windows Discord shows flags as letters; user's choice).
   '🎙️ Podcast' voice (top of VOICE CHANNELS, 29 Oct): Marchutans connect and listen only, role 'Caller' (made by Mauro, separate from Shotcallers) speaks/video/priority, Admins/Moderator speak + mute/move.
+  Server emojis (29 Oct): :gladiator: … :chanter: (official class icons, NCSOFT CDN), :hidden_cube: (ours), :aion_market: (site logo).
   Channel look: scripts/discord/mstyle.py (mode mstyle-plan/apply): same channels renamed '📢 NEWS' / '📣・announcements' / voice '🌌 Abyss' (light style, user's choice).
   Carl-bot was giving Marchutans to everyone (autorole / reaction role, seen in the audit log): that must be switched off on carl.gg, otherwise nobody needs to verify.
 
