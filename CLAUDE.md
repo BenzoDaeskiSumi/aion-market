@@ -252,7 +252,7 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   #🛡️・verify-requests (Admins, Moderator), #🆘・verify-help (under #verify: @everyone can write, Marchutans can't see it, Admins/Moderator answer; slowmode 30 s). All categories but 'News' are hidden from @everyone and visible to Marchutans; current members all got Marchutans.
   29 Oct: scripts/discord/vreset.py removed Marchutans from 141 unverified members (kept: verified, bots, Admins/Moderator; ids in KV vreset:<g>) and made
   #📢・verify-now (only role-less members see it; Admins/Moderator write and @everyone-ping it). Mode vresetfix-apply = nick + class role for already-verified members; vresetcls-apply = unverified members lose class roles (53 removed on 29 Oct).
-  #🏰・legion is a FORUM since 29 Oct (Faction-Leaders create posts, Marchutans read/reply, tags Recruiting/Event/News/Info); the old text channel is '🗄️・legion-archive' (read-only).
+  #🏰・legion is a FORUM since 29 Oct (only role 'Legion Leader' + Admins/Moderator post and reply; Marchutans/Temporary Access/Faction-Leaders read and react; tags Recruiting/Event/News/Info); the old text channel is '🗄️・legion-archive' (read-only).
   Language channels in '🌍 INTERNATIONAL CHANNELS' (hidden from @everyone, Marchutans see it): 🪆 russian, 💃 spanish, 🥐 french, 🥨 german, 🥟 polish, 🍕 italian — typical emojis, not flags (Windows Discord shows flags as letters; user's choice).
   '🎙️ Podcast' voice (Caller speaks, others listen) was made 29 Oct and later deleted by someone on the server; role 'Caller' still exists.
   Class = ROLE ICON (server is boost level 3): each class role has the official class icon, Discord shows it right after the name; nicknames are the plain
@@ -260,6 +260,7 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   Server emojis (29 Oct): :gladiator: … :chanter: (official class icons, NCSOFT CDN), :hidden_cube: (ours), :aion_market: (site logo).
   29 Oct 20:05: 26 channels had their own permissions with @everyone able to view (unverified saw them): all synced to their category
   (legion forum/archive keep their extras, View copied from the category). Channels outside categories: verify*, staff/logs/roles (Faction-Leaders see staff/logs/roles).
+  Category 👑 LEADERS (29 Oct): 👑・leaders-chat + 👑 Leaders voice, only Admins, Moderator, Legion Leader, Faction-Leaders (@everyone hidden).
   Channel look: scripts/discord/mstyle.py (mode mstyle-plan/apply): same channels renamed '📢 NEWS' / '📣・announcements' / voice '🌌 Abyss' (light style, user's choice).
   Carl-bot was giving Marchutans to everyone (autorole / reaction role, seen in the audit log): that must be switched off on carl.gg, otherwise nobody needs to verify.
 
