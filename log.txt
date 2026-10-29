@@ -1,0 +1,199 @@
+[90mDownloading Chrome Headless Shell https://www.remotion.dev/chrome-headless-shell[39m
+Downloading from: https://remotion.media/chromium-headless-shell-linux-x64-157.0.8080.0.zip?clear
+Getting Headless Shell - 9.6 Mb/98.9 Mb
+Getting Headless Shell - 19.1 Mb/98.9 Mb
+Getting Headless Shell - 28.6 Mb/98.9 Mb
+Getting Headless Shell - 38.2 Mb/98.9 Mb
+Getting Headless Shell - 47.7 Mb/98.9 Mb
+Getting Headless Shell - 57.3 Mb/98.9 Mb
+Getting Headless Shell - 66.8 Mb/98.9 Mb
+Getting Headless Shell - 76.4 Mb/98.9 Mb
+Getting Headless Shell - 85.9 Mb/98.9 Mb
+Getting Headless Shell - 95.5 Mb/98.9 Mb
+Got Headless Shell
+Bundling 6%
+Bundling 21%
+Bundling 32%
+Bundling 43%
+Bundling 54%
+Bundling 65%
+Bundling 71%
+Bundling 76%
+Bundling 81%
+Bundling 87%
+Bundling 92%
+Bundling 98%
+Bundling 100%
+Getting composition
+⚡️ Cached bundle. Subsequent renders will be faster.
+[90mComposition          MarketIntro[39m
+[90mFormat               jpeg[39m
+[90mOutput               out/f40.jpg[39m
+Rendered 0/1
+Rendered 0/1
+Rendered 1/1
+[34m+                    out/f40.jpg[39m
+Bundling 6%
+Bundling 19%
+Bundling 62%
+Bundling 69%
+Bundling 74%
+Bundling 80%
+Bundling 85%
+Bundling 90%
+Bundling 95%
+Bundling 100%
+Getting composition
+[90mComposition          MarketIntro[39m
+[90mFormat               jpeg[39m
+[90mOutput               out/f230.jpg[39m
+Rendered 0/1
+Rendered 0/1
+Rendered 1/1
+[34m+                    out/f230.jpg[39m
+Bundling 6%
+Bundling 20%
+Bundling 62%
+Bundling 69%
+Bundling 74%
+Bundling 80%
+Bundling 85%
+Bundling 90%
+Bundling 95%
+Bundling 100%
+Getting composition
+[90mComposition          MarketIntro[39m
+[90mFormat               jpeg[39m
+[90mOutput               out/f520.jpg[39m
+Rendered 0/1
+Rendered 0/1
+Rendered 1/1
+[34m+                    out/f520.jpg[39m
+Bundling 6%
+Bundling 19%
+Bundling 61%
+Bundling 69%
+Bundling 74%
+Bundling 80%
+Bundling 85%
+Bundling 90%
+Bundling 95%
+Bundling 100%
+Getting composition
+[90mComposition          MarketIntro[39m
+[90mFormat               jpeg[39m
+[90mOutput               out/f760.jpg[39m
+Rendered 0/1
+Rendered 0/1
+Rendered 1/1
+[34m+                    out/f760.jpg[39m
+Bundling 6%
+Bundling 19%
+Bundling 62%
+Bundling 69%
+Bundling 74%
+Bundling 80%
+Bundling 85%
+Bundling 90%
+Bundling 95%
+Bundling 100%
+Getting composition
+[90mComposition          MarketIntro[39m
+[90mFormat               jpeg[39m
+[90mOutput               out/f930.jpg[39m
+Rendered 0/1
+Rendered 0/1
+Rendered 1/1
+[34m+                    out/f930.jpg[39m
+Bundling 6%
+Bundling 19%
+Bundling 61%
+Bundling 69%
+Bundling 74%
+Bundling 80%
+Bundling 85%
+Bundling 90%
+Bundling 95%
+Bundling 100%
+Getting composition
+[90mComposition          MarketIntro[39m
+[90mFormat               jpeg[39m
+[90mOutput               out/f1190.jpg[39m
+Rendered 0/1
+Rendered 0/1
+Rendered 1/1
+[34m+                    out/f1190.jpg[39m
+Bundling 6%
+Bundling 19%
+Bundling 62%
+Bundling 69%
+Bundling 74%
+Bundling 80%
+Bundling 85%
+Bundling 90%
+Bundling 95%
+Bundling 100%
+Getting composition
+[90mComposition          MarketIntro[39m
+[90mFormat               jpeg[39m
+[90mOutput               out/f1300.jpg[39m
+Rendered 0/1
+Rendered 0/1
+Rendered 1/1
+[34m+                    out/f1300.jpg[39m
+Bundling 6%
+Bundling 19%
+Bundling 61%
+Bundling 69%
+Bundling 74%
+Bundling 80%
+Bundling 85%
+Bundling 90%
+Bundling 95%
+Bundling 100%
+Getting composition
+[90mComposition          MarketIntro[39m
+[90mFormat               jpeg[39m
+[90mOutput               out/f1480.jpg[39m
+Rendered 0/1
+Rendered 0/1
+Rendered 1/1
+[34m+                    out/f1480.jpg[39m
+Bundling 6%
+Bundling 19%
+Bundling 61%
+Bundling 69%
+Bundling 74%
+Bundling 80%
+Bundling 85%
+Bundling 90%
+Bundling 95%
+Bundling 100%
+Getting composition
+[90mComposition          MarketIntro[39m
+[90mFormat               jpeg[39m
+[90mOutput               out/f1640.jpg[39m
+Rendered 0/1
+Rendered 0/1
+Rendered 1/1
+[34m+                    out/f1640.jpg[39m
+Rendered 1667/1680, time remaining: 0s
+Rendered 1668/1680, time remaining: 0s
+Rendered 1669/1680, time remaining: 0s
+Rendered 1670/1680, time remaining: 0s
+Rendered 1671/1680, time remaining: 0s
+Rendered 1672/1680, time remaining: 0s
+Rendered 1673/1680, time remaining: 0s
+Rendered 1673/1680, time remaining: 0s
+Rendered 1674/1680, time remaining: 0s
+Rendered 1675/1680, time remaining: 0s
+Rendered 1676/1680, time remaining: 0s
+Rendered 1677/1680, time remaining: 0s
+Rendered 1678/1680, time remaining: 0s
+Rendered 1679/1680, time remaining: 0s
+Encoded 1298/1680
+Encoded 1309/1680
+Encoded 1341/1680
+Encoded 1344/1680
+Encoded 1680/1680
+[34m+                    out/aion-market-intro.mp4[39m [90m15 MB[39m
