@@ -987,6 +987,8 @@ async function join(req, env) {
 const LEGION = {name: 'Legione', server: 2305};      // in-game legion (profile.regionName in the official data) on Marchutan
 const CLASS_ROLES = ['Gladiator', 'Templar', 'Assassin', 'Ranger', 'Sorcerer', 'Spiritmaster', 'Cleric', 'Chanter'];
 const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z]/g, '');
+// MarchutanEU nicknames/channels: Unicode class emojis (custom server emojis can't go in nicknames or channel names)
+const CLASS_EMO = {templar: '🛡️', gladiator: '⚔️', spiritmaster: '👻', cleric: '✨', ranger: '🏹', sorcerer: '🔥', assassin: '🗡️', chanter: '🎶'};
 const cpShort = (v) => (!v ? '' : v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v >= 1e4 ? `${Math.round(v / 1e3)}k` : kin(v));
 async function linkOf(env, uid) { return JSON.parse(await env.USERS.get('link:' + uid) || 'null'); }
 async function charProfile(server, id) {        // one official call (profile only): name, class, CP, legion
@@ -1489,7 +1491,7 @@ async function applyVerify(env, g, cfg, uid, req, by) {
   const old = JSON.parse(await env.USERS.get(`vlink:${g}:${uid}`) || 'null');
   if (old && (old.server !== req.server || old.id !== req.id)) await env.USERS.delete(`vchar:${g}:${old.server}:${old.id}`);
   await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${cfg.role}`);
-  await dapi(env, 'PATCH', `/guilds/${g}/members/${uid}`, {nick: req.name}).catch(() => {});   // Discord nickname = in-game name
+  await dapi(env, 'PATCH', `/guilds/${g}/members/${uid}`, {nick: `${CLASS_EMO[norm(req.cls)] ? CLASS_EMO[norm(req.cls)] + ' ' : ''}${req.name}`.slice(0, 32)}).catch(() => {});   // nickname = class emoji + in-game name
   // class role: a role of the server named like the character's class (Templar, Gladiator, … on MarchutanEU); other class roles are removed
   const roles = await (await dapi(env, 'GET', `/guilds/${g}/roles`)).json().catch(() => []), mem = await (await dapi(env, 'GET', `/guilds/${g}/members/${uid}`)).json().catch(() => ({}));
   const cls = Array.isArray(roles) ? roles.filter((r) => CLASS_ROLES.includes(r.name)) : [], want = cls.find((r) => norm(r.name) === norm(req.cls || ''));
