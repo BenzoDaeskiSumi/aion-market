@@ -1,11 +1,17 @@
-import json, os, urllib.request
+"""MarchutanEU: language channels get an emoji that Windows also draws (flags show as letters there): the user picked 'typical' emojis."""
+import json, os, re, time, urllib.request
 T, G = os.environ['DISCORD_TOKEN'], '1564968231410864160'
 def api(m, p, b=None):
-    return json.load(urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v10' + p, method=m, data=json.dumps(b).encode() if b is not None else None,
-        headers={'Authorization': f'Bot {T}', 'User-Agent': 'DiscordBot (aion-market, 1)', 'Content-Type': 'application/json', 'X-Audit-Log-Reason': 'German channel'})))
+    with urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v10' + p, method=m, data=json.dumps(b).encode() if b is not None else None,
+            headers={'Authorization': f'Bot {T}', 'User-Agent': 'DiscordBot (aion-market, 1)', 'Content-Type': 'application/json', 'X-Audit-Log-Reason': 'Language emojis'}), timeout=60) as r:
+        time.sleep(0.5); return json.load(r)
+E = [('russian', '🪆'), ('spanish', '💃'), ('french', '🥐'), ('german', '🥨'), ('polish', '🥟'), ('italian', '🍕'), ('portugu', '⚽'), ('turkish', '🧿'), ('dutch', '🌷'),
+     ('greek', '🏛️'), ('romanian', '🧛'), ('hungar', '🌶️'), ('czech', '🍺'), ('swed', '🫎'), ('ukrain', '🌻')]
 ch = api('GET', f'/guilds/{G}/channels'); cat = next(c for c in ch if c['type'] == 4 and 'NON-ENGLISH' in c['name'])
-if any('german' in c['name'] for c in ch): raise SystemExit(print('a german channel already exists'))
-fr = next(c for c in ch if c.get('parent_id') == cat['id'] and 'french' in c['name'])
-de = api('POST', f'/guilds/{G}/channels', {'name': '🇩🇪・german-deutsch', 'type': 0, 'parent_id': cat['id'], 'position': fr['position'] + 1,
-    'topic': 'Deutschsprachiger Chat', 'permission_overwrites': cat['permission_overwrites']})
-print('created', de['id'], de['name'])
+for c in ch:
+    if c.get('parent_id') != cat['id']: continue
+    base = c['name'].split('・', 1)[-1]; base = re.sub(r'^[^\w]+', '', base)
+    e = next((e for k, e in E if k in base.lower()), None)
+    if not e: print('  no emoji for', c['name']); continue
+    new = f'{e}・{base}'
+    if new != c['name']: api('PATCH', f"/channels/{c['id']}", {'name': new}); print(f"  {c['name']} -> {new}")
