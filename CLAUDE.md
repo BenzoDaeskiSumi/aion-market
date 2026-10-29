@@ -231,10 +231,13 @@ To limit the bot to one channel: Discord server settings → Integrations → th
 - Worker artChallenge(): every Monday 10:00 Europe/Rome a brief from ART_PROMPTS in #sfida-settimanale + a thread (KV art:n, art:last, cfg:art_channel, art_err).
   Mauro's Aion slash commands are global, so they also show there (hide them in that server's Integrations settings).
 
-## Screenshot verification for other servers (built for the Marchutan community server; Mauro not added there yet on 29 Oct)
+## Marchutan verification bot (its own Discord application, NOT Mauro — the user asked)
+- verify/ = separate Cloudflare Worker 'marchutan-verifica' (verify/src/index.js: helpers copied from bot/src/index.js — keep charProfile/charSearch in sync; verify/register.mjs),
+  deployed by .github/workflows/verify.yml with repo secrets VERIFY_APP_ID, VERIFY_PUBLIC_KEY, VERIFY_DISCORD_TOKEN (+ the Cloudflare ones); KV namespace 'marchutan-verifica-kv'.
+  Its URL https://marchutan-verifica.aion2-market.workers.dev goes in that app's Interactions Endpoint URL.
 - /verifica-setup (admin, in that server): creates role 'Verificato', '✅・verifica' (everyone reads, can't write; instructions message) and '🛡️・verifiche-mod'
-  (hidden; admin roles + Mauro). KV vcfg:<guild> = {role, ch, mod}. It does NOT hide the rest of the server (the admins decide: remove View Channels from @everyone, give it to Verificato).
-- /verifica personaggio:<autocomplete server:id> screenshot:<attachment>: Mauro posts the official character (name, class, level, server, legion, CP, avatar) + the screenshot
+  (hidden; admin roles + the bot). KV vcfg:<guild> = {role, ch, mod}. It does NOT hide the rest of the server (the admins decide: remove View Channels from @everyone, give it to Verificato).
+- /verifica personaggio:<autocomplete server:id> screenshot:<attachment>: the bot posts the official character (name, class, level, server, legion, CP, avatar) + the screenshot
   in the mod channel with ✅ vf:ok:<uid> / ❌ vf:no:<uid> (modal vfm: with an optional reason). Approve = role + nick + DM; reject = DM with reason.
-  KV vreq:<g>:<uid> (14 days), vlink:<g>:<uid>, vchar:<g>:<server>:<id> (one character per account) — separate from the Legione's link:/linkc:.
+  KV vreq:<g>:<uid> (14 days), vlink:<g>:<uid>, vchar:<g>:<server>:<id> (one character per account).
   Moderators = Administrator / Manage Server / Manage Roles / Manage Messages / Moderate Members / Kick Members. No AI check yet (would need an API key secret).
