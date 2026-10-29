@@ -6,6 +6,12 @@ const LOCALE = {it: 'it-IT', en: 'en-GB', es: 'es-ES', fr: 'fr-FR'}[LANG];
 document.documentElement.lang = LANG;
 const EN = {
   // home page (index.html)
+  "Scrivi almeno 2 lettere del nome qui sopra per cercare un personaggio EU.": "Type at least 2 letters of the name above to search an EU character.",
+  "Cerca un personaggio e cliccalo per vedere Gear Score, Combat Power, equipaggiamento e Daevanion.": "Search a character and click it to see Gear Score, Combat Power, equipment and Daevanion.",
+  "Cerca un personaggio EU: Gear Score, Combat Power, equipaggiamento e Daevanion.": "Look up any EU character: Gear Score, Combat Power, equipment and Daevanion.",
+  "Il bot Mauro porta i dati del sito su Discord.": "The Mauro bot brings the site's data to Discord.",
+  "Preferiti e avvisi": "Favourites and alerts",
+  "Entra con Discord dal Market: i tuoi preferiti e gli avvisi di prezzo ti seguono su ogni dispositivo, e Mauro ti avvisa quando un oggetto arriva al prezzo che vuoi.": "Log in with Discord from the Market: your favourites and price alerts follow you on every device, and Mauro tells you when an item reaches your price.",
   "prezzi delle": "prices at",
   "cambia server nel Market": "change server in the Market",
   "Mappa": "Map",
@@ -283,6 +289,12 @@ const EN_RE = [
 ];
 const ES = {
   // home page (index.html)
+  "Scrivi almeno 2 lettere del nome qui sopra per cercare un personaggio EU.": "Escribe al menos 2 letras del nombre arriba para buscar un personaje de la UE.",
+  "Cerca un personaggio e cliccalo per vedere Gear Score, Combat Power, equipaggiamento e Daevanion.": "Busca un personaje y haz clic para ver Gear Score, Combat Power, equipo y Daevanion.",
+  "Cerca un personaggio EU: Gear Score, Combat Power, equipaggiamento e Daevanion.": "Busca un personaje de la UE: Gear Score, Combat Power, equipo y Daevanion.",
+  "Il bot Mauro porta i dati del sito su Discord.": "El bot Mauro lleva los datos del sitio a Discord.",
+  "Preferiti e avvisi": "Favoritos y avisos",
+  "Entra con Discord dal Market: i tuoi preferiti e gli avvisi di prezzo ti seguono su ogni dispositivo, e Mauro ti avvisa quando un oggetto arriva al prezzo che vuoi.": "Entra con Discord desde el Market: tus favoritos y avisos de precio te siguen en cada dispositivo, y Mauro te avisa cuando un objeto llega a tu precio.",
   "prezzi delle": "precios de las",
   "cambia server nel Market": "cambia de servidor en el Market",
   "Mappa": "Mapa",
@@ -551,6 +563,12 @@ const ES_RE = [
 
 const FR = {
   // home page (index.html)
+  "Scrivi almeno 2 lettere del nome qui sopra per cercare un personaggio EU.": "Tapez au moins 2 lettres du nom ci-dessus pour chercher un personnage EU.",
+  "Cerca un personaggio e cliccalo per vedere Gear Score, Combat Power, equipaggiamento e Daevanion.": "Cherchez un personnage et cliquez dessus pour voir Gear Score, Combat Power, équipement et Daevanion.",
+  "Cerca un personaggio EU: Gear Score, Combat Power, equipaggiamento e Daevanion.": "Cherchez un personnage EU : Gear Score, Combat Power, équipement et Daevanion.",
+  "Il bot Mauro porta i dati del sito su Discord.": "Le bot Mauro apporte les données du site sur Discord.",
+  "Preferiti e avvisi": "Favoris et alertes",
+  "Entra con Discord dal Market: i tuoi preferiti e gli avvisi di prezzo ti seguono su ogni dispositivo, e Mauro ti avvisa quando un oggetto arriva al prezzo che vuoi.": "Connectez-vous avec Discord depuis le Market : vos favoris et alertes de prix vous suivent sur chaque appareil, et Mauro vous prévient quand un objet atteint votre prix.",
   "prezzi delle": "prix de",
   "cambia server nel Market": "changez de serveur dans le Market",
   "Mappa": "Carte",

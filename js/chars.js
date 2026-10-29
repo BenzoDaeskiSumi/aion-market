@@ -117,9 +117,9 @@ function sparkline(points, label, goals) {
 function drawChars() {
   const tb = document.getElementById('chrows'), more = document.getElementById('charmore');
   const msg = (t) => { const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 3; td.className = 'empty'; td.textContent = t; tr.appendChild(td); tb.replaceChildren(tr); more.hidden = true; };
-  loadCharMeta(); loadLegion();
+  loadCharMeta();
   const key = charKey(), q = key.split('|')[0];
-  if (q.length < 2) { CRES = null; return drawRoster(tb, more); }
+  if (q.length < 2) { CRES = null; document.querySelector('#chartab thead tr').replaceChildren(...['Personaggio', 'Classe', 'Livello'].map((t) => Object.assign(document.createElement('th'), {textContent: t}))); return msg('Scrivi almeno 2 lettere del nome qui sopra per cercare un personaggio EU.'); }
   document.querySelector('#chartab thead tr').replaceChildren(...['Personaggio', 'Classe', 'Livello'].map((t) => Object.assign(document.createElement('th'), {textContent: t})));
   if (!CRES || CRES.key !== key) { clearTimeout(CTIMER); CTIMER = setTimeout(() => runCharSearch(1), 350); CRES = {key, loading: true}; }
   if (CRES.loading) return msg('Cerco…');
@@ -151,7 +151,7 @@ function drawCharDetail() {
   const note = document.getElementById('hist-note');
   document.getElementById('hist-title').textContent = CPICK ? 'Personaggio' : 'Personaggi';
   pick.hidden = facts.hidden = cd.hidden = true;
-  if (!CPICK) { note.textContent = 'Clicca un membro della Legione, oppure cerca un personaggio, per vedere Gear Score, Combat Power, equipaggiamento e Daevanion.'; return; }
+  if (!CPICK) { note.textContent = 'Cerca un personaggio e cliccalo per vedere Gear Score, Combat Power, equipaggiamento e Daevanion.'; return; }
   const d = charInfo(CPICK);
   if (!d) { note.textContent = 'Caricamento…'; return; }
   if (d.error || !d.profile) { note.textContent = 'Non riesco a leggere questo personaggio dal sito ufficiale. Riprova tra poco.'; return; }

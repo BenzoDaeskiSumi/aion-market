@@ -1,4 +1,0 @@
-# Marchutan verification bot (Cloudflare Worker, Discord "Interactions Endpoint URL"). Deployed by .github/workflows/verify.yml.
-name = "marchutan-verifica"
-main = "src/index.js"
-compatibility_date = "2025-09-01"

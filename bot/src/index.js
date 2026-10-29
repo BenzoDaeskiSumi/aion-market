@@ -1402,6 +1402,91 @@ async function artChallenge(env, force) {
   await env.USERS.put('art:last', today); await env.USERS.put('art:n', String(n + 1));
 }
 
+// ---------- screenshot verification for any server (built for the Marchutan community server): /verifica-setup, /verifica, ✅/❌ by a moderator ----------
+// KV vcfg:<guild> = {role, ch, mod}; vreq:<guild>:<uid> = pending request; vlink:<guild>:<uid> = {server, id, name, by, t}; vchar:<guild>:<server>:<id> = uid.
+// Kept apart from the Legione's link:/linkc: keys, so verifying on another server never touches the Legione's links.
+const VIEWB = 0x400, SENDB = 0x800;
+async function verifySetup(i, env) {
+  if (!isAdmin(i)) return oops('Solo gli amministratori possono configurare la verifica.');
+  const g = i.guild_id, me = await (await dapi(env, 'GET', '/users/@me')).json();
+  const roles = await (await dapi(env, 'GET', `/guilds/${g}/roles`)).json(), chans = await (await dapi(env, 'GET', `/guilds/${g}/channels`)).json();
+  const role = roles.find((r) => r.name === 'Verificato') || await (await dapi(env, 'POST', `/guilds/${g}/roles`, {name: 'Verificato', color: 0x34d399, hoist: false, mentionable: false, permissions: '0'})).json();
+  const mods = roles.filter((r) => BigInt(r.permissions) & (8n | 32n | 0x10000000n) && !r.managed).map((r) => r.id);
+  let ch = chans.find((c) => c.type === 0 && /verifica$/.test(c.name));
+  if (!ch) ch = await (await dapi(env, 'POST', `/guilds/${g}/channels`, {name: '✅・verifica', type: 0, position: 0,
+    topic: 'Collega il tuo personaggio e manda uno screenshot: un moderatore controlla e ti dà il ruolo Verificato.',
+    permission_overwrites: [{id: g, type: 0, allow: String(VIEWB), deny: String(SENDB)}, {id: me.id, type: 1, allow: String(VIEWB | SENDB), deny: '0'}]})).json();
+  let mod = chans.find((c) => c.type === 0 && /verifiche-mod$/.test(c.name));
+  if (!mod) mod = await (await dapi(env, 'POST', `/guilds/${g}/channels`, {name: '🛡️・verifiche-mod', type: 0,
+    topic: 'Richieste di verifica: controlla che il nome nello screenshot sia quello del personaggio, poi ✅ o ❌.',
+    permission_overwrites: [{id: g, type: 0, allow: '0', deny: String(VIEWB)}, {id: me.id, type: 1, allow: String(VIEWB | SENDB), deny: '0'},
+      ...mods.map((id) => ({id, type: 0, allow: String(VIEWB | SENDB), deny: '0'}))]})).json();
+  if (!ch?.id || !mod?.id || !role?.id) return oops('Non sono riuscito a creare ruolo o canali: controlla che Mauro abbia il permesso Amministratore.');
+  await env.USERS.put('vcfg:' + g, JSON.stringify({role: role.id, ch: ch.id, mod: mod.id}));
+  await dapi(env, 'POST', `/channels/${ch.id}/messages`, {embeds: [{color: 0x34d399, title: '✅ Verifica il tuo personaggio', description: [
+    '**1.** Scrivi `/verifica` qui sotto.',
+    '**2.** In **personaggio** scegli il tuo dai suggerimenti (mostrano server e classe).',
+    '**3.** In **screenshot** allega un\'immagine del gioco dove si legge il **nome del personaggio**: per esempio la finestra del personaggio (tasto P).',
+    '',
+    'Un moderatore controlla che il nome corrisponda e ti dà il ruolo **Verificato**. Ti avviso in privato appena fatto.',
+  ].join('\n'), footer: {text: 'Dati del personaggio: sito ufficiale NCSOFT · lo screenshot lo vedono solo i moderatori'}}]});
+  return oops(`Fatto: ruolo <@&${role.id}>, istruzioni in <#${ch.id}>, richieste in <#${mod.id}> (lo vedono solo gli admin: aggiungi lì il ruolo dei moderatori se serve).\n` +
+    `Per nascondere il resto del server a chi non è verificato: togli "Visualizza canali" a @everyone e dallo al ruolo Verificato.`);
+}
+async function verifyRequest(i, env, ctx) {
+  const g = i.guild_id, cfg = JSON.parse(await env.USERS.get('vcfg:' + g) || 'null');
+  if (!cfg) return oops('La verifica non è attiva su questo server (un admin deve usare `/verifica-setup`).');
+  const uid = userId(i), [server, id] = String(opt(i.data, 'personaggio')?.value || '').split(':');
+  if (!/^\d{4}$/.test(server || '') || !id) return oops('Scegli il personaggio dai **suggerimenti** che compaiono mentre scrivi il nome.');
+  const attId = opt(i.data, 'screenshot')?.value, att = i.data.resolved?.attachments?.[attId];
+  if (!att || !/^image\//.test(att.content_type || '')) return oops('Allega uno **screenshot** (immagine) dove si legge il nome del personaggio.');
+  if ((i.member?.roles || []).includes(cfg.role)) return oops('Sei già verificato. 👍');
+  const owner = await env.USERS.get(`vchar:${g}:${server}:${id}`);
+  if (owner && owner !== uid) return oops('Questo personaggio è già verificato da un altro account. Se è tuo, scrivi a un moderatore.');
+  ctx.waitUntil((async () => {
+    const c = await charProfile(+server, id).catch(() => null);
+    if (!c?.name) return void await hook(i, env, {content: 'Il sito ufficiale NCSOFT non risponde: riprova tra qualche minuto.'});
+    const req = {server: +server, id, name: c.name, cls: c.cls, lv: c.lv, sn: c.serverName, t: Date.now()};
+    await env.USERS.put(`vreq:${g}:${uid}`, JSON.stringify(req), {expirationTtl: 14 * 86400});
+    const r = await dapi(env, 'POST', `/channels/${cfg.mod}/messages`, {allowed_mentions: {parse: []}, embeds: [{color: 0xf2c94c, title: `Richiesta di verifica · ${c.name}`,
+      description: `<@${uid}> dice di essere **${c.name}**\n${c.cls || '?'} · Lv ${c.lv || '?'} · ${c.serverName || ''}${c.legion ? ` · Legione: ${c.legion}` : ''}${c.cp ? ` · CP ${kin(c.cp)}` : ''}\n\nControlla che nello screenshot si legga **${c.name}**.`,
+      thumbnail: avatarProxy(c.img, env) ? {url: avatarProxy(c.img, env)} : undefined, image: {url: att.url}, timestamp: new Date().toISOString()}],
+      components: [{type: 1, components: [{type: 2, style: 3, label: 'Approva', emoji: {name: '✅'}, custom_id: `vf:ok:${uid}`}, {type: 2, style: 4, label: 'Rifiuta', emoji: {name: '❌'}, custom_id: `vf:no:${uid}`}]}]});
+    await hook(i, env, {content: r.ok ? `📨 Richiesta inviata ai moderatori per **${c.name}** (${c.serverName}). Ti scrivo in privato appena controllano.` : 'Non riesco a scrivere nel canale dei moderatori: avvisa un admin.'});
+  })());
+  return Response.json({type: 5, data: {flags: 64}});
+}
+async function dmUser(env, uid, content) {
+  const ch = await (await dapi(env, 'POST', '/users/@me/channels', {recipient_id: uid})).json().catch(() => null);
+  if (ch?.id) await dapi(env, 'POST', `/channels/${ch.id}/messages`, {content, allowed_mentions: {parse: []}}).catch(() => {});
+}
+async function verifyDecide(i, env, ctx, reason) {
+  const [, act, uid] = (i.data.custom_id || '').split(':'), g = i.guild_id, cfg = JSON.parse(await env.USERS.get('vcfg:' + g) || 'null');
+  const pm = BigInt(i.member?.permissions || 0);   // admins, or moderators: Manage Messages / Moderate Members / Kick Members
+  if (!isAdmin(i) && !(pm & 0x2000n || pm & (1n << 40n) || pm & 2n)) return oops('Solo i moderatori possono decidere le verifiche.');
+  const req = JSON.parse(await env.USERS.get(`vreq:${g}:${uid}`) || 'null');
+  if (act === 'no' && reason === undefined) return Response.json({type: 9, data: {custom_id: `vfm:no:${uid}`, title: 'Rifiuta la verifica', components: [{type: 1, components: [
+    {type: 4, custom_id: 'why', label: 'Motivo (lo mando all\'utente)', style: 2, required: false, max_length: 300, placeholder: 'Es. il nome nello screenshot non si legge'}]}]}});
+  const by = userId(i), embed = {...(i.message?.embeds?.[0] || {})};
+  if (act === 'ok') {
+    if (!req) return oops('Richiesta scaduta o già gestita.');
+    ctx.waitUntil((async () => {
+      await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${cfg.role}`);
+      await dapi(env, 'PATCH', `/guilds/${g}/members/${uid}`, {nick: req.name}).catch(() => {});
+      await env.USERS.put(`vlink:${g}:${uid}`, JSON.stringify({...req, by, t: Date.now()}));
+      await env.USERS.put(`vchar:${g}:${req.server}:${req.id}`, uid);
+      await env.USERS.delete(`vreq:${g}:${uid}`);
+      await dmUser(env, uid, `✅ Sei verificato come **${req.name}** (${req.sn}). Benvenuto!`);
+    })());
+    return Response.json({type: 7, data: {embeds: [{...embed, color: 0x34d399, footer: {text: 'Approvata'}, description: `${embed.description || ''}\n\n✅ Approvata da <@${by}>`}], components: []}});
+  }
+  ctx.waitUntil((async () => {
+    await env.USERS.delete(`vreq:${g}:${uid}`);
+    await dmUser(env, uid, `❌ La tua verifica${req ? ` come **${req.name}**` : ''} non è stata approvata.${reason ? `\nMotivo: ${reason}` : ''}\nPuoi riprovare con \`/verifica\` e uno screenshot dove si legge bene il nome.`);
+  })());
+  return Response.json({type: 7, data: {embeds: [{...embed, color: 0xf87171, footer: {text: 'Rifiutata'}, description: `${embed.description || ''}\n\n❌ Rifiutata da <@${by}>${reason ? `: ${reason}` : ''}`}], components: []}});
+}
+
 // ---------- /raid: sign-up sheet with Tank / Healer / DPS buttons; the cron tags everyone ~15 min before ----------
 // KV raid:<id> = {title, t, slots, by, ch, note, list: {tank: [uid], heal: [], dps: []}, pinged}; expires a day after the start.
 const RAID_TZ = 'Europe/Rome', RAID_ROLES = [['tank', 'Tank', '🛡️'], ['heal', 'Healer', '✚'], ['dps', 'DPS', '⚔️']];
@@ -1506,7 +1591,7 @@ export default {
     if (new URL(req.url).pathname === '/timers/run') { try { await callChannel(env); await updateTimers(env); } catch (e) { await env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500)); } }
     if (new URL(req.url).pathname.startsWith('/timers/')) return Response.json({channel: await env.USERS.get('cfg:timer_channel'), msg: await env.USERS.get('cfg:timer_msg'), err: await env.USERS.get('timer_err'), alerts: await env.USERS.get('alert_err'), sweep: await env.USERS.get('sweep_err'), art: await env.USERS.get('art_err'), sweepAt: await env.USERS.get('cfg:sweep_at')});
     if (new URL(req.url).pathname.startsWith('/char/')) return charApi(req, env);
-    if (new URL(req.url).pathname.startsWith('/legion')) return legionApi(req, env, ctx);
+    // /legion and /legion/me (public Legione roster for the site) switched off on 29 Oct: the site no longer shows the Legione
     if (req.method !== 'POST') return new Response('Aion 2 Market bot: ok');
     const body = await req.text();
     if (!(await verified(req, body, env))) return new Response('bad signature', {status: 401});
@@ -1520,6 +1605,7 @@ export default {
           return Response.json({type: 8, data: {choices: list.filter((x) => x.name.toLowerCase().includes(q2)).slice(0, 25)
             .map((x) => ({name: `${x.name} · ${x.race === 1 ? 'Elyos' : 'Asmodian'}`, value: String(x.id)}))}});
         }
+        if (i.data.name === 'verifica') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), null)}});
         if (i.data.name === 'collega') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), /^\d{4}$/.test(String(opt(i.data, 'server')?.value || '')) ? opt(i.data, 'server').value : null)}});
         if (i.data.name === 'personaggio') {
           const srv = /^\d{4}$/.test(String(opt(i.data, 'server')?.value || '')) ? opt(i.data, 'server').value : null;
@@ -1548,6 +1634,8 @@ export default {
         if (i.data.name === 'aiuto') return aiuto(env);
         if (i.data.name === 'raid') return await raidCreate(i, env);
         if (i.data.name === 'collega') return await collega(i, env, ctx);
+        if (i.data.name === 'verifica') return await verifyRequest(i, env, ctx);
+        if (i.data.name === 'verifica-setup') return await verifySetup(i, env);
         if (i.data.name === 'scollega') return await scollega(i, env);
         if (i.data.name === 'legione') return await legione(i, env, ctx);
         if (i.data.name === 'personaggio') return await personaggio(i, env, ctx);
@@ -1565,6 +1653,8 @@ export default {
       if (i.type === 3 && i.data.custom_id?.startsWith('ts:')) return await signupButton(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('rs:')) return await raidButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('rp:')) return await rolePick(i, env, ctx);
+      if (i.type === 3 && i.data.custom_id?.startsWith('vf:')) return await verifyDecide(i, env, ctx);
+      if (i.type === 5 && i.data.custom_id?.startsWith('vfm:')) return await verifyDecide({...i, data: {...i.data, custom_id: i.data.custom_id.replace('vfm:', 'vf:')}}, env, ctx, String(i.data.components?.[0]?.components?.[0]?.value || '').trim());
       if (i.type === 5 && i.data.custom_id?.startsWith('alm:')) return await alertSubmit(i, env);
       if (i.type === 5 && i.data.custom_id === 'lkm') return await linkModalSubmit(i, env, ctx);
       return oops('Comando sconosciuto.');
