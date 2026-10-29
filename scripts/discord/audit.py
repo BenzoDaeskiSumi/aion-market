@@ -7,7 +7,8 @@ def api(m, p, b=None):
         time.sleep(0.5); return json.load(r)
 E = [('russian', '🪆'), ('spanish', '💃'), ('french', '🥐'), ('german', '🥨'), ('polish', '🥟'), ('italian', '🍕'), ('portugu', '⚽'), ('turkish', '🧿'), ('dutch', '🌷'),
      ('greek', '🏛️'), ('romanian', '🧛'), ('hungar', '🌶️'), ('czech', '🍺'), ('swed', '🫎'), ('ukrain', '🌻')]
-ch = api('GET', f'/guilds/{G}/channels'); cat = next(c for c in ch if c['type'] == 4 and 'NON-ENGLISH' in c['name'])
+ch = api('GET', f'/guilds/{G}/channels'); cat = {'id': next(c['parent_id'] for c in ch if 'russian' in c['name'].lower())}
+print('category:', next(c['name'] for c in ch if c['id'] == cat['id']))
 for c in ch:
     if c.get('parent_id') != cat['id']: continue
     base = c['name'].split('・', 1)[-1]; base = re.sub(r'^[^\w]+', '', base)
