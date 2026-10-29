@@ -767,7 +767,7 @@ async function rolePick(i, env, ctx) {
         if (!any && have.has(sep.id)) await call('DELETE', sep.id);
       }
     }
-    const text = !ok ? '⚠️ Non sono riuscito a cambiare tutti i ruoli: avvisa un Centurion.'
+    const text = !ok ? (gid === ART_GUILD ? '⚠️ Non sono riuscito a cambiare tutti i ruoli: avvisa un admin.' : '⚠️ Non sono riuscito a cambiare tutti i ruoli: avvisa un Centurion.')
       : !add.length && !del.length ? 'Nessun cambiamento.'
       : [add.length ? `✅ Aggiunti: ${add.map((r) => names[r]).join(', ')}` : null, del.length ? `➖ Tolti: ${del.map((r) => names[r]).join(', ')}` : null].filter(Boolean).join('\n');
     await fetch(`https://discord.com/api/v10/webhooks/${i.application_id}/${i.token}/messages/@original`, {method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({content: text})});
@@ -1342,6 +1342,66 @@ async function weekFix(env) {
   await env.USERS.put('wk:fix1', '1');
 }
 
+// ---------- concept-art friends' server (not Aion): a weekly design challenge every Monday 10:00 (Italy) in '🎯・sfida-settimanale' ----------
+// Posts one brief from ART_PROMPTS (in order, KV art:n), opens a thread for the entries; KV art:last = day posted, cfg:art_channel = channel id.
+const ART_GUILD = '1565296605257670727', ART_TZ = 'Europe/Rome';
+const ART_PROMPTS = [
+  ['Creature', 'Un animale da soma per una carovana che attraversa un deserto di vetro.'],
+  ['Environment', 'Una stazione di servizio abbandonata, cento anni dopo, ripresa dalla natura.'],
+  ['Character', 'Il cartografo di una nave volante: dimmi chi è dagli attrezzi che porta.'],
+  ['Prop', 'Una lanterna che non usa il fuoco. Tre varianti, una tavola.'],
+  ['Vehicle', 'Un mezzo per consegnare la posta in una città costruita in verticale.'],
+  ['Environment', 'Il mercato notturno di un villaggio di pescatori su palafitte.'],
+  ['Creature', 'Un predatore che caccia solo quando piove.'],
+  ['Character', 'Un guardiano di una biblioteca proibita, in tre età diverse.'],
+  ['Prop', "L'arma cerimoniale di un ordine di monaci pacifisti."],
+  ['Environment', "L'interno di una serra su un pianeta senza sole."],
+  ['Character', 'Un mercante di ricordi: costume, banco e un oggetto che vende.'],
+  ['Vehicle', 'Una casa mobile per una famiglia di nomadi delle nevi.'],
+  ['Creature', 'Un animale domestico per una civiltà che vive sottoterra.'],
+  ['Environment', "La sala d'attesa di un ufficio per fantasmi."],
+  ['Prop', 'Un kit da viaggio per un alchimista: apri lo zaino e mostra tutto.'],
+  ['Character', 'Due rivali dello stesso mestiere, in una sola illustrazione.'],
+  ['Environment', 'Un ponte che collega due città in guerra da secoli.'],
+  ['Creature', 'Un insetto gigante addomesticato come cavalcatura.'],
+  ['Vehicle', 'Una barca per esplorare un oceano di nebbia.'],
+  ['Character', 'Un cavaliere la cui armatura racconta tutte le battaglie perse.'],
+  ['Environment', 'Una cucina di un ristorante su un treno che non si ferma mai.'],
+  ['Prop', "Uno strumento musicale suonato da una creatura con sei dita."],
+  ['Creature', 'Lo spirito di un bosco bruciato, mentre ricresce.'],
+  ['Environment', 'Il laboratorio di un inventore che costruisce stelle.'],
+  ['Character', "Un postino dell'aldilà: uniforme, borsa e mezzo di trasporto."],
+  ['Vehicle', 'Un robot da lavoro agricolo, vecchio e riparato mille volte.'],
+  ['Environment', 'Un tempio costruito dentro lo scheletro di una creatura enorme.'],
+  ['Creature', 'Un parassita gentile: vive su un altro animale e lo aiuta.'],
+  ['Prop', 'Tre chiavi per tre porte diverse: una reggia, una prigione, un sogno.'],
+  ['Character', 'Una squadra di tre esploratori: silhouette leggibili prima dei dettagli.'],
+]; // la lista ricomincia da capo quando finisce
+async function artChannel(env) {
+  let ch = await env.USERS.get('cfg:art_channel');
+  if (ch) return ch;
+  const list = await (await dapi(env, 'GET', `/guilds/${ART_GUILD}/channels`)).json().catch(() => []);
+  ch = (Array.isArray(list) ? list : []).find((c) => c.type === 0 && /sfida-settimanale$/.test(c.name))?.id;
+  if (ch) await env.USERS.put('cfg:art_channel', ch);
+  return ch || null;
+}
+async function artChallenge(env, force) {
+  const now = Date.now(), d = localDay(now, ART_TZ), hour = Math.floor(((now / 6e4 + tzOffset(now, ART_TZ)) % 1440 + 1440) % 1440 / 60);
+  const today = `${d.y}-${d.m}-${d.d}`, last = await env.USERS.get('art:last');
+  if (!force && last && (d.dow !== 1 || hour < 10 || last === today)) return;     // the very first one goes out right away
+  const ch = await artChannel(env);
+  if (!ch) return;
+  const n = +(await env.USERS.get('art:n') || 0), [kind, brief] = ART_PROMPTS[n % ART_PROMPTS.length];
+  const end = Math.floor((now + 6 * 864e5) / 1000);
+  const r = await dapi(env, 'POST', `/channels/${ch}/messages`, {allowed_mentions: {parse: []}, embeds: [{color: 0xf2a65a, title: `🎯 Sfida della settimana · ${kind}`, description:
+    `**${brief}**\n\n• Sketch, studi, tavole di design o illustrazione finita: va bene tutto.\n• Posta nel thread qui sotto entro <t:${end}:D> (<t:${end}:R>).\n• Una critica sincera a chi posta prima di te vale doppio.`,
+    footer: {text: `Sfida n. ${n + 1} · ogni lunedì alle 10`}}]});
+  if (!r.ok) { await env.USERS.put('art_err', `${r.status} ${(await r.text()).slice(0, 200)}`); return; }
+  const m = await r.json();
+  await dapi(env, 'POST', `/channels/${ch}/messages/${m.id}/threads`, {name: `Sfida ${n + 1} · ${kind}`, auto_archive_duration: 10080}).catch(() => {});
+  await env.USERS.put('art:last', today); await env.USERS.put('art:n', String(n + 1));
+}
+
 // ---------- /raid: sign-up sheet with Tank / Healer / DPS buttons; the cron tags everyone ~15 min before ----------
 // KV raid:<id> = {title, t, slots, by, ch, note, list: {tank: [uid], heal: [], dps: []}, pinged}; expires a day after the start.
 const RAID_TZ = 'Europe/Rome', RAID_ROLES = [['tank', 'Tank', '🛡️'], ['heal', 'Healer', '✚'], ['dps', 'DPS', '⚔️']];
@@ -1439,12 +1499,12 @@ async function raidReminders(env) {               // cron: tag the sign-ups once
 
 // ---------- entry point ----------
 export default {
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.allSettled([checkAlerts(env).catch((e) => env.USERS.put('alert_err', String(e?.message || e).slice(0, 300))), checkStale(env).catch(() => {}), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => env.USERS.put('sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300))), weekFix(env).catch((e) => env.USERS.put('timer_err', 'weekfix ' + String(e?.stack || e).slice(0, 300)))])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.allSettled([checkAlerts(env).catch((e) => env.USERS.put('alert_err', String(e?.message || e).slice(0, 300))), checkStale(env).catch(() => {}), updateTimers(env).catch((e) => env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => env.USERS.put('sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300))), weekFix(env).catch((e) => env.USERS.put('timer_err', 'weekfix ' + String(e?.stack || e).slice(0, 300))), artChallenge(env).catch((e) => env.USERS.put('art_err', String(e?.stack || e).slice(0, 300)))])); },
   async fetch(req, env, ctx) {
     if (new URL(req.url).pathname === '/hit') return hit(req, env);
     if (/^\/join(\/cb)?$/.test(new URL(req.url).pathname)) return join(req, env);
     if (new URL(req.url).pathname === '/timers/run') { try { await callChannel(env); await updateTimers(env); } catch (e) { await env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500)); } }
-    if (new URL(req.url).pathname.startsWith('/timers/')) return Response.json({channel: await env.USERS.get('cfg:timer_channel'), msg: await env.USERS.get('cfg:timer_msg'), err: await env.USERS.get('timer_err'), alerts: await env.USERS.get('alert_err'), sweep: await env.USERS.get('sweep_err'), sweepAt: await env.USERS.get('cfg:sweep_at')});
+    if (new URL(req.url).pathname.startsWith('/timers/')) return Response.json({channel: await env.USERS.get('cfg:timer_channel'), msg: await env.USERS.get('cfg:timer_msg'), err: await env.USERS.get('timer_err'), alerts: await env.USERS.get('alert_err'), sweep: await env.USERS.get('sweep_err'), art: await env.USERS.get('art_err'), sweepAt: await env.USERS.get('cfg:sweep_at')});
     if (new URL(req.url).pathname.startsWith('/char/')) return charApi(req, env);
     if (new URL(req.url).pathname.startsWith('/legion')) return legionApi(req, env, ctx);
     if (req.method !== 'POST') return new Response('Aion 2 Market bot: ok');
