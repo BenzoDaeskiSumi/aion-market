@@ -111,7 +111,7 @@ const Shot = ({src, label, delay, top, left}: {readonly src: string; readonly la
 export const DbMap = () => (
   <AbsoluteFill>
     <Backdrop />
-    <Caption kicker="E non solo" title="Database, Mappa, Personaggi" lines={['Tutti gli oggetti ufficiali del gioco', 'Mappa con raccolta, boss e cubi nascosti', 'La Legione con Gear Score e progressi']} />
+    <Caption kicker="E non solo" title="Database, Mappa, Personaggi" lines={['Tutti gli oggetti ufficiali del gioco', 'Mappa con raccolta, boss e cubi nascosti', 'Scheda ufficiale di ogni personaggio EU']} />
     <Shot src="db.jpg" label="Database" delay={20} top={70} left={800} />
     <Shot src="map.jpg" label="Mappa" delay={50} top={300} left={960} />
     <Shot src="chars.jpg" label="Personaggi" delay={80} top={530} left={1120} />
@@ -155,7 +155,7 @@ export const Outro = () => (
           benzodaeskisumi.github.io/aion-market
         </div>
       </Rise>
-      <Rise delay={34}><div style={{fontFamily: inter, fontSize: 44, color: C.kinah}}>Un progetto della Legione · Marchutan</div></Rise>
+      <Rise delay={34}><div style={{fontFamily: inter, fontSize: 44, color: C.kinah}}>Tutti i server Asmodian EU · gratis, senza account</div></Rise>
       <Rise delay={46}><div style={{fontFamily: inter, fontSize: 30, color: C.dim, marginTop: 30}}>Prezzi: aion2.exchange · Ricette e mappa: MetaBot.GG</div></Rise>
     </AbsoluteFill>
   </AbsoluteFill>

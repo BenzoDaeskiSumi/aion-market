@@ -29,7 +29,7 @@ rects.deals = {table: await box('#maintab'), flip: await col('#maintab', 'data-k
 await shot('?s=12305&v=craft', 'craft_detail.jpg', 2500, async () => { await p.click('#crows tr'); await p.waitForTimeout(1500); });
 rects.craft = {table: await box('#crafttab'), aside: await box('.aside')};
 await shot('?s=12305&v=db', 'db.jpg', 5000);
-await shot('?s=12305&v=char', 'chars.jpg', 6000);
+await shot('market.html?s=12305&v=char&q=Benzo', 'chars.jpg', 5000, async () => { await p.click('#chrows tr[data-ch]').catch(() => {}); await p.waitForTimeout(4000); });
 await shot('map.html', 'map.jpg', 7000);
 writeFileSync(OUT + 'rects.json', JSON.stringify(rects, null, 1));
 console.log(JSON.stringify(rects));
