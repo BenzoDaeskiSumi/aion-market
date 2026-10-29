@@ -236,6 +236,8 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   (hidden; admin roles + Mauro). KV vcfg:<guild> = {role, ch, mod}. It does NOT hide the rest of the server (the admins decide: remove View Channels from @everyone, give it to the verified role).
 - /verify character:<autocomplete server:id, EU servers, Marchutan (2305) results first> screenshot:<attachment>: Mauro posts the official character (name, class, level, server, legion, CP, avatar) + the screenshot
   in the mod channel with ✅ vf:ok:<uid> / ❌ vf:no:<uid> (modal vfm: with an optional reason). Approve = card deleted from the mod channel (verifyClean also drops cards of already-verified members) + role + nick (in-game name) + class role (server role named like the class, CLASS_ROLES; others removed) + DM; reject = DM with reason.
+  /verify-user user:<member> character:<autocomplete> (moderators; command visible to Manage Roles by default): verifies someone directly, no screenshot,
+  may move a character from another account (old vlink dropped). Both paths go through applyVerify().
   KV vreq:<g>:<uid> (14 days), vlink:<g>:<uid>, vchar:<g>:<server>:<id> (one character per account), separate from the Legione's link:/linkc:.
   Moderators = Administrator / Manage Server / Manage Roles / Manage Messages / Moderate Members / Kick Members. No AI check yet (would need an API key secret). In privacy.html.
 

@@ -1482,6 +1482,45 @@ async function dmUser(env, uid, content) {
   const ch = await (await dapi(env, 'POST', '/users/@me/channels', {recipient_id: uid})).json().catch(() => null);
   if (ch?.id) await dapi(env, 'POST', `/channels/${ch.id}/messages`, {content, allowed_mentions: {parse: []}}).catch(() => {});
 }
+// what an approval does (✅ on a request, or a moderator's /verify-user): role, in-game nickname, class role, KV links, DM
+async function applyVerify(env, g, cfg, uid, req, by) {
+  const prevOwner = await env.USERS.get(`vchar:${g}:${req.server}:${req.id}`);
+  if (prevOwner && prevOwner !== uid) await env.USERS.delete(`vlink:${g}:${prevOwner}`);       // a moderator moved the character to another account
+  const old = JSON.parse(await env.USERS.get(`vlink:${g}:${uid}`) || 'null');
+  if (old && (old.server !== req.server || old.id !== req.id)) await env.USERS.delete(`vchar:${g}:${old.server}:${old.id}`);
+  await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${cfg.role}`);
+  await dapi(env, 'PATCH', `/guilds/${g}/members/${uid}`, {nick: req.name}).catch(() => {});   // Discord nickname = in-game name
+  // class role: a role of the server named like the character's class (Templar, Gladiator, … on MarchutanEU); other class roles are removed
+  const roles = await (await dapi(env, 'GET', `/guilds/${g}/roles`)).json().catch(() => []), mem = await (await dapi(env, 'GET', `/guilds/${g}/members/${uid}`)).json().catch(() => ({}));
+  const cls = Array.isArray(roles) ? roles.filter((r) => CLASS_ROLES.includes(r.name)) : [], want = cls.find((r) => norm(r.name) === norm(req.cls || ''));
+  for (const r of cls) if (r !== want && (mem.roles || []).includes(r.id)) await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${r.id}`).catch(() => {});
+  if (want) await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${want.id}`).catch(() => {});
+  await env.USERS.put(`vlink:${g}:${uid}`, JSON.stringify({...req, by, t: Date.now()}));
+  await env.USERS.put(`vchar:${g}:${req.server}:${req.id}`, uid);
+  await env.USERS.delete(`vreq:${g}:${uid}`);
+  await dmUser(env, uid, `✅ You are verified as **${req.name}** (${req.sn}). Welcome!`);
+}
+// /verify-user user:<member> character:<autocomplete>: a moderator links someone's character directly (no screenshot); may move a character from another account
+async function verifyUser(i, env, ctx) {
+  const g = i.guild_id, cfg = JSON.parse(await env.USERS.get('vcfg:' + g) || 'null');
+  if (!cfg) return oops('Verification is not active on this server.');
+  const pm = BigInt(i.member?.permissions || 0);
+  if (!isAdmin(i) && !(pm & 0x2000n || pm & (1n << 40n) || pm & 2n)) return oops('Only moderators can use this command.');
+  const uid = opt(i.data, 'user')?.value, [server, id] = String(opt(i.data, 'character')?.value || '').split(':');
+  if (!uid) return oops('Pick the member.');
+  if (i.data.resolved?.users?.[uid]?.bot) return oops('That is a bot.');
+  if (!/^\d{4}$/.test(server || '') || !id) return oops('Pick the character from the **suggestions** that appear while you type the name.');
+  const by = userId(i);
+  ctx.waitUntil((async () => {
+    const c = await charProfile(+server, id).catch(() => null);
+    if (!c?.name) return void await hook(i, env, {content: 'The official NCSOFT site is not answering: try again in a few minutes.'});
+    const prev = await env.USERS.get(`vchar:${g}:${server}:${id}`);
+    const req = {server: +server, id, name: c.name, cls: c.cls, lv: c.lv, sn: c.serverName, t: Date.now(), manual: true};
+    await applyVerify(env, g, cfg, uid, req, by);
+    await hook(i, env, {content: `✅ <@${uid}> verified as **${c.name}** · ${c.cls || '?'} · ${c.serverName || ''}${prev && prev !== uid ? ` (moved from <@${prev}>)` : ''}.`, allowed_mentions: {parse: []}});
+  })());
+  return Response.json({type: 5, data: {flags: 64}});
+}
 async function verifyDecide(i, env, ctx, reason) {
   const [, act, uid] = (i.data.custom_id || '').split(':'), g = i.guild_id, cfg = JSON.parse(await env.USERS.get('vcfg:' + g) || 'null');
   const pm = BigInt(i.member?.permissions || 0);   // admins, or moderators: Manage Messages / Moderate Members / Kick Members
@@ -1492,19 +1531,7 @@ async function verifyDecide(i, env, ctx, reason) {
   const by = userId(i), embed = {...(i.message?.embeds?.[0] || {})};
   if (act === 'ok') {
     if (!req) return oops('Request expired or already handled.');
-    ctx.waitUntil((async () => {
-      await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${cfg.role}`);
-      await dapi(env, 'PATCH', `/guilds/${g}/members/${uid}`, {nick: req.name}).catch(() => {});   // Discord nickname = in-game name
-      // class role: a role of the server named like the character's class (Templar, Gladiator, … on MarchutanEU); other class roles are removed
-      const roles = await (await dapi(env, 'GET', `/guilds/${g}/roles`)).json().catch(() => []), mem = await (await dapi(env, 'GET', `/guilds/${g}/members/${uid}`)).json().catch(() => ({}));
-      const cls = Array.isArray(roles) ? roles.filter((r) => CLASS_ROLES.includes(r.name)) : [], want = cls.find((r) => norm(r.name) === norm(req.cls || ''));
-      for (const r of cls) if (r !== want && (mem.roles || []).includes(r.id)) await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${r.id}`).catch(() => {});
-      if (want) await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${want.id}`).catch(() => {});
-      await env.USERS.put(`vlink:${g}:${uid}`, JSON.stringify({...req, by, t: Date.now()}));
-      await env.USERS.put(`vchar:${g}:${req.server}:${req.id}`, uid);
-      await env.USERS.delete(`vreq:${g}:${uid}`);
-      await dmUser(env, uid, `✅ You are verified as **${req.name}** (${req.sn}). Welcome!`);
-    })());
+    ctx.waitUntil(applyVerify(env, g, cfg, uid, req, by));
     // approved requests leave the moderators' channel (the user asked): delete the card, the moderator gets a private confirmation
     ctx.waitUntil(dapi(env, 'DELETE', `/channels/${i.channel_id}/messages/${i.message.id}`).catch(() => {}));
     return Response.json({type: 4, data: {flags: 64, content: `✅ <@${uid}> verified as **${req.name}**.`, allowed_mentions: {parse: []}}});
@@ -1634,7 +1661,7 @@ export default {
           return Response.json({type: 8, data: {choices: list.filter((x) => x.name.toLowerCase().includes(q2)).slice(0, 25)
             .map((x) => ({name: `${x.name} · ${x.race === 1 ? 'Elyos' : 'Asmodian'}`, value: String(x.id)}))}});
         }
-        if (i.data.name === 'verify') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), null, true)}});
+        if (i.data.name === 'verify' || i.data.name === 'verify-user') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), null, true)}});
         if (i.data.name === 'collega') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), /^\d{4}$/.test(String(opt(i.data, 'server')?.value || '')) ? opt(i.data, 'server').value : null)}});
         if (i.data.name === 'personaggio') {
           const srv = /^\d{4}$/.test(String(opt(i.data, 'server')?.value || '')) ? opt(i.data, 'server').value : null;
@@ -1664,6 +1691,7 @@ export default {
         if (i.data.name === 'raid') return await raidCreate(i, env);
         if (i.data.name === 'collega') return await collega(i, env, ctx);
         if (i.data.name === 'verify') return await verifyRequest(i, env, ctx);
+        if (i.data.name === 'verify-user') return await verifyUser(i, env, ctx);
         if (i.data.name === 'verify-setup') return await verifySetup(i, env);
         if (i.data.name === 'scollega') return await scollega(i, env);
         if (i.data.name === 'legione') return await legione(i, env, ctx);

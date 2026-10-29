@@ -37,6 +37,9 @@ const commands = [
   {name: 'verify', description: 'Verify your character: pick it and attach a screenshot where the name is readable', dm_permission: false, options: [
     {type: 3, name: 'character', description: 'Your character: pick it from the suggestions (EU servers)', required: true, autocomplete: true},
     {type: 11, name: 'screenshot', description: 'In-game screenshot where your character name is readable', required: true}]},
+  {name: 'verify-user', description: 'Moderators: link a member to their character and verify them (no screenshot needed)', default_member_permissions: '268435456', dm_permission: false, options: [
+    {type: 6, name: 'user', description: 'The Discord member', required: true},
+    {type: 3, name: 'character', description: 'Their character: pick it from the suggestions (EU servers)', required: true, autocomplete: true}]},
   {name: 'verify-setup', description: 'Admin: turn on screenshot verification on this server (role and channels)', default_member_permissions: '32', dm_permission: false},
   {name: 'scollega', description: 'Scollega il tuo personaggio dal tuo account Discord', dm_permission: false, options: [
     {type: 6, name: 'utente', description: 'Solo admin: scollega il personaggio di questo utente', required: false}]},
