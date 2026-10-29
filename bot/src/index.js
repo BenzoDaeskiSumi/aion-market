@@ -1394,7 +1394,7 @@ async function artChallenge(env, force) {
   const n = +(await env.USERS.get('art:n') || 0), [kind, brief] = ART_PROMPTS[n % ART_PROMPTS.length];
   const end = Math.floor((now + 6 * 864e5) / 1000);
   const r = await dapi(env, 'POST', `/channels/${ch}/messages`, {allowed_mentions: {parse: []}, embeds: [{color: 0xf2a65a, title: `🎯 Sfida della settimana · ${kind}`, description:
-    `**${brief}**\n\n• Sketch, studi, tavole di design o illustrazione finita: va bene tutto.\n• Posta nel thread qui sotto entro <t:${end}:D> (<t:${end}:R>).\n• Una critica sincera a chi posta prima di te vale doppio.`,
+    `**${brief}**\n\n• Sketch, studi, tavole di design o illustrazione finita: va bene tutto.\n• Posta nel thread qui sotto entro <t:${end}:D> (<t:${end}:R>).\n• Un consiglio a chi posta prima di te vale doppio.`,
     footer: {text: `Sfida n. ${n + 1} · ogni lunedì alle 10`}}]});
   if (!r.ok) { await env.USERS.put('art_err', `${r.status} ${(await r.text()).slice(0, 200)}`); return; }
   const m = await r.json();

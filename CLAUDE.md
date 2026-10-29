@@ -227,6 +227,6 @@ To limit the bot to one channel: Discord server settings → Integrations → th
 
 ## Concept-art friends' server (not Aion; the user's academy friends, guild 1565296605257670727, Mauro is admin there)
 - scripts/discord/art.py (Discord setup mode art-plan / art-apply): never deletes; renames Discord's defaults, creates INFO (benvenuto/regole/annunci read-only),
-  STUDIO (wip, forum critiche with tags, lavori-finiti, sfida-settimanale, studi), RISORSE, CHIACCHIERE, VOCALI; specialty roles via the picker rp:spec (generic rolePick).
+  STUDIO (wip, forum aiuto with tags — the user dislikes the word 'critica': use 'aiuto', lavori-finiti, sfida-settimanale, studi), RISORSE, CHIACCHIERE, VOCALI; specialty roles via the picker rp:spec (generic rolePick).
 - Worker artChallenge(): every Monday 10:00 Europe/Rome a brief from ART_PROMPTS in #sfida-settimanale + a thread (KV art:n, art:last, cfg:art_channel, art_err).
   Mauro's Aion slash commands are global, so they also show there (hide them in that server's Integrations settings).

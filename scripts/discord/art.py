@@ -41,7 +41,7 @@ LAYOUT = [
                          (0, '📜・regole', 'Poche regole, valgono per tutti.'),
                          (0, '📢・annunci', "Novità dell'accademia, scadenze, eventi.")]),
     (CAT('🎨', 'STUDIO'), [(0, '✏️・wip', 'Lavori in corso: posta presto, posta spesso.'),
-                           (15, '🔍・critiche', 'Un post per lavoro. Scrivi cosa vuoi sapere: silhouette, colore, leggibilità, anatomia…'),
+                           (15, '🙋・aiuto', 'Bloccato su un lavoro? Apri un post e scrivi su cosa ti serve una mano: silhouette, colore, leggibilità, anatomia…'),
                            (0, '🏆・lavori-finiti', 'I pezzi finiti, da portfolio.'),
                            (0, '🎯・sfida-settimanale', 'Ogni lunedì alle 10 Mauro lancia un brief di design: si risponde nel thread.'),
                            (0, '🖼️・studi', 'Studi dal vero, anatomia, prospettiva, master study.')]),
@@ -50,10 +50,10 @@ LAYOUT = [
                             (0, '📖・tutorial', 'Video, corsi, articoli che vi sono serviti davvero.'),
                             (0, '💼・lavoro-e-contest', 'Offerte di lavoro, contest, call per artisti, portfolio review.')]),
     (CAT('💬', 'CHIACCHIERE'), [(0, '💬・generale', ''), (0, '😂・meme', ''), (0, '🎮・giochi', ''), (0, '🎵・musica', 'Cosa ascoltate mentre disegnate?')]),
-    (CAT('🔊', 'VOCALI'), [(2, '🎧 Disegniamo insieme', ''), (2, '📺 Live e critiche', ''), (2, '☕ Pausa caffè', '')]),
+    (CAT('🔊', 'VOCALI'), [(2, '🎧 Disegniamo insieme', ''), (2, '📺 Aiuto in diretta', ''), (2, '☕ Pausa caffè', '')]),
 ]
 RENAME = {'canali testuali': CAT('💬', 'CHIACCHIERE'), 'canali vocali': CAT('🔊', 'VOCALI'), 'generale': '💬・generale', 'giochi': '🎮・giochi',
-          'musica': '🎵・musica', 'lounge': '🎧 Disegniamo insieme', 'sala streaming': '📺 Live e critiche'}
+          'musica': '🎵・musica', 'lounge': '🎧 Disegniamo insieme', 'sala streaming': '📺 Aiuto in diretta', 'critiche': '🙋・aiuto', 'live e critiche': '📺 Aiuto in diretta'}
 READ_ONLY = {'benvenuto', 'regole', 'annunci'}
 SPECS = [('Character Design', '🧍', 0xf2a65a), ('Environment', '🏞️', 0x6fbf73), ('Creature', '🐉', 0xd9534f), ('Props e Veicoli', '🛠️', 0x9aa5b1),
          ('Illustrazione', '🖌️', 0xb07cf5), ('3D', '🧊', 0x4fb3d9), ('Animazione', '🎞️', 0xf0c419), ('UI e Grafica', '🔷', 0x5b8cff)]
@@ -83,7 +83,7 @@ for n, e, color in SPECS:
 def find(kind, name, parent=None):
     want = plain(name)
     for c in chans:
-        if (c['type'] == kind or (kind == 15 and c['type'] == 0 and want.endswith('critiche'))) and plain(c['name']) == want: return c
+        if (c['type'] == kind or (kind == 15 and c['type'] == 0 and want.endswith('aiuto'))) and plain(c['name']) == want: return c
     return None
 for pos, (cat_name, items) in enumerate(LAYOUT):
     cat = find(4, cat_name)
@@ -123,11 +123,11 @@ H = lambda t, e='': f"↬ {bold_serif(t)}{' ' + e if e else ''}"
 SEP = '\n━━━━━━━━━━━━━━━━━━━━\n'
 welcome = {'embeds': [{'color': 0xf2a65a, 'title': f"Benvenuto su {guild['name']}", 'description': '\n'.join([
     H('Chi siamo', '🎨'),
-    "Amici dell'accademia di **concept art**: qui si posta, ci si critica a vicenda e si disegna insieme.",
+    "Amici dell'accademia di **concept art**: qui si posta, ci si dà una mano e si disegna insieme.",
     SEP,
     H('Dove trovi cosa', '📍'),
     f"➤ {ch('wip')}", 'lavori in corso, anche brutti',
-    f"➤ {ch('critiche')}", 'un post per lavoro, scrivi cosa vuoi sapere',
+    f"➤ {ch('aiuto')}", 'un post per lavoro, scrivi su cosa ti serve una mano',
     f"➤ {ch('sfida-settimanale')}", 'ogni **lunedì alle 10** un brief di design nuovo',
     f"➤ {ch('lavori-finiti')}", 'i pezzi da portfolio',
     f"➤ {ch('reference')} · {ch('brush-e-tool')} · {ch('tutorial')}", 'le risorse che ci passiamo',
@@ -139,9 +139,9 @@ welcome = {'embeds': [{'color': 0xf2a65a, 'title': f"Benvenuto su {guild['name']
 ])}], 'components': [{'type': 1, 'components': [{'type': 3, 'custom_id': 'rp:spec', 'placeholder': 'Cosa disegni?', 'min_values': 0,
     'max_values': len(SPECS), 'options': [{'label': n, 'value': roles[n]['id'], 'emoji': {'name': e}} for n, e, _ in SPECS if n in roles and 'id' in roles[n]]}]}]}
 rules = {'embeds': [{'color': 0x9aa5b1, 'title': 'Regole', 'description': '\n'.join([
-    H('1. Critiche utili', '🔍'),
-    '• Critica il **lavoro**, mai la persona. Di\' cosa funziona e cosa cambieresti.',
-    '• Chi chiede una critica la vuole sincera: niente "bello!" e basta.',
+    H('1. Aiutarsi a vicenda', '🤝'),
+    '• Commenta il **lavoro**, mai la persona. Di\' cosa funziona e cosa cambieresti.',
+    '• Chi chiede aiuto vuole un parere sincero: niente "bello!" e basta.',
     SEP,
     H('2. Lavori degli altri', '🖼️'),
     '• Non ripostare fuori dal server i lavori degli altri senza permesso.',
@@ -164,4 +164,10 @@ post('regole', rules)
 if APPLY and guild.get('system_channel_id') != next((v for k, v in cid.items() if k.endswith('benvenuto')), None):
     try: api('PATCH', f'/guilds/{G}', {'system_channel_id': next(v for k, v in cid.items() if k.endswith('generale'))})
     except Exception as e: say('  canale di sistema:', e)
+# the challenge posts already out used the word 'critica'
+sid = next((v for k, v in cid.items() if k.endswith('sfida-settimanale')), None)
+for m in (api('GET', f'/channels/{sid}/messages?limit=20') if sid and APPLY else []):
+    if m['author']['id'] == me['id'] and m.get('embeds') and 'critica' in m['embeds'][0].get('description', ''):
+        e = m['embeds'][0]; e['description'] = e['description'].replace('Una critica sincera a chi posta prima di te vale doppio.', 'Un consiglio a chi posta prima di te vale doppio.')
+        api('PATCH', f"/channels/{sid}/messages/{m['id']}", {'embeds': [e]}); say('  sistemata la sfida già pubblicata')
 say('fatto' if APPLY else 'solo prova, nessuna modifica')
