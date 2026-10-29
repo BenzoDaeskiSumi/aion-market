@@ -738,8 +738,10 @@ async function personaggio(i, env, ctx) {
 }
 async function charChoices(q, srv, en) {
   if (q.length < 2) return [{name: en ? 'Type at least 2 letters of the name' : 'Scrivi almeno 2 lettere del nome', value: q || '-'}];
-  const [r, meta] = await Promise.all([charSearch(q, srv ? +srv : null, 1, 25), charMeta().catch(() => ({classes: {}}))]);
-  return r.list.map((c) => ({name: `${c.name} · ${c.serverName} · ${meta.classes[c.pcId] || ''} Lv ${c.level}`.slice(0, 100), value: `${c.server}:${c.id}`.slice(0, 100)}));
+  const [r, meta, home] = await Promise.all([charSearch(q, srv ? +srv : null, 1, 25), charMeta().catch(() => ({classes: {}})),
+    en && !srv ? charSearch(q, 2305, 1, 25).catch(() => ({list: []})) : {list: []}]);   // /verify: Marchutan's characters always come first
+  const seen = new Set(), list = [...home.list, ...r.list].filter((c) => !seen.has(c.server + ':' + c.id) && seen.add(c.server + ':' + c.id)).slice(0, 25);
+  return list.map((c) => ({name: `${c.name} · ${c.serverName} · ${meta.classes[c.pcId] || ''} Lv ${c.level}`.slice(0, 100), value: `${c.server}:${c.id}`.slice(0, 100)}));
 }
 
 // ---------- role picker in #scegli-ruoli (posted by scripts/discord/setup.mjs): menus rp:<group>, option values = role ids ----------
