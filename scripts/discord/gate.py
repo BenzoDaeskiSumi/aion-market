@@ -64,12 +64,32 @@ while True:
     after = page[-1]['user']['id']
 humans = [m for m in members if not m['user'].get('bot')]
 lost = [m for m in humans if not (set(m['roles']) & access)]
-say(f'  membri: {len(humans)} · senza ruolo di accesso: {len(lost)} -> ricevono "Amico della Legione" (vedono tutto come oggi)')
+# one-time migration of Oct 2026 only (mode gate-migrate-apply): now members without an access role are newcomers who still have to link
+MIGRATE = 'migrate' in os.environ.get('MODE', '')
+say(f'  membri: {len(humans)} · senza ruolo di accesso (devono ancora collegare il personaggio): {len(lost)}' + (' -> ricevono "Amico della Legione"' if MIGRATE else ''))
 for m in lost:
     say('    ·', m.get('nick') or m['user'].get('global_name') or m['user']['username'])
-    if APPLY:
+    if APPLY and MIGRATE:
         api('PUT', f"/guilds/{G}/members/{m['user']['id']}/roles/{byname['Amico della Legione']['id']}")
         if sep and sep['id'] not in m['roles']: api('PUT', f"/guilds/{G}/members/{m['user']['id']}/roles/{sep['id']}")
+
+# who has a grade but never linked a character (e.g. given automatically by another bot on joining): listed for the officers, nothing changed
+try:
+    cf = lambda path: json.load(urllib.request.urlopen(urllib.request.Request('https://api.cloudflare.com/client/v4/accounts/' + os.environ['CF_ACCOUNT'] + path,
+                                                                                headers={'Authorization': 'Bearer ' + os.environ['CF_TOKEN']}), timeout=60))
+    ns = next(n['id'] for n in cf('/storage/kv/namespaces?per_page=100')['result'] if n['title'].endswith('aion-market-bot-users'))
+    linked, cur = set(), ''
+    while True:
+        r = cf(f'/storage/kv/namespaces/{ns}/keys?prefix=link:&limit=1000' + (f'&cursor={cur}' if cur else ''))
+        linked |= {k['name'][5:] for k in r['result']}
+        cur = r.get('result_info', {}).get('cursor')
+        if not cur: break
+    nolink = [m for m in humans if m['user']['id'] not in linked and set(m['roles']) & access]
+    say(f'  personaggi collegati: {len(linked)} · con un ruolo ma senza personaggio collegato: {len(nolink)}')
+    for m in sorted(nolink, key=lambda m: m['joined_at']):
+        say('    ·', m['joined_at'][:10], m.get('nick') or m['user'].get('global_name') or m['user']['username'], '·', ', '.join(r['name'] for r in roles if r['id'] in m['roles'] and r['name'] in GRADES + ['Ospite']))
+except Exception as e:
+    say('  (elenco senza personaggio non disponibile:', e, ')')
 
 # 3) channel permissions
 chans = api('GET', f'/guilds/{G}/channels')
@@ -115,7 +135,8 @@ for c in sorted(chans, key=lambda c: (c['type'] != 4, c['position'])):
     if 'uffici' in g or name.endswith('assistenza'): continue
     ows = [dict(x) for x in c.get('permission_overwrites', [])]
     before = json.dumps(sorted(ows, key=lambda x: x['id']))
-    public = 'benvenut' in g
+    # before linking: only the BENVENUTO category itself and #benvenuto (+ #assistenza, handled above); #regole and #scegli-ruoli open after linking
+    public = 'benvenut' in g and (c['type'] == 4 or name.endswith('benvenuto'))
     guest = 'progressi' not in name                                      # guests see everything (voice included) but UFFICIALI and #progressi (Legione only)
     set_view(ows, G, 0, None if public else False)                       # @everyone (role id = guild id)
     set_view(ows, byname['Ospite']['id'], 0, True if guest and not public else None)

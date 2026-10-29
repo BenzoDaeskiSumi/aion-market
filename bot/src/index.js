@@ -938,9 +938,9 @@ async function signupCalls(env) {         // cron: tag once ~15 min before; dele
   }
 }
 
-// ---------- "Entra nel Discord" from the site: /join -> Discord login (identify + guilds.join) -> the Worker adds the user with the 'Ospite' role ----------
+// ---------- "Entra nel Discord" from the site: /join -> Discord login (identify + guilds.join) -> the Worker adds the user to the server, with no role ----------
 // Without DISCORD_CLIENT_SECRET (or if anything fails) it falls back to a plain invite link. Nothing is stored apart from the 10-minute login state.
-const JOIN_ROLE = 'Ospite', WORKER = (env) => env.WORKER_URL || 'https://aion-market-bot.aion2-market.workers.dev';
+const WORKER = (env) => env.WORKER_URL || 'https://aion-market-bot.aion2-market.workers.dev';
 async function siteInvite(env) {
   let code = await env.USERS.get('cfg:site_invite');
   if (code) return `https://discord.gg/${code}`;
@@ -969,12 +969,9 @@ async function join(req, env) {
       body: new URLSearchParams({client_id: env.DISCORD_APP_ID, client_secret: env.DISCORD_CLIENT_SECRET, grant_type: 'authorization_code', code, redirect_uri: cb})})).json();
     if (!tok.access_token) return fallback();
     const me = await (await fetch('https://discord.com/api/v10/users/@me', {headers: {Authorization: `Bearer ${tok.access_token}`}})).json();
-    const roles = await (await dapi(env, 'GET', `/guilds/${GUILD}/roles`)).json();
-    let guest = roles.find((r) => r.name === JOIN_ROLE);
-    if (!guest) guest = await (await dapi(env, 'POST', `/guilds/${GUILD}/roles`, {name: JOIN_ROLE, permissions: '0', color: 0x95a5a6, hoist: false, mentionable: false})).json();
-    const sep = roles.find((r) => r.name.includes('𝐆𝐑𝐀𝐃𝐈') && r.name.includes('─'));
-    // 201 = joined now (gets the roles), 204 = already a member (left as they are)
-    const r = await dapi(env, 'PUT', `/guilds/${GUILD}/members/${me.id}`, {access_token: tok.access_token, roles: [guest.id, sep?.id].filter(Boolean)});
+    // no role on joining: newcomers see only BENVENUTO (benvenuto + assistenza) until they link their character, which gives Recluta or Ospite
+    // 201 = joined now, 204 = already a member (left as they are)
+    const r = await dapi(env, 'PUT', `/guilds/${GUILD}/members/${me.id}`, {access_token: tok.access_token});
     if (r.status !== 201 && r.status !== 204) return fallback();
     return go(`https://discord.com/channels/${GUILD}`);
   } catch (e) {
