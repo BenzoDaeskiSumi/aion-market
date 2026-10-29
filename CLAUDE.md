@@ -243,7 +243,7 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   (commands /verify and /verify-setup, English only, no Italian localizations). Approval gives the existing role 'Marchutans'; #✅・verify (top, hidden from Marchutans but visible to Admins/Moderator; @everyone CAN send — Discord hides the command box otherwise — slowmode 5 min, the cron's verifyClean() deletes every message not by Mauro) and
   #🛡️・verify-requests (Admins, Moderator), #🆘・verify-help (under #verify: @everyone can write, Marchutans can't see it, Admins/Moderator answer; slowmode 30 s). All categories but 'News' are hidden from @everyone and visible to Marchutans; current members all got Marchutans.
   29 Oct: scripts/discord/vreset.py removed Marchutans from 141 unverified members (kept: verified, bots, Admins/Moderator; ids in KV vreset:<g>) and made
-  #📢・verify-now (only role-less members see it; Admins/Moderator write and @everyone-ping it). Mode vresetfix-apply = nick + class role for already-verified members.
+  #📢・verify-now (only role-less members see it; Admins/Moderator write and @everyone-ping it). Mode vresetfix-apply = nick + class role for already-verified members; vresetcls-apply = unverified members lose class roles (53 removed on 29 Oct).
   Channel look: scripts/discord/mstyle.py (mode mstyle-plan/apply): same channels renamed '📢 NEWS' / '📣・announcements' / voice '🌌 Abyss' (light style, user's choice).
   Carl-bot was giving Marchutans to everyone (autorole / reaction role, seen in the audit log): that must be switched off on carl.gg, otherwise nobody needs to verify.
 
