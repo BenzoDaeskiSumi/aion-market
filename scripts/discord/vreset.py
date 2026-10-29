@@ -22,6 +22,17 @@ cf = lambda p, m='GET', data=None: urllib.request.urlopen(urllib.request.Request
 ns = next(n['id'] for n in json.loads(cf('/storage/kv/namespaces?per_page=100'))['result'] if n['title'].endswith('aion-market-bot-users'))
 verified = {k['name'].split(':')[2] for k in json.loads(cf(f'/storage/kv/namespaces/{ns}/keys?prefix=vlink:{G}:'))['result']}
 
+if os.environ.get('MODE', '').startswith('vresetfix'):   # already-verified members: in-game nickname + class role (what approval does since 29 Oct)
+    roles = api('GET', f'/guilds/{G}/roles'); CL = {r['name'].lower(): r['id'] for r in roles if r['name'] in ('Gladiator', 'Templar', 'Assassin', 'Ranger', 'Sorcerer', 'Spiritmaster', 'Cleric', 'Chanter')}
+    for uid in verified:
+        v = json.loads(cf(f'/storage/kv/namespaces/{ns}/values/vlink:{G}:{uid}'))
+        want = CL.get(''.join(ch for ch in (v.get('cls') or '').lower() if ch.isalpha()))
+        print(f"  {v['name']} · {v.get('cls')} -> nick + role {'yes' if want else 'none found'}")
+        if not APPLY: continue
+        try: api('PATCH', f'/guilds/{G}/members/{uid}', {'nick': v['name']})
+        except Exception as e: print('    nick:', str(e)[:120])
+        if want: api('PUT', f'/guilds/{G}/members/{uid}/roles/{want}')
+    raise SystemExit(print('done'))
 print(('APPLY' if APPLY else 'DRY RUN') + ' · MarchutanEU: everyone must verify')
 me = api('GET', '/users/@me'); roles = {r['name']: r for r in api('GET', f'/guilds/{G}/roles')}
 role = roles['Marchutans']; keep_roles = {roles[n]['id'] for n in ('Admins', 'Moderator') if n in roles}

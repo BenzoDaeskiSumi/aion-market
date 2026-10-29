@@ -1486,7 +1486,12 @@ async function verifyDecide(i, env, ctx, reason) {
     if (!req) return oops('Request expired or already handled.');
     ctx.waitUntil((async () => {
       await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${cfg.role}`);
-      await dapi(env, 'PATCH', `/guilds/${g}/members/${uid}`, {nick: req.name}).catch(() => {});
+      await dapi(env, 'PATCH', `/guilds/${g}/members/${uid}`, {nick: req.name}).catch(() => {});   // Discord nickname = in-game name
+      // class role: a role of the server named like the character's class (Templar, Gladiator, … on MarchutanEU); other class roles are removed
+      const roles = await (await dapi(env, 'GET', `/guilds/${g}/roles`)).json().catch(() => []), mem = await (await dapi(env, 'GET', `/guilds/${g}/members/${uid}`)).json().catch(() => ({}));
+      const cls = Array.isArray(roles) ? roles.filter((r) => CLASS_ROLES.includes(r.name)) : [], want = cls.find((r) => norm(r.name) === norm(req.cls || ''));
+      for (const r of cls) if (r !== want && (mem.roles || []).includes(r.id)) await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${r.id}`).catch(() => {});
+      if (want) await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${want.id}`).catch(() => {});
       await env.USERS.put(`vlink:${g}:${uid}`, JSON.stringify({...req, by, t: Date.now()}));
       await env.USERS.put(`vchar:${g}:${req.server}:${req.id}`, uid);
       await env.USERS.delete(`vreq:${g}:${uid}`);
