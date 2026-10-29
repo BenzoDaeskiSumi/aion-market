@@ -133,6 +133,8 @@ changed = 0
 for c in sorted(chans, key=lambda c: (c['type'] != 4, c['position'])):
     g, name = group(c), plain(c['name'])
     if 'uffici' in g or name.endswith('assistenza'): continue
+    # private channels opened to single people by hand (e.g. the 'Officer' voice room) are left alone
+    if any(o['type'] == 1 and o['id'] != me['id'] and int(o['allow']) & VIEW for o in c.get('permission_overwrites', [])): continue
     ows = [dict(x) for x in c.get('permission_overwrites', [])]
     before = json.dumps(sorted(ows, key=lambda x: x['id']))
     # before linking: only the BENVENUTO category itself and #benvenuto (+ #assistenza, handled above); #regole and #scegli-ruoli open after linking
