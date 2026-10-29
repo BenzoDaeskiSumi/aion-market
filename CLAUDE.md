@@ -239,6 +239,11 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   KV vreq:<g>:<uid> (14 days), vlink:<g>:<uid>, vchar:<g>:<server>:<id> (one character per account), separate from the Legione's link:/linkc:.
   Moderators = Administrator / Manage Server / Manage Roles / Manage Messages / Moderate Members / Kick Members. No AI check yet (would need an API key secret). In privacy.html.
 
+- Live on MarchutanEU AION2 (guild 1564968231410864160, English server): set up by scripts/discord/verify_setup.py (mode vsetup-plan/apply), texts in English
+  (commands have Italian description_localizations). Approval gives the existing role 'Marchutans'; #✅・verify (top, read-only, hidden from Marchutans) and
+  #🛡️・verify-requests (Admins, Moderator). All categories but 'News' are hidden from @everyone and visible to Marchutans; current members all got Marchutans.
+  Carl-bot was giving Marchutans to everyone (autorole / reaction role, seen in the audit log): that must be switched off on carl.gg, otherwise nobody needs to verify.
+
 ## No Legione on the site (29 Oct, the user asked)
 - The site no longer mentions the Legione: no guild line / 'Entra nel nostro Discord' in market.html's footer, no Legione panel on the home, no roster in Personaggi
   (empty search = a hint; drawRoster/loadLegion are dead code), the Worker's public /legion routes are switched off. Mauro still runs its Legione features
