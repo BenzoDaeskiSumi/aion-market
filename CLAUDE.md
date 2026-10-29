@@ -245,6 +245,7 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   29 Oct: scripts/discord/vreset.py removed Marchutans from 141 unverified members (kept: verified, bots, Admins/Moderator; ids in KV vreset:<g>) and made
   #📢・verify-now (only role-less members see it; Admins/Moderator write and @everyone-ping it). Mode vresetfix-apply = nick + class role for already-verified members; vresetcls-apply = unverified members lose class roles (53 removed on 29 Oct).
   #🏰・legion is a FORUM since 29 Oct (Faction-Leaders create posts, Marchutans read/reply, tags Recruiting/Event/News/Info); the old text channel is '🗄️・legion-archive' (read-only).
+  Language channels in '🌍 NON-ENGLISH CHANNELS' (hidden from @everyone, Marchutans see it, children synced): 🇷🇺・russian-русский, 🇪🇸・spanish-españa, 🇫🇷・french-france, 🇩🇪・german-deutsch.
   Channel look: scripts/discord/mstyle.py (mode mstyle-plan/apply): same channels renamed '📢 NEWS' / '📣・announcements' / voice '🌌 Abyss' (light style, user's choice).
   Carl-bot was giving Marchutans to everyone (autorole / reaction role, seen in the audit log): that must be switched off on carl.gg, otherwise nobody needs to verify.
 
