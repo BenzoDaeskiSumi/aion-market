@@ -1,32 +1,24 @@
-import json, os, urllib.request, urllib.error
-T, TH, G = os.environ['DISCORD_TOKEN'], '1565744102782279801', '1564968231410864160'
-chans = json.load(urllib.request.urlopen(urllib.request.Request(f'https://discord.com/api/v10/guilds/{G}/channels', headers={'Authorization': f'Bot {T}', 'User-Agent': 'DiscordBot (aion-market, 1)'})))
-ap = next(c['id'] for c in chans if c['name'].endswith('legion-leader-apply'))
-content = '\n'.join([
- '## 🏰 Example Legion  ·  ⚔️ PvP / Siege  ·  🇬🇧 EN 🇩🇪 DE',
- '-# ⚠️ EXAMPLE — not a real legion. Copy this layout for your own post.',
- '',
- '👑 **Leader:** ExampleName  ·  🎖️ **Officers:** NameOne, NameTwo',
- '📈 **Legion level:** 7',
- '🗣️ **Languages:** English, German',
- '🎯 **Focus:** PvP, Siege, weekday dungeons',
- '🔥 **Style:** semi-hardcore',
- '👥 **Members:** 64 / 128 — **64 spots open**',
- '🛡️ **Looking for:** Cleric, Chanter, Templar',
- '📋 **Requirements:** Combat Power 50k+, online 3+ days a week',
- '🕗 **Play times:** every day 20:00–23:00 (server time, CET)',
- '🎙️ **Voice:** Discord, mic for sieges',
- '🏠 **Legion Hall:** Altgard',
- '✉️ **How to join:** whisper ExampleName or an officer in game',
- '',
- '──────────',
- '📝 **Title:** `Legion name · focus · languages`',
- '🔄 **One post per legion** — edit it when things change, no reposts or bumps',
- '🏷️ Tag **Recruiting** while you have open spots',
- f'👑 Only **Legion Leaders** post here → get the role in <#{ap}>',
-])
-body = {'content': content, 'embeds': [], 'allowed_mentions': {'parse': []}}
-req = urllib.request.Request(f'https://discord.com/api/v10/channels/{TH}/messages/{TH}', method='PATCH', data=json.dumps(body).encode(),
-    headers={'Authorization': f'Bot {T}', 'User-Agent': 'DiscordBot (aion-market, 1)', 'Content-Type': 'application/json'})
-try: print('edited', json.load(urllib.request.urlopen(req))['id'], len(content))
-except urllib.error.HTTPError as e: print('ERR', e.code, e.read()[:300])
+"""MarchutanEU (30 Oct): Stage channel for sieges. Verified members listen and can raise their hand; Shotcallers, Caller, Faction-Leaders,
+Admins and Moderator are stage moderators (start it, bring people up)."""
+import json, os, time, urllib.request, urllib.error
+T, G = os.environ['DISCORD_TOKEN'], '1564968231410864160'
+def api(m, p, b=None):
+    try:
+        with urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v10' + p, method=m, data=json.dumps(b).encode() if b is not None else None,
+                headers={'Authorization': f'Bot {T}', 'User-Agent': 'DiscordBot (aion-market, 1)', 'Content-Type': 'application/json', 'X-Audit-Log-Reason': 'Siege stage'}), timeout=60) as r:
+            time.sleep(0.4); return None if r.status == 204 else json.load(r)
+    except urllib.error.HTTPError as e: raise RuntimeError(f'{m} {p} {e.code} {e.read()[:300]!r}')
+VIEW, CONNECT, SPEAK, MANAGE_CH, MUTE, MOVE, REQ = 0x400, 0x100000, 0x200000, 0x10, 0x400000, 0x1000000, 0x100000000
+g = api('GET', f'/guilds/{G}'); print('community:', 'COMMUNITY' in g['features'])
+R = {r['name']: r['id'] for r in api('GET', f'/guilds/{G}/roles')}
+me = api('GET', '/users/@me')['id']
+chans = api('GET', f'/guilds/{G}/channels')
+if any(c['type'] == 13 and 'siege' in c['name'].lower() for c in chans): raise SystemExit(print('siege stage already exists'))
+cat = next(c for c in chans if c['type'] == 4 and 'VOICE' in c['name'].upper())
+ow = lambda i, a, d=0, t=0: {'id': i, 'type': t, 'allow': str(a), 'deny': str(d)}
+mods = [n for n in ('Shotcallers', 'Caller', 'Faction-Leaders', 'Admins', 'Moderator') if n in R]
+stage = api('POST', f'/guilds/{G}/channels', {'name': '🏯 Siege Stage', 'type': 13, 'parent_id': cat['id'], 'position': 0, 'permission_overwrites': [
+    ow(G, 0, VIEW), ow(R['Marchutans'], VIEW | CONNECT | REQ),
+    ow(me, VIEW | CONNECT | MANAGE_CH | MUTE | MOVE, 0, 1)] + [ow(R[n], VIEW | CONNECT | SPEAK | REQ | MANAGE_CH | MUTE | MOVE) for n in mods]})
+api('PATCH', f'/guilds/{G}/channels', [{'id': stage['id'], 'position': 0}])
+print('created', stage['name'], stage['id'], '· stage moderators:', mods)
