@@ -260,7 +260,9 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   Server emojis (29 Oct): :gladiator: … :chanter: (official class icons, NCSOFT CDN), :hidden_cube: (ours), :aion_market: (site logo).
   29 Oct 20:05: 26 channels had their own permissions with @everyone able to view (unverified saw them): all synced to their category
   (legion forum/archive keep their extras, View copied from the category). Channels outside categories: verify*, staff/logs/roles (Faction-Leaders see staff/logs/roles).
-  Legion section (30 Oct): pinned+locked example post '📌 How to post your legion (example)' in the forum (template: legion/level, server, leader+officers,
+  Legion section (30 Oct): pinned+locked example post '📌 How to post your legion (example)' in the forum = short rules + graphic card img/discord/legion-example.png
+  (rendered with Playwright from an HTML card on bg/asmodian.svg; no server field: everyone is on Marchutan) + a 4-line template. Fields: legion/level,
+  leader+officers,
   languages, focus, style, members x/128, classes wanted, requirements, play times in server time CET, siege/abyss, Legion Hall, voice, how to join; facts:
   128 members at every legion level 1-20, ranks High Commander / Elite Officer / Soldier, Asmodian halls Altgard/Morheim — MetaBot.GG legion guide).
   #📝・legion-leader-apply (vcfg.lapp, commands only, cleaned by verifyClean): /legion-apply legion character screenshot -> card in #verify-requests,
