@@ -10,6 +10,13 @@ def api(m, p, b=None):
     except urllib.error.HTTPError as e: raise RuntimeError(f'{m} {p} {e.code} {e.read()[:300]!r}')
 VIEW, CONNECT, SPEAK, MANAGE_CH, MUTE, MOVE, REQ = 0x400, 0x100000, 0x200000, 0x10, 0x400000, 0x1000000, 0x100000000
 g = api('GET', f'/guilds/{G}'); print('community:', 'COMMUNITY' in g['features'])
+if 'COMMUNITY' not in g['features']:      # the user agreed (30 Oct): Community is required for Stage channels
+    chs = api('GET', f'/guilds/{G}/channels')
+    rules = next(c['id'] for c in chs if c['type'] == 0 and c['name'].endswith('server-rules'))
+    upd = next(c['id'] for c in chs if c['type'] == 0 and c['name'].endswith('staff'))
+    api('PATCH', f'/guilds/{G}', {'verification_level': max(1, g['verification_level']), 'explicit_content_filter': 2,
+        'features': list(set(g['features']) | {'COMMUNITY'}), 'rules_channel_id': rules, 'public_updates_channel_id': upd})
+    print('Community enabled · rules channel', rules, '· updates channel', upd, '· verification level', max(1, g['verification_level']))
 R = {r['name']: r['id'] for r in api('GET', f'/guilds/{G}/roles')}
 me = api('GET', '/users/@me')['id']
 chans = api('GET', f'/guilds/{G}/channels')
