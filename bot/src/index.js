@@ -1766,6 +1766,17 @@ async function raidReminders(env) {               // cron: tag the sign-ups once
   }
 }
 
+// English command/option names (30 Oct, MarchutanEU is an English server) mapped back to the Italian names the handlers use
+const CMD_IT = {deals: 'affari', alert: 'avviso', help: 'aiuto', character: 'personaggio', favorites: 'preferiti'};
+const OPT_IT = {item: 'oggetto', type: 'tipo', price: 'prezzo', when: 'quando', name: 'nome', add: 'aggiungi', list: 'lista'};
+const MAPPED = new Set(['info', 'craft', 'server', ...Object.values(CMD_IT)]);
+function toItalianNames(d) {
+  if (!d?.name || d.type > 1) return;
+  if (CMD_IT[d.name]) d.name = CMD_IT[d.name];
+  if (!MAPPED.has(d.name)) return;
+  const walk = (opts) => (opts || []).forEach((o) => { if (OPT_IT[o.name]) o.name = OPT_IT[o.name]; walk(o.options); });
+  walk(d.options);
+}
 // ---------- entry point ----------
 export default {
   async scheduled(event, env, ctx) { ctx.waitUntil(Promise.allSettled([checkAlerts(env).catch((e) => putErr(env, 'alert_err', String(e?.message || e).slice(0, 300))), checkStale(env).catch(() => {}), updateTimers(env).catch((e) => putErr(env, 'timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => putErr(env, 'sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300))), weekFix(env).catch((e) => env.USERS.put('timer_err', 'weekfix ' + String(e?.stack || e).slice(0, 300))), artChallenge(env).catch((e) => putErr(env, 'art_err', String(e?.stack || e).slice(0, 300))), verifyClean(env).catch(() => {})])); },
@@ -1780,6 +1791,7 @@ export default {
     const body = await req.text();
     if (!(await verified(req, body, env))) return new Response('bad signature', {status: 401});
     const i = JSON.parse(body);
+    toItalianNames(i.data);                                                 // commands are registered in English (Italian name_localizations): handlers keep the Italian names
     if (i.type === 1) return Response.json({type: 1});                       // PING from Discord
     try {
       if (i.type === 4) {                                                       // autocomplete
