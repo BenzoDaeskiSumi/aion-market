@@ -255,6 +255,8 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   #🏰・legion is a FORUM since 29 Oct (only role 'Legion Leader' + Admins/Moderator post and reply; Marchutans/Temporary Access/Faction-Leaders read and react; tags Recruiting/Event/News/Info); the old text channel is '🗄️・legion-archive' (read-only).
   Language channels in '🌍 INTERNATIONAL CHANNELS' (hidden from @everyone, Marchutans see it): 🪆 russian, 💃 spanish, 🥐 french, 🥨 german, 🥟 polish, 🍕 italian — typical emojis, not flags (Windows Discord shows flags as letters; user's choice).
   '🎙️ Podcast' voice (Caller speaks, others listen) was made 29 Oct and later deleted by someone on the server; role 'Caller' still exists.
+  30 Oct (user agreed): server switched to COMMUNITY (rules channel = server-rules, updates = staff, verification level low, explicit filter all) to allow
+  Stage channels; '🏯 Siege Stage' (type 13, top of VOICE CHANNELS): Marchutans listen + raise hand; Shotcallers, Caller, Faction-Leaders, Admins, Moderator are stage moderators.
   Class = ROLE ICON (server is boost level 3): each class role has the official class icon, Discord shows it right after the name; nicknames are the plain
   in-game name (the Unicode emoji prefix tried first was removed on 29 Oct: the user wanted the class icons; custom emojis can't go in nicknames).
   Server emojis (29 Oct): :gladiator: … :chanter: (official class icons, NCSOFT CDN), :hidden_cube: (ours), :aion_market: (site logo).
