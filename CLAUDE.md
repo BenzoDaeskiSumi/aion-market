@@ -262,6 +262,9 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   (legion forum/archive keep their extras, View copied from the category). Channels outside categories: verify*, staff/logs/roles (Faction-Leaders see staff/logs/roles).
   Category 👑 LEADERS (29 Oct): 👑・leaders-chat + 👑 Leaders voice, only Admins, Moderator, Legion Leader, Faction-Leaders (@everyone hidden).
   Channel look: scripts/discord/mstyle.py (mode mstyle-plan/apply): same channels renamed '📢 NEWS' / '📣・announcements' / voice '🌌 Abyss' (light style, user's choice).
+  30 Oct: someone added RaidProtect (captcha bot, role 'Unverified' on join, channels verification / typing-prohibited / raidprotect-logs). It has the 'bot'
+  role (Administrator, same position as Mauro's top role) so Mauro can't kick it: Unverified no longer hides our verify channels and was removed from 6 members;
+  the user has to remove RaidProtect in Server Settings → Integrations.
   Carl-bot was giving Marchutans to everyone (autorole / reaction role, seen in the audit log): that must be switched off on carl.gg, otherwise nobody needs to verify.
 
 ## No Legione on the site (29 Oct, the user asked)
