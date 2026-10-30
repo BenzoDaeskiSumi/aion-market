@@ -1534,6 +1534,57 @@ async function applyVerify(env, g, cfg, uid, req, by) {
 // /legion-apply legion:<text> character:<autocomplete> screenshot:<attachment> (MarchutanEU, 30 Oct): a verified member asks for the 'Legion Leader' role;
 // the card goes to the moderators' channel with ✅ ll:ok:<uid> / ❌ ll:no:<uid>. Nothing stored in KV: the card carries everything.
 const LEADER_ROLE = 'Legion Leader';
+// Legion Leader tickets (30 Oct, replaces /legion-apply): button lt:open in #legion-leader-apply opens a PRIVATE thread with the member + Admins/Moderator
+// (role mention adds them; mods also see private threads through Manage Threads). Inside: ✅ lt:ok:<uid> (mods) gives the role, 🔒 lt:close:<uid> archives + locks.
+async function legionTicket(i, env, ctx) {
+  const g = i.guild_id, uid = userId(i), [, act, who] = (i.data.custom_id || '').split(':'), pm = BigInt(i.member?.permissions || 0);
+  const isMod = isAdmin(i) || !!(pm & 0x2000n || pm & (1n << 40n) || pm & 2n || pm & 0x400000000n);
+  if (act === 'open') {
+    const cfg = JSON.parse(await env.USERS.get('vcfg:' + g) || 'null');
+    if (cfg?.role && !(i.member?.roles || []).includes(cfg.role)) return oops('Verify your character first with `/verify`, then open a ticket.');
+    const name = (i.member?.user?.username || 'member').slice(0, 60), ch = i.channel_id;
+    const act = await (await dapi(env, 'GET', `/guilds/${g}/threads/active`)).json().catch(() => ({}));
+    const mine = (act.threads || []).find((t) => t.parent_id === ch && t.name === `🎫 ${name}`);
+    if (mine) return oops(`You already have an open ticket: <#${mine.id}>`);
+    ctx.waitUntil((async () => {
+      const t = await (await dapi(env, 'POST', `/channels/${ch}/threads`, {name: `🎫 ${name}`, type: 12, invitable: false, auto_archive_duration: 10080})).json();
+      if (!t?.id) return void await hook(i, env, {content: 'I could not open the ticket: ask a moderator.'});
+      await dapi(env, 'PUT', `/channels/${t.id}/thread-members/${uid}`);
+      const roles = await (await dapi(env, 'GET', `/guilds/${g}/roles`)).json().catch(() => []);
+      const mods = (Array.isArray(roles) ? roles : []).filter((r) => ['Admins', 'Moderator'].includes(r.name)).map((r) => r.id);
+      await dapi(env, 'POST', `/channels/${t.id}/messages`, {content: `<@${uid}> ${mods.map((r) => `<@&${r}>`).join(' ')}`, allowed_mentions: {users: [uid], roles: mods},
+        embeds: [{color: 0xc9a227, title: '👑 Legion Leader request', description: [
+          'Only you and the moderators can see this ticket.', '',
+          '**Send here:**', '• the **name of your legion**', '• a **screenshot of the Legion window** where your character is shown as **High Commander**', '',
+          'A moderator will check it and give you the **Legion Leader** role. Then you can post your legion in the forum.'].join('\n')}],
+        components: [{type: 1, components: [{type: 2, style: 3, label: 'Give Legion Leader', emoji: {name: '✅'}, custom_id: `lt:ok:${uid}`},
+          {type: 2, style: 2, label: 'Close ticket', emoji: {name: '🔒'}, custom_id: `lt:close:${uid}`}]}]});
+      await hook(i, env, {content: `🎫 Your ticket is open: <#${t.id}>`});
+    })().catch(() => hook(i, env, {content: 'Something went wrong: please try again.'}).catch(() => {})));
+    return Response.json({type: 5, data: {flags: 64}});
+  }
+  if (act === 'ok') {
+    if (!isMod) return oops('Only moderators can give the role.');
+    const roles = await (await dapi(env, 'GET', `/guilds/${g}/roles`)).json().catch(() => []);
+    const role = Array.isArray(roles) && roles.find((r) => r.name === LEADER_ROLE);
+    if (!role) return oops(`There is no role called "${LEADER_ROLE}".`);
+    ctx.waitUntil((async () => {
+      await dapi(env, 'PUT', `/guilds/${g}/members/${who}/roles/${role.id}`);
+      await dapi(env, 'POST', `/channels/${i.channel_id}/messages`, {content: `✅ <@${who}> is now **Legion Leader** (by <@${uid}>). You can post your legion in the forum. This ticket closes now.`, allowed_mentions: {parse: []}});
+      await dapi(env, 'PATCH', `/channels/${i.channel_id}`, {archived: true, locked: true});
+    })());
+    return Response.json({type: 6});
+  }
+  if (act === 'close') {
+    if (!isMod && uid !== who) return oops('Only the person who opened it or a moderator can close it.');
+    ctx.waitUntil((async () => {
+      await dapi(env, 'POST', `/channels/${i.channel_id}/messages`, {content: `🔒 Ticket closed by <@${uid}>.`, allowed_mentions: {parse: []}});
+      await dapi(env, 'PATCH', `/channels/${i.channel_id}`, {archived: true, locked: true});
+    })());
+    return Response.json({type: 6});
+  }
+  return oops('Unknown action.');
+}
 async function legionApply(i, env, ctx) {
   const g = i.guild_id, cfg = JSON.parse(await env.USERS.get('vcfg:' + g) || 'null'), uid = userId(i);
   if (!cfg?.mod) return oops('Legion applications are not active on this server.');
@@ -1790,6 +1841,7 @@ export default {
       if (i.type === 3 && i.data.custom_id?.startsWith('rp:')) return await rolePick(i, env, ctx);
       if (i.type === 3 && i.data.custom_id === 'vt:get') return await tempAccess(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('ll:')) return await legionDecide(i, env, ctx);
+      if (i.type === 3 && i.data.custom_id?.startsWith('lt:')) return await legionTicket(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('vf:')) return await verifyDecide(i, env, ctx);
       if (i.type === 5 && i.data.custom_id?.startsWith('vfm:')) return await verifyDecide({...i, data: {...i.data, custom_id: i.data.custom_id.replace('vfm:', 'vf:')}}, env, ctx, String(i.data.components?.[0]?.components?.[0]?.value || '').trim());
       if (i.type === 5 && i.data.custom_id?.startsWith('alm:')) return await alertSubmit(i, env);
