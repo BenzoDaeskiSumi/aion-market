@@ -70,9 +70,7 @@ else:   # channel already there: refresh its topic and Mauro's instructions mess
             'permission_overwrites': ows + [{'id': G, 'type': 0, 'allow': str(VIEW | SEND | 0x8000 | 0x10000 | 0x80000000), 'deny': str(THREADS)},
                                             {'id': me['id'], 'type': 1, 'allow': str(VIEW | SEND | 0x2000), 'deny': '0'}] +
                                            [{'id': byname[n]['id'], 'type': 0, 'allow': str(VIEW | SEND), 'deny': '0'} for n in MODS if n in byname]})   # mods see it (role allows beat the Marchutans deny)
-        msgs = [m for m in api('GET', f"/channels/{ch['id']}/messages?limit=50") if m['author']['id'] == me['id']]
-        if msgs: api('PATCH', f"/channels/{ch['id']}/messages/{msgs[-1]['id']}", guide)
-        else: api('POST', f"/channels/{ch['id']}/messages", guide)
+        # the instructions message (text + video, 30 Oct) is posted by hand; re-runs leave it alone
 if not mod:
     say('  create #🛡️・verify-requests (Admins, Moderator, Mauro)')
     if APPLY:
