@@ -1,31 +1,26 @@
-"""MarchutanEU (30 Oct): Stage channel for sieges. Verified members listen and can raise their hand; Shotcallers, Caller, Faction-Leaders,
-Admins and Moderator are stage moderators (start it, bring people up)."""
 import json, os, time, urllib.request, urllib.error
 T, G = os.environ['DISCORD_TOKEN'], '1564968231410864160'
 def api(m, p, b=None):
     try:
         with urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v10' + p, method=m, data=json.dumps(b).encode() if b is not None else None,
-                headers={'Authorization': f'Bot {T}', 'User-Agent': 'DiscordBot (aion-market, 1)', 'Content-Type': 'application/json', 'X-Audit-Log-Reason': 'Siege stage'}), timeout=60) as r:
+                headers={'Authorization': f'Bot {T}', 'User-Agent': 'DiscordBot (aion-market, 1)', 'Content-Type': 'application/json', 'X-Audit-Log-Reason': 'Legion Leader tickets'}), timeout=60) as r:
             time.sleep(0.4); return None if r.status == 204 else json.load(r)
     except urllib.error.HTTPError as e: raise RuntimeError(f'{m} {p} {e.code} {e.read()[:300]!r}')
-VIEW, CONNECT, SPEAK, MANAGE_CH, MUTE, MOVE, REQ = 0x400, 0x100000, 0x200000, 0x10, 0x400000, 0x1000000, 0x100000000
-g = api('GET', f'/guilds/{G}'); print('community:', 'COMMUNITY' in g['features'])
-if 'COMMUNITY' not in g['features']:      # the user agreed (30 Oct): Community is required for Stage channels
-    chs = api('GET', f'/guilds/{G}/channels')
-    rules = next(c['id'] for c in chs if c['type'] == 0 and c['name'].endswith('server-rules'))
-    upd = next(c['id'] for c in chs if c['type'] == 0 and c['name'].endswith('staff'))
-    api('PATCH', f'/guilds/{G}', {'verification_level': max(1, g['verification_level']), 'explicit_content_filter': 2,
-        'features': list(set(g['features']) | {'COMMUNITY'}), 'rules_channel_id': rules, 'public_updates_channel_id': upd})
-    print('Community enabled · rules channel', rules, '· updates channel', upd, '· verification level', max(1, g['verification_level']))
-R = {r['name']: r['id'] for r in api('GET', f'/guilds/{G}/roles')}
-me = api('GET', '/users/@me')['id']
-chans = api('GET', f'/guilds/{G}/channels')
-if any(c['type'] == 13 and 'siege' in c['name'].lower() for c in chans): raise SystemExit(print('siege stage already exists'))
-cat = next(c for c in chans if c['type'] == 4 and 'VOICE' in c['name'].upper())
-ow = lambda i, a, d=0, t=0: {'id': i, 'type': t, 'allow': str(a), 'deny': str(d)}
-mods = [n for n in ('Shotcallers', 'Caller', 'Faction-Leaders', 'Admins', 'Moderator') if n in R]
-stage = api('POST', f'/guilds/{G}/channels', {'name': '🏯 Siege Stage', 'type': 13, 'parent_id': cat['id'], 'position': 0, 'permission_overwrites': [
-    ow(G, 0, VIEW), ow(R['Marchutans'], VIEW | CONNECT | REQ),
-    ow(me, VIEW | CONNECT | MANAGE_CH | MUTE | MOVE, 0, 1)] + [ow(R[n], VIEW | CONNECT | SPEAK | REQ | MANAGE_CH | MUTE | MOVE) for n in mods]})
-api('PATCH', f'/guilds/{G}/channels', [{'id': stage['id'], 'position': 0}])
-print('created', stage['name'], stage['id'], '· stage moderators:', mods)
+VIEW, SEND, EMBED, ATTACH, HIST, TSEND, CPUB, CPRIV, APPCMD = 0x400, 0x800, 0x4000, 0x8000, 0x10000, 0x4000000000, 0x800000000, 0x1000000000, 0x80000000
+me = api('GET', '/users/@me')['id']; R = {r['name']: r['id'] for r in api('GET', f'/guilds/{G}/roles')}
+ch = next(c for c in api('GET', f'/guilds/{G}/channels') if c['name'].endswith('legion-leader-apply') or c['name'].endswith('legion-leader-tickets'))
+ows = [o for o in ch['permission_overwrites'] if o['id'] not in (R['Marchutans'], me)] + [
+    {'id': R['Marchutans'], 'type': 0, 'allow': str(VIEW | HIST | TSEND | ATTACH | EMBED), 'deny': str(SEND | CPUB | CPRIV | APPCMD)},
+    {'id': me, 'type': 1, 'allow': str(VIEW | SEND | TSEND | CPRIV | 0x400000000 | 0x2000), 'deny': '0'}]
+api('PATCH', f"/channels/{ch['id']}", {'name': '🎫・legion-leader-tickets', 'rate_limit_per_user': 0, 'permission_overwrites': ows,
+    'topic': 'Legion leaders: open a private ticket to get the Legion Leader role.'})
+body = {'content': '', 'embeds': [{'color': 0xc9a227, 'title': '👑 Become Legion Leader', 'description': '\n'.join([
+    'Are you the **High Commander** of a legion? Get the **Legion Leader** role to post your legion in the forum.', '',
+    '**1.** Press **Open a ticket** below: a private chat opens with you and the moderators.',
+    '**2.** Send the **legion name** and a **screenshot of the Legion window** showing you as High Commander.',
+    '**3.** A moderator gives you the role and closes the ticket.'])}],
+    'components': [{'type': 1, 'components': [{'type': 2, 'style': 1, 'label': 'Open a ticket', 'emoji': {'name': '🎫'}, 'custom_id': 'lt:open'}]}]}
+msgs = [m for m in api('GET', f"/channels/{ch['id']}/messages?limit=20") if m['author']['id'] == me]
+if msgs: api('PATCH', f"/channels/{ch['id']}/messages/{msgs[-1]['id']}", body); print('instructions replaced')
+else: api('POST', f"/channels/{ch['id']}/messages", body); print('instructions posted')
+print('channel ->', '🎫・legion-leader-tickets')
