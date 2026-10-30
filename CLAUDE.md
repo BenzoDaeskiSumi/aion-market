@@ -267,8 +267,9 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   leader+officers,
   languages, focus, style, members x/128, classes wanted, requirements, play times in server time CET, siege/abyss, Legion Hall, voice, how to join; facts:
   128 members at every legion level 1-20, ranks High Commander / Elite Officer / Soldier, Asmodian halls Altgard/Morheim — MetaBot.GG legion guide).
-  #📝・legion-leader-apply (vcfg.lapp, commands only, cleaned by verifyClean): /legion-apply legion character screenshot -> card in #verify-requests,
-  ✅ ll:ok:<uid> gives role 'Legion Leader' + DM, ❌ ll:no:<uid> DM; must already have Marchutans; card shows the official profile's legion name vs the written one.
+  #🎫・legion-leader-tickets (was legion-leader-apply; vcfg.lapp): button lt:open -> legionTicket() opens a PRIVATE thread '🎫 <username>' with the member and
+  pings Admins/Moderator; ✅ lt:ok:<uid> (mods) gives 'Legion Leader' and archives+locks, 🔒 lt:close:<uid> (opener or mod) closes. One open ticket per person.
+  Verified members can only write inside threads there. /legion-apply is no longer registered (legionApply/legionDecide kept as dead code).
   Category 👑 LEADERS (29 Oct): 👑・leaders-chat + 👑 Leaders voice, only Admins, Moderator, Legion Leader, Faction-Leaders (@everyone hidden).
   Channel look: scripts/discord/mstyle.py (mode mstyle-plan/apply): same channels renamed '📢 NEWS' / '📣・announcements' / voice '🌌 Abyss' (light style, user's choice).
   30 Oct: someone added RaidProtect (captcha bot, role 'Unverified' on join, channels verification / typing-prohibited / raidprotect-logs). It has the 'bot'
