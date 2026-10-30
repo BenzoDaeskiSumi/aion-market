@@ -1,20 +1,30 @@
-import json, os, urllib.request
-from datetime import datetime, timezone
+"""MarchutanEU (30 Oct): RaidProtect added a second verification (role 'Unverified' on join, which also hides our #verify channels).
+Mauro can't kick it or take its 'bot' role (same top role as Mauro), so: our verify channels stop hiding from 'Unverified', and members who
+currently have 'Unverified' lose it. The user removes the bot itself from Server Settings → Integrations."""
+import json, os, time, urllib.request, urllib.error
 T, G = os.environ['DISCORD_TOKEN'], '1564968231410864160'
-get = lambda p: json.load(urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v10' + p, headers={'Authorization': f'Bot {T}', 'User-Agent': 'DiscordBot (aion-market, 1)'})))
-when = lambda sf: datetime.fromtimestamp(((int(sf) >> 22) + 1420070400000) / 1000, timezone.utc).strftime('%m-%d %H:%M')
-roles = get(f'/guilds/{G}/roles'); RN = {r['id']: r['name'] for r in roles}; RN[G] = '@everyone'
-members = get(f'/guilds/{G}/members?limit=1000')
-bots = [m for m in members if m['user'].get('bot')]
-for b in bots: print('bot', b['user']['username'], b['user']['id'], 'joined', b['joined_at'][:16], [RN.get(r) for r in b['roles']])
-ev = get(f'/guilds/{G}/audit-logs?limit=100'); users = {u['id']: u['username'] for u in ev.get('users', [])}
-for e in ev['audit_log_entries'][:100]:
-    who = users.get(e['user_id'], e['user_id'])
-    if e['action_type'] in (25,) and who not in ('Mauro',): 
-        ch = [(c['key'], [r['name'] for r in c.get('new_value', [])]) for c in e.get('changes', [])]
-    else: ch = [c['key'] for c in e.get('changes', [])][:6]
-    print(when(e['id']), who, 'action', e['action_type'], 'target', e.get('target_id'), ch)
-r = {x['id']: x for x in roles}
-for x in roles: print('role', x['position'], x['name'], 'managed' if x['managed'] else '', x['permissions'])
-for c in get(f'/guilds/{G}/channels'):
-    if c['type'] != 4 and not c.get('parent_id') or 'verif' in c['name'].lower(): print('chan', c['name'], c['id'], [(RN.get(o['id'], o['id']), o['allow'], o['deny']) for o in c['permission_overwrites']])
+def api(m, p, b=None):
+    for _ in range(6):
+        try:
+            with urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v10' + p, method=m, data=json.dumps(b).encode() if b is not None else None,
+                    headers={'Authorization': f'Bot {T}', 'User-Agent': 'DiscordBot (aion-market, 1)', 'Content-Type': 'application/json', 'X-Audit-Log-Reason': 'Undo RaidProtect double verification'}), timeout=60) as r:
+                time.sleep(0.4); return None if r.status == 204 else json.load(r)
+        except urllib.error.HTTPError as e:
+            if e.code == 429: time.sleep(json.load(e).get('retry_after', 1) + 0.5); continue
+            raise RuntimeError(f'{m} {p} {e.code} {e.read()[:200]!r}')
+U = next(r['id'] for r in api('GET', f'/guilds/{G}/roles') if r['name'] == 'Unverified')
+for c in api('GET', f'/guilds/{G}/channels'):
+    if any(c['name'].endswith(s) for s in ('・verify', 'verify-help', 'verify-now')):
+        ows = [o for o in c['permission_overwrites'] if o['id'] != U]
+        if len(ows) != len(c['permission_overwrites']): api('PATCH', f"/channels/{c['id']}", {'permission_overwrites': ows}); print('Unverified no longer hidden from', c['name'])
+members, after = [], '0'
+while True:
+    page = api('GET', f'/guilds/{G}/members?limit=1000&after={after}'); members += page
+    if len(page) < 1000: break
+    after = page[-1]['user']['id']
+n = 0
+for m in members:
+    if U in m['roles']:
+        try: api('DELETE', f"/guilds/{G}/members/{m['user']['id']}/roles/{U}"); n += 1
+        except Exception as e: print('  ', m['user']['username'], str(e)[:80])
+print('Unverified removed from', n, 'members')
