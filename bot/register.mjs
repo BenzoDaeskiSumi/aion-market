@@ -40,6 +40,10 @@ const commands = [
   {name: 'verify-user', description: 'Moderators: link a member to their character and verify them (no screenshot needed)', default_member_permissions: '268435456', dm_permission: false, options: [
     {type: 6, name: 'user', description: 'The Discord member', required: true},
     {type: 3, name: 'character', description: 'Their character: pick it from the suggestions (EU servers)', required: true, autocomplete: true}]},
+  {name: 'legion-apply', description: 'Legion leaders: ask for the Legion Leader role (screenshot of your legion window)', dm_permission: false, options: [
+    {type: 3, name: 'legion', description: 'Name of your legion', required: true, max_length: 40},
+    {type: 3, name: 'character', description: 'Your character (the legion leader): pick it from the suggestions', required: true, autocomplete: true},
+    {type: 11, name: 'screenshot', description: 'Legion window where your character is shown as High Commander', required: true}]},
   {name: 'verify-setup', description: 'Admin: turn on screenshot verification on this server (role and channels)', default_member_permissions: '32', dm_permission: false},
   {name: 'scollega', description: 'Scollega il tuo personaggio dal tuo account Discord', dm_permission: false, options: [
     {type: 6, name: 'utente', description: 'Solo admin: scollega il personaggio di questo utente', required: false}]},

@@ -1481,6 +1481,10 @@ async function verifyClean(env) {
     const cfg = JSON.parse(await env.USERS.get(k.name) || 'null'); if (!cfg?.ch) continue;
     const msgs = await (await dapi(env, 'GET', `/channels/${cfg.ch}/messages?limit=50`)).json().catch(() => []);
     for (const m of Array.isArray(msgs) ? msgs : []) if (m.author?.id !== me && !m.pinned) await dapi(env, 'DELETE', `/channels/${cfg.ch}/messages/${m.id}`).catch(() => {});
+    if (cfg.lapp) {   // #legion-leader-apply works the same way: commands only
+      const am = await (await dapi(env, 'GET', `/channels/${cfg.lapp}/messages?limit=50`)).json().catch(() => []);
+      for (const m of Array.isArray(am) ? am : []) if (m.author?.id !== me && !m.pinned) await dapi(env, 'DELETE', `/channels/${cfg.lapp}/messages/${m.id}`).catch(() => {});
+    }
     if (!cfg.mod) continue;   // moderators' channel: drop cards of members already verified (approved earlier, or a duplicate request)
     const reqs = await (await dapi(env, 'GET', `/channels/${cfg.mod}/messages?limit=100`)).json().catch(() => []);
     for (const m of Array.isArray(reqs) ? reqs : []) {
@@ -1527,6 +1531,48 @@ async function applyVerify(env, g, cfg, uid, req, by) {
   await dmUser(env, uid, `✅ You are verified as **${req.name}** (${req.sn}). Welcome!`);
 }
 // /verify-user user:<member> character:<autocomplete>: a moderator links someone's character directly (no screenshot); may move a character from another account
+// /legion-apply legion:<text> character:<autocomplete> screenshot:<attachment> (MarchutanEU, 30 Oct): a verified member asks for the 'Legion Leader' role;
+// the card goes to the moderators' channel with ✅ ll:ok:<uid> / ❌ ll:no:<uid>. Nothing stored in KV: the card carries everything.
+const LEADER_ROLE = 'Legion Leader';
+async function legionApply(i, env, ctx) {
+  const g = i.guild_id, cfg = JSON.parse(await env.USERS.get('vcfg:' + g) || 'null'), uid = userId(i);
+  if (!cfg?.mod) return oops('Legion applications are not active on this server.');
+  if (!(i.member?.roles || []).includes(cfg.role)) return oops('Verify your character first with `/verify`, then apply.');
+  const legion = String(opt(i.data, 'legion')?.value || '').trim().slice(0, 40), [server, id] = String(opt(i.data, 'character')?.value || '').split(':');
+  if (!legion) return oops('Write the name of your legion.');
+  if (!/^\d{4}$/.test(server || '') || !id) return oops('Pick your character from the **suggestions** that appear while you type the name.');
+  const att = i.data.resolved?.attachments?.[opt(i.data, 'screenshot')?.value];
+  if (!att || !/^image\//.test(att.content_type || '')) return oops('Attach a **screenshot** of the legion window where you are shown as the leader (High Commander).');
+  ctx.waitUntil((async () => {
+    const c = await charProfile(+server, id).catch(() => null);
+    if (!c?.name) return void await hook(i, env, {content: 'The official NCSOFT site is not answering: try again in a few minutes.'});
+    const same = c.legion && c.legion.toLowerCase() === legion.toLowerCase();
+    const r = await dapi(env, 'POST', `/channels/${cfg.mod}/messages`, {allowed_mentions: {parse: []}, embeds: [{color: 0xc9a227, title: `Legion Leader request · ${legion}`,
+      description: `<@${uid}> says they lead **${legion}**\nCharacter: **${c.name}** · ${c.cls || '?'} · Lv ${c.lv || '?'} · ${c.serverName || ''}\n` +
+        `Legion on the official profile: **${c.legion || 'none'}** ${same ? '✅ matches' : '⚠️ does not match the name written'}\n\nCheck the screenshot: **${c.name}** must be the legion's **High Commander**.`,
+      thumbnail: avatarProxy(c.img, env) ? {url: avatarProxy(c.img, env)} : undefined, image: {url: att.url}, timestamp: new Date().toISOString()}],
+      components: [{type: 1, components: [{type: 2, style: 3, label: 'Give Legion Leader', emoji: {name: '✅'}, custom_id: `ll:ok:${uid}`}, {type: 2, style: 4, label: 'Reject', emoji: {name: '❌'}, custom_id: `ll:no:${uid}`}]}]});
+    await hook(i, env, {content: r.ok ? `📨 Request sent to the moderators for **${legion}**. I'll DM you when they check it.` : 'I cannot write in the moderators\' channel: tell an admin.'});
+  })().catch(() => hook(i, env, {content: 'Something went wrong: please try again, or ask in the help channel.'}).catch(() => {})));
+  return Response.json({type: 5, data: {flags: 64}});
+}
+async function legionDecide(i, env, ctx) {
+  const [, act, uid] = (i.data.custom_id || '').split(':'), g = i.guild_id, by = userId(i), pm = BigInt(i.member?.permissions || 0);
+  if (!isAdmin(i) && !(pm & 0x2000n || pm & (1n << 40n) || pm & 2n)) return oops('Only moderators can decide.');
+  const embed = {...(i.message?.embeds?.[0] || {})}, legion = (embed.title || '').split(' · ').slice(1).join(' · ') || 'your legion';
+  if (act === 'ok') {
+    const roles = await (await dapi(env, 'GET', `/guilds/${g}/roles`)).json().catch(() => []);
+    const role = Array.isArray(roles) && roles.find((r) => r.name === LEADER_ROLE);
+    if (!role) return oops(`There is no role called "${LEADER_ROLE}".`);
+    ctx.waitUntil((async () => {
+      await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${role.id}`);
+      await dmUser(env, uid, `👑 You are now **Legion Leader** for **${legion}**. You can post in the legion forum: one post per legion, keep it updated.`);
+    })());
+    return Response.json({type: 7, data: {embeds: [{...embed, color: 0x34d399, footer: {text: 'Approved'}, description: `${embed.description || ''}\n\n✅ Approved by <@${by}>`}], components: []}});
+  }
+  ctx.waitUntil(dmUser(env, uid, `❌ Your Legion Leader request for **${legion}** was not approved. Ask a moderator if you think it's a mistake.`));
+  return Response.json({type: 7, data: {embeds: [{...embed, color: 0xf87171, footer: {text: 'Rejected'}, description: `${embed.description || ''}\n\n❌ Rejected by <@${by}>`}], components: []}});
+}
 async function verifyUser(i, env, ctx) {
   const g = i.guild_id, cfg = JSON.parse(await env.USERS.get('vcfg:' + g) || 'null');
   if (!cfg) return oops('Verification is not active on this server.');
@@ -1692,7 +1738,7 @@ export default {
           return Response.json({type: 8, data: {choices: list.filter((x) => x.name.toLowerCase().includes(q2)).slice(0, 25)
             .map((x) => ({name: `${x.name} · ${x.race === 1 ? 'Elyos' : 'Asmodian'}`, value: String(x.id)}))}});
         }
-        if (i.data.name === 'verify' || i.data.name === 'verify-user') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), null, true)}});
+        if (i.data.name === 'verify' || i.data.name === 'verify-user' || i.data.name === 'legion-apply') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), null, true)}});
         if (i.data.name === 'collega') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), /^\d{4}$/.test(String(opt(i.data, 'server')?.value || '')) ? opt(i.data, 'server').value : null)}});
         if (i.data.name === 'personaggio') {
           const srv = /^\d{4}$/.test(String(opt(i.data, 'server')?.value || '')) ? opt(i.data, 'server').value : null;
@@ -1723,6 +1769,7 @@ export default {
         if (i.data.name === 'collega') return await collega(i, env, ctx);
         if (i.data.name === 'verify') return await verifyRequest(i, env, ctx);
         if (i.data.name === 'verify-user') return await verifyUser(i, env, ctx);
+        if (i.data.name === 'legion-apply') return await legionApply(i, env, ctx);
         if (i.data.name === 'verify-setup') return await verifySetup(i, env);
         if (i.data.name === 'scollega') return await scollega(i, env);
         if (i.data.name === 'legione') return await legione(i, env, ctx);
@@ -1742,6 +1789,7 @@ export default {
       if (i.type === 3 && i.data.custom_id?.startsWith('rs:')) return await raidButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('rp:')) return await rolePick(i, env, ctx);
       if (i.type === 3 && i.data.custom_id === 'vt:get') return await tempAccess(i, env, ctx);
+      if (i.type === 3 && i.data.custom_id?.startsWith('ll:')) return await legionDecide(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('vf:')) return await verifyDecide(i, env, ctx);
       if (i.type === 5 && i.data.custom_id?.startsWith('vfm:')) return await verifyDecide({...i, data: {...i.data, custom_id: i.data.custom_id.replace('vfm:', 'vf:')}}, env, ctx, String(i.data.components?.[0]?.components?.[0]?.value || '').trim());
       if (i.type === 5 && i.data.custom_id?.startsWith('alm:')) return await alertSubmit(i, env);
