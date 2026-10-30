@@ -177,6 +177,10 @@ in the URL, or /chart/create when too long) from data/s/<id>/hist.json (written 
 daily for 30 days 'm', [hours since epoch, price], last point extended to the latest check).
 Embed links open the page at ?s=<server>&item=<name> (deep link handled at page start-up).
 .github/workflows/bot.yml deploys it (wrangler-action) and registers the commands (bot/register.mjs) on every push to bot/**.
+Since 30 Oct: GLOBAL commands have English names (info, deals, server, alert add/list, craft, help, character, favorites, verify*) with Italian
+name/description localizations (Italian clients still see /affari, /personaggio…); toItalianNames() at the top of the request handler maps them back
+(CMD_IT/OPT_IT), so handlers keep the Italian names. Legione-only commands (avvisi-canale, statistiche, chisiamo, collega, scollega, legione, raid) are
+GUILD commands of the Legione (1553398446524731435) only. Bot replies of the market commands are still Italian.
 Repo secrets (set by the user, never in chat): CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, DISCORD_PUBLIC_KEY, DISCORD_APP_ID, DISCORD_TOKEN, SUPABASE_SERVICE_KEY.
 Worker URL: https://aion-market-bot.aion2-market.workers.dev (Discord Interactions Endpoint URL). Deploy errors are printed as run annotations.
 Price alerts: profiles.alerts = [{item, server, price, dir below|above}] (max 25), set on the site (detail pane '#alertbox', logged in)
