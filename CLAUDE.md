@@ -260,6 +260,11 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   Server emojis (29 Oct): :gladiator: … :chanter: (official class icons, NCSOFT CDN), :hidden_cube: (ours), :aion_market: (site logo).
   29 Oct 20:05: 26 channels had their own permissions with @everyone able to view (unverified saw them): all synced to their category
   (legion forum/archive keep their extras, View copied from the category). Channels outside categories: verify*, staff/logs/roles (Faction-Leaders see staff/logs/roles).
+  Legion section (30 Oct): pinned+locked example post '📌 How to post your legion (example)' in the forum (template: legion/level, server, leader+officers,
+  languages, focus, style, members x/128, classes wanted, requirements, play times in server time CET, siege/abyss, Legion Hall, voice, how to join; facts:
+  128 members at every legion level 1-20, ranks High Commander / Elite Officer / Soldier, Asmodian halls Altgard/Morheim — MetaBot.GG legion guide).
+  #📝・legion-leader-apply (vcfg.lapp, commands only, cleaned by verifyClean): /legion-apply legion character screenshot -> card in #verify-requests,
+  ✅ ll:ok:<uid> gives role 'Legion Leader' + DM, ❌ ll:no:<uid> DM; must already have Marchutans; card shows the official profile's legion name vs the written one.
   Category 👑 LEADERS (29 Oct): 👑・leaders-chat + 👑 Leaders voice, only Admins, Moderator, Legion Leader, Faction-Leaders (@everyone hidden).
   Channel look: scripts/discord/mstyle.py (mode mstyle-plan/apply): same channels renamed '📢 NEWS' / '📣・announcements' / voice '🌌 Abyss' (light style, user's choice).
   30 Oct: someone added RaidProtect (captcha bot, role 'Unverified' on join, channels verification / typing-prohibited / raidprotect-logs). It has the 'bot'
