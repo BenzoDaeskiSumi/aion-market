@@ -259,7 +259,7 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   29 Oct: scripts/discord/vreset.py removed Marchutans from 141 unverified members (kept: verified, bots, Admins/Moderator; ids in KV vreset:<g>) and made
   #📢・verify-now (only role-less members see it; Admins/Moderator write and @everyone-ping it). Mode vresetfix-apply = nick + class role for already-verified members; vresetcls-apply = unverified members lose class roles (53 removed on 29 Oct).
   #🏰・legion is a FORUM since 29 Oct (only role 'Legion Leader' + Admins/Moderator post and reply; Marchutans/Temporary Access/Faction-Leaders read and react; tags Recruiting/Event/News/Info); the old text channel is '🗄️・legion-archive' (read-only).
-  Language channels in '🌍 INTERNATIONAL CHANNELS' (hidden from @everyone, Marchutans see it): 🪆 russian, 💃 spanish, 🥐 french, 🥨 german, 🥟 polish, 🍕 italian — typical emojis, not flags (Windows Discord shows flags as letters; user's choice).
+  Language channels in '🌍 INTERNATIONAL CHANNELS' (hidden from @everyone, Marchutans see it): 🪆 russian, 💃 spanish, 🥐 french, 🥨 german, 🥟 polish, 🍕 italian, ⛰️ balkan, 🌲 romanian — typical emojis, not flags (Windows Discord shows flags as letters; user's choice).
   '🎙️ Podcast' voice (Caller speaks, others listen) was made 29 Oct and later deleted by someone on the server; role 'Caller' still exists.
   30 Oct (user agreed): server switched to COMMUNITY (rules channel = server-rules, updates = staff, verification level low, explicit filter all) to allow
   Stage channels; '🏯 Siege Stage' (type 13, top of VOICE CHANNELS): Marchutans listen + raise hand; Shotcallers, Caller, Faction-Leaders, Admins, Moderator are stage moderators.
