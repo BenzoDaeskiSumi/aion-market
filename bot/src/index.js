@@ -1529,7 +1529,14 @@ async function applyVerify(env, g, cfg, uid, req, by) {
   await env.USERS.put(`vchar:${g}:${req.server}:${req.id}`, uid).catch(() => {});
   await env.USERS.delete(`vreq:${g}:${uid}`).catch(() => {});
   await dmUser(env, uid, `✅ You are verified as **${req.name}** (${req.sn}). Welcome!`);
-  if (g === MEU) await exposedPush(env, [{discord_id: uid, characters: [exposedChar(req)]}]).catch((e) => putErr(env, 'exposed_err', String(e?.message || e).slice(0, 300)));
+  if (g === MEU) {
+    const p = {discord_id: uid, characters: [exposedChar(req)]};
+    await exposedPush(env, [p]).catch(async (e) => {   // their server down: keep it for the cron to retry (one KV write only on failure)
+      await putErr(env, 'exposed_err', String(e?.message || e).slice(0, 300));
+      const q = JSON.parse(await env.USERS.get('exposed:retry') || '[]').filter((x) => x.discord_id !== uid);
+      await env.USERS.put('exposed:retry', JSON.stringify([...q, p].slice(-500))).catch(() => {});
+    });
+  }
 }
 // Exposed bot (siege / party search bot of Vagari, MarchutanEU, 31 Oct, the user agreed): every MarchutanEU verification is sent to its player DB
 // (POST https://onlyexposed.tech/api/app/characters, secret EXPOSED_API_KEY); exposedBulk() in the cron sends everyone already verified once (KV exposed:bulk).
@@ -1542,7 +1549,10 @@ async function exposedPush(env, players) {
   return r.status;
 }
 async function exposedBulk(env) {
-  if (!env.EXPOSED_API_KEY || await env.USERS.get('exposed:bulk')) return;
+  if (!env.EXPOSED_API_KEY) return;
+  const retry = await env.USERS.get('exposed:retry');
+  if (retry) { await exposedPush(env, JSON.parse(retry)); await env.USERS.delete('exposed:retry'); }
+  if (await env.USERS.get('exposed:bulk')) return;
   const keys = [];
   let cur;
   do { const l = await env.USERS.list({prefix: `vlink:${MEU}:`, cursor: cur}); keys.push(...l.keys.map((k) => k.name)); cur = l.list_complete ? null : l.cursor; } while (cur);

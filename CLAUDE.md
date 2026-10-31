@@ -285,7 +285,7 @@ To limit the bot to one channel: Discord server settings → Integrations → th
 
 - Exposed bot (31 Oct, the user agreed; Vagari's siege/party-search bot): applyVerify() POSTs every MarchutanEU verification to https://onlyexposed.tech/api/app/characters
   ({players: [{discord_id, characters: [{name, server, character_id}]}]}, Bearer = repo secret EXPOSED_API_KEY, put on the Worker by bot.yml); exposedBulk() in the cron sends
-  everyone already verified once (KV exposed:bulk = {n, t}; errors in exposed_err; both shown by /timers/status). Without the secret nothing is sent.
+  everyone already verified once (KV exposed:bulk = {n, t}; errors in exposed_err; both shown by /timers/status). A failed push (their 502s) goes to KV exposed:retry, re-sent by the cron. Without the secret nothing is sent.
 
 ## No Legione on the site (29 Oct, the user asked)
 - The site no longer mentions the Legione: no guild line / 'Entra nel nostro Discord' in market.html's footer, no Legione panel on the home, no roster in Personaggi
