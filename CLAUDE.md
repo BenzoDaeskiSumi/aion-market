@@ -283,6 +283,10 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   the user has to remove RaidProtect in Server Settings → Integrations.
   Carl-bot was giving Marchutans to everyone (autorole / reaction role, seen in the audit log): that must be switched off on carl.gg, otherwise nobody needs to verify.
 
+- Exposed bot (31 Oct, the user agreed; Vagari's siege/party-search bot): applyVerify() POSTs every MarchutanEU verification to https://onlyexposed.tech/api/app/characters
+  ({players: [{discord_id, characters: [{name, server, character_id}]}]}, Bearer = repo secret EXPOSED_API_KEY, put on the Worker by bot.yml); exposedBulk() in the cron sends
+  everyone already verified once (KV exposed:bulk = {n, t}; errors in exposed_err; both shown by /timers/status). Without the secret nothing is sent.
+
 ## No Legione on the site (29 Oct, the user asked)
 - The site no longer mentions the Legione: no guild line / 'Entra nel nostro Discord' in market.html's footer, no Legione panel on the home, no roster in Personaggi
   (empty search = a hint; drawRoster/loadLegion are dead code), the Worker's public /legion routes are switched off. Mauro still runs its Legione features

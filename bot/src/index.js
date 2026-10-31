@@ -1529,6 +1529,27 @@ async function applyVerify(env, g, cfg, uid, req, by) {
   await env.USERS.put(`vchar:${g}:${req.server}:${req.id}`, uid).catch(() => {});
   await env.USERS.delete(`vreq:${g}:${uid}`).catch(() => {});
   await dmUser(env, uid, `✅ You are verified as **${req.name}** (${req.sn}). Welcome!`);
+  if (g === MEU) await exposedPush(env, [{discord_id: uid, characters: [exposedChar(req)]}]).catch((e) => putErr(env, 'exposed_err', String(e?.message || e).slice(0, 300)));
+}
+// Exposed bot (siege / party search bot of Vagari, MarchutanEU, 31 Oct, the user agreed): every MarchutanEU verification is sent to its player DB
+// (POST https://onlyexposed.tech/api/app/characters, secret EXPOSED_API_KEY); exposedBulk() in the cron sends everyone already verified once (KV exposed:bulk).
+const MEU = '1564968231410864160', EXPOSED_URL = 'https://onlyexposed.tech/api/app/characters';
+const exposedChar = (r) => ({name: r.name, server: String(r.sn || 'Marchutan').replace(/\s*\(.*$/, ''), character_id: String(r.id)});
+async function exposedPush(env, players) {
+  if (!env.EXPOSED_API_KEY || !players.length) return;
+  const r = await fetch(EXPOSED_URL, {method: 'POST', headers: {Authorization: `Bearer ${env.EXPOSED_API_KEY}`, 'Content-Type': 'application/json', 'User-Agent': 'Mauro (aion-market)'}, body: JSON.stringify({players})});
+  if (!r.ok) throw new Error(`Exposed ${r.status}: ${(await r.text()).slice(0, 200)}`);
+  return r.status;
+}
+async function exposedBulk(env) {
+  if (!env.EXPOSED_API_KEY || await env.USERS.get('exposed:bulk')) return;
+  const keys = [];
+  let cur;
+  do { const l = await env.USERS.list({prefix: `vlink:${MEU}:`, cursor: cur}); keys.push(...l.keys.map((k) => k.name)); cur = l.list_complete ? null : l.cursor; } while (cur);
+  const players = [];
+  for (const k of keys) { const v = JSON.parse(await env.USERS.get(k) || 'null'); if (v?.name) players.push({discord_id: k.split(':')[2], characters: [exposedChar(v)]}); }
+  for (let i = 0; i < players.length; i += 500) await exposedPush(env, players.slice(i, i + 500));
+  await env.USERS.put('exposed:bulk', JSON.stringify({n: players.length, t: Date.now()}));
 }
 // /verify-user user:<member> character:<autocomplete>: a moderator links someone's character directly (no screenshot); may move a character from another account
 // /legion-apply legion:<text> character:<autocomplete> screenshot:<attachment> (MarchutanEU, 30 Oct): a verified member asks for the 'Legion Leader' role;
@@ -1779,12 +1800,12 @@ function toItalianNames(d) {
 }
 // ---------- entry point ----------
 export default {
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.allSettled([checkAlerts(env).catch((e) => putErr(env, 'alert_err', String(e?.message || e).slice(0, 300))), checkStale(env).catch(() => {}), updateTimers(env).catch((e) => putErr(env, 'timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => putErr(env, 'sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300))), weekFix(env).catch((e) => env.USERS.put('timer_err', 'weekfix ' + String(e?.stack || e).slice(0, 300))), artChallenge(env).catch((e) => putErr(env, 'art_err', String(e?.stack || e).slice(0, 300))), verifyClean(env).catch(() => {})])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.allSettled([checkAlerts(env).catch((e) => putErr(env, 'alert_err', String(e?.message || e).slice(0, 300))), checkStale(env).catch(() => {}), updateTimers(env).catch((e) => putErr(env, 'timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => putErr(env, 'sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300))), weekFix(env).catch((e) => env.USERS.put('timer_err', 'weekfix ' + String(e?.stack || e).slice(0, 300))), artChallenge(env).catch((e) => putErr(env, 'art_err', String(e?.stack || e).slice(0, 300))), verifyClean(env).catch(() => {}), exposedBulk(env).catch((e) => putErr(env, 'exposed_err', String(e?.message || e).slice(0, 300)))])); },
   async fetch(req, env, ctx) {
     if (new URL(req.url).pathname === '/hit') return hit(req, env);
     if (/^\/join(\/cb)?$/.test(new URL(req.url).pathname)) return join(req, env);
     if (new URL(req.url).pathname === '/timers/run') { try { await callChannel(env); await updateTimers(env); } catch (e) { await env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500)); } }
-    if (new URL(req.url).pathname.startsWith('/timers/')) return Response.json({channel: await env.USERS.get('cfg:timer_channel'), msg: await env.USERS.get('cfg:timer_msg'), err: await env.USERS.get('timer_err'), alerts: await env.USERS.get('alert_err'), sweep: await env.USERS.get('sweep_err'), art: await env.USERS.get('art_err'), sweepAt: await env.USERS.get('cfg:sweep_at')});
+    if (new URL(req.url).pathname.startsWith('/timers/')) return Response.json({channel: await env.USERS.get('cfg:timer_channel'), msg: await env.USERS.get('cfg:timer_msg'), err: await env.USERS.get('timer_err'), alerts: await env.USERS.get('alert_err'), sweep: await env.USERS.get('sweep_err'), art: await env.USERS.get('art_err'), sweepAt: await env.USERS.get('cfg:sweep_at'), exposed: await env.USERS.get('exposed:bulk'), exposedErr: await env.USERS.get('exposed_err')});
     if (new URL(req.url).pathname.startsWith('/char/')) return charApi(req, env);
     // /legion and /legion/me (public Legione roster for the site) switched off on 29 Oct: the site no longer shows the Legione
     if (req.method !== 'POST') return new Response('Aion 2 Market bot: ok');

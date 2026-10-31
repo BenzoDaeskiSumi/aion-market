@@ -21,6 +21,7 @@ jobs:
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
           DISCORD_APP_ID: ${{ secrets.DISCORD_APP_ID }}
           DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
+          EXPOSED_API_KEY: ${{ secrets.EXPOSED_API_KEY }}
         run: |
           # wrangler's output goes into annotations so it can be read without the raw logs
           report() { tail -n 25 "$1" | sed 's/\x1b\[[0-9;]*m//g' | grep -v '^\s*$' | while IFS= read -r l; do echo "::$2::$l"; done; }
@@ -54,6 +55,8 @@ jobs:
           if [ -n "$SUPABASE_SERVICE_KEY" ]; then
             if ! printf '%s' "$SUPABASE_SERVICE_KEY" | npx -y wrangler@4 secret put SUPABASE_SERVICE_KEY > secret.txt 2>&1; then report secret.txt error; exit 1; fi
           else echo "::warning::secret SUPABASE_SERVICE_KEY missing: /preferiti will not work"; fi
+          if [ -n "$EXPOSED_API_KEY" ]; then printf '%s' "$EXPOSED_API_KEY" | npx -y wrangler@4 secret put EXPOSED_API_KEY > secret.txt 2>&1 || report secret.txt error
+          else echo "::warning::secret EXPOSED_API_KEY missing: verifications are not sent to the Exposed bot"; fi
       - name: Register the slash commands
         run: node bot/register.mjs 2>&1 | tee reg.txt; s=${PIPESTATUS[0]}; [ $s -eq 0 ] || sed 's/^/::error::/' reg.txt; exit $s
         shell: bash
