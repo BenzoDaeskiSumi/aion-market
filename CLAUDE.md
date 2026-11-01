@@ -265,7 +265,7 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   1 Nov: each language channel is visible ONLY to its language role (Russian, Spanish, French, German, Polish, Italian, Balkan, Romanian) + Admins/Moderator; members pick
   them in '🎭・pick-your-roles' (was pick-your-language; top of the category, Marchutans read-only) from Mauro's menu rp:lang (generic rolePick, English replies on MarchutanEU).
   1 Nov tidy-up: category '📌 INFO' (first; @everyone reads, nobody writes) = 📜・server-rules + 🎭・pick-your-roles; staff channels (just-staff, siege-staff,
-  bot-staff, verify-requests, logs, roles, raidprotect-logs) in the user's 'staff' category (last, they keep their own permissions); only verify-now / verify / verify-help
+  bot-staff, verify-requests, logs, roles, raidprotect-logs, jobs) in the user's 'staff' category (FIRST category, then 👑 LEADERS, then 📌 INFO; channels keep their own permissions); only verify-now / verify / verify-help
   stay outside categories. Someone added 🍲 lithuanian: role Lithuanian (board + LANGS_R) like the other languages; 🌻 ukrainian back to role-only.
   Same channel: menu rp:style (roles PvE / PvP) and a note on the Gear Score roles. 🌻 ukrainian (role Ukrainian) added after russian.
   Role groups with SEPARATOR roles: 'Class', 'Gear Score', 'Languages', 'Playstyle' each followed by many U+3164 (Hangul filler) so the pill fills the whole row
