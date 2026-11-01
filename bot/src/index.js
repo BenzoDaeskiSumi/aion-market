@@ -998,7 +998,7 @@ const LEGION = {name: 'Legione', server: 2305};      // in-game legion (profile.
 const CLASS_ROLES = ['Gladiator', 'Templar', 'Assassin', 'Ranger', 'Sorcerer', 'Spiritmaster', 'Cleric', 'Chanter'];
 // MarchutanEU role groups (1 Nov): separator roles 'Class✧･ﾟ:' etc. shown only while the member has a role of the group; Gear Score tiers GS 700+ … GS 3000+
 const SEPS = {cls: 'Class', gs: 'Gear Score', lang: 'Languages', style: 'Playstyle'}, GS_TIERS = [3000, 2800, 2500, 2100, 1400, 700];
-const sepRole = (roles, k) => (Array.isArray(roles) ? roles : []).find((r) => r.name.startsWith(SEPS[k]) && r.name.includes('✧'));
+const sepRole = (roles, k) => (Array.isArray(roles) ? roles : []).find((r) => r.name.startsWith(SEPS[k]) && /[✧\u3164]/.test(r.name));   // 'Class' + U+3164 padding (full-width pill)
 async function setGroup(env, g, uid, have, group, want, sep) {   // member ends with exactly 'want' out of 'group'; separator iff any
   for (const r of group) if (!want.includes(r) && have.has(r)) { await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${r}`).catch(() => {}); have.delete(r); }
   for (const r of want) if (!have.has(r)) { await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${r}`).catch(() => {}); have.add(r); }

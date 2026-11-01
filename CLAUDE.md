@@ -265,7 +265,8 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   1 Nov: each language channel is visible ONLY to its language role (Russian, Spanish, French, German, Polish, Italian, Balkan, Romanian) + Admins/Moderator; members pick
   them in '🎭・pick-your-roles' (was pick-your-language; top of the category, Marchutans read-only) from Mauro's menu rp:lang (generic rolePick, English replies on MarchutanEU).
   Same channel: menu rp:style (roles PvE / PvP) and a note on the Gear Score roles. 🌻 ukrainian (role Ukrainian) added after russian.
-  Role groups with SEPARATOR roles (like 'Status✧･ﾟ:' on other servers): 'Class✧･ﾟ:', 'Gear Score✧･ﾟ:', 'Languages✧･ﾟ:', 'Playstyle✧･ﾟ:' (SEPS/sepRole in index.js),
+  Role groups with SEPARATOR roles: 'Class', 'Gear Score', 'Languages', 'Playstyle' each followed by many U+3164 (Hangul filler) so the pill fills the whole row
+  in the profile, like other servers' headers (user wanted it plain, no ✧･ﾟ: decoration; SEPS/sepRole in index.js match the name start + U+3164),
   each directly above its roles in one block where the class roles were; a member holds a separator only while holding a role of its group (setGroup(), rolePick).
   Gear Score tiers 'GS 700+' 'GS 1400+' 'GS 2100+' 'GS 2500+' 'GS 2800+' 'GS 3000+' (one at a time, official ItemLevel; below 700 none): set on verification (applyVerify -> setGs),
   by /refresh (MarchutanEU guild command, registered in register.mjs meuCommands) and by gsSweep() in the cron: 10 verified members per run by clock rotation
