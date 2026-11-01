@@ -32,6 +32,14 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
   counters st:YYYY-MM-DD (no cookies, no IP); admins read them with /statistiche. Described in privacy.html.
 - Phone layout (<= 760 px): menu button for header controls, bottom tab bar, details as a bottom sheet (showDetail/closeSheet in js/ui.js).
 
+## Site rework (1 Nov 2026, the user asked)
+- English by default: i18n.js LANG = saved 'it'|'en'|'es'|'fr', else 'en' (pages are still written in Italian and translated by the dictionaries; html lang="en").
+- Marchutan only: SERVER is always 12305 (ui.js/main.js/url.js/account.js ignore ?s=, the saved server and the profile's server_id); the server <select> is hidden
+  (label.srv hidden); home.js uses 12305; Characters search is fixed to NCSOFT server 2305 (charsrv hidden). Other servers are still synced for the Discord bot.
+- Deals tab REMOVED (button, header counters are plain spans, ?v=deals opens the Market, the 'Deals now' ticker in #takeaway is off: the bar only shows load errors).
+- Map and Guides HIDDEN: no links from index/market (map.html, guide.html, guida-*.html still exist and work if opened directly; to be fixed later).
+- Home: cards Market / Crafting / Database / Characters; second CTA = Crafting; /affari dropped from the bot list; English meta/OG tags.
+
 ## Database view (wiki)
 - Tab 'Database' (VIEW 'db', js/db.js): every item of NCSOFT's official AION 2 item dictionary (tw.ncsoft.com/aion2_tw/v2.0/dict/search/item,
   locale=en-US gives the global English names; fetched one grade at a time with grades=Epic|Unique|Legend|Rare|Common because a search stops at 10,000).

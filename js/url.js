@@ -27,7 +27,7 @@ function writeURL() {
 }
 // read a link into the state (before drawing); items are applied after the server's data is loaded
 function readURL(p) {
-  VIEW = ['deals', 'craft', 'db', 'char'].includes(p.get('v')) ? p.get('v') : 'market';
+  VIEW = ['craft', 'db', 'char'].includes(p.get('v')) ? p.get('v') : 'market';
   CPICK = /^\d{4}:[A-Za-z0-9_\-=]{10,80}$/.test(p.get('ch') || '') ? p.get('ch') : null;
   CS_URL = /^\d{4}$/.test(p.get('cs') || '') ? p.get('cs') : ''; if (CMETA) charSrv.value = CS_URL;
   DEAL = p.get('d') === 'sell' ? 'sell' : 'buy';
@@ -63,7 +63,7 @@ function showFromURL(p, first) {
 }
 window.addEventListener('popstate', () => {
   const p = new URLSearchParams(location.search), s = +p.get('s');
-  if (s && s !== SERVER && [...srvSel.options].some((o) => +o.value === s)) {
+  if (false && s && s !== SERVER) {   // Marchutan only
     SERVER = s; srvSel.value = String(s); URL_READY = false; loadServer().then(() => showFromURL(p));
   } else showFromURL(p);
   if (!(p.get('item') || p.get('craft') || p.get('id') || p.get('ch'))) closeSheet();

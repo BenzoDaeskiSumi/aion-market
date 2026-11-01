@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="it">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,18 +8,18 @@
   if (location.search.length > 1 || /access_token|error/.test(location.hash)) location.replace('market.html' + location.search + location.hash);
   try { const t = localStorage.getItem('aion-theme'); if (['abyss', 'elyos', 'asmodian'].includes(t)) document.documentElement.dataset.theme = t; } catch (e) {}
 </script>
-<title>Aion 2 Market · prezzi, affari e crafting per i server Asmodian EU</title>
-<meta name="description" content="Prezzi del Market di Aion 2 per tutti i server Asmodian EU, aggiornati ogni ora: affari da comprare e rivendere, storico, crafting con i costi, database, mappa e bot Discord.">
+<title>Aion 2 Market · Marchutan prices, history and crafting</title>
+<meta name="description" content="Aion 2 Market prices for Marchutan (EU, Asmodian), updated every hour: price history, crafting costs, item database, characters and a Discord bot.">
 <meta name="theme-color" content="#5b8cff">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Aion 2 Market">
-<meta property="og:title" content="Aion 2 Market — prezzi e affari per i server Asmodian EU">
-<meta property="og:description" content="Prezzi aggiornati ogni ora, affari da comprare e rivendere, storico dei prezzi, crafting con i costi e avvisi su Discord.">
+<meta property="og:title" content="Aion 2 Market — Marchutan prices, updated every hour">
+<meta property="og:description" content="Prices updated every hour, price history, crafting costs and Discord price alerts for Marchutan (EU).">
 <meta property="og:url" content="https://benzodaeskisumi.github.io/aion-market/">
 <meta property="og:image" content="https://benzodaeskisumi.github.io/aion-market/img/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Aion 2 Market: prezzi del Market per tutti i server Asmodian EU">
+<meta property="og:image:alt" content="Aion 2 Market: Market prices for Marchutan (EU)">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
@@ -34,7 +34,7 @@
 <header class="top">
   <a class="brand" href="./" aria-current="page"><img src="img/favicon-48.png" alt="" width="34" height="34">Aion 2 Market</a>
   <nav aria-label="Sezioni">
-    <a href="market.html">Market</a><a href="market.html?v=deals">Affari</a><a href="market.html?v=craft">Crafting</a><a href="market.html?v=db">Database</a><a href="market.html?v=char">Personaggi</a><a href="map.html">Mappa</a><a href="guide.html">Guide</a>
+    <a href="market.html">Market</a><a href="market.html?v=craft">Crafting</a><a href="market.html?v=db">Database</a><a href="market.html?v=char">Personaggi</a>
   </nav>
   <a class="btn primary go" href="market.html">Apri il Market</a>
 </header>
@@ -42,19 +42,19 @@
 <main>
   <section class="hero">
     <div class="pitch">
-      <p class="kicker">Server Asmodian EU · aggiornato ogni ora</p>
+      <p class="kicker">Marchutan · Asmodian EU · aggiornato ogni ora</p>
       <h1>Il Market di Aion 2, letto per te</h1>
-      <p class="lead">Prezzo più basso, media e storico di ogni oggetto, gli affari da comprare e rivendere e quanto conviene craftare. Gratis, senza account.</p>
+      <p class="lead">Prezzo più basso, media e storico di ogni oggetto del Market di Marchutan, e quanto conviene craftare. Gratis, senza account.</p>
       <div class="ctas">
         <a class="btn primary" href="market.html">Apri il Market</a>
-        <a class="btn" href="market.html?v=deals">Vedi gli affari</a>
+        <a class="btn" href="market.html?v=craft">Crafting</a>
       </div>
       <dl class="live" id="live" aria-live="polite">
         <div><dt>Oggetti</dt><dd id="l-items">—</dd></div>
         <div><dt>Da comprare</dt><dd class="up" id="l-buy">—</dd></div>
         <div><dt>Da vendere</dt><dd class="gold" id="l-sell">—</dd></div>
       </dl>
-      <p class="server">Server: <b id="l-server">Marchutan</b> · <span>prezzi delle</span> <b id="l-upd">—</b> · <a href="market.html">cambia server nel Market</a></p>
+      <p class="server">Server: <b id="l-server">Marchutan</b> · <span>prezzi delle</span> <b id="l-upd">—</b></p>
     </div>
     <figure class="video">
       <video controls playsinline preload="none" poster="media/intro-poster.jpg" width="1920" height="1080" aria-label="Video di presentazione di Aion 2 Market">
@@ -68,11 +68,9 @@
     <h2 id="f-title">Cosa trovi</h2>
     <div class="grid">
       <a class="card" href="market.html"><img src="img/home/market.jpg" alt="" width="800" height="450" loading="lazy"><h3>Market</h3><p>Prezzo più basso, media, trend a 7 giorni e segnale Compra, Vendi o Tieni per ogni oggetto.</p></a>
-      <a class="card" href="market.html?v=deals"><img src="img/home/deals.jpg" alt="" width="800" height="450" loading="lazy"><h3>Affari</h3><p>Cosa comprare sotto la media e cosa rivendere, con il profitto già al netto della tassa.</p></a>
       <a class="card" href="market.html?v=craft"><img src="img/home/craft.jpg" alt="" width="800" height="450" loading="lazy"><h3>Crafting</h3><p>Craftarlo o comprarlo? Costo stimato con i prezzi di oggi e ricetta passo per passo.</p></a>
       <a class="card" href="market.html?v=db"><img src="img/home/db.jpg" alt="" width="800" height="450" loading="lazy"><h3>Database</h3><p>Tutti gli oggetti ufficiali di AION 2, con statistiche e descrizione.</p></a>
-      <a class="card" href="market.html?v=char"><img src="img/home/chars.jpg" alt="" width="800" height="450" loading="lazy"><h3>Personaggi</h3><p>Cerca un personaggio EU: Gear Score, Combat Power, equipaggiamento e Daevanion.</p></a>
-      <a class="card" href="map.html"><img src="img/home/map.jpg" alt="" width="800" height="450" loading="lazy"><h3>Mappa</h3><p>Mappa interattiva con raccolta, boss, dungeon e cubi nascosti.</p></a>
+      <a class="card" href="market.html?v=char"><img src="img/home/chars.jpg" alt="" width="800" height="450" loading="lazy"><h3>Personaggi</h3><p>Cerca un personaggio di Marchutan: Gear Score, Combat Power, equipaggiamento e Daevanion.</p></a>
     </div>
   </section>
 
@@ -82,7 +80,6 @@
       <p>Il bot Mauro porta i dati del sito su Discord.</p>
       <ul class="cmds">
         <li><code>/info</code><span>scheda e grafico di un oggetto</span></li>
-        <li><code>/affari</code><span>i migliori affari ora</span></li>
         <li><code>/craft</code><span>conviene craftarlo?</span></li>
         <li><code>/avviso</code><span>ti tagga quando il prezzo arriva</span></li>
         <li><code>/preferiti</code><span>i tuoi oggetti del sito</span></li>
@@ -98,7 +95,7 @@
 </main>
 
 <footer>
-  <p>Prezzi aggiornati ogni ora dai dati pubblici di <a href="https://aion2.exchange/" target="_blank" rel="noopener">aion2.exchange</a> e dai video del Market in gioco. Database oggetti: dizionario ufficiale NCSOFT. Ricette e mappa: <a href="https://metabot.gg/" target="_blank" rel="noopener">MetaBot.GG</a>. Non affiliato a NCSOFT.</p>
+  <p>Prezzi aggiornati ogni ora dai dati pubblici di <a href="https://aion2.exchange/" target="_blank" rel="noopener">aion2.exchange</a> e dai video del Market in gioco. Database oggetti: dizionario ufficiale NCSOFT. Ricette: <a href="https://metabot.gg/" target="_blank" rel="noopener">MetaBot.GG</a>. Non affiliato a NCSOFT.</p>
   <p><a href="privacy.html">Privacy</a> · <span class="langs"><button type="button" data-lang="it" title="Italiano">IT</button><button type="button" data-lang="en" title="English">EN</button><button type="button" data-lang="es" title="Español">ES</button><button type="button" data-lang="fr" title="Français">FR</button></span></p>
 </footer>
 

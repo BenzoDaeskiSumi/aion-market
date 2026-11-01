@@ -1,12 +1,12 @@
 /* Aion 2 Market — Language switch and translator (IT -> EN/ES/FR). Classic script: shares globals with the others, loaded in order by index.html. */
 /* ---------- language: the page is written in Italian; with English chosen, a translator rewrites every text node
    and label as it appears (exact phrases, ' · ' separated parts, and patterns for sentences with numbers/names) ---------- */
-const LANG = (() => { try { const l = localStorage.getItem('aion-lang'); return ['en', 'es', 'fr'].includes(l) ? l : 'it'; } catch (e) { return 'it'; } })();
+const LANG = (() => { try { const l = localStorage.getItem('aion-lang'); return ['it', 'en', 'es', 'fr'].includes(l) ? l : 'en'; } catch (e) { return 'en'; } })();
 const LOCALE = {it: 'it-IT', en: 'en-GB', es: 'es-ES', fr: 'fr-FR'}[LANG];
 document.documentElement.lang = LANG;
 const EN = {
   // home page (index.html)
-  "Scrivi almeno 2 lettere del nome qui sopra per cercare un personaggio EU.": "Type at least 2 letters of the name above to search an EU character.",
+  "Scrivi almeno 2 lettere del nome qui sopra per cercare un personaggio di Marchutan.": "Type at least 2 letters of the name above to search a Marchutan character.",
   "Cerca un personaggio e cliccalo per vedere Gear Score, Combat Power, equipaggiamento e Daevanion.": "Search a character and click it to see Gear Score, Combat Power, equipment and Daevanion.",
   "Cerca un personaggio EU: Gear Score, Combat Power, equipaggiamento e Daevanion.": "Look up any EU character: Gear Score, Combat Power, equipment and Daevanion.",
   "Il bot Mauro porta i dati del sito su Discord.": "The Mauro bot brings the site's data to Discord.",
@@ -43,7 +43,7 @@ const EN = {
   "Un progetto della Legione": "A Legione project",
   "Gilda italiana Asmodian su Marchutan. Raid, eventi con promemoria e un server Discord attrezzato: entra, collega il personaggio e sei dei nostri.": "Italian Asmodian guild on Marchutan. Raids, events with reminders and a well-equipped Discord server: join, link your character and you're one of us.",
   "Prezzi aggiornati ogni ora dai dati pubblici di": "Prices updated every hour from the public data of",
-  "e dai video del Market in gioco. Database oggetti: dizionario ufficiale NCSOFT. Ricette e mappa:": "and from videos of the in-game Market. Item database: official NCSOFT dictionary. Recipes and map:",
+  "e dai video del Market in gioco. Database oggetti: dizionario ufficiale NCSOFT. Ricette:": "and from videos of the in-game Market. Item database: official NCSOFT dictionary. Recipes:",
   ". Non affiliato a NCSOFT.": ". Not affiliated with NCSOFT.",
   'In gioco:': "In game:", '→ browser web di Steam → apri questa pagina e fissala con la puntina.': "→ Steam web browser → open this page and pin it.",
   // overlay page
@@ -289,7 +289,7 @@ const EN_RE = [
 ];
 const ES = {
   // home page (index.html)
-  "Scrivi almeno 2 lettere del nome qui sopra per cercare un personaggio EU.": "Escribe al menos 2 letras del nombre arriba para buscar un personaje de la UE.",
+  "Scrivi almeno 2 lettere del nome qui sopra per cercare un personaggio di Marchutan.": "Escribe al menos 2 letras del nombre arriba para buscar un personaje de Marchutan.",
   "Cerca un personaggio e cliccalo per vedere Gear Score, Combat Power, equipaggiamento e Daevanion.": "Busca un personaje y haz clic para ver Gear Score, Combat Power, equipo y Daevanion.",
   "Cerca un personaggio EU: Gear Score, Combat Power, equipaggiamento e Daevanion.": "Busca un personaje de la UE: Gear Score, Combat Power, equipo y Daevanion.",
   "Il bot Mauro porta i dati del sito su Discord.": "El bot Mauro lleva los datos del sitio a Discord.",
@@ -326,7 +326,7 @@ const ES = {
   "Un progetto della Legione": "Un proyecto de la Legione",
   "Gilda italiana Asmodian su Marchutan. Raid, eventi con promemoria e un server Discord attrezzato: entra, collega il personaggio e sei dei nostri.": "Gremio italiano asmodiano en Marchutan. Raids, eventos con recordatorios y un servidor de Discord bien equipado: entra, vincula tu personaje y eres de los nuestros.",
   "Prezzi aggiornati ogni ora dai dati pubblici di": "Precios actualizados cada hora con los datos públicos de",
-  "e dai video del Market in gioco. Database oggetti: dizionario ufficiale NCSOFT. Ricette e mappa:": "y de vídeos del Market del juego. Base de datos de objetos: diccionario oficial de NCSOFT. Recetas y mapa:",
+  "e dai video del Market in gioco. Database oggetti: dizionario ufficiale NCSOFT. Ricette:": "y de vídeos del Market del juego. Base de datos de objetos: diccionario oficial de NCSOFT. Recetas:",
   ". Non affiliato a NCSOFT.": ". No afiliado a NCSOFT.",
   'In gioco:': "En el juego:", '→ browser web di Steam → apri questa pagina e fissala con la puntina.': "→ navegador web de Steam → abre esta página y fíjala con la chincheta.",
   // overlay page
@@ -563,7 +563,7 @@ const ES_RE = [
 
 const FR = {
   // home page (index.html)
-  "Scrivi almeno 2 lettere del nome qui sopra per cercare un personaggio EU.": "Tapez au moins 2 lettres du nom ci-dessus pour chercher un personnage EU.",
+  "Scrivi almeno 2 lettere del nome qui sopra per cercare un personaggio di Marchutan.": "Tapez au moins 2 lettres du nom ci-dessus pour chercher un personnage de Marchutan.",
   "Cerca un personaggio e cliccalo per vedere Gear Score, Combat Power, equipaggiamento e Daevanion.": "Cherchez un personnage et cliquez dessus pour voir Gear Score, Combat Power, équipement et Daevanion.",
   "Cerca un personaggio EU: Gear Score, Combat Power, equipaggiamento e Daevanion.": "Cherchez un personnage EU : Gear Score, Combat Power, équipement et Daevanion.",
   "Il bot Mauro porta i dati del sito su Discord.": "Le bot Mauro apporte les données du site sur Discord.",
@@ -600,7 +600,7 @@ const FR = {
   "Un progetto della Legione": "Un projet de la Legione",
   "Gilda italiana Asmodian su Marchutan. Raid, eventi con promemoria e un server Discord attrezzato: entra, collega il personaggio e sei dei nostri.": "Guilde italienne asmodienne sur Marchutan. Raids, événements avec rappels et un serveur Discord bien équipé : rejoignez-nous, liez votre personnage et vous êtes des nôtres.",
   "Prezzi aggiornati ogni ora dai dati pubblici di": "Prix mis à jour toutes les heures à partir des données publiques de",
-  "e dai video del Market in gioco. Database oggetti: dizionario ufficiale NCSOFT. Ricette e mappa:": "et de vidéos du Market en jeu. Base d'objets : dictionnaire officiel NCSOFT. Recettes et carte :",
+  "e dai video del Market in gioco. Database oggetti: dizionario ufficiale NCSOFT. Ricette:": "et de vidéos du Market en jeu. Base d'objets : dictionnaire officiel NCSOFT. Recettes :",
   ". Non affiliato a NCSOFT.": ". Non affilié à NCSOFT.",
   'In gioco:': "En jeu :", '→ browser web di Steam → apri questa pagina e fissala con la puntina.': "→ navigateur web de Steam → ouvrez cette page et épinglez-la.",
   // overlay page
@@ -858,6 +858,9 @@ if (LANG === 'fr') RE.unshift([/^(\d+) × (.+)$/, (m, q, n) => `${q} × ${iname(
 Object.assign(EN, {"Guide": "Guides", "Tutte le guide": "All guides"});
 Object.assign(ES, {"Guide": "Guías", "Tutte le guide": "Todas las guías"});
 Object.assign(FR, {"Guide": "Guides", "Tutte le guide": "Tous les guides"});
+Object.assign(EN, {"Marchutan · Asmodian EU · aggiornato ogni ora": "Marchutan · EU Asmodian · updated every hour", "Prezzo più basso, media e storico di ogni oggetto del Market di Marchutan, e quanto conviene craftare. Gratis, senza account.": "Lowest price, average and history of every item on the Marchutan Market, and whether crafting pays off. Free, no account needed.", "Cerca un personaggio di Marchutan: Gear Score, Combat Power, equipaggiamento e Daevanion.": "Search a Marchutan character: Gear Score, Combat Power, gear and Daevanion.", "Ricette:": "Recipes:"});
+Object.assign(ES, {"Marchutan · Asmodian EU · aggiornato ogni ora": "Marchutan · asmodianos UE · actualizado cada hora", "Prezzo più basso, media e storico di ogni oggetto del Market di Marchutan, e quanto conviene craftare. Gratis, senza account.": "Precio más bajo, media e historial de cada objeto del Market de Marchutan, y cuánto compensa craftear. Gratis, sin cuenta.", "Cerca un personaggio di Marchutan: Gear Score, Combat Power, equipaggiamento e Daevanion.": "Busca un personaje de Marchutan: Gear Score, Combat Power, equipo y Daevanion.", "Ricette:": "Recetas:"});
+Object.assign(FR, {"Marchutan · Asmodian EU · aggiornato ogni ora": "Marchutan · Asmodiens EU · mis à jour toutes les heures", "Prezzo più basso, media e storico di ogni oggetto del Market di Marchutan, e quanto conviene craftare. Gratis, senza account.": "Prix le plus bas, moyenne et historique de chaque objet du Market de Marchutan, et ce que rapporte l'artisanat. Gratuit, sans compte.", "Cerca un personaggio di Marchutan: Gear Score, Combat Power, equipaggiamento e Daevanion.": "Cherchez un personnage de Marchutan : Gear Score, Combat Power, équipement et Daevanion.", "Ricette:": "Recettes :"});
 function tr(text) {
   const core = text.trim();
   if (!core || !/[a-zà-ú]/i.test(core)) return text;

@@ -1,20 +1,20 @@
 <!doctype html>
-<html lang="it">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Aion 2 Market · Benzodaeskisumi</title>
-<meta name="description" content="Prezzi del Market di Aion 2 per tutti i server Asmodian EU, aggiornati ogni ora: affari da comprare e rivendere, storico, crafting con i costi e bot Discord.">
+<title>Aion 2 Market · Marchutan</title>
+<meta name="description" content="Aion 2 Market prices for Marchutan (EU, Asmodian), updated every hour: price history, crafting costs, item database, characters and a Discord bot.">
 <meta name="theme-color" content="#5b8cff">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Aion 2 Market">
-<meta property="og:title" content="Aion 2 Market — prezzi e affari per i server Asmodian EU">
-<meta property="og:description" content="Prezzi aggiornati ogni ora, affari da comprare e rivendere, storico dei prezzi, crafting con i costi e avvisi su Discord.">
+<meta property="og:title" content="Aion 2 Market — Marchutan prices, updated every hour">
+<meta property="og:description" content="Prices updated every hour, price history, crafting costs and Discord price alerts for Marchutan (EU).">
 <meta property="og:url" content="https://benzodaeskisumi.github.io/aion-market/">
 <meta property="og:image" content="https://benzodaeskisumi.github.io/aion-market/img/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Aion 2 Market: prezzi del Market per tutti i server Asmodian EU">
+<meta property="og:image:alt" content="Aion 2 Market: Market prices for Marchutan (EU)">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
@@ -38,14 +38,12 @@
     <h1><a class="home" href="./"><img class="logo" src="img/favicon-256.png" alt="" width="36" height="36"><span class="bt">Aion 2 Market</span></a></h1>
     <nav class="tabs" role="tablist" aria-label="Sezioni">
       <button type="button" role="tab" data-view="market">Market</button>
-      <button type="button" role="tab" data-view="deals">Affari <span id="tab-deals"></span></button>
       <button type="button" role="tab" data-view="craft">Crafting <span id="tab-craft"></span></button>
       <button type="button" role="tab" data-view="db">Database <span id="tab-db"></span></button>
       <button type="button" role="tab" data-view="char">Personaggi</button>
-      <a class="tablink" href="map.html" title="Mappa interattiva"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>Mappa</a>
     </nav>
     <div class="barend">
-      <label class="srv"><span>Server</span><select id="server" aria-label="Server"><option value="12305">Marchutan</option></select></label>
+      <label class="srv" hidden><span>Server</span><select id="server" aria-label="Server"><option value="12305">Marchutan</option></select></label>
       <button class="menubtn" id="menubtn" type="button" aria-expanded="false" aria-controls="barright" aria-label="Impostazioni" title="Impostazioni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
     </div>
     <div class="right" id="barright" role="dialog" aria-label="Impostazioni">
@@ -65,15 +63,13 @@
   <div class="stats" aria-live="polite">
     <span class="kpi"><b id="t-tracked">—</b>Oggetti</span>
     <span class="kpi"><b id="t-avail">—</b>In vendita</span>
-    <button type="button" class="kpi statbtn buy" data-deal="buy"><b id="t-buys">—</b>Da comprare</button>
-    <button type="button" class="kpi statbtn sell" data-deal="sell"><b id="t-sells">—</b>Da vendere</button>
+    <span class="kpi buy"><b id="t-buys">—</b>Da comprare</span>
+    <span class="kpi sell"><b id="t-sells">—</b>Da vendere</span>
     <span class="kpi"><b id="t-last">—</b>Ultimo aggiornamento</span>
   </div>
   <div class="take" id="takeaway">Caricamento…</div>
 
-  <div class="dealfilter" id="dealfilter" role="group" aria-label="Tipo di affare">
-        <button type="button" data-deal="buy">Da comprare</button><button type="button" data-deal="sell">Da vendere</button>
-      </div>
+  <div class="dealfilter" id="dealfilter" hidden></div>
   <div class="dealfilter" id="craftkind" role="group" aria-label="Sezione del crafting" hidden>
         <button type="button" data-kind="craft" title="Oggetti fatti da materiali">Crafting</button><button type="button" data-kind="transfer" title="Equipaggiamento fatto da un altro pezzo di equipaggiamento (Transfer in gioco)">Transfer</button>
       </div>
@@ -173,7 +169,7 @@
     </aside>
   </div>
 </div>
-<footer>Prezzi del server <span id="f-server">Marchutan</span> (Europa · Asmodiani), aggiornati ogni ora dai dati pubblici di <a href="https://aion2.exchange/" target="_blank" rel="noopener">aion2.exchange</a> e dai video del Market in gioco. Database oggetti: dizionario ufficiale NCSOFT. Non affiliato a NCSOFT. <a class="priv" href="map.html">Mappa</a> · <a class="priv" href="guide.html">Guide</a> · <button type="button" class="priv linkbtn" id="install" hidden>Installa l'app</button> · <a class="priv" href="privacy.html">Privacy</a></footer>
+<footer>Prezzi del server <span id="f-server">Marchutan</span> (Europa · Asmodiani), aggiornati ogni ora dai dati pubblici di <a href="https://aion2.exchange/" target="_blank" rel="noopener">aion2.exchange</a> e dai video del Market in gioco. Database oggetti: dizionario ufficiale NCSOFT. Non affiliato a NCSOFT. <button type="button" class="priv linkbtn" id="install" hidden>Installa l'app</button> · <a class="priv" href="privacy.html">Privacy</a></footer>
 
 <script src="js/i18n.js"></script>
 <script src="js/core.js"></script>

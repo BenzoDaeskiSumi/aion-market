@@ -62,6 +62,7 @@ document.getElementById('q').addEventListener('input', drawTable);
 let MARKET_SORT = null;   // the Market tab keeps its own sort (default: by grade, like the game)
 function setView(v, deal) {
   if (VIEW === 'market' && v !== 'market') MARKET_SORT = [sortK, sortDir];
+  if (v === 'deals') v = 'market';   // Deals tab removed (Nov 2026)
   VIEW = v; if (deal) DEAL = deal;
   if (v === 'deals') { sortK = DEAL === 'buy' ? 'flip_profit' : 'over_avg'; sortDir = -1; }
   else if (v === 'market') { [sortK, sortDir] = MARKET_SORT || ['grade_rank', -1]; }
@@ -71,7 +72,6 @@ function setView(v, deal) {
   drawCats(); drawTable(); drawChart();
 }
 document.querySelectorAll('.tabs [role="tab"]').forEach((t) => t.addEventListener('click', () => setView(t.dataset.view)));
-document.querySelectorAll('[data-deal]').forEach((b) => b.addEventListener('click', () => setView('deals', b.dataset.deal)));
 document.querySelectorAll('[data-kind]').forEach((b) => b.addEventListener('click', () => {    // Crafting / Transfer sections of the Crafting view
   CKIND = b.dataset.kind; CSEL = {type: 'all'};
   if (pickedCraft && !KROWS().some((r) => r.name === pickedCraft)) pickedCraft = null;
@@ -93,7 +93,7 @@ document.getElementById('rows').addEventListener('click', (e) => {
 let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { drawTable(); drawChart(); }, 120); });
 
 const get = (u) => fetch(u, {cache: 'no-store'}).then((r) => { if (!r.ok) throw new Error(u); return r.json(); });
-let SERVER = +(store.get('aion-server') || 12305);
+let SERVER = 12305;   // the site shows Marchutan only (Nov 2026); other servers are still synced for the Discord bot
 const srvSel = document.getElementById('server');
 function loadServer() {
   const t = document.getElementById('takeaway'); t.classList.remove('err');

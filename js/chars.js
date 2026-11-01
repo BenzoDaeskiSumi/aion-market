@@ -28,7 +28,7 @@ function loadCharMeta() {
         return g;
       });
       charSrv.replaceChildren(opt('', 'Tutti i server EU'), ...groups);
-      if (CS_URL) charSrv.value = CS_URL;
+      charSrv.value = '2305';   // Marchutan only (Nov 2026)
       if (VIEW === 'char') { drawTable(); drawChart(); }
     });
   return CMETA_LOAD;
@@ -119,7 +119,7 @@ function drawChars() {
   const msg = (t) => { const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 3; td.className = 'empty'; td.textContent = t; tr.appendChild(td); tb.replaceChildren(tr); more.hidden = true; };
   loadCharMeta();
   const key = charKey(), q = key.split('|')[0];
-  if (q.length < 2) { CRES = null; document.querySelector('#chartab thead tr').replaceChildren(...['Personaggio', 'Classe', 'Livello'].map((t) => Object.assign(document.createElement('th'), {textContent: t}))); return msg('Scrivi almeno 2 lettere del nome qui sopra per cercare un personaggio EU.'); }
+  if (q.length < 2) { CRES = null; document.querySelector('#chartab thead tr').replaceChildren(...['Personaggio', 'Classe', 'Livello'].map((t) => Object.assign(document.createElement('th'), {textContent: t}))); return msg('Scrivi almeno 2 lettere del nome qui sopra per cercare un personaggio di Marchutan.'); }
   document.querySelector('#chartab thead tr').replaceChildren(...['Personaggio', 'Classe', 'Livello'].map((t) => Object.assign(document.createElement('th'), {textContent: t})));
   if (!CRES || CRES.key !== key) { clearTimeout(CTIMER); CTIMER = setTimeout(() => runCharSearch(1), 350); CRES = {key, loading: true}; }
   if (CRES.loading) return msg('Cerco…');

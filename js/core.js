@@ -79,14 +79,14 @@ function drawAll() {
   document.getElementById('t-avail').textContent = fmtK(ITEMS.filter((r) => r.available).length);
   document.getElementById('t-buys').textContent = fmtK(buys.length);
   document.getElementById('t-sells').textContent = fmtK(sells.length);
-  document.getElementById('tab-deals').textContent = fmtK(buys.length + sells.length);
   document.getElementById('tab-craft').textContent = CROWS.length ? fmtK(CROWS.length) : '';
   document.getElementById('t-tax').textContent = fmtPct(+S.tax_rate);
   document.getElementById('t-last').textContent = ITEMS.length ? fmtDT(d3.max(ITEMS, (r) => r.last_checked)) : '—';
   const take = document.getElementById('takeaway');
   const avail = ITEMS.filter((r) => r.available);
   take.classList.remove('tick');
-  if (buys.length) {
+  take.hidden = true;   // the 'Deals now' ticker went away with the Deals tab (Nov 2026); the bar only shows errors
+  if (false && buys.length) {
     const top = buys.slice().sort((a, b) => b.flip_profit - a.flip_profit).slice(0, 15);
     const mkDeal = (r) => {
       const b = document.createElement('button'); b.type = 'button'; b.className = 'deal'; b.dataset.key = r.item;

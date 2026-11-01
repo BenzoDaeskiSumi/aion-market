@@ -8,12 +8,11 @@ Promise.all([get('data/settings.json'), get('data/icons.json').catch(() => ({}))
       document.querySelector('footer').append(' Noms des objets en français : ', a, '.');
     }
     const qs = new URLSearchParams(location.search);              // shareable link / deep link from the Discord bot
-    if (servers.some((x) => x.id === +qs.get('s'))) SERVER = +qs.get('s');
-    if (!servers.some((x) => x.id === SERVER)) SERVER = 12305;
+    SERVER = 12305;
     srvSel.replaceChildren(...servers.map((x) => Object.assign(document.createElement('option'), {value: x.id, textContent: x.name, selected: x.id === SERVER})));
     return loadServer().then(() => { showFromURL(qs, true); countVisit(); });
   })
-  .catch(() => { const t = document.getElementById('takeaway'); t.textContent = 'Non riesco a caricare i dati. Ricarica la pagina tra qualche secondo.'; t.classList.add('err'); });
+  .catch(() => { const t = document.getElementById('takeaway'); t.hidden = false; t.textContent = 'Non riesco a caricare i dati. Ricarica la pagina tra qualche secondo.'; t.classList.add('err'); });
 
 // anonymous visit counter (one per browser session; no cookies, nothing personal — see privacy.html)
 function countVisit() {

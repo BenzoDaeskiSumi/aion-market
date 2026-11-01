@@ -43,7 +43,7 @@ async function loadProfile() {
   if (data) {
     (data.favorites || []).forEach((f) => FAVS.add(f));
     ALERTS = Array.isArray(data.alerts) ? data.alerts : [];          // keep favourites added before logging in
-    if (data.server_id && data.server_id !== SERVER && [...srvSel.options].some((o) => +o.value === data.server_id)) {
+    if (false && data.server_id && data.server_id !== SERVER && [...srvSel.options].some((o) => +o.value === data.server_id)) {
       SERVER = data.server_id; srvSel.value = String(SERVER); store.set('aion-server', String(SERVER)); await loadServer();
     }
   }

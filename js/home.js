@@ -1,7 +1,6 @@
 /* Aion 2 Market — home page: live numbers of the chosen server (same files the tracker reads), visit counter, service worker. */
 (async () => {
-  let server = 12305;
-  try { const s = +localStorage.getItem('aion-server'); if (s) server = s; } catch (e) {}
+  const server = 12305;   // Marchutan only (Nov 2026)
   const set = (id, v) => { document.getElementById(id).textContent = v; };
   const num = (n) => n.toLocaleString(LOCALE);
   try {

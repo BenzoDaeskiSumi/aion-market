@@ -101,7 +101,7 @@ function drawTable() {
   document.getElementById('maintab').hidden = craft || db || ch; document.getElementById('crafttab').hidden = !craft;
   document.getElementById('dbtab').hidden = !db; if (!db) document.getElementById('dbmore').hidden = true;
   document.getElementById('chartab').hidden = !ch; if (!ch) document.getElementById('charmore').hidden = true;
-  document.getElementById('charsrv').hidden = !ch; sideBtn.style.display = ch ? 'none' : '';
+  document.getElementById('charsrv').hidden = true; sideBtn.style.display = ch ? 'none' : '';
   document.getElementById('win').classList.toggle('charview', ch);
   document.getElementById('win').classList.toggle('craftview', craft || db);
   document.getElementById('win').classList.toggle('dbview', db);
