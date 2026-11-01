@@ -9,6 +9,8 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 - Video: Remotion project on the 'video' branch (scenes in src/, original synthesised music music.py -> public/music.mp3, live-site screenshots + measured boxes
   by scripts/shots.mjs -> public/rects.json); workflow 'Video' (inputs shots=yes retakes the screenshots, stills_only=yes for a quick check) renders it to the
   'video-out' branch; media/intro.mp4 on main = that MP4 re-encoded (crf 27, faststart). sw.js never caches media/.
+  Since 1 Nov 2026 the video is in ENGLISH and shows only current features (Market, Details, Crafting, Database + Characters, Discord /info /craft /alert /favorites /character;
+  no Deals, no Map, no Legione); poster media/intro-poster.jpg = frame at 3.5 s; index.html loads both with ?v=en (cache bust).
 - Tracker code on main: market.html (markup only; was index.html until 25 Oct 2026) + css/style.css + js/{i18n,core,market,craft,ui,alerts,account,main}.js (classic scripts,
   shared globals, loaded in that order) + privacy.html. Bot in bot/. Scripts in scripts/.
 - Market data is NOT on main: it lives on the 'data' branch as ONE commit that every writer replaces (git checkout --orphan +
