@@ -2,17 +2,17 @@
 // Data: the site's public JSON on GitHub Pages (data/s/<server>/summary.json, written by scripts/sync.py every hour).
 
 const GRADE = {
-  orange: ['Mitico', 0xff8a3d], gold: ['Leggendario', 0xf0c43f], blue: ['Raro', 0x4ea6ff],
-  green: ['Non comune', 0x62e07a], white: ['Comune', 0xe9eef7], teal: ['Speciale', 0x3fe0c8],
+  orange: ['Mythic', 0xff8a3d], gold: ['Legendary', 0xf0c43f], blue: ['Rare', 0x4ea6ff],
+  green: ['Uncommon', 0x62e07a], white: ['Common', 0xe9eef7], teal: ['Special', 0x3fe0c8],
 };
 const SIGNAL = {
-  'Compra per rivendere': '🟢 Compra per rivendere', 'Vendi ora': '🔴 Vendi ora', 'Tieni': '⚪ Tieni',
-  'Servono più dati': '⏳ Servono più dati', 'Non disponibile': '⛔ Non disponibile', 'Prezzo anomalo': '⚠️ Prezzo anomalo (1-2 inserzioni fuori scala)',
+  'Compra per rivendere': '🟢 Buy to resell', 'Vendi ora': '🔴 Sell now', 'Tieni': '⚪ Hold',
+  'Servono più dati': '⏳ Needs more data', 'Non disponibile': '⛔ Not available', 'Prezzo anomalo': '⚠️ Odd price (1-2 listings way off)',
 };
-const CONF = {alta: '🟢 alta', media: '🟡 media', bassa: '🔴 bassa'};
-const nf = new Intl.NumberFormat('it-IT');
+const CONF = {alta: '🟢 high', media: '🟡 medium', bassa: '🔴 low'};
+const nf = new Intl.NumberFormat('en-GB');
 const kin = (v) => (v == null ? '—' : nf.format(Math.round(v)));
-const pct = (v) => (v == null ? '' : `${(v * 100).toLocaleString('it-IT', {maximumFractionDigits: 1})}%`);
+const pct = (v) => (v == null ? '' : `${(v * 100).toLocaleString('en-GB', {maximumFractionDigits: 1})}%`);
 const slug = (s) => s.toLowerCase().replace(/['’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 async function json(env, file, ttl) {
@@ -72,29 +72,29 @@ function itemEmbed(name, r, sid, sname, ico, env) {
   const [gname, color] = GRADE[r.g] || GRADE.white;
   const ch = r.ch ? ` (${r.ch > 0 ? '▲ +' : '▼ '}${kin(Math.abs(r.ch))})` : '';
   const fields = [
-    {name: 'Prezzo più basso', value: r.p > 0 ? `**${kin(r.p)}** kinah${ch}` : 'Non in vendita', inline: true},
-    {name: 'Media 3 giorni', value: kin(r.a), inline: true},
-    {name: 'Annunci', value: kin(r.n), inline: true},
-    {name: 'Vendite al giorno', value: r.d == null ? '—' : `${r.k === 'stima' ? '~' : ''}${r.d.toLocaleString('it-IT')}`, inline: true},
-    {name: 'Min – max 7 giorni', value: r.lo == null ? '—' : `${kin(r.lo)} – ${kin(r.hi)}`, inline: true},
-    {name: 'Trend 7 giorni', value: r.t7 == null ? '—' : `${r.t7 > 0 ? '▲ +' : r.t7 < 0 ? '▼ ' : ''}${pct(r.t7)}`, inline: true},
-    {name: 'Liquidità', value: r.lq == null ? '—' : `${r.lq}/100`, inline: true},
-    {name: 'Flip (dopo tasse)', value: r.f == null ? '—' : `${r.f > 0 ? '+' : ''}${kin(r.f)} (${pct(r.m)})`, inline: true},
-    {name: 'Segnale', value: (SIGNAL[r.s] || r.s) + (r.q && r.p > 0 ? ` · affidabilità ${CONF[r.q] || r.q}` : ''), inline: false},
+    {name: 'Lowest price', value: r.p > 0 ? `**${kin(r.p)}** kinah${ch}` : 'Not on sale', inline: true},
+    {name: '3-day average', value: kin(r.a), inline: true},
+    {name: 'Listings', value: kin(r.n), inline: true},
+    {name: 'Sales per day', value: r.d == null ? '—' : `${r.k === 'stima' ? '~' : ''}${r.d.toLocaleString('en-GB')}`, inline: true},
+    {name: '7-day min – max', value: r.lo == null ? '—' : `${kin(r.lo)} – ${kin(r.hi)}`, inline: true},
+    {name: '7-day trend', value: r.t7 == null ? '—' : `${r.t7 > 0 ? '▲ +' : r.t7 < 0 ? '▼ ' : ''}${pct(r.t7)}`, inline: true},
+    {name: 'Liquidity', value: r.lq == null ? '—' : `${r.lq}/100`, inline: true},
+    {name: 'Flip (after tax)', value: r.f == null ? '—' : `${r.f > 0 ? '+' : ''}${kin(r.f)} (${pct(r.m)})`, inline: true},
+    {name: 'Signal', value: (SIGNAL[r.s] || r.s) + (r.q && r.p > 0 ? ` · confidence ${CONF[r.q] || r.q}` : ''), inline: false},
   ];
   const icon = ico[name] || `icons/${slug(name)}.png`;
   return {
     title: name, url: itemUrl(env, sid, name), color,
     description: [gname, r.c, r.l ? `Item Level ${r.l}` : null].filter(Boolean).join(' · '),
     thumbnail: {url: `${env.SITE}/${icon}`}, fields,
-    footer: {text: `${sname} · Asmodian · dati aion2.exchange`}, timestamp: r.t,
+    footer: {text: `${sname} · Asmodian · data aion2.exchange`}, timestamp: r.t,
   };
 }
 // ---------- price chart (image drawn by QuickChart from the light history in hist.json) ----------
-const VIEWS = {card: '📋 Scheda', w: '📈 7 giorni', m: '📈 30 giorni'};
-const kShort = (v) => v >= 1e6 ? `${(v / 1e6).toLocaleString('it-IT', {maximumFractionDigits: v >= 1e7 ? 0 : 2})}M` : v >= 1e3 ? `${Math.round(v / 1e3)}K` : String(v);
+const VIEWS = {card: '📋 Card', w: '📈 7 days', m: '📈 30 days'};
+const kShort = (v) => v >= 1e6 ? `${(v / 1e6).toLocaleString('en-GB', {maximumFractionDigits: v >= 1e7 ? 0 : 2})}M` : v >= 1e3 ? `${Math.round(v / 1e3)}K` : String(v);
 async function chartUrl(pts, avg, color) {
-  const day = (h) => new Date(h * 36e5).toLocaleDateString('it-IT', {timeZone: 'Europe/Rome', day: '2-digit', month: '2-digit'});
+  const day = (h) => new Date(h * 36e5).toLocaleDateString('en-GB', {timeZone: 'Europe/Rome', day: '2-digit', month: '2-digit'});
   // one label per day (the 6-hour points of the 7-day chart would repeat the same date)
   const labels = pts.map(([h], k) => (k && day(pts[k - 1][0]) === day(h) ? '' : day(h))), vals = pts.map(([, p]) => p);
   const skip = labels.some((l) => !l) ? 'autoSkip:false,' : '';
@@ -105,7 +105,7 @@ async function chartUrl(pts, avg, color) {
     `]},options:{legend:{display:false},layout:{padding:{left:6,right:16,top:14,bottom:4}},scales:{` +
     `xAxes:[{gridLines:{display:false},ticks:{${skip}fontColor:'#9aa3b5',fontSize:14,maxTicksLimit:7,maxRotation:0,autoSkipPadding:18}}],` +
     `yAxes:[{gridLines:{color:'rgba(154,163,181,0.18)',zeroLineColor:'rgba(0,0,0,0)',drawBorder:false},ticks:{fontColor:'#9aa3b5',fontSize:14,maxTicksLimit:5,padding:8,` +
-    `callback:(v)=>v>=1e6?(v/1e6).toFixed(v>=1e7?0:2).replace('.',',')+'M':v>=1e3?Math.round(v/1e3)+'K':v}}]}}}`;
+    `callback:(v)=>v>=1e6?(v/1e6).toFixed(v>=1e7?0:2)+'M':v>=1e3?Math.round(v/1e3)+'K':v}}]}}}`;
   const url = `https://quickchart.io/chart?w=720&h=320&devicePixelRatio=2&bkg=transparent&c=${encodeURIComponent(cfg)}`;
   if (url.length <= 2000) return url;
   const r = await fetch('https://quickchart.io/chart/create', {method: 'POST', headers: {'Content-Type': 'application/json'},
@@ -116,27 +116,27 @@ async function chartEmbed(name, r, h, view, sid, sname, ico, env) {
   const pts = h?.[view];
   const [, color] = GRADE[r?.g] || GRADE.white;
   const base = {title: name, url: itemUrl(env, sid, name), color, thumbnail: {url: `${env.SITE}/${ico[name] || `icons/${slug(name)}.png`}`},
-    footer: {text: `${sname} · Asmodian · dati aion2.exchange`}, timestamp: r?.t};
-  const span = view === 'w' ? 'ultimi 7 giorni' : 'ultimi 30 giorni';
-  if (!pts || pts.length < 2) return {...base, description: `📈 Non ci sono abbastanza prezzi negli ${span} per un grafico.`};
+    footer: {text: `${sname} · Asmodian · data aion2.exchange`}, timestamp: r?.t};
+  const span = view === 'w' ? 'last 7 days' : 'last 30 days';
+  if (!pts || pts.length < 2) return {...base, description: `📈 Not enough prices in the ${span} for a chart.`};
   const vals = pts.map(([, p]) => p), lo = Math.min(...vals), hi = Math.max(...vals), first = vals[0], last = vals[vals.length - 1];
   const url = await chartUrl(pts, r?.a, 0x5b8cff);
   const ch = first ? (last - first) / first : 0;
-  return {...base, description: `📈 **Prezzo più basso**, ${span}` + (r?.a ? ` · tratteggio = media 3 giorni (${kin(r.a)})` : ''),
+  return {...base, description: `📈 **Lowest price**, ${span}` + (r?.a ? ` · dashed = 3-day average (${kin(r.a)})` : ''),
     fields: [
-      {name: 'Adesso', value: r?.p > 0 ? `**${kin(r.p)}**` : 'Non in vendita', inline: true},
-      {name: 'Minimo', value: kin(lo), inline: true},
-      {name: 'Massimo', value: kin(hi), inline: true},
-      {name: 'Variazione', value: `${ch > 0 ? '▲ +' : ch < 0 ? '▼ ' : ''}${pct(ch)}`, inline: true},
+      {name: 'Now', value: r?.p > 0 ? `**${kin(r.p)}**` : 'Not on sale', inline: true},
+      {name: 'Low', value: kin(lo), inline: true},
+      {name: 'High', value: kin(hi), inline: true},
+      {name: 'Change', value: `${ch > 0 ? '▲ +' : ch < 0 ? '▼ ' : ''}${pct(ch)}`, inline: true},
     ], image: url ? {url} : undefined};
 }
 // action buttons under a card: anyone can press them (each for themselves)
 const crafts = (rec) => new Set((rec.recipes || []).flatMap((r) => [r.p, r.c && r.cp].filter(Boolean)));
 const actionRow = (env, sid, name, craftable) => ({type: 1, components: [
-  {type: 2, style: 2, emoji: {name: '⭐'}, label: 'Preferito', custom_id: `fa:${sid}`},
-  {type: 2, style: 2, emoji: {name: '🔔'}, label: 'Avviso', custom_id: `al:${sid}`},
+  {type: 2, style: 2, emoji: {name: '⭐'}, label: 'Favourite', custom_id: `fa:${sid}`},
+  {type: 2, style: 2, emoji: {name: '🔔'}, label: 'Alert', custom_id: `al:${sid}`},
   ...(craftable ? [{type: 2, style: 2, emoji: {name: '🔨'}, label: 'Craft', custom_id: `cr:${sid}`}] : []),
-  {type: 2, style: 5, label: 'Apri sul sito', url: itemUrl(env, sid, name)},
+  {type: 2, style: 5, label: 'Open on the site', url: itemUrl(env, sid, name)},
 ]});
 // view buttons under a card: the current one is highlighted and disabled
 const viewRow = (prefix, view) => ({type: 1, components: Object.entries(VIEWS).map(([v, label]) =>
@@ -144,7 +144,7 @@ const viewRow = (prefix, view) => ({type: 1, components: Object.entries(VIEWS).m
 async function itemView(name, sid, view, env) {
   const [sum, srv, ico, hs] = await Promise.all([summary(env, sid), servers(env), icons(env), view === 'card' ? null : hist(env, sid)]);
   const r = sum[name], sname = serverName(srv, sid);
-  if (view === 'card' || !hs) return r ? itemEmbed(name, r, sid, sname, ico, env) : {title: name, url: itemUrl(env, sid, name), color: 0x5b8cff, description: `Nessun dato per questo oggetto su ${sname}.`};
+  if (view === 'card' || !hs) return r ? itemEmbed(name, r, sid, sname, ico, env) : {title: name, url: itemUrl(env, sid, name), color: 0x5b8cff, description: `No data for this item on ${sname}.`};
   return chartEmbed(name, r, hs[name], view, sid, sname, ico, env);
 }
 
@@ -156,16 +156,16 @@ async function prezzo(i, env) {
   const data = i.data, sid = await serverOf(i, env), q = String(opt(data, 'oggetto')?.value || '').trim();
   const [sum, srv, ico, rec] = await Promise.all([summary(env, sid), servers(env), icons(env), recipes(env)]);
   const name = sum[q] ? q : search(Object.entries(sum), q, 1)[0];
-  if (!name) return oops(`Non trovo **${q}** sul market. Scegli un nome dai suggerimenti mentre scrivi.`);
+  if (!name) return oops(`I can't find **${q}** on the Market. Pick a name from the suggestions while you type.`);
   return reply({embeds: [itemEmbed(name, sum[name], sid, serverName(srv, sid), ico, env)],
     components: [viewRow(`pv:${userId(i)}:${sid}`, 'card'), actionRow(env, sid, name, crafts(rec).has(name))]});
 }
 // view buttons of /info: the item is the card's title; only who asked can switch (one message, no spam)
 async function prezzoView(i, env) {
   const [, owner, sid, view] = i.data.custom_id.split(':');
-  if (userId(i) !== owner) return oops('Usa /info per aprire la tua scheda: questi pulsanti sono di chi ha fatto la richiesta.');
+  if (userId(i) !== owner) return oops('Use /info to open your own card: these buttons belong to whoever asked.');
   const name = i.message?.embeds?.[0]?.title;
-  if (!name) return oops('Non trovo più l\'oggetto di questa scheda: rifai /info.');
+  if (!name) return oops('I can\'t find this card\'s item any more: run /info again.');
   const [embed, rec] = await Promise.all([itemView(name, +sid, view, env), recipes(env)]);
   return Response.json({type: 7, data: {embeds: [embed], components: [viewRow(`pv:${owner}:${sid}`, view), actionRow(env, +sid, name, crafts(rec).has(name))]}});
 }
@@ -190,26 +190,26 @@ async function favPage(env, uid, sid, idx, view = 'card') {
   sid = sid || prof.server_id || +env.DEFAULT_SERVER;
   const n = favs.length, i = ((idx % n) + n) % n, name = favs[i];
   const embed = await itemView(name, sid, view, env);
-  embed.author = {name: `Preferiti · ${i + 1} di ${n}`};
+  embed.author = {name: `Favourites · ${i + 1} of ${n}`};
   const btn = (to, label) => ({type: 2, style: 2, label, custom_id: `fav:${uid}:${sid}:${to}:${view}:${label}`, disabled: n < 2});
   return {embeds: [embed], components: [{type: 1, components: [
     btn(i - 1, '◀'), {type: 2, style: 2, label: `${i + 1} / ${n}`, custom_id: `fav:noop:${uid}`, disabled: true}, btn(i + 1, '▶'),
     {type: 2, style: 2, emoji: {name: '🔔'}, custom_id: `al:${sid}`},
-    {type: 2, style: 5, label: 'Apri sul sito', url: itemUrl(env, sid, name)},
+    {type: 2, style: 5, label: 'Open on the site', url: itemUrl(env, sid, name)},
   ]}, viewRow(`fav:${uid}:${sid}:${i}`, view)]};
 }
 async function preferiti(i, env) {
   const uid = userId(i), srv = opt(i.data, 'server')?.value || await savedServer(i, env);
   const page = await favPage(env, uid, srv ? +srv : null, 0);
-  if (!page) return oops(`Non hai ancora preferiti. Accedi con Discord su ${env.SITE} e premi la ⭐ accanto agli oggetti che ti interessano.`);
+  if (!page) return oops(`You have no favourites yet. Log in with Discord on ${env.SITE} and press the ⭐ next to the items you care about.`);
   return reply(page);
 }
 async function favButton(i, env) {
   const [, owner, sid, idx, view] = i.data.custom_id.split(':');
   const uid = userId(i);
-  if (uid !== owner) return oops('Questi sono i preferiti di un altro utente: usa /preferiti per vedere i tuoi.');
+  if (uid !== owner) return oops('These are someone else\'s favourites: use /favorites to see yours.');
   const page = await favPage(env, owner, +sid, +idx, VIEWS[view] ? view : 'card');
-  if (!page) return Response.json({type: 7, data: {content: 'Nessun preferito.', embeds: [], components: []}});
+  if (!page) return Response.json({type: 7, data: {content: 'No favourites.', embeds: [], components: []}});
   return Response.json({type: 7, data: page});                      // 7 = edit the same message, no new posts
 }
 
@@ -223,23 +223,23 @@ async function affari(i, env) {
     ? rows.filter(([, r]) => r.s === 'Vendi ora').sort((a, b) => (b[1].p / b[1].a) - (a[1].p / a[1].a))
     : rows.filter(([, r]) => r.s === 'Compra per rivendere').sort((a, b) => b[1].f - a[1].f);
   const lines = top.slice(0, 12).map(([n, r], i) => kind === 'vendi'
-    ? `**${i + 1}. [${n}](${itemUrl(env, sid, n)})** — ${kin(r.p)} (media ${kin(r.a)}, +${pct(r.p / r.a - 1)})`
-    : `**${i + 1}. [${n}](${itemUrl(env, sid, n)})** — compra a ${kin(r.p)}, media ${kin(r.a)} → **+${kin(r.f)}**`);
+    ? `**${i + 1}. [${n}](${itemUrl(env, sid, n)})** — ${kin(r.p)} (avg ${kin(r.a)}, +${pct(r.p / r.a - 1)})`
+    : `**${i + 1}. [${n}](${itemUrl(env, sid, n)})** — buy at ${kin(r.p)}, avg ${kin(r.a)} → **+${kin(r.f)}**`);
   return reply({embeds: [{
-    title: kind === 'vendi' ? `Da vendere ora · ${sname}` : `Affari da comprare · ${sname}`,
+    title: kind === 'vendi' ? `Sell now · ${sname}` : `Deals to buy · ${sname}`,
     url: env.SITE, color: kind === 'vendi' ? 0xff5c6c : 0x62e07a,
-    description: lines.join('\n') || 'Nessun affare in questo momento.',
-    footer: {text: `${top.length} in totale · dati aion2.exchange`},
+    description: lines.join('\n') || 'No deals right now.',
+    footer: {text: `${top.length} in total · data aion2.exchange`},
   }]});
 }
 
 // ---------- /server: remember the user's server ----------
 async function setServer(i, env) {
   const sid = +opt(i.data, 'server')?.value, srv = await servers(env);
-  if (!srv.some((s) => s.id === sid)) return oops('Server non valido: sceglilo dalla lista.');
-  if (!env.USERS) return oops('Salvataggio non disponibile in questo momento.');
+  if (!srv.some((s) => s.id === sid)) return oops('Invalid server: pick it from the list.');
+  if (!env.USERS) return oops('Saving is not available right now.');
   await env.USERS.put(`srv:${userId(i)}`, String(sid));
-  return oops(`✅ Server registrato: **${serverName(srv, sid)}**. Da ora /info, /affari e /preferiti useranno questo server; per cambiarlo rifai /server.`);
+  return oops(`✅ Server saved: **${serverName(srv, sid)}**. From now on /info, /deals and /favorites use this server; run /server again to change it.`);
 }
 
 // ---------- price alerts: stored in profiles.alerts (site login), checked every 15 min by the cron below ----------
@@ -252,8 +252,8 @@ const parsePrice = (v) => {
   n *= {k: 1e3, m: 1e6, b: 1e9}[m[2]] || 1;
   return Number.isFinite(n) && n > 0 ? Math.round(n) : null;
 };
-const alertText = (a, srv) => `${a.dir === 'above' ? 'sopra' : 'sotto'} **${kin(a.price)}** · ${serverName(srv, a.server)}`;
-const NO_LOGIN = (env) => `Gli avvisi sono per chi ha fatto l'accesso al sito: entra su ${env.SITE} con **Accedi con Discord** (una volta sola), poi riprova.`;
+const alertText = (a, srv) => `${a.dir === 'above' ? 'above' : 'below'} **${kin(a.price)}** · ${serverName(srv, a.server)}`;
+const NO_LOGIN = (env) => `Alerts need a site login: open ${env.SITE} and press **Log in with Discord** (just once), then try again.`;
 
 // suggestions for the price box of /avviso aggiungi: what you typed (decoded) + targets around the current price
 function priceChoices(sum, data, q) {
@@ -262,13 +262,13 @@ function priceChoices(sum, data, q) {
   const nice = (v) => { const e = 10 ** Math.max(0, Math.floor(Math.log10(v)) - 2); return Math.round(v / e) * e; };
   const typed = parsePrice(q);
   if (typed) out.push([`${kin(typed)} kinah`, typed]);
-  else if (q.trim()) out.push(['Prezzo non valido: scrivi es. 250000, 250k, 1.5m', 0]);
+  else if (q.trim()) out.push(['Invalid price: type e.g. 250000, 250k, 1.5m', 0]);
   if (r) {
     const base = r.p > 0 ? r.p : r.a;
-    if (base) [5, 10, 20].forEach((p) => out.push([`${up ? '+' : '−'}${p}% dal prezzo attuale → ${kin(nice(base * (1 + (up ? p : -p) / 100)))}`, nice(base * (1 + (up ? p : -p) / 100))]));
-    if (r.a) out.push([`Media 3 giorni → ${kin(r.a)}`, r.a]);
-    if (up ? r.hi : r.lo) out.push([`${up ? 'Massimo' : 'Minimo'} 7 giorni → ${kin(up ? r.hi : r.lo)}`, up ? r.hi : r.lo]);
-    if (r.p > 0) out.push([`Prezzo attuale → ${kin(r.p)}`, r.p]);
+    if (base) [5, 10, 20].forEach((p) => out.push([`${up ? '+' : '−'}${p}% from the current price → ${kin(nice(base * (1 + (up ? p : -p) / 100)))}`, nice(base * (1 + (up ? p : -p) / 100))]));
+    if (r.a) out.push([`3-day average → ${kin(r.a)}`, r.a]);
+    if (up ? r.hi : r.lo) out.push([`7-day ${up ? 'high' : 'low'} → ${kin(up ? r.hi : r.lo)}`, up ? r.hi : r.lo]);
+    if (r.p > 0) out.push([`Current price → ${kin(r.p)}`, r.p]);
   }
   return out.filter(([, v], k) => v || k === 0).slice(0, 25).map(([n, v]) => ({name: n.slice(0, 100), value: String(v || q).slice(0, 100)}));
 }
@@ -281,45 +281,45 @@ async function avviso(i, env) {
   if (what === 'aggiungi') {
     const sid = await serverOf(i, env), q = String(opt(i.data, 'oggetto')?.value || '').trim();
     const sum = await summary(env, sid), name = sum[q] ? q : search(Object.entries(sum), q, 1)[0];
-    if (!name) return oops(`Non trovo **${q}** sul market. Scegli un nome dai suggerimenti.`);
+    if (!name) return oops(`I can't find **${q}** on the Market. Pick a name from the suggestions.`);
     const price = parsePrice(opt(i.data, 'prezzo')?.value);
-    if (!price) return oops('Prezzo non valido: scrivi un numero, es. `250000`, `250k` o `1.5m`.');
+    if (!price) return oops('Invalid price: type a number, e.g. `250000`, `250k` or `1.5m`.');
     const dir = opt(i.data, 'quando')?.value === 'above' ? 'above' : 'below';
     const rest = alerts.filter((a) => !(a.item === name && a.server === sid && a.dir === dir));
-    if (rest.length >= MAX_ALERTS) return oops(`Hai già ${MAX_ALERTS} avvisi: togline qualcuno con \`/avviso lista\`.`);
+    if (rest.length >= MAX_ALERTS) return oops(`You already have ${MAX_ALERTS} alerts: remove some with \`/alert list\`.`);
     const a = {item: name, server: sid, price, dir};
     await rpc(env, 'set_alerts_by_discord', {did: uid, a: [...rest, a]});
-    const now = sum[name]?.p > 0 ? `ora è a **${kin(sum[name].p)}**` : 'ora non è in vendita';
+    const now = sum[name]?.p > 0 ? `now at **${kin(sum[name].p)}**` : 'not on sale right now';
     const ch = env.USERS ? await env.USERS.get('cfg:alert_channel') : null;
-    return oops(`🔔 Avviso salvato: **${name}** ${alertText(a, srv)} (${now}).\n` +
-      (ch ? `Ti scrivo in <#${ch}> quando ci arriva.` : 'Nessun canale avvisi impostato: un admin deve usare `/avvisi-canale`.'));
+    return oops(`🔔 Alert saved: **${name}** ${alertText(a, srv)} (${now}).\n` +
+      (ch ? `I'll ping you in <#${ch}> when it gets there.` : 'No alert channel set yet: an admin has to run `/avvisi-canale`.'));
   }
   // lista
-  if (!alerts.length) return oops('Non hai avvisi. Aggiungine uno con `/avviso aggiungi` o dal sito (scheda dell\'oggetto).');
+  if (!alerts.length) return oops('You have no alerts. Add one with `/alert add` or on the site (item details).');
   const sums = {};
   for (const a of alerts) sums[a.server] ||= await summary(env, a.server).catch(() => ({}));
   const lines = alerts.map((a, k) => { const p = sums[a.server][a.item]?.p;
-    return `**${k + 1}. ${a.item}** — ${alertText(a, srv)} · ora ${p > 0 ? kin(p) : 'non in vendita'}`; });
-  return reply({flags: 64, embeds: [{title: `I tuoi avvisi (${alerts.length}/${MAX_ALERTS})`, color: 0x5b8cff, description: lines.join('\n')}],
-    components: [{type: 1, components: [{type: 3, custom_id: `alrm:${uid}`, placeholder: 'Togli avvisi…', min_values: 1, max_values: alerts.length,
+    return `**${k + 1}. ${a.item}** — ${alertText(a, srv)} · now ${p > 0 ? kin(p) : 'not on sale'}`; });
+  return reply({flags: 64, embeds: [{title: `Your alerts (${alerts.length}/${MAX_ALERTS})`, color: 0x5b8cff, description: lines.join('\n')}],
+    components: [{type: 1, components: [{type: 3, custom_id: `alrm:${uid}`, placeholder: 'Remove alerts…', min_values: 1, max_values: alerts.length,
       options: alerts.map((a, k) => ({label: `${k + 1}. ${a.item}`.slice(0, 100), value: String(k),
-        description: `${a.dir === 'above' ? 'sopra' : 'sotto'} ${kin(a.price)} · ${serverName(srv, a.server)}`.slice(0, 100)}))}]}]});
+        description: `${a.dir === 'above' ? 'above' : 'below'} ${kin(a.price)} · ${serverName(srv, a.server)}`.slice(0, 100)}))}]}]});
 }
 async function alertRemove(i, env) {
   const uid = userId(i);
-  if (i.data.custom_id !== `alrm:${uid}`) return oops('Non sono i tuoi avvisi.');
+  if (i.data.custom_id !== `alrm:${uid}`) return oops('These are not your alerts.');
   const prof = (await rpc(env, 'alerts_by_discord', {did: uid}))[0];
   const drop = new Set((i.data.values || []).map(Number));
   const keep = (prof?.alerts || []).filter((_, k) => !drop.has(k));
   await rpc(env, 'set_alerts_by_discord', {did: uid, a: keep});
-  return Response.json({type: 7, data: {content: `🗑️ Tolti ${drop.size} avvisi, ne restano ${keep.length}.`, embeds: [], components: []}});
+  return Response.json({type: 7, data: {content: `🗑️ Removed ${drop.size} alerts, ${keep.length} left.`, embeds: [], components: []}});
 }
 async function alertChannel(i, env) {
   const ch = i.channel_id || i.channel?.id;
-  const test = await discord(env, `/channels/${ch}/messages`, {content: '🔔 Da ora gli avvisi di prezzo arriveranno in questo canale.'});
-  if (!test.ok) return oops(`Non riesco a scrivere in questo canale (errore ${test.status}): dai al bot il permesso **Invia messaggi** qui e riprova.`);
+  const test = await discord(env, `/channels/${ch}/messages`, {content: '🔔 Price alerts will be posted in this channel from now on.'});
+  if (!test.ok) return oops(`I can't write in this channel (error ${test.status}): give the bot **Send Messages** here and try again.`);
   await env.USERS.put('cfg:alert_channel', ch);
-  return oops('✅ Canale avvisi impostato.');
+  return oops('✅ Alert channel set.');
 }
 const discord = (env, path, body) => fetch(`https://discord.com/api/v10${path}`, {method: 'POST',
   headers: {Authorization: `Bot ${env.DISCORD_TOKEN}`, 'Content-Type': 'application/json'}, body: JSON.stringify(body)});
@@ -343,7 +343,7 @@ async function checkAlerts(env) {
       next[key] = state[key] || Date.now();
       if (state[key] || sent >= 30) continue;              // already told / stay under the per-run request limit
       const res = await discord(env, `/channels/${ch}/messages`, {
-        content: `<@${uid}> 🔔 **${a.item}** è ${a.dir === 'above' ? 'salito a' : 'sceso a'} **${kin(r.p)}** kinah su ${serverName(srv, a.server)} (il tuo avviso: ${a.dir === 'above' ? 'sopra' : 'sotto'} ${kin(a.price)}).`,
+        content: `<@${uid}> 🔔 **${a.item}** ${a.dir === 'above' ? 'rose to' : 'dropped to'} **${kin(r.p)}** kinah on ${serverName(srv, a.server)} (your alert: ${a.dir === 'above' ? 'above' : 'below'} ${kin(a.price)}).`,
         embeds: [itemEmbed(a.item, r, a.server, serverName(srv, a.server), ico, env)],
         allowed_mentions: {users: [uid]}});
       if (res.ok) sent++; else delete next[key];          // retry next run
@@ -357,31 +357,31 @@ async function checkAlerts(env) {
 const cardItem = (i) => i.message?.embeds?.[0]?.title;
 async function favToggle(i, env) {
   const uid = userId(i), name = cardItem(i);
-  if (!name) return oops('Non trovo più l\'oggetto di questa scheda: rifai /info.');
+  if (!name) return oops('I can\'t find this card\'s item any more: run /info again.');
   const prof = await profile(env, uid);
-  if (!prof) return oops(`I preferiti sono per chi ha fatto l'accesso al sito: entra su ${env.SITE} con **Accedi con Discord** (una volta sola), poi riprova.`);
+  if (!prof) return oops(`Favourites need a site login: open ${env.SITE} and press **Log in with Discord** (just once), then try again.`);
   const favs = new Set(prof.favorites || []), had = favs.has(name);
   had ? favs.delete(name) : favs.add(name);
   try { await rpc(env, 'set_favorites_by_discord', {did: uid, f: [...favs]}); }
-  catch { return oops('Il pulsante ⭐ non è ancora attivo (manca una funzione nel database): per ora aggiungi i preferiti dal sito.'); }
-  return oops(had ? `☆ **${name}** tolto dai preferiti (${favs.size}).` : `⭐ **${name}** aggiunto ai preferiti (${favs.size}). Li vedi con /preferiti e sul sito.`);
+  catch { return oops('The ⭐ button is not active yet (a database function is missing): add favourites on the site for now.'); }
+  return oops(had ? `☆ **${name}** removed from favourites (${favs.size}).` : `⭐ **${name}** added to favourites (${favs.size}). See them with /favorites and on the site.`);
 }
 async function alertForm(i, env) {
   const sid = +i.data.custom_id.split(':')[1], name = cardItem(i);
-  if (!name) return oops('Non trovo più l\'oggetto di questa scheda: rifai /info.');
+  if (!name) return oops('I can\'t find this card\'s item any more: run /info again.');
   const prof = (await rpc(env, 'alerts_by_discord', {did: userId(i)}))[0];
   if (!prof) return oops(NO_LOGIN(env));
   const r = (await summary(env, sid))[name];
-  const now = r?.p > 0 ? `Ora ${kShort(r.p)}. ` : '';
-  return Response.json({type: 9, data: {custom_id: `alm:${sid}:${name}`.slice(0, 100), title: '🔔 Avviso di prezzo', components: [{type: 1, components: [{
+  const now = r?.p > 0 ? `Now ${kShort(r.p)}. ` : '';
+  return Response.json({type: 9, data: {custom_id: `alm:${sid}:${name}`.slice(0, 100), title: '🔔 Price alert', components: [{type: 1, components: [{
     type: 4, custom_id: 'price', style: 1, required: true, max_length: 20, label: `${name}`.slice(0, 45),
-    placeholder: `${now}Prezzo: 250000, 250k, 1.5m`.slice(0, 100)}]}]}});
+    placeholder: `${now}Price: 250000, 250k, 1.5m`.slice(0, 100)}]}]}});
 }
 async function alertSubmit(i, env) {
   const [, sid0, ...rest] = i.data.custom_id.split(':'), sid = +sid0;
   const name = rest.join(':') || cardItem(i), uid = userId(i);
   const price = parsePrice(i.data.components?.[0]?.components?.[0]?.value);
-  if (!price) return oops('Prezzo non valido: scrivi un numero, es. `250000`, `250k` o `1.5m`.');
+  if (!price) return oops('Invalid price: type a number, e.g. `250000`, `250k` or `1.5m`.');
   const prof = (await rpc(env, 'alerts_by_discord', {did: uid}))[0];
   if (!prof) return oops(NO_LOGIN(env));
   const [sum, srv] = await Promise.all([summary(env, sid), servers(env)]), r = sum[name];
@@ -389,12 +389,12 @@ async function alertSubmit(i, env) {
   const dir = r?.p > 0 && price > r.p ? 'above' : 'below';
   const alerts = Array.isArray(prof.alerts) ? prof.alerts : [];
   const rest2 = alerts.filter((a) => !(a.item === name && a.server === sid && a.dir === dir));
-  if (rest2.length >= MAX_ALERTS) return oops(`Hai già ${MAX_ALERTS} avvisi: togline qualcuno con \`/avviso lista\`.`);
+  if (rest2.length >= MAX_ALERTS) return oops(`You already have ${MAX_ALERTS} alerts: remove some with \`/alert list\`.`);
   const a = {item: name, server: sid, price, dir};
   await rpc(env, 'set_alerts_by_discord', {did: uid, a: [...rest2, a]});
   const ch = env.USERS ? await env.USERS.get('cfg:alert_channel') : null;
-  return oops(`🔔 Avviso salvato: **${name}** ${alertText(a, srv)} (${r?.p > 0 ? `ora è a **${kin(r.p)}**` : 'ora non è in vendita'}).\n` +
-    (ch ? `Ti scrivo in <#${ch}> quando ci arriva. I tuoi avvisi: \`/avviso lista\`.` : 'Nessun canale avvisi impostato: un admin deve usare `/avvisi-canale`.'));
+  return oops(`🔔 Alert saved: **${name}** ${alertText(a, srv)} (${r?.p > 0 ? `now at **${kin(r.p)}**` : 'not on sale right now'}).\n` +
+    (ch ? `I'll ping you in <#${ch}> when it gets there. Your alerts: \`/alert list\`.` : 'No alert channel set yet: an admin has to run `/avvisi-canale`.'));
 }
 
 // ---------- /craft: same engine as the site's Crafting view (js/craft.js craftEngine) ----------
@@ -438,78 +438,71 @@ function craftEngine(sum, rec) {
   }
   return {ways, unit, craftBest, market};
 }
-const fmtPct = (v) => `${Math.round(v * 1000) / 10}%`.replace('.', ',');
+const fmtPct = (v) => `${Math.round(v * 1000) / 10}%`;
 async function craftEmbed(name, sid, env) {
   const [sum, rec, srv, ico, st] = await Promise.all([summary(env, sid), recipes(env), servers(env), icons(env), settings(env)]);
   const E = craftEngine(sum, rec), w = E.craftBest(name);
   if (!w) return null;
   const market = E.market.get(name) ?? null, tax = +st.tax_rate || 0;
-  const verdict = w.est == null ? '⏳ Mancano dei prezzi' : market == null ? '🔨 Solo crafting (non è in vendita)'
-    : market > w.est ? `🔨 **Craftalo**: risparmi ${kin(market - w.est)}` : `🛒 **Compralo**: costa ${kin(w.est - market)} in meno che craftarlo`;
+  const verdict = w.est == null ? '⏳ Some prices are missing' : market == null ? '🔨 Craft only (not on sale)'
+    : market > w.est ? `🔨 **Craft it**: you save ${kin(market - w.est)}` : `🛒 **Buy it**: it costs ${kin(w.est - market)} less than crafting`;
   // the chain: ingredients cheaper to craft get their own step before the item itself
   const steps = [], seen = new Set();
   (function walk(x) { if (!x || seen.has(x.name)) return; seen.add(x.name); x.parts.forEach((p) => { if (p.src === 'craft') walk(p.way); }); steps.push(x); })(w);
   const no = new Map(steps.map((x, k) => [x.name, k + 1]));
-  const via = (p) => !isFinite(p.price) ? 'prezzo non disponibile' : p.src === 'market' ? 'Market' : p.src === 'npc' ? 'negozio NPC' : `craftalo (passo ${no.get(p.name)})`;
+  const via = (p) => !isFinite(p.price) ? 'price not available' : p.src === 'market' ? 'Market' : p.src === 'npc' ? 'NPC shop' : `craft it (step ${no.get(p.name)})`;
   const lines = (x) => x.parts.map((p) => `${p.q} × ${p.name} — ${isFinite(p.price) ? `**${kin(p.q * p.price)}**` : '—'} · ${via(p)}`).join('\n');
-  const estLabel = (x) => x.mode === 'combo' ? `stimato con la combo ${Math.round(x.r.c * 100)}%` : 'stimato con i fallimenti';
+  const estLabel = (x) => x.mode === 'combo' ? `estimated with the ${Math.round(x.r.c * 100)}% combo` : 'estimated with failures';
   const fields = steps.slice(-4).map((x) => ({
-    name: `${steps.length > 1 ? `Passo ${no.get(x.name)} · ` : ''}${x.mode === 'combo' ? 1 : x.r.q} × ${x.name}`.slice(0, 256),
-    value: `${lines(x)}\nTotale **${x.cost == null ? '—' : kin(x.cost)}** · ${estLabel(x)} **${x.est == null ? '—' : kin(x.est)}**${x.mode !== 'combo' && x.r.q > 1 ? ' a pezzo' : ''}`.slice(0, 1024)}));
+    name: `${steps.length > 1 ? `Step ${no.get(x.name)} · ` : ''}${x.mode === 'combo' ? 1 : x.r.q} × ${x.name}`.slice(0, 256),
+    value: `${lines(x)}\nTotal **${x.cost == null ? '—' : kin(x.cost)}** · ${estLabel(x)} **${x.est == null ? '—' : kin(x.est)}**${x.mode !== 'combo' && x.r.q > 1 ? ' each' : ''}`.slice(0, 1024)}));
   const [gname, color] = GRADE[rec.grades?.[name] || sum[name]?.g] || GRADE.white;
-  const how = w.r.nr && w.mode !== 'combo' ? 'potenziamento (sempre riuscito)' : w.mode === 'combo' ? `esce solo con la combo (${Math.round(w.r.c * 100)}%) di un craft riuscito (${fmtPct(w.r.ok)})`
-    : `riesce il ${fmtPct(w.r.ok)} delle volte${w.r.q > 1 ? `, ne fa ${w.r.q}` : ''}`;
+  const how = w.r.nr && w.mode !== 'combo' ? 'upgrade (always succeeds)' : w.mode === 'combo' ? `only from the combo (${Math.round(w.r.c * 100)}%) of a successful craft (${fmtPct(w.r.ok)})`
+    : `succeeds ${fmtPct(w.r.ok)} of the time${w.r.q > 1 ? `, makes ${w.r.q}` : ''}`;
   return {
     title: `🔨 ${name}`, url: itemUrl(env, sid, name), color, thumbnail: {url: `${env.SITE}/${ico[name] || `icons/${slug(name)}.png`}`},
-    description: [`${gname} · ${w.r.s}${w.r.m ? ` · maestria ${w.r.m}` : ''} · ${how}`, '',
-      `Costo di 1 craft: **${w.cost == null ? '—' : kin(w.cost)}**`,
-      `Costo ${estLabel(w)}: **${w.est == null ? '—' : kin(w.est)}**`,
-      `Prezzo Market: **${market == null ? 'non in vendita' : kin(market)}**` + (market != null && w.est != null ? ` · se lo rivendi ${market * (1 - tax) - w.est >= 0 ? '+' : '−'}${kin(Math.abs(market * (1 - tax) - w.est))} (dopo tasse)` : ''),
-      ...(sum[name]?.a7 ? [`Media 7 giorni: **${kin(sum[name].a7)}**` + (w.est != null ? ` · craftarlo costa ${w.est <= sum[name].a7 ? `il ${Math.round((1 - w.est / sum[name].a7) * 100)}% in meno` : `il ${Math.round((w.est / sum[name].a7 - 1) * 100)}% in più`}` : '')] : []),
-      ...(w.r.base ? [`-# Potenziamento: consuma un ${w.r.base} (contato tra gli ingredienti).`] : []),
+    description: [`${gname} · ${w.r.s}${w.r.m ? ` · mastery ${w.r.m}` : ''} · ${how}`, '',
+      `Cost of 1 craft: **${w.cost == null ? '—' : kin(w.cost)}**`,
+      `Cost ${estLabel(w)}: **${w.est == null ? '—' : kin(w.est)}**`,
+      `Market price: **${market == null ? 'not on sale' : kin(market)}**` + (market != null && w.est != null ? ` · if you resell it ${market * (1 - tax) - w.est >= 0 ? '+' : '−'}${kin(Math.abs(market * (1 - tax) - w.est))} (after tax)` : ''),
+      ...(sum[name]?.a7 ? [`7-day average: **${kin(sum[name].a7)}**` + (w.est != null ? ` · crafting costs ${w.est <= sum[name].a7 ? `${Math.round((1 - w.est / sum[name].a7) * 100)}% less` : `${Math.round((w.est / sum[name].a7 - 1) * 100)}% more`}` : '')] : []),
+      ...(w.r.base ? [`-# Upgrade: uses up one ${w.r.base} (counted among the ingredients).`] : []),
       verdict].join('\n'),
-    fields: [...(steps.length > 4 ? [{name: '…', value: `${steps.length - 4} passi precedenti: vedili sul sito (Crafting).`}] : []), ...fields],
-    footer: {text: `${serverName(srv, sid)} · ingredienti al prezzo più basso tra Market, NPC e craft · ricette MetaBot.GG`},
+    fields: [...(steps.length > 4 ? [{name: '…', value: `${steps.length - 4} earlier steps: see them on the site (Crafting).`}] : []), ...fields],
+    footer: {text: `${serverName(srv, sid)} · ingredients at the cheapest of Market, NPC and craft · recipes MetaBot.GG`},
   };
 }
 async function craft(i, env) {
   const sid = await serverOf(i, env), q = String(opt(i.data, 'oggetto')?.value || '').trim();
   const rec = await recipes(env), names = crafts(rec);
   const name = names.has(q) ? q : search([...names].map((n) => [n, {p: 1}]), q, 1)[0];
-  if (!name) return oops(`**${q}** non si può craftare (o non lo trovo). Scegli un nome dai suggerimenti.`);
+  if (!name) return oops(`**${q}** can't be crafted (or I can't find it). Pick a name from the suggestions.`);
   const embed = await craftEmbed(name, sid, env);
-  return embed ? reply({embeds: [embed]}) : oops('Ricetta non disponibile.');
+  return embed ? reply({embeds: [embed]}) : oops('Recipe not available.');
 }
 async function craftButton(i, env) {
   const sid = +i.data.custom_id.split(':')[1], name = cardItem(i);
   const embed = name && await craftEmbed(name, sid, env);
-  return embed ? reply({flags: 64, embeds: [embed]}) : oops('Ricetta non disponibile per questo oggetto.');
+  return embed ? reply({flags: 64, embeds: [embed]}) : oops('No recipe for this item.');
 }
 
 // ---------- /aiuto ----------
 function aiuto(env) {
-  return reply({flags: 64, embeds: [{title: '📖 Comandi del bot Aion 2 Market', url: env.SITE, color: 0x5b8cff, description: [
-    '**Prezzi**',
-    '`/info <oggetto>` — prezzo, media, vendite, trend e segnale. Sotto la scheda: 📋/📈 per scheda e grafici, ⭐ preferito, 🔔 avviso, 🔨 costo craft.',
-    '`/affari [compra|vendi]` — i migliori affari del momento: da comprare per rivendere o da vendere ora.',
-    '`/craft <oggetto>` — quanto costa craftarlo adesso, ingrediente per ingrediente, e se conviene rispetto a comprarlo.',
-    '`/personaggio <nome>` — scheda di un personaggio (server EU): Combat Power, equipaggiamento, Daevanion. Dati ufficiali NCSOFT.',
+  return reply({flags: 64, embeds: [{title: '📖 Aion 2 Market bot commands', url: env.SITE, color: 0x5b8cff, description: [
+    '**Prices**',
+    '`/info <item>` — lowest price, average, sales, trend and signal. Under the card: 📋/📈 card and charts, ⭐ favourite, 🔔 alert, 🔨 craft cost.',
+    '`/deals [buy|sell]` — the best deals right now: to buy and resell, or to sell now.',
+    '`/craft <item>` — what crafting it costs right now, ingredient by ingredient, and whether it beats buying it.',
+    '`/character <name>` — character card (EU servers): Combat Power, gear, Daevanion. Official NCSOFT data.',
     '',
-    '**I tuoi dati** (serve l\'accesso al sito con Discord, una volta sola)',
-    '`/preferiti` — i tuoi preferiti, uno alla volta con ◀ ▶.',
-    '`/avviso aggiungi` · `/avviso lista` — ti avviso quando un oggetto scende o sale a un prezzo (anche 250k, 1.5m).',
-    '`/server <server>` — registra il tuo server: gli altri comandi lo useranno in automatico.',
+    '**Your data** (needs a site login with Discord, just once)',
+    '`/favorites` — your favourites, one at a time with ◀ ▶.',
+    '`/alert add` · `/alert list` — I ping you when an item drops or rises to a price (250k and 1.5m work too).',
+    '`/server <server>` — save your server: the other commands use it automatically.',
     '',
-    '**Legione**',
-    '`/collega <personaggio> [server]` — collega il tuo personaggio: soprannome e ruolo di classe automatici, `/personaggio` senza nome mostra il tuo. `/scollega` per toglierlo. Gli admin aggiungono `utente` per collegare o scollegare qualcun altro.',
-    '`/legione` — i personaggi collegati della Legione in ordine di Combat Power.',
-    '`/raid <titolo> <quando>` — iscrizioni a un raid con i pulsanti Tank / Healer / DPS; Mauro tagga gli iscritti 15 minuti prima. Quando: `21:00`, `domani 21`, `sabato 21:30`, `25/10 21:00`.',
+    '`/help` — this guide.',
     '',
-    '**Altro**',
-    '`/chisiamo` — Mauro, chi siamo?',
-    '`/aiuto` — questa guida.',
-    '',
-    `Sito: ${env.SITE} · prezzi aggiornati ogni ora da aion2.exchange.`,
+    `Site: ${env.SITE} · prices updated every hour from aion2.exchange.`,
   ].join('\n')}]});
 }
 
@@ -521,12 +514,12 @@ async function checkStale(env) {
   if (!r.ok) return;
   const meta = await r.json(), age = (Date.now() - Date.parse(meta.snapshot)) / 36e5;
   const flagged = await env.USERS.get('stale_alert');
-  const when = new Date(meta.snapshot).toLocaleString('it-IT', {timeZone: 'Europe/Rome', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'});
+  const when = new Date(meta.snapshot).toLocaleString('en-GB', {timeZone: 'Europe/Rome', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'});
   if (age > 3 && !flagged) {
-    const res = await discord(env, `/channels/${ch}/messages`, {content: `⚠️ I prezzi del sito sono fermi da **${Math.floor(age)} ore** (ultimo aggiornamento: ${when}). Controllare GitHub Actions (Sync prices) o aion2.exchange.`});
+    const res = await discord(env, `/channels/${ch}/messages`, {content: `⚠️ The site's prices have not updated for **${Math.floor(age)} hours** (last update: ${when}). Check GitHub Actions (Sync prices) or aion2.exchange.`});
     if (res.ok) await env.USERS.put('stale_alert', String(Date.now()));
   } else if (age <= 2 && flagged) {
-    await discord(env, `/channels/${ch}/messages`, {content: `✅ Gli aggiornamenti dei prezzi sono ripartiti (ultimo: ${when}).`});
+    await discord(env, `/channels/${ch}/messages`, {content: `✅ Price updates are back (last: ${when}).`});
     await env.USERS.delete('stale_alert');
   }
 }
@@ -619,14 +612,14 @@ async function charApi(req, env) {
 // ---------- /personaggio: a character card (deferred answer: the official site can take a moment) ----------
 const NC_GRADE = {Epic: 0xff8a3d, Unique: 0xf0c43f, Legend: 0x4ea6ff, Rare: 0x62e07a, Common: 0xe9eef7, Special: 0x3fe0c8};
 const NC_DOT = {Epic: '🟧', Unique: '🟨', Legend: '🟦', Rare: '🟩', Common: '⬜', Special: '🟪'};
-const ARMOR = [['MainHand', 'Arma'], ['SubHand', 'Seconda mano'], ['Helmet', 'Elmo'], ['Shoulder', 'Spallacci'], ['Torso', 'Corazza'], ['Pants', 'Gambali'],
+const ARMOR = [['MainHand', 'Weapon'], ['SubHand', 'Off-hand'], ['Helmet', 'Helm'], ['Shoulder', 'Pauldrons'], ['Torso', 'Breastplate'], ['Pants', 'Greaves'],
   ['Gloves', 'Guanti'], ['Boots', 'Stivali'], ['Cape', 'Mantello']];
-const ACCS = [['Necklace', 'Collana'], ['Earring1', 'Orecchino'], ['Earring2', 'Orecchino'], ['Ring1', 'Anello'], ['Ring2', 'Anello'], ['Bracelet1', 'Bracciale'],
+const ACCS = [['Necklace', 'Necklace'], ['Earring1', 'Earring'], ['Earring2', 'Earring'], ['Ring1', 'Ring'], ['Ring2', 'Ring'], ['Bracelet1', 'Bracelet'],
   ['Bracelet2', 'Bracciale'], ['Belt', 'Cintura'], ['Amulet', 'Amuleto'], ['Rune1', 'Runa'], ['Rune2', 'Runa']];
 // side bar of the card: one colour per class
 const CLASS_COLOR = {gladiator: 0xe0483e, templar: 0x4a7dff, assassin: 0xe0559e, ranger: 0x4caf50, sorcerer: 0x3fc4ff,
   spiritmaster: 0x9b59ff, elementalist: 0x9b59ff, cleric: 0xf5d142, chanter: 0xff8a3d};
-const CHAR_VIEWS = {card: '📋 Scheda', gear: '🧩 Equipaggiamento', stats: '📊 Statistiche'};
+const CHAR_VIEWS = {card: '📋 Card', gear: '🧩 Gear', stats: '📊 Stats'};
 const classIcon = (name) => name ? `https://assets.playnccdn.com/static-aion2/characters/img/class/class_icon_${String(name).toLowerCase().replace(/[^a-z]/g, '')}.png` : undefined;
 // Discord can't load the official profile pictures directly: the Worker relays them (/char/img)
 const avatarProxy = (u, env) => { const m = String(u || '').match(/gameServerKey=(\d+)&charKey=(\d+)/); return m ? `${env.WORKER_URL || 'https://aion-market-bot.aion2-market.workers.dev'}/char/img/${m[1]}-${m[2]}.jpg` : null; };
@@ -648,14 +641,14 @@ async function charView(server, id, view, uid, env) {
   const url = `${env.SITE}/?v=char&ch=${server}:${encodeURIComponent(id)}`;
   const base = {
     author: {name: `${pr.className || ''} · Lv ${pr.characterLevel ?? '?'}`, icon_url: classIcon(pr.className)},
-    title: pr.characterName || 'Personaggio', url, color: CLASS_COLOR[String(pr.className || '').toLowerCase().replace(/[^a-z]/g, '')] ?? (pr.raceId === 2 ? 0xb06cff : 0xf0c43f),
+    title: pr.characterName || 'Character', url, color: CLASS_COLOR[String(pr.className || '').toLowerCase().replace(/[^a-z]/g, '')] ?? (pr.raceId === 2 ? 0xb06cff : 0xf0c43f),
     thumbnail: avatarProxy(pr.profileImage, env) ? {url: avatarProxy(pr.profileImage, env)} : undefined,
-    footer: {text: `${pr.serverName || ''} · ${race} · dati ufficiali NCSOFT`}, timestamp: new Date().toISOString(),
+    footer: {text: `${pr.serverName || ''} · ${race} · official NCSOFT data`}, timestamp: new Date().toISOString(),
   };
   const head = [
     {name: '⚔️ Combat Power', value: pr.combatPower ? `**${kin(pr.combatPower)}**` : '—', inline: true},
     {name: '🛡️ Item Level', value: il ? `**${kin(il)}**` : '—', inline: true},
-    {name: '🏅 Titoli', value: d.title?.ownedCount != null ? `**${d.title.ownedCount}** / ${d.title.totalCount}` : '—', inline: true},
+    {name: '🏅 Titles', value: d.title?.ownedCount != null ? `**${d.title.ownedCount}** / ${d.title.totalCount}` : '—', inline: true},
   ];
   let embed;
   if (view === 'gear') {
@@ -668,37 +661,37 @@ async function charView(server, id, view, uid, env) {
       return rows.map((r) => [lvs(r.lv), r.name + (r.lv.length > 1 ? ` ×${r.lv.length}` : '')].filter(Boolean).join(' ')).join('\n') || '—';
     };
     const arc = gear.filter((x) => /^Arcana/.test(x.slotPosName)).map((x) => x.name).join(' · ');
-    embed = {...base, description: `🧩 **Equipaggiamento**${pr.titleName ? ` · *${pr.titleName}*` : ''}`,
+    embed = {...base, description: `🧩 **Gear**${pr.titleName ? ` · *${pr.titleName}*` : ''}`,
       thumbnail: by.MainHand?.icon ? {url: by.MainHand.icon} : base.thumbnail,
-      fields: [{name: '🗡️ Armi e armature', value: list(ARMOR).slice(0, 1024), inline: false}, {name: '💍 Accessori', value: list(ACCS).slice(0, 1024), inline: false},
+      fields: [{name: '🗡️ Weapons and armor', value: list(ARMOR).slice(0, 1024), inline: false}, {name: '💍 Accessories', value: list(ACCS).slice(0, 1024), inline: false},
         ...(arc ? [{name: '🃏 Arcana', value: arc.slice(0, 1024), inline: false}] : []),
 ]};
   } else if (view === 'stats') {
     const main = stats.filter((x) => ['STR', 'DEX', 'INT', 'CON', 'AGI', 'WIS'].includes(x.type));
     const gods = stats.filter((x) => x.type !== 'ItemLevel' && !main.includes(x));
     const cols = (rows) => '```\n' + rows.map((x) => `${x.name.replace(/ \[.*\]/, '').padEnd(14)}${String(x.value).padStart(4)}`).join('\n') + '\n```';
-    embed = {...base, description: `📊 **Statistiche**`, fields: [...head,
-      ...(main.length ? [{name: 'Principali', value: cols(main), inline: true}] : []),
-      ...(gods.length ? [{name: 'Divinità', value: cols(gods).slice(0, 1024), inline: true}] : [])]};
+    embed = {...base, description: `📊 **Stats**`, fields: [...head,
+      ...(main.length ? [{name: 'Main', value: cols(main), inline: true}] : []),
+      ...(gods.length ? [{name: 'Gods', value: cols(gods).slice(0, 1024), inline: true}] : [])]};
   } else {
     const boards = (d.daevanion?.boardList || []).filter((b) => b.totalNodeCount);
     const ranks = (d.ranking?.rankingList || []).filter((r) => r.rankingContentsName);
     const wpn = by.MainHand;
     embed = {...base, description: [pr.titleName ? `🏷️ *${pr.titleName}*` : null, wpn ? `${NC_DOT[wpn.grade] || ''} ${wpn.name}${wpn.enchantLevel ? ` \`+${wpn.enchantLevel}\`` : ''}` : null].filter(Boolean).join('\n') || undefined,
       fields: [...head,
-        ...(ranks.length ? [{name: '🏆 Classifiche', value: ranks.map((r) => `**${r.rankingContentsName}**: ${r.rank ? `#${kin(r.rank)}` : '—'}${r.point ? ` · ${kin(r.point)} punti` : ''}`).join('\n').slice(0, 1024), inline: false}] : []),
+        ...(ranks.length ? [{name: '🏆 Rankings', value: ranks.map((r) => `**${r.rankingContentsName}**: ${r.rank ? `#${kin(r.rank)}` : '—'}${r.point ? ` · ${kin(r.point)} points` : ''}`).join('\n').slice(0, 1024), inline: false}] : []),
         ...(boards.length >= 3 ? [{name: '✨ Daevanion', value: '\u200b', inline: false}] : [])],
       image: boards.length >= 3 ? {url: radarUrl(boards, pr.raceId === 2 ? '#b06cff' : '#f0c43f')} : undefined};
   }
   const views = {type: 1, components: Object.entries(CHAR_VIEWS).map(([v, label]) => ({type: 2, style: v === view ? 1 : 2, label, disabled: v === view,
     custom_id: `pc:${uid}:${v}:${server}:${id}`.slice(0, 100)}))};
-  return {embeds: [embed], components: [views, {type: 1, components: [{type: 2, style: 5, label: 'Scheda completa sul sito', url}]}]};
+  return {embeds: [embed], components: [views, {type: 1, components: [{type: 2, style: 5, label: 'Full card on the site', url}]}]};
 }
 async function charButton(i, env) {
   const [, owner, view, server, ...rest] = i.data.custom_id.split(':');
-  if (userId(i) !== owner) return oops('Usa /personaggio per aprire la tua scheda: questi pulsanti sono di chi ha fatto la richiesta.');
+  if (userId(i) !== owner) return oops('Use /character to open your own card: these buttons belong to whoever asked.');
   try { return Response.json({type: 7, data: await charView(+server, rest.join(':'), CHAR_VIEWS[view] ? view : 'card', owner, env)}); }
-  catch { return oops('Il sito ufficiale di NCSOFT non risponde in questo momento, riprova tra poco.'); }
+  catch { return oops('The official NCSOFT site is not answering right now, try again in a moment.'); }
 }
 async function charImg(path) {
   const m = path.match(/^\/char\/img\/(\d+)-(\d+)\.jpg$/);
@@ -712,7 +705,7 @@ async function personaggio(i, env, ctx) {
   const followup = (data) => fetch(`https://discord.com/api/v10/webhooks/${i.application_id || env.DISCORD_APP_ID}/${i.token}/messages/@original`,
     {method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({allowed_mentions: {parse: []}, ...data})});
   const mine = !raw ? await linkOf(env, userId(i)) : null;
-  if (!raw && !mine) return oops('Scrivi il nome di un personaggio, oppure collega il tuo con `/collega` e poi basta `/personaggio`.');
+  if (!raw && !mine) return oops('Type a character name (pick it from the suggestions).');
   ctx.waitUntil((async () => {
     try {
       let server, id;
@@ -723,21 +716,21 @@ async function personaggio(i, env, ctx) {
         const exact = r.list.filter((c) => c.name.toLowerCase() === raw.toLowerCase());
         const pick = exact.length === 1 ? exact[0] : r.list.length === 1 ? r.list[0] : null;
         if (!pick) {
-          await followup({content: r.list.length ? `Ho trovato ${r.total} personaggi per **${raw}**: sceglilo dai suggerimenti mentre scrivi il nome (mostrano server e classe).`
-            : `Nessun personaggio trovato con il nome **${raw}** sui server EU.`});
+          await followup({content: r.list.length ? `I found ${r.total} characters for **${raw}**: pick yours from the suggestions while you type (they show server and class).`
+            : `No character called **${raw}** on the EU servers.`});
           return;
         }
         [server, id] = [pick.server, pick.id];
       }
       await followup(await charView(server, id, 'card', userId(i), env));
     } catch (e) {
-      await followup({content: 'Il sito ufficiale di NCSOFT non risponde in questo momento, riprova tra poco.'});
+      await followup({content: 'The official NCSOFT site is not answering right now, try again in a moment.'});
     }
   })());
   return Response.json({type: 5});                                     // "thinking…", replaced by the card
 }
 async function charChoices(q, srv, en) {
-  if (q.length < 2) return [{name: en ? 'Type at least 2 letters of the name' : 'Scrivi almeno 2 lettere del nome', value: q || '-'}];
+  if (q.length < 2) return [{name: 'Type at least 2 letters of the name', value: q || '-'}];
   const [r, meta, home] = await Promise.all([charSearch(q, srv ? +srv : null, 1, 25), charMeta().catch(() => ({classes: {}})),
     en && !srv ? charSearch(q, 2305, 1, 25).catch(() => ({list: []})) : {list: []}]);   // /verify: Marchutan's characters always come first
   const seen = new Set(), list = [...home.list, ...r.list].filter((c) => !seen.has(c.server + ':' + c.id) && seen.add(c.server + ':' + c.id)).slice(0, 25);
@@ -2029,9 +2022,9 @@ export default {
       if (i.type === 5 && i.data.custom_id?.startsWith('vfm:')) return await verifyDecide({...i, data: {...i.data, custom_id: i.data.custom_id.replace('vfm:', 'vf:')}}, env, ctx, String(i.data.components?.[0]?.components?.[0]?.value || '').trim());
       if (i.type === 5 && i.data.custom_id?.startsWith('alm:')) return await alertSubmit(i, env);
       if (i.type === 5 && i.data.custom_id === 'lkm') return await linkModalSubmit(i, env, ctx);
-      return oops('Comando sconosciuto.');
+      return oops('Unknown command.');
     } catch (e) {
-      return oops('Non riesco a leggere i dati del market in questo momento, riprova tra un minuto.');
+      return oops('I can\'t read the Market data right now, try again in a minute.');
     }
   },
 };

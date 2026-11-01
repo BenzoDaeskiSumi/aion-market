@@ -4,9 +4,9 @@ import {readFileSync} from 'node:fs';
 let servers;
 try { servers = JSON.parse(readFileSync(new URL('../data/servers.json', import.meta.url))); }
 catch { servers = await (await fetch('https://benzodaeskisumi.github.io/aion-market/data/servers.json')).json(); }
-// Global commands are in ENGLISH (MarchutanEU is an English server) with Italian name/description localizations: Italian Discord clients
-// (the Legione) still see /affari, /personaggio… The Worker maps the English names back (toItalianNames in bot/src/index.js).
-const it = (name, description) => ({...(name ? {name_localizations: {it: name}} : {}), description_localizations: {it: description}});
+// Global commands are in ENGLISH for everyone. The Worker maps the English names back to its internal Italian ones (toItalianNames in bot/src/index.js).
+// 1 Nov 2026: English only for everyone (the user asked); the Italian localizations are switched off but kept in the code.
+const it = () => ({});
 const server = {type: 3, name: 'server', description: 'Asmodian server (default: the one saved with /server)', ...it(null, 'Server Asmodian (predefinito: quello registrato con /server)'), required: false,
   choices: servers.slice(0, 25).map((s) => ({name: s.name, value: String(s.id)}))};
 const commands = [
@@ -14,7 +14,7 @@ const commands = [
     {type: 3, name: 'item', description: 'Item name (English, as in game)', ...it('oggetto', 'Nome dell’oggetto (in inglese, come in gioco)'), required: true, autocomplete: true}, server]},
   {name: 'deals', description: 'The best Market deals right now', ...it('affari', 'I migliori affari del momento'), options: [
     {type: 3, name: 'type', description: 'What you are looking for', ...it('tipo', 'Cosa cerchi'), required: false, choices: [
-      {name: 'To buy (flip)', name_localizations: {it: 'Da comprare (flip)'}, value: 'compra'}, {name: 'To sell now', name_localizations: {it: 'Da vendere ora'}, value: 'vendi'}]}, server]},
+      {name: 'To buy (flip)', value: 'compra'}, {name: 'To sell now', value: 'vendi'}]}, server]},
   {name: 'server', description: 'Save your server: the other commands will use it', ...it(null, 'Registra il tuo server: gli altri comandi lo useranno in automatico'), options: [
     {...server, description: 'Your Asmodian server', ...it(null, 'Il tuo server Asmodian'), required: true}]},
   {name: 'alert', description: 'Price alerts (needs a site login with Discord)', ...it('avviso', 'Avvisi di prezzo (serve l’accesso al sito con Discord)'), options: [
@@ -22,8 +22,8 @@ const commands = [
       {type: 3, name: 'item', description: 'Item name (English)', ...it('oggetto', 'Nome dell’oggetto (in inglese)'), required: true, autocomplete: true},
       {type: 3, name: 'price', description: 'Pick a suggestion or type a price (250000, 250k, 1.5m)', ...it('prezzo', 'Scegli un suggerimento o scrivi il prezzo (250000, 250k, 1.5m)'), required: true, autocomplete: true},
       {type: 3, name: 'when', description: 'When to ping you (default: when it drops below)', ...it('quando', 'Quando avvisarti (predefinito: quando scende sotto)'), required: false, choices: [
-        {name: 'Drops below the price (to buy)', name_localizations: {it: 'Scende sotto il prezzo (per comprare)'}, value: 'below'},
-        {name: 'Rises above the price (to sell)', name_localizations: {it: 'Sale sopra il prezzo (per vendere)'}, value: 'above'}]},
+        {name: 'Drops below the price (to buy)', value: 'below'},
+        {name: 'Rises above the price (to sell)', value: 'above'}]},
       server]},
     {type: 1, name: 'list', description: 'Your alerts, with a menu to remove them', ...it('lista', 'I tuoi avvisi, con la possibilità di toglierli')}]},
   {name: 'craft', description: 'What crafting an item costs right now and whether it pays off', ...it(null, 'Quanto costa craftare un oggetto adesso e se conviene'), options: [
