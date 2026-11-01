@@ -74,3 +74,9 @@ const r2 = await fetch(`https://discord.com/api/v10/applications/${DISCORD_APP_I
   method: 'PUT', headers: {Authorization: `Bot ${DISCORD_TOKEN}`, 'Content-Type': 'application/json'}, body: JSON.stringify(legionCommands)});
 console.log('register Legione commands:', r2.status, r2.ok ? 'ok' : await r2.text());
 if (!r2.ok) process.exit(1);
+// MarchutanEU-only commands (1 Nov)
+const meuCommands = [{name: 'refresh', description: 'Update your Gear Score role from the official Aion 2 armory', dm_permission: false}];
+const r3 = await fetch(`https://discord.com/api/v10/applications/${DISCORD_APP_ID}/guilds/1564968231410864160/commands`, {
+  method: 'PUT', headers: {Authorization: `Bot ${DISCORD_TOKEN}`, 'Content-Type': 'application/json'}, body: JSON.stringify(meuCommands)});
+console.log('register MarchutanEU commands:', r3.status, r3.ok ? 'ok' : await r3.text());
+if (!r3.ok) process.exit(1);

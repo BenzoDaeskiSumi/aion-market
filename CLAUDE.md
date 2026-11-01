@@ -263,7 +263,14 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   #🏰・legion is a FORUM since 29 Oct (only role 'Legion Leader' + Admins/Moderator post and reply; Marchutans/Temporary Access/Faction-Leaders read and react; tags Recruiting/Event/News/Info); the old text channel is '🗄️・legion-archive' (read-only).
   Language channels in '🌍 INTERNATIONAL CHANNELS' (hidden from @everyone, Marchutans see it): 🪆 russian, 💃 spanish, 🥐 french, 🥨 german, 🥟 polish, 🍕 italian, ⛰️ balkan, 🌲 romanian — typical emojis, not flags (Windows Discord shows flags as letters; user's choice).
   1 Nov: each language channel is visible ONLY to its language role (Russian, Spanish, French, German, Polish, Italian, Balkan, Romanian) + Admins/Moderator; members pick
-  them in '🌐・pick-your-language' (top of the category, Marchutans read-only) from Mauro's menu rp:lang (generic rolePick, English replies on MarchutanEU).
+  them in '🎭・pick-your-roles' (was pick-your-language; top of the category, Marchutans read-only) from Mauro's menu rp:lang (generic rolePick, English replies on MarchutanEU).
+  Same channel: menu rp:style (roles PvE / PvP) and a note on the Gear Score roles. 🌻 ukrainian (role Ukrainian) added after russian.
+  Role groups with SEPARATOR roles (like 'Status✧･ﾟ:' on other servers): 'Class✧･ﾟ:', 'Gear Score✧･ﾟ:', 'Languages✧･ﾟ:', 'Playstyle✧･ﾟ:' (SEPS/sepRole in index.js),
+  each directly above its roles in one block where the class roles were; a member holds a separator only while holding a role of its group (setGroup(), rolePick).
+  Gear Score tiers 'GS 700+' 'GS 1400+' 'GS 2100+' 'GS 2500+' 'GS 2800+' 'GS 3000+' (one at a time, official ItemLevel; below 700 none): set on verification (applyVerify -> setGs),
+  by /refresh (MarchutanEU guild command, registered in register.mjs meuCommands) and by gsSweep() in the cron: 10 verified members per run by clock rotation
+  (Discord member list + KV vlink reads + charProfile, no KV writes) = everyone about once a day at 1,000 members. Errors in KV gs_err (/timers/status 'gs').
+  /verify-remove also drops the GS tier, the class role and their separators.
   '🎙️ Podcast' voice (Caller speaks, others listen) was made 29 Oct and later deleted by someone on the server; role 'Caller' still exists.
   30 Oct (user agreed): server switched to COMMUNITY (rules channel = server-rules, updates = staff, verification level low, explicit filter all) to allow
   Stage channels; '🏯 Siege Stage' (type 13, top of VOICE CHANNELS): Marchutans listen + raise hand; Shotcallers, Caller, Faction-Leaders, Admins, Moderator are stage moderators.

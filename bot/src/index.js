@@ -758,7 +758,14 @@ async function rolePick(i, env, ctx) {
     for (const r of add) ok = (await call('PUT', r)).ok && ok;
     for (const r of del) ok = (await call('DELETE', r)).ok && ok;
     // separator role of this group (𝐂𝐋𝐀𝐒𝐒𝐈 ────…): shown only while the member has at least one role of the group
-    const title = {class: 'CLASSI', content: 'CONTENUTI'}[i.data.custom_id.slice(3)];
+    const gk = i.data.custom_id.slice(3);
+    if (gid === MEU && SEPS[gk] && ok) {
+      const roles = await (await fetch(`https://discord.com/api/v10/guilds/${gid}/roles`, {headers: {Authorization: `Bot ${env.DISCORD_TOKEN}`}})).json().catch(() => []);
+      const sep = sepRole(roles, gk), after = new Set([...have].filter((r) => !del.includes(r)).concat(add)), any = group.some((r) => after.has(r));
+      if (sep && any && !have.has(sep.id)) await call('PUT', sep.id);
+      if (sep && !any && have.has(sep.id)) await call('DELETE', sep.id);
+    }
+    const title = {class: 'CLASSI', content: 'CONTENUTI'}[gk];
     if (title && ok) {
       const bold = [...title].map((c) => String.fromCodePoint(0x1D400 + c.charCodeAt(0) - 65)).join('');
       const roles = await (await fetch(`https://discord.com/api/v10/guilds/${gid}/roles`, {headers: {Authorization: `Bot ${env.DISCORD_TOKEN}`}})).json().catch(() => []);
@@ -989,6 +996,50 @@ async function join(req, env) {
 // KV link:<uid> = {server, id, name, cls, cp, serverName, t}; linkc:<server>:<id> = uid. Sets the nickname and the class role (+ CLASSI separator).
 const LEGION = {name: 'Legione', server: 2305};      // in-game legion (profile.regionName in the official data) on Marchutan
 const CLASS_ROLES = ['Gladiator', 'Templar', 'Assassin', 'Ranger', 'Sorcerer', 'Spiritmaster', 'Cleric', 'Chanter'];
+// MarchutanEU role groups (1 Nov): separator roles 'Class✧･ﾟ:' etc. shown only while the member has a role of the group; Gear Score tiers GS 700+ … GS 3000+
+const SEPS = {cls: 'Class', gs: 'Gear Score', lang: 'Languages', style: 'Playstyle'}, GS_TIERS = [3000, 2800, 2500, 2100, 1400, 700];
+const sepRole = (roles, k) => (Array.isArray(roles) ? roles : []).find((r) => r.name.startsWith(SEPS[k]) && r.name.includes('✧'));
+async function setGroup(env, g, uid, have, group, want, sep) {   // member ends with exactly 'want' out of 'group'; separator iff any
+  for (const r of group) if (!want.includes(r) && have.has(r)) { await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${r}`).catch(() => {}); have.delete(r); }
+  for (const r of want) if (!have.has(r)) { await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${r}`).catch(() => {}); have.add(r); }
+  if (sep && want.length && !have.has(sep.id)) { await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${sep.id}`).catch(() => {}); have.add(sep.id); }
+  if (sep && !want.length && have.has(sep.id)) { await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${sep.id}`).catch(() => {}); have.delete(sep.id); }
+}
+async function setGs(env, g, uid, have, roles, il) {             // Gear Score tier role (il = official ItemLevel); unknown il changes nothing
+  if (!(il >= 0) || !Array.isArray(roles)) return null;
+  const tiers = GS_TIERS.map((t) => ({t, r: roles.find((x) => x.name === `GS ${t}+`)})).filter((x) => x.r);
+  const hit = tiers.find((x) => il >= x.t);
+  await setGroup(env, g, uid, have, tiers.map((x) => x.r.id), hit ? [hit.r.id] : [], sepRole(roles, 'gs'));
+  return hit ? hit.r.name : null;
+}
+// cron: 10 verified MarchutanEU members per run (rotation by clock, no KV writes) -> about everyone once a day for 1,000 members
+async function gsSweep(env) {
+  const cfg = JSON.parse(await env.USERS.get('vcfg:' + MEU) || 'null'); if (!cfg?.role) return;
+  let all = [], after = '0';
+  for (let p = 0; p < 3; p++) { const page = await (await dapi(env, 'GET', `/guilds/${MEU}/members?limit=1000&after=${after}`)).json(); if (!Array.isArray(page) || !page.length) break; all = all.concat(page); after = page[page.length - 1].user.id; if (page.length < 1000) break; }
+  const ver = all.filter((m) => (m.roles || []).includes(cfg.role) && !m.user?.bot).sort((a, b) => (BigInt(a.user.id) < BigInt(b.user.id) ? -1 : 1));
+  if (!ver.length) return;
+  const roles = await (await dapi(env, 'GET', `/guilds/${MEU}/roles`)).json().catch(() => []), N = 10, start = (Math.floor(Date.now() / 900e3) * N) % ver.length;
+  for (let k = 0; k < Math.min(N, ver.length); k++) {
+    const m = ver[(start + k) % ver.length], link = JSON.parse(await env.USERS.get(`vlink:${MEU}:${m.user.id}`) || 'null');
+    if (!link?.id) continue;
+    const c = await charProfile(link.server, link.id).catch(() => null);
+    if (c?.name) await setGs(env, MEU, m.user.id, new Set(m.roles), roles, c.il);
+  }
+}
+// /refresh (MarchutanEU): your Gear Score role now (official profile is cached 10 min, so spamming it costs nothing)
+async function gsRefresh(i, env, ctx) {
+  const g = i.guild_id, uid = userId(i), link = JSON.parse(await env.USERS.get(`vlink:${g}:${uid}`) || 'null');
+  if (!link?.id) return oops('Your character is not linked yet: verify with `/verify` first.');
+  ctx.waitUntil((async () => {
+    const c = await charProfile(link.server, link.id).catch(() => null);
+    if (!c?.name) return void await hook(i, env, {content: 'The official armory is not answering: try again in a few minutes.'});
+    const roles = await (await dapi(env, 'GET', `/guilds/${g}/roles`)).json().catch(() => []);
+    const tier = await setGs(env, g, uid, new Set(i.member?.roles || []), roles, c.il);
+    await hook(i, env, {content: `🛡️ **${c.name}** · Gear Score **${c.il}** → ${tier ? `**${tier}**` : 'below 700 (no tier role)'}`});
+  })().catch(() => hook(i, env, {content: 'Something went wrong: please try again.'}).catch(() => {})));
+  return Response.json({type: 5, data: {flags: 64}});
+}
 const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z]/g, '');
 const cpShort = (v) => (!v ? '' : v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v >= 1e4 ? `${Math.round(v / 1e3)}k` : kin(v));
 async function linkOf(env, uid) { return JSON.parse(await env.USERS.get('link:' + uid) || 'null'); }
@@ -1463,7 +1514,7 @@ async function verifyRequest(i, env, ctx) {
   ctx.waitUntil((async () => {
     const c = await charProfile(+server, id).catch(() => null);
     if (!c?.name) return void await hook(i, env, {content: 'The official NCSOFT site is not answering: try again in a few minutes.'});
-    const req = {server: +server, id, name: c.name, cls: c.cls, lv: c.lv, sn: c.serverName, t: Date.now()};
+    const req = {server: +server, id, name: c.name, cls: c.cls, lv: c.lv, il: c.il, sn: c.serverName, t: Date.now()};
     const r = await dapi(env, 'POST', `/channels/${cfg.mod}/messages`, {allowed_mentions: {parse: []}, embeds: [{color: 0xf2c94c, title: `Verification request · ${c.name}`,
       description: `<@${uid}> says they are **${c.name}**\n${c.cls || '?'} · Lv ${c.lv || '?'} · ${c.serverName || ''}${c.legion ? ` · Legion: ${c.legion}` : ''}${c.cp ? ` · CP ${kin(c.cp)}` : ''}\n\nCheck that the screenshot shows **${c.name}**.`,
       thumbnail: avatarProxy(c.img, env) ? {url: avatarProxy(c.img, env)} : undefined, image: {url: att.url}, timestamp: new Date().toISOString()}],
@@ -1526,8 +1577,9 @@ async function applyVerify(env, g, cfg, uid, req, by) {
   const cls = Array.isArray(roles) ? roles.filter((r) => CLASS_ROLES.includes(r.name)) : [], want = cls.find((r) => norm(r.name) === norm(req.cls || ''));
   const tmp = Array.isArray(roles) && roles.find((r) => r.id === cfg.temp || r.name === 'Temporary Access');   // verified: the temporary role goes away
   if (tmp && (mem.roles || []).includes(tmp.id)) await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${tmp.id}`).catch(() => {});
-  for (const r of cls) if (r !== want && (mem.roles || []).includes(r.id)) await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${r.id}`).catch(() => {});
-  if (want) await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${want.id}`).catch(() => {});
+  const have = new Set(mem.roles || []);
+  await setGroup(env, g, uid, have, cls.map((r) => r.id), want ? [want.id] : [], sepRole(roles, 'cls'));
+  if (g === MEU) await setGs(env, g, uid, have, roles, req.il);
   await env.USERS.put(`vlink:${g}:${uid}`, JSON.stringify({...req, by, t: Date.now()})).catch(() => {});   // best effort: KV can hit its daily write limit
   await env.USERS.put(`vchar:${g}:${req.server}:${req.id}`, uid).catch(() => {});
   await env.USERS.delete(`vreq:${g}:${uid}`).catch(() => {});
@@ -1672,7 +1724,7 @@ async function verifyUser(i, env, ctx) {
     const c = await charProfile(+server, id).catch(() => null);
     if (!c?.name) return void await hook(i, env, {content: 'The official NCSOFT site is not answering: try again in a few minutes.'});
     const prev = await env.USERS.get(`vchar:${g}:${server}:${id}`);
-    const req = {server: +server, id, name: c.name, cls: c.cls, lv: c.lv, sn: c.serverName, t: Date.now(), manual: true};
+    const req = {server: +server, id, name: c.name, cls: c.cls, lv: c.lv, il: c.il, sn: c.serverName, t: Date.now(), manual: true};
     await applyVerify(env, g, cfg, uid, req, by);
     await hook(i, env, {content: `✅ <@${uid}> verified as **${c.name}** · ${c.cls || '?'} · ${c.serverName || ''}${prev && prev !== uid ? ` (moved from <@${prev}>)` : ''}.`, allowed_mentions: {parse: []}});
   })());
@@ -1694,7 +1746,7 @@ async function verifyRemove(i, env, ctx) {
     await env.USERS.delete(`vreq:${g}:${uid}`).catch(() => {});
     if (!keep) {
       const roles = await (await dapi(env, 'GET', `/guilds/${g}/roles`)).json().catch(() => []), mem = await (await dapi(env, 'GET', `/guilds/${g}/members/${uid}`)).json().catch(() => ({}));
-      const drop = (Array.isArray(roles) ? roles : []).filter((r) => r.id === cfg.role || CLASS_ROLES.includes(r.name)).filter((r) => (mem.roles || []).includes(r.id));
+      const drop = (Array.isArray(roles) ? roles : []).filter((r) => r.id === cfg.role || CLASS_ROLES.includes(r.name) || /^GS \d+\+$/.test(r.name) || r === sepRole(roles, 'cls') || r === sepRole(roles, 'gs')).filter((r) => (mem.roles || []).includes(r.id));
       for (const r of drop) await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${r.id}`).catch(() => {});
       await dapi(env, 'PATCH', `/guilds/${g}/members/${uid}`, {nick: null}).catch(() => {});
     }
@@ -1710,7 +1762,7 @@ async function verifyDecide(i, env, ctx, reason) {
   const [, , , bs, bid] = (i.data.custom_id || '').split(':');
   if (!req && act === 'ok' && bs && bid) {          // card made while KV refused writes: the character is in the button
     const c = await charProfile(+bs, bid).catch(() => null);
-    if (c?.name) req = {server: +bs, id: bid, name: c.name, cls: c.cls, lv: c.lv, sn: c.serverName, t: Date.now()};
+    if (c?.name) req = {server: +bs, id: bid, name: c.name, cls: c.cls, lv: c.lv, il: c.il, sn: c.serverName, t: Date.now()};
   }
   if (act === 'no' && reason === undefined) return Response.json({type: 9, data: {custom_id: `vfm:no:${uid}`, title: 'Reject verification', components: [{type: 1, components: [
     {type: 4, custom_id: 'why', label: 'Reason (sent to the user)', style: 2, required: false, max_length: 300, placeholder: 'e.g. the name in the screenshot is not readable'}]}]}});
@@ -1837,12 +1889,12 @@ function toItalianNames(d) {
 }
 // ---------- entry point ----------
 export default {
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.allSettled([checkAlerts(env).catch((e) => putErr(env, 'alert_err', String(e?.message || e).slice(0, 300))), checkStale(env).catch(() => {}), updateTimers(env).catch((e) => putErr(env, 'timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => putErr(env, 'sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300))), weekFix(env).catch((e) => env.USERS.put('timer_err', 'weekfix ' + String(e?.stack || e).slice(0, 300))), artChallenge(env).catch((e) => putErr(env, 'art_err', String(e?.stack || e).slice(0, 300))), verifyClean(env).catch(() => {}), exposedBulk(env).catch((e) => putErr(env, 'exposed_err', String(e?.message || e).slice(0, 300)))])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.allSettled([checkAlerts(env).catch((e) => putErr(env, 'alert_err', String(e?.message || e).slice(0, 300))), checkStale(env).catch(() => {}), updateTimers(env).catch((e) => putErr(env, 'timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => putErr(env, 'sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300))), weekFix(env).catch((e) => env.USERS.put('timer_err', 'weekfix ' + String(e?.stack || e).slice(0, 300))), artChallenge(env).catch((e) => putErr(env, 'art_err', String(e?.stack || e).slice(0, 300))), verifyClean(env).catch(() => {}), gsSweep(env).catch((e) => putErr(env, 'gs_err', String(e?.stack || e).slice(0, 300))), exposedBulk(env).catch((e) => putErr(env, 'exposed_err', String(e?.message || e).slice(0, 300)))])); },
   async fetch(req, env, ctx) {
     if (new URL(req.url).pathname === '/hit') return hit(req, env);
     if (/^\/join(\/cb)?$/.test(new URL(req.url).pathname)) return join(req, env);
     if (new URL(req.url).pathname === '/timers/run') { try { await callChannel(env); await updateTimers(env); } catch (e) { await env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500)); } }
-    if (new URL(req.url).pathname.startsWith('/timers/')) return Response.json({channel: await env.USERS.get('cfg:timer_channel'), msg: await env.USERS.get('cfg:timer_msg'), err: await env.USERS.get('timer_err'), alerts: await env.USERS.get('alert_err'), sweep: await env.USERS.get('sweep_err'), art: await env.USERS.get('art_err'), sweepAt: await env.USERS.get('cfg:sweep_at'), exposed: await env.USERS.get('exposed:bulk'), exposedErr: await env.USERS.get('exposed_err')});
+    if (new URL(req.url).pathname.startsWith('/timers/')) return Response.json({channel: await env.USERS.get('cfg:timer_channel'), msg: await env.USERS.get('cfg:timer_msg'), err: await env.USERS.get('timer_err'), alerts: await env.USERS.get('alert_err'), sweep: await env.USERS.get('sweep_err'), art: await env.USERS.get('art_err'), sweepAt: await env.USERS.get('cfg:sweep_at'), exposed: await env.USERS.get('exposed:bulk'), exposedErr: await env.USERS.get('exposed_err'), gs: await env.USERS.get('gs_err')});
     if (new URL(req.url).pathname.startsWith('/char/')) return charApi(req, env);
     // /legion and /legion/me (public Legione roster for the site) switched off on 29 Oct: the site no longer shows the Legione
     if (req.method !== 'POST') return new Response('Aion 2 Market bot: ok');
@@ -1891,6 +1943,7 @@ export default {
         if (i.data.name === 'verify') return await verifyRequest(i, env, ctx);
         if (i.data.name === 'verify-user') return await verifyUser(i, env, ctx);
         if (i.data.name === 'verify-remove') return await verifyRemove(i, env, ctx);
+        if (i.data.name === 'refresh') return await gsRefresh(i, env, ctx);
         if (i.data.name === 'legion-apply') return await legionApply(i, env, ctx);
         if (i.data.name === 'verify-setup') return await verifySetup(i, env);
         if (i.data.name === 'scollega') return await scollega(i, env);
