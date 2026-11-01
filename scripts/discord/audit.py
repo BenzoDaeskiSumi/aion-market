@@ -58,5 +58,7 @@ while True:
 n = 0
 for m in members:
     if m['user'].get('bot'): continue
-    if set(m['roles']) & grp and srvsep['id'] not in m['roles']: api('PUT', f'/guilds/{G}/members/{m["user"]["id"]}/roles/{srvsep["id"]}'); n += 1
+    if set(m['roles']) & grp and srvsep['id'] not in m['roles']:
+        try: api('PUT', f'/guilds/{G}/members/{m["user"]["id"]}/roles/{srvsep["id"]}'); n += 1
+        except Exception: pass   # left the server meanwhile
 print('Server separator given to', n)
