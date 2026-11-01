@@ -1008,7 +1008,7 @@ async function setGroup(env, g, uid, have, group, want, sep) {   // member ends 
   if (sep && !want.length && have.has(sep.id)) { await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${sep.id}`).catch(() => {}); have.delete(sep.id); }
 }
 // 'Server' separator group = staff roles (Admins, Moderator, *-Mod…) + every role between the Server and Class separators (Marchutans, Shotcallers…), not the bots' 'bot' role
-const LANGS_R = ['Russian', 'Ukrainian', 'Spanish', 'French', 'German', 'Polish', 'Italian', 'Balkan', 'Romanian'];
+const LANGS_R = ['Russian', 'Ukrainian', 'Spanish', 'French', 'German', 'Polish', 'Italian', 'Lithuanian', 'Balkan', 'Romanian'];
 function sepGroups(roles) {
   const rs = Array.isArray(roles) ? roles : [], srv = sepRole(rs, 'srv'), cls = sepRole(rs, 'cls'), ids = (f) => rs.filter(f).map((r) => r.id);
   return {
