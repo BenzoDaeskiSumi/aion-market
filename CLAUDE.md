@@ -275,6 +275,11 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   'Server' separator (1 Nov): over the staff/community roles (Admins, Moderator, Bot Moderator, LanguageModerator, *-Mod, and everything between it and the Class separator:
   Server Booster, Faction-Leaders, Shotcallers, Marchutans; not the bots' 'bot' role). Mauro can't place it above 'bot', so an admin must drag it above Admins by hand.
   sepGroups()/fixSeps() in index.js: applyVerify, /verify-remove and gsSweep (10 members per cron run) keep every separator in sync.
+  Separator names are bold sans letters (𝗖𝗹𝗮𝘀𝘀, 𝗦𝗲𝗿𝘃𝗲𝗿…; plainBold() maps them back) + U+3164 padding.
+  #🎭・pick-your-roles = role board (1 Nov, template like other servers' role boards, Aion look): per section a banner embed (img/discord/roles-languages|playstyle|classes|gearscore.png,
+  1200x300, rendered with Playwright from bg/abyss.svg + Cormorant Garamond) + an embed listing 'emoji ➜ @role' + grey buttons rb:<roleId> (emoji + member count;
+  roleButton() toggles, only PICKABLE roles; pickCounts() in gsSweep refreshes the counts hourly) and, for Gear Score, a 🔄 button gs:refresh (= /refresh).
+  The old select menus rp:lang/style/peek were deleted (rolePick still handles them).
   🧙 CLASS CHATS (1 Nov): each class channel visible only to its class role + 'All Classes' (peek role, menu rp:peek in #pick-your-roles; gives NO class role) + Admins/Moderator.
   '🎙️ Podcast' voice (Caller speaks, others listen) was made 29 Oct and later deleted by someone on the server; role 'Caller' still exists.
   30 Oct (user agreed): server switched to COMMUNITY (rules channel = server-rules, updates = staff, verification level low, explicit filter all) to allow

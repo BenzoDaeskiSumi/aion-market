@@ -998,7 +998,9 @@ const LEGION = {name: 'Legione', server: 2305};      // in-game legion (profile.
 const CLASS_ROLES = ['Gladiator', 'Templar', 'Assassin', 'Ranger', 'Sorcerer', 'Spiritmaster', 'Cleric', 'Chanter'];
 // MarchutanEU role groups (1 Nov): separator roles 'Class✧･ﾟ:' etc. shown only while the member has a role of the group; Gear Score tiers GS 700+ … GS 3000+
 const SEPS = {srv: 'Server', cls: 'Class', gs: 'Gear Score', lang: 'Languages', style: 'Playstyle'}, GS_TIERS = [3000, 2800, 2500, 2100, 1400, 700];
-const sepRole = (roles, k) => (Array.isArray(roles) ? roles : []).find((r) => r.name.startsWith(SEPS[k]) && /[✧\u3164]/.test(r.name));   // 'Class' + U+3164 padding (full-width pill)
+// separator names: bold sans letters (𝗖𝗹𝗮𝘀𝘀) + U+3164 padding (full-width pill); plainBold() maps the bold letters back to ASCII
+const plainBold = (t) => [...t].map((c) => { const o = c.codePointAt(0); return o >= 0x1D5D4 && o <= 0x1D5ED ? String.fromCharCode(65 + o - 0x1D5D4) : o >= 0x1D5EE && o <= 0x1D607 ? String.fromCharCode(97 + o - 0x1D5EE) : c; }).join('');
+const sepRole = (roles, k) => (Array.isArray(roles) ? roles : []).find((r) => /[✧\u3164]/.test(r.name) && plainBold(r.name).startsWith(SEPS[k]));
 async function setGroup(env, g, uid, have, group, want, sep) {   // member ends with exactly 'want' out of 'group'; separator iff any
   for (const r of group) if (!want.includes(r) && have.has(r)) { await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${r}`).catch(() => {}); have.delete(r); }
   for (const r of want) if (!have.has(r)) { await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${r}`).catch(() => {}); have.add(r); }
@@ -1023,6 +1025,40 @@ async function fixSeps(env, g, uid, have, roles) {   // each separator iff the m
     if (!any && have.has(sep.id)) { await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${sep.id}`).catch(() => {}); have.delete(sep.id); }
   }
 }
+// #pick-your-roles buttons rb:<roleId> (MarchutanEU, 1 Nov): toggle that role; only the pickable roles below
+const PICKABLE = [...LANGS_R, 'PvE', 'PvP', 'All Classes'];
+async function roleButton(i, env, ctx) {
+  const g = i.guild_id, uid = userId(i), rid = (i.data.custom_id || '').split(':')[1], have = new Set(i.member?.roles || []);
+  const roles = await (await dapi(env, 'GET', `/guilds/${g}/roles`)).json().catch(() => []);
+  const role = Array.isArray(roles) && roles.find((r) => r.id === rid);
+  if (!role || !PICKABLE.includes(role.name)) return oops('This button is not active any more.');
+  const add = !have.has(rid);
+  ctx.waitUntil((async () => {
+    const r = await dapi(env, add ? 'PUT' : 'DELETE', `/guilds/${g}/members/${uid}/roles/${rid}`);
+    if (add) have.add(rid); else have.delete(rid);
+    if (r.ok) await fixSeps(env, g, uid, have, roles);
+    await hook(i, env, {content: !r.ok ? '⚠️ I could not change your role: ask a moderator.' : add ? `✅ Added <@&${rid}>` : `➖ Removed <@&${rid}>`, allowed_mentions: {parse: []}});
+  })().catch(() => hook(i, env, {content: 'Something went wrong: please try again.'}).catch(() => {})));
+  return Response.json({type: 5, data: {flags: 64}});
+}
+// once an hour (from gsSweep, which already has the member list): the buttons in #pick-your-roles show how many members have each role
+async function pickCounts(env, members) {
+  if (Math.floor(Date.now() / 900e3) % 4) return;
+  const chs = await (await dapi(env, 'GET', `/guilds/${MEU}/channels`)).json().catch(() => []);
+  const ch = (Array.isArray(chs) ? chs : []).find((c) => c.name.includes('pick-your-roles')); if (!ch) return;
+  const msgs = await (await dapi(env, 'GET', `/channels/${ch.id}/messages?limit=20`)).json().catch(() => []);
+  const n = {}; for (const m of members) for (const r of m.roles || []) n[r] = (n[r] || 0) + 1;
+  for (const m of Array.isArray(msgs) ? msgs : []) {
+    if (!(m.components || []).some((row) => row.components.some((c) => (c.custom_id || '').startsWith('rb:')))) continue;
+    let changed = false;
+    const comps = m.components.map((row) => ({type: 1, components: row.components.map((c) => {
+      if (!(c.custom_id || '').startsWith('rb:')) return c;
+      const label = String(n[c.custom_id.slice(3)] || 0); if (c.label !== label) changed = true;
+      return {type: 2, style: c.style, custom_id: c.custom_id, emoji: c.emoji, label};
+    })}));
+    if (changed) await dapi(env, 'PATCH', `/channels/${ch.id}/messages/${m.id}`, {components: comps}).catch(() => {});
+  }
+}
 async function setGs(env, g, uid, have, roles, il) {             // Gear Score tier role (il = official ItemLevel); unknown il changes nothing
   if (!(il >= 0) || !Array.isArray(roles)) return null;
   const tiers = GS_TIERS.map((t) => ({t, r: roles.find((x) => x.name === `GS ${t}+`)})).filter((x) => x.r);
@@ -1037,6 +1073,7 @@ async function gsSweep(env) {
   for (let p = 0; p < 3; p++) { const page = await (await dapi(env, 'GET', `/guilds/${MEU}/members?limit=1000&after=${after}`)).json(); if (!Array.isArray(page) || !page.length) break; all = all.concat(page); after = page[page.length - 1].user.id; if (page.length < 1000) break; }
   const ver = all.filter((m) => (m.roles || []).includes(cfg.role) && !m.user?.bot).sort((a, b) => (BigInt(a.user.id) < BigInt(b.user.id) ? -1 : 1));
   if (!ver.length) return;
+  await pickCounts(env, all.filter((m) => !m.user?.bot)).catch(() => {});
   const roles = await (await dapi(env, 'GET', `/guilds/${MEU}/roles`)).json().catch(() => []), N = 10, start = (Math.floor(Date.now() / 900e3) * N) % ver.length;
   for (let k = 0; k < Math.min(N, ver.length); k++) {
     const m = ver[(start + k) % ver.length], link = JSON.parse(await env.USERS.get(`vlink:${MEU}:${m.user.id}`) || 'null');
@@ -1983,6 +2020,8 @@ export default {
       if (i.type === 3 && i.data.custom_id?.startsWith('ts:')) return await signupButton(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('rs:')) return await raidButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('rp:')) return await rolePick(i, env, ctx);
+      if (i.type === 3 && i.data.custom_id?.startsWith('rb:')) return await roleButton(i, env, ctx);
+      if (i.type === 3 && i.data.custom_id === 'gs:refresh') return await gsRefresh(i, env, ctx);
       if (i.type === 3 && i.data.custom_id === 'vt:get') return await tempAccess(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('ll:')) return await legionDecide(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('lt:')) return await legionTicket(i, env, ctx);

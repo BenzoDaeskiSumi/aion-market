@@ -1,64 +1,59 @@
-# one-off (1 Nov): 'Server' separator over staff/community roles; class channels only for their class + 'All Classes' (peek role, picked in #pick-your-roles)
+# one-off (1 Nov): bold separators + #pick-your-roles redone as sections (banner + role list + buttons rb:<roleId>), like a classic role board
 import json, os, time, urllib.request, urllib.error
 T, G = os.environ['DISCORD_TOKEN'], '1564968231410864160'
+SITE = 'https://benzodaeskisumi.github.io/aion-market/img/discord/'
 def api(m, p, b=None):
     for _ in range(8):
         try:
             r = urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v10' + p, method=m, data=json.dumps(b).encode() if b is not None else None,
-                headers={'Authorization': f'Bot {T}', 'User-Agent': 'DiscordBot (x, 1)', 'Content-Type': 'application/json', 'X-Audit-Log-Reason': 'Server separator + class channels'}))
+                headers={'Authorization': f'Bot {T}', 'User-Agent': 'DiscordBot (x, 1)', 'Content-Type': 'application/json', 'X-Audit-Log-Reason': 'Role board'}))
             t = r.read(); return json.loads(t) if t else None
         except urllib.error.HTTPError as e:
             body = e.read()
             if e.code == 429: time.sleep(json.loads(body).get('retry_after', 2) + 0.2); continue
             print('ERR', m, p, e.code, body[:300]); raise
-VIEW = 0x400
-CLASS = ['Gladiator', 'Templar', 'Assassin', 'Ranger', 'Sorcerer', 'Spiritmaster', 'Cleric', 'Chanter']
-rs = {r['name']: r for r in api('GET', f'/guilds/{G}/roles')}
-SRV = 'Server' + 'ㅤ' * 54
-if not any(n.startswith('Serverㅤ') for n in rs): rs[SRV] = api('POST', f'/guilds/{G}/roles', {'name': SRV, 'permissions': '0'}); print('created Server separator')
-srv = next(r for n, r in rs.items() if n.startswith('Serverㅤ'))
-if 'All Classes' not in rs: rs['All Classes'] = api('POST', f'/guilds/{G}/roles', {'name': 'All Classes', 'permissions': '0'}); print('created All Classes')
-# positions: Server sep as high as Mauro can (right under 'bot'); All Classes right under Chanter
-rs = {r['name']: r for r in api('GET', f'/guilds/{G}/roles')}
-api('PATCH', f'/guilds/{G}/roles', [{'id': srv['id'], 'position': rs['bot']['position'] - 1}])
-rs = {r['name']: r for r in api('GET', f'/guilds/{G}/roles')}
-api('PATCH', f'/guilds/{G}/roles', [{'id': rs['All Classes']['id'], 'position': rs['Chanter']['position']}])
-order = sorted(api('GET', f'/guilds/{G}/roles'), key=lambda r: -r['position'])
-print('order:', ' | '.join(r['name'].replace('ㅤ', '') + ('[sep]' if 'ㅤ' in r['name'] else '') for r in order[:30]))
-rs = {r['name']: r for r in order}
-# class channels: only that class + All Classes + Admins/Moderator
-ch = api('GET', f'/guilds/{G}/channels')
-cat = next(c for c in ch if c['type'] == 4 and 'CLASS CHATS' in c['name'].upper())
-mods = [rs[n]['id'] for n in ('Admins', 'Moderator') if n in rs]
-for c in [c for c in ch if c.get('parent_id') == cat['id']]:
-    cl = next((n for n in CLASS if n.lower() in c['name'].lower()), None)
-    if not cl: print('skip', c['name']); continue
-    ow = [{'id': G, 'type': 0, 'allow': '0', 'deny': str(VIEW)}, {'id': rs[cl]['id'], 'type': 0, 'allow': str(VIEW), 'deny': '0'},
-          {'id': rs['All Classes']['id'], 'type': 0, 'allow': str(VIEW), 'deny': '0'}] + [{'id': m, 'type': 0, 'allow': str(VIEW), 'deny': '0'} for m in mods]
-    if 'Unverified' in rs: ow.append({'id': rs['Unverified']['id'], 'type': 0, 'allow': '0', 'deny': str(VIEW)})
-    api('PATCH', f'/channels/{c["id"]}', {'permission_overwrites': ow}); print('channel', c['name'], '-> only', cl, '+ All Classes')
-# picker: All Classes menu in #pick-your-roles
-pick = next(c for c in ch if 'pick-your' in c['name'])
-msgs = api('GET', f'/channels/{pick["id"]}/messages?limit=20')
-if not any(c.get('custom_id') == 'rp:peek' for m in msgs for r in (m.get('components') or []) for c in r['components']):
-    api('POST', f'/channels/{pick["id"]}/messages', {'content': '# 👀 All class channels\nEvery class channel in 🧙 CLASS CHATS is visible only to its own class. Want to read the others too? Pick **All Classes** (you keep your own class).',
-        'components': [{'type': 1, 'components': [{'type': 3, 'custom_id': 'rp:peek', 'placeholder': 'See all class channels?', 'min_values': 0, 'max_values': 1,
-            'options': [{'label': 'All Classes', 'value': rs['All Classes']['id'], 'emoji': {'name': '👀'}, 'description': 'Read every class channel'}]}]}]})
-    print('peek menu posted')
-# Server separator for every human member with a staff/community role
-srvsep = next(r for r in order if r['name'].startswith('Serverㅤ')); cls = next(r for r in order if r['name'].startswith('Classㅤ'))
-grp = {r['id'] for r in order if r['name'] != 'bot' and r['id'] != srvsep['id'] and (r['name'] in ('Admins', 'Moderator', 'Bot Moderator', 'LanguageModerator') or r['name'].endswith('-Mod') or cls['position'] < r['position'] < srvsep['position'])}
-print('Server group:', [r['name'] for r in order if r['id'] in grp])
+def bold(t): return ''.join(chr(0x1D5D4 + ord(c) - 65) if 'A' <= c <= 'Z' else chr(0x1D5EE + ord(c) - 97) if 'a' <= c <= 'z' else c for c in t)
+roles = api('GET', f'/guilds/{G}/roles')
+for r in roles:
+    if 'ㅤ' not in r['name']: continue
+    base = r['name'].replace('ㅤ', '')
+    for word in ('Server', 'Class', 'Gear Score', 'Languages', 'Playstyle'):
+        if base in (word, bold(word)):
+            new = bold(word) + 'ㅤ' * (60 - len(word))
+            if new != r['name']: api('PATCH', f'/guilds/{G}/roles/{r["id"]}', {'name': new}); print('bold', word)
+rs = {r['name']: r['id'] for r in api('GET', f'/guilds/{G}/roles')}
 members, after = [], '0'
 while True:
     page = api('GET', f'/guilds/{G}/members?limit=1000&after={after}')
     if not page: break
     members += page; after = page[-1]['user']['id']
     if len(page) < 1000: break
-n = 0
+cnt = {}
 for m in members:
-    if m['user'].get('bot'): continue
-    if set(m['roles']) & grp and srvsep['id'] not in m['roles']:
-        try: api('PUT', f'/guilds/{G}/members/{m["user"]["id"]}/roles/{srvsep["id"]}'); n += 1
-        except Exception: pass   # left the server meanwhile
-print('Server separator given to', n)
+    if not m['user'].get('bot'):
+        for r in m['roles']: cnt[r] = cnt.get(r, 0) + 1
+def buttons(items):
+    btn = [{'type': 2, 'style': 2, 'custom_id': f'rb:{rs[n]}', 'emoji': {'name': e}, 'label': str(cnt.get(rs[n], 0))} for n, e, _ in items]
+    return [{'type': 1, 'components': btn[k:k + 5]} for k in range(0, len(btn), 5)]
+def lines(items): return '\n'.join(f'{e} ➜ <@&{rs[n]}>' + (f'  ·  {d}' if d else '') for n, e, d in items)
+LANG = [('Russian', '🪆', ''), ('Ukrainian', '🌻', ''), ('Spanish', '💃', ''), ('French', '🥐', ''), ('German', '🥨', ''), ('Polish', '🥟', ''),
+        ('Italian', '🍕', ''), ('Balkan', '⛰️', ''), ('Romanian', '🌲', '')]
+STYLE = [('PvE', '🐉', 'dungeons, bosses, raids'), ('PvP', '⚔️', 'Abyss, sieges, arenas')]
+PEEK = [('All Classes', '👀', 'read every class channel, you keep your own class')]
+GS = ['GS 3000+', 'GS 2800+', 'GS 2500+', 'GS 2100+', 'GS 1400+', 'GS 700+']
+sections = [
+    ('roles-languages', 0xc9a227, '**Press a button** to get the role and see that language channel. Press it again to remove it.\n\n' + lines(LANG), buttons(LANG)),
+    ('roles-playstyle', 0xd9485f, '**What do you play?** Pick one or both.\n\n' + lines(STYLE), buttons(STYLE)),
+    ('roles-classes', 0x8f6bff, 'Each channel in **🧙 CLASS CHATS** is visible only to its own class.\nWant to read the others too?\n\n' + lines(PEEK), buttons(PEEK)),
+    ('roles-gearscore', 0x3fb6d0, 'Your **Gear Score** role is **automatic**: Mauro reads it from the official armory about once a day.\n\n'
+        + '\n'.join(f'🛡️ ➜ <@&{rs[n]}>' for n in GS if n in rs) + '\n\nJust upgraded? Press the button (or type `/refresh`).',
+        [{'type': 1, 'components': [{'type': 2, 'style': 1, 'custom_id': 'gs:refresh', 'emoji': {'name': '🔄'}, 'label': 'Refresh my Gear Score'}]}]),
+]
+pick = next(c for c in api('GET', f'/guilds/{G}/channels') if 'pick-your-roles' in c['name'])
+me = api('GET', '/users/@me')['id']
+for m in api('GET', f'/channels/{pick["id"]}/messages?limit=50'):
+    if m['author']['id'] == me: api('DELETE', f'/channels/{pick["id"]}/messages/{m["id"]}')
+for img, col, text, comps in sections:
+    api('POST', f'/channels/{pick["id"]}/messages', {'embeds': [{'color': col, 'image': {'url': SITE + img + '.png'}}, {'color': col, 'description': text}],
+        'components': comps, 'allowed_mentions': {'parse': []}})
+print('role board posted:', len(sections), 'sections')
