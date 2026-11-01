@@ -35,7 +35,9 @@ moves += [{'id': by('server-rules')['id'], 'parent_id': info['id'], 'lock_permis
 order = [info, cat('NEWS'), cat('GENERAL'), cat('INTERNATIONAL'), cat('PVP&'), cat('CLASS CHATS'), next(c for c in ch if c['type'] == 4 and c['name'].upper().endswith('PVE')),
          cat('LEGIONS'), cat('MEDIA'), cat('VOICE'), cat('LEADERS'), staff]
 moves += [{'id': c['id'], 'position': 10 + k} for k, c in enumerate(order)]
-api('PATCH', f'/guilds/{G}/channels', moves); print('moved', len(moves))
+for mv in moves:
+    if 'parent_id' in mv: api('PATCH', f"/channels/{mv['id']}", {'parent_id': mv['parent_id'], 'lock_permissions': False})
+api('PATCH', f'/guilds/{G}/channels', [{'id': mv['id'], 'position': mv['position']} for mv in moves if 'position' in mv]); print('moved', len(moves))
 # staff channels in order inside 'staff'
 ch = api('GET', f'/guilds/{G}/channels')
 inside = [c for n in ('just-staff', 'siege-staff', 'bot-staff', 'verify-requests', 'logs', 'roles', 'raidprotect-logs') for c in ch if c.get('parent_id') == staff['id'] and n in c['name'] and c['type'] == 0]
