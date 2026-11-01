@@ -242,6 +242,8 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   in the mod channel with ✅ vf:ok:<uid> / ❌ vf:no:<uid> (modal vfm: with an optional reason). Approve = card deleted from the mod channel (verifyClean also drops cards of already-verified members) + role + nick (in-game name) + class role (server role named like the class, CLASS_ROLES; others removed) + DM; reject = DM with reason.
   /verify-user user:<member> character:<autocomplete> (moderators; command visible to Manage Roles by default): verifies someone directly, no screenshot,
   may move a character from another account (old vlink dropped). Both paths go through applyVerify().
+  /verify-remove user:<member> [keep_access] (moderators, 1 Nov): drops vlink/vchar/vreq; unless keep_access also removes the verified role + class roles and resets the nick.
+  Not sent to the Exposed bot (its API has no delete).
   KV FREE LIMIT 1,000 writes/day was hit on 29 Oct (sweep every 3 h + error notes every run): now putErr() writes error notes only when they change,
   the legion sweep rotates by clock (no cfg:sweep_at) and refreshes a member every 12 h, hist is written only on change; verification no longer needs
   KV writes (the ✅ button carries vf:ok:<uid>:<server>:<id>, all KV writes in it are best effort).

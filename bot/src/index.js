@@ -1675,6 +1675,30 @@ async function verifyUser(i, env, ctx) {
   })());
   return Response.json({type: 5, data: {flags: 64}});
 }
+// /verify-remove user:<member> [keep_access]: a moderator unlinks a member's character (KV vlink/vchar/vreq); unless keep_access the member also loses
+// the verified role and class roles and the nickname is reset, so they have to /verify again
+async function verifyRemove(i, env, ctx) {
+  const g = i.guild_id, cfg = JSON.parse(await env.USERS.get('vcfg:' + g) || 'null');
+  if (!cfg) return oops('Verification is not active on this server.');
+  const pm = BigInt(i.member?.permissions || 0);
+  if (!isAdmin(i) && !(pm & 0x2000n || pm & (1n << 40n) || pm & 2n)) return oops('Only moderators can use this command.');
+  const uid = opt(i.data, 'user')?.value, keep = !!opt(i.data, 'keep_access')?.value;
+  if (!uid) return oops('Pick the member.');
+  ctx.waitUntil((async () => {
+    const link = JSON.parse(await env.USERS.get(`vlink:${g}:${uid}`) || 'null');
+    if (link) await env.USERS.delete(`vchar:${g}:${link.server}:${link.id}`).catch(() => {});
+    await env.USERS.delete(`vlink:${g}:${uid}`).catch(() => {});
+    await env.USERS.delete(`vreq:${g}:${uid}`).catch(() => {});
+    if (!keep) {
+      const roles = await (await dapi(env, 'GET', `/guilds/${g}/roles`)).json().catch(() => []), mem = await (await dapi(env, 'GET', `/guilds/${g}/members/${uid}`)).json().catch(() => ({}));
+      const drop = (Array.isArray(roles) ? roles : []).filter((r) => r.id === cfg.role || CLASS_ROLES.includes(r.name)).filter((r) => (mem.roles || []).includes(r.id));
+      for (const r of drop) await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${r.id}`).catch(() => {});
+      await dapi(env, 'PATCH', `/guilds/${g}/members/${uid}`, {nick: null}).catch(() => {});
+    }
+    await hook(i, env, {content: `🔓 <@${uid}> unlinked${link ? ` from **${link.name}**` : ' (no character was linked)'}${keep ? ' · roles and nickname kept.' : ' · verified role, class role and nickname removed: they have to `/verify` again.'}`, allowed_mentions: {parse: []}});
+  })().catch(() => hook(i, env, {content: 'Something went wrong: please try again.'}).catch(() => {})));
+  return Response.json({type: 5, data: {flags: 64}});
+}
 async function verifyDecide(i, env, ctx, reason) {
   const [, act, uid] = (i.data.custom_id || '').split(':'), g = i.guild_id, cfg = JSON.parse(await env.USERS.get('vcfg:' + g) || 'null');
   const pm = BigInt(i.member?.permissions || 0);   // admins, or moderators: Manage Messages / Moderate Members / Kick Members
@@ -1863,6 +1887,7 @@ export default {
         if (i.data.name === 'collega') return await collega(i, env, ctx);
         if (i.data.name === 'verify') return await verifyRequest(i, env, ctx);
         if (i.data.name === 'verify-user') return await verifyUser(i, env, ctx);
+        if (i.data.name === 'verify-remove') return await verifyRemove(i, env, ctx);
         if (i.data.name === 'legion-apply') return await legionApply(i, env, ctx);
         if (i.data.name === 'verify-setup') return await verifySetup(i, env);
         if (i.data.name === 'scollega') return await scollega(i, env);

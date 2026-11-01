@@ -38,6 +38,9 @@ const commands = [
   {name: 'verify-user', description: 'Moderators: link a member to their character and verify them (no screenshot needed)', default_member_permissions: '268435456', dm_permission: false, options: [
     {type: 6, name: 'user', description: 'The Discord member', required: true},
     {type: 3, name: 'character', description: 'Their character: pick it from the suggestions (EU servers)', required: true, autocomplete: true}]},
+  {name: 'verify-remove', description: 'Moderators: unlink a member from their character (removes the verification)', default_member_permissions: '268435456', dm_permission: false, options: [
+    {type: 6, name: 'user', description: 'The Discord member', required: true},
+    {type: 5, name: 'keep_access', description: 'Keep the Marchutans role, class role and nickname (default: no, they must verify again)'}]},
   {name: 'verify-setup', description: 'Admin: turn on screenshot verification on this server (role and channels)', default_member_permissions: '32', dm_permission: false},
   {name: 'favorites', description: 'Your site favourites (log in with Discord), one at a time with arrows', ...it('preferiti', 'I tuoi preferiti del sito (accedi con Discord), uno alla volta con le frecce'), options: [
     {...server, description: 'Server (default: /server, then the one chosen on the site)', ...it(null, 'Server (predefinito: /server, poi quello scelto sul sito)')}]},
