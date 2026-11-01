@@ -769,7 +769,10 @@ async function rolePick(i, env, ctx) {
         if (!any && have.has(sep.id)) await call('DELETE', sep.id);
       }
     }
-    const text = !ok ? (gid === ART_GUILD ? '⚠️ Non sono riuscito a cambiare tutti i ruoli: avvisa un admin.' : '⚠️ Non sono riuscito a cambiare tutti i ruoli: avvisa un Centurion.')
+    const en = gid === MEU;   // MarchutanEU (English): language picker rp:lang
+    const text = en ? (!ok ? '⚠️ I could not change all your roles: ask a moderator.' : !add.length && !del.length ? 'Nothing changed.'
+      : [add.length ? `✅ Added: ${add.map((r) => names[r]).join(', ')}` : null, del.length ? `➖ Removed: ${del.map((r) => names[r]).join(', ')}` : null].filter(Boolean).join('\n'))
+      : !ok ? (gid === ART_GUILD ? '⚠️ Non sono riuscito a cambiare tutti i ruoli: avvisa un admin.' : '⚠️ Non sono riuscito a cambiare tutti i ruoli: avvisa un Centurion.')
       : !add.length && !del.length ? 'Nessun cambiamento.'
       : [add.length ? `✅ Aggiunti: ${add.map((r) => names[r]).join(', ')}` : null, del.length ? `➖ Tolti: ${del.map((r) => names[r]).join(', ')}` : null].filter(Boolean).join('\n');
     await fetch(`https://discord.com/api/v10/webhooks/${i.application_id}/${i.token}/messages/@original`, {method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({content: text})});
