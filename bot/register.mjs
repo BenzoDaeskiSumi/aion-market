@@ -10,9 +10,9 @@ const it = () => ({});
 const server = {type: 3, name: 'server', description: 'Asmodian server (default: the one saved with /server)', ...it(null, 'Server Asmodian (predefinito: quello registrato con /server)'), required: false,
   choices: servers.slice(0, 25).map((s) => ({name: s.name, value: String(s.id)}))};
 const commands = [
-  {name: 'info', description: 'Price, charts and details of a Market item', ...it(null, 'Prezzo, grafici e info di un oggetto del Market'), options: [
+  {name: 'item', description: 'Price, charts and details of a Market item', ...it(null, 'Prezzo, grafici e info di un oggetto del Market'), options: [
     {type: 3, name: 'item', description: 'Item name (English, as in game)', ...it('oggetto', 'Nome dell’oggetto (in inglese, come in gioco)'), required: true, autocomplete: true}, server]},
-  {name: 'deals', description: 'The best Market deals right now', ...it('affari', 'I migliori affari del momento'), options: [
+  {name: 'deals', description: 'The best deals right now on materials and consumables', ...it('affari', 'I migliori affari del momento'), options: [
     {type: 3, name: 'type', description: 'What you are looking for', ...it('tipo', 'Cosa cerchi'), required: false, choices: [
       {name: 'To buy (flip)', value: 'compra'}, {name: 'To sell now', value: 'vendi'}]}, server]},
   {name: 'server', description: 'Save your server: the other commands will use it', ...it(null, 'Registra il tuo server: gli altri comandi lo useranno in automatico'), options: [

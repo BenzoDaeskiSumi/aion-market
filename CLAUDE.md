@@ -191,6 +191,9 @@ Since 30 Oct: GLOBAL commands have English names (info, deals, server, alert add
 (the Italian localizations are off: it() in register.mjs returns {}) and the market replies (cards, /deals, /craft, /alert, /favorites, /character, /help, alerts in the channel, watchdog)
 are in English. toItalianNames() at the top of the request handler maps the names back (CMD_IT/OPT_IT), so handlers keep the Italian names. Legione-only commands (avvisi-canale, statistiche, chisiamo, collega, scollega, legione, raid) are
 GUILD commands of the Legione (1553398446524731435) only, still Italian.
+1 Nov 2026: /info renamed /item (CMD_IT item -> 'info'). /deals lists only DEAL_CATS (Gathering / Crafting / Special Material + every Consumables category).
+Booster perk on MarchutanEU only: boostOnly() before dispatch locks /item, /deals, /craft, /alert, /server and the card buttons al:/cr:/alm: unless member.premium_since
+(admins/moderators pass); free: /favorites, /character, /help, verify and roles. Other guilds and DMs are not limited.
 Repo secrets (set by the user, never in chat): CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, DISCORD_PUBLIC_KEY, DISCORD_APP_ID, DISCORD_TOKEN, SUPABASE_SERVICE_KEY.
 Worker URL: https://aion-market-bot.aion2-market.workers.dev (Discord Interactions Endpoint URL). Deploy errors are printed as run annotations.
 Price alerts: profiles.alerts = [{item, server, price, dir below|above}] (max 25), set on the site (detail pane '#alertbox', logged in)

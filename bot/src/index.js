@@ -163,9 +163,9 @@ async function prezzo(i, env) {
 // view buttons of /info: the item is the card's title; only who asked can switch (one message, no spam)
 async function prezzoView(i, env) {
   const [, owner, sid, view] = i.data.custom_id.split(':');
-  if (userId(i) !== owner) return oops('Use /info to open your own card: these buttons belong to whoever asked.');
+  if (userId(i) !== owner) return oops('Use /item to open your own card: these buttons belong to whoever asked.');
   const name = i.message?.embeds?.[0]?.title;
-  if (!name) return oops('I can\'t find this card\'s item any more: run /info again.');
+  if (!name) return oops('I can\'t find this card\'s item any more: run /item again.');
   const [embed, rec] = await Promise.all([itemView(name, +sid, view, env), recipes(env)]);
   return Response.json({type: 7, data: {embeds: [embed], components: [viewRow(`pv:${owner}:${sid}`, view), actionRow(env, +sid, name, crafts(rec).has(name))]}});
 }
@@ -213,12 +213,14 @@ async function favButton(i, env) {
   return Response.json({type: 7, data: page});                      // 7 = edit the same message, no new posts
 }
 
-// ---------- /affari ----------
+// ---------- /deals (internal name affari) ----------
+const DEAL_CATS = new Set(['Gathering Material', 'Crafting Material', 'Special Material', 'Potions', 'Food', 'Scroll', 'Candy', 'Manastone/Soulstone',
+  'Theostone', 'Wings', 'Pantheon', 'Duration Ticket', 'Chest', 'Consumable Miscellaneous']);
 async function affari(i, env) {
   const data = i.data, sid = await serverOf(i, env), kind = opt(data, 'tipo')?.value || 'compra';
   const [sum, srv] = await Promise.all([summary(env, sid), servers(env)]);
   const sname = serverName(srv, sid);
-  const rows = Object.entries(sum);
+  const rows = Object.entries(sum).filter(([, r]) => DEAL_CATS.has(r.c));   // 1 Nov 2026: materials (gathering, crafting, special) and consumables only
   const top = kind === 'vendi'
     ? rows.filter(([, r]) => r.s === 'Vendi ora').sort((a, b) => (b[1].p / b[1].a) - (a[1].p / a[1].a))
     : rows.filter(([, r]) => r.s === 'Compra per rivendere').sort((a, b) => b[1].f - a[1].f);
@@ -229,7 +231,7 @@ async function affari(i, env) {
     title: kind === 'vendi' ? `Sell now · ${sname}` : `Deals to buy · ${sname}`,
     url: env.SITE, color: kind === 'vendi' ? 0xff5c6c : 0x62e07a,
     description: lines.join('\n') || 'No deals right now.',
-    footer: {text: `${top.length} in total · data aion2.exchange`},
+    footer: {text: `${top.length} in total · materials and consumables · data aion2.exchange`},
   }]});
 }
 
@@ -239,7 +241,7 @@ async function setServer(i, env) {
   if (!srv.some((s) => s.id === sid)) return oops('Invalid server: pick it from the list.');
   if (!env.USERS) return oops('Saving is not available right now.');
   await env.USERS.put(`srv:${userId(i)}`, String(sid));
-  return oops(`✅ Server saved: **${serverName(srv, sid)}**. From now on /info, /deals and /favorites use this server; run /server again to change it.`);
+  return oops(`✅ Server saved: **${serverName(srv, sid)}**. From now on /item, /deals and /favorites use this server; run /server again to change it.`);
 }
 
 // ---------- price alerts: stored in profiles.alerts (site login), checked every 15 min by the cron below ----------
@@ -357,7 +359,7 @@ async function checkAlerts(env) {
 const cardItem = (i) => i.message?.embeds?.[0]?.title;
 async function favToggle(i, env) {
   const uid = userId(i), name = cardItem(i);
-  if (!name) return oops('I can\'t find this card\'s item any more: run /info again.');
+  if (!name) return oops('I can\'t find this card\'s item any more: run /item again.');
   const prof = await profile(env, uid);
   if (!prof) return oops(`Favourites need a site login: open ${env.SITE} and press **Log in with Discord** (just once), then try again.`);
   const favs = new Set(prof.favorites || []), had = favs.has(name);
@@ -368,7 +370,7 @@ async function favToggle(i, env) {
 }
 async function alertForm(i, env) {
   const sid = +i.data.custom_id.split(':')[1], name = cardItem(i);
-  if (!name) return oops('I can\'t find this card\'s item any more: run /info again.');
+  if (!name) return oops('I can\'t find this card\'s item any more: run /item again.');
   const prof = (await rpc(env, 'alerts_by_discord', {did: userId(i)}))[0];
   if (!prof) return oops(NO_LOGIN(env));
   const r = (await summary(env, sid))[name];
@@ -490,8 +492,9 @@ async function craftButton(i, env) {
 function aiuto(env) {
   return reply({flags: 64, embeds: [{title: '📖 Aion 2 Market bot commands', url: env.SITE, color: 0x5b8cff, description: [
     '**Prices**',
-    '`/info <item>` — lowest price, average, sales, trend and signal. Under the card: 📋/📈 card and charts, ⭐ favourite, 🔔 alert, 🔨 craft cost.',
-    '`/deals [buy|sell]` — the best deals right now: to buy and resell, or to sell now.',
+    '`/item <item>` — lowest price, average, sales, trend and signal. Under the card: 📋/📈 card and charts, ⭐ favourite, 🔔 alert, 🔨 craft cost.',
+    '`/deals [buy|sell]` — the best deals right now on materials and consumables: to buy and resell, or to sell now.',
+    '-# On MarchutanEU `/item`, `/deals`, `/craft`, `/alert` and `/server` are a perk for server boosters 💎.',
     '`/craft <item>` — what crafting it costs right now, ingredient by ingredient, and whether it beats buying it.',
     '`/character <name>` — character card (EU servers): Combat Power, gear, Daevanion. Official NCSOFT data.',
     '',
@@ -1927,8 +1930,21 @@ async function raidReminders(env) {               // cron: tag the sign-ups once
 }
 
 // English command/option names (30 Oct, MarchutanEU is an English server) mapped back to the Italian names the handlers use
-const CMD_IT = {deals: 'affari', alert: 'avviso', help: 'aiuto', character: 'personaggio', favorites: 'preferiti'};
+const CMD_IT = {item: 'info', deals: 'affari', alert: 'avviso', help: 'aiuto', character: 'personaggio', favorites: 'preferiti'};
 const OPT_IT = {item: 'oggetto', type: 'tipo', price: 'prezzo', when: 'quando', name: 'nome', add: 'aggiungi', list: 'lista'};
+// 1 Nov 2026 (the user asked): on MarchutanEU the market commands are a perk for server boosters (member.premium_since);
+// free for everyone: /favorites, /character, /help (and the role / verify features). Admins and moderators are let through to help and test.
+const BOOST_CMDS = new Set(['info', 'affari', 'craft', 'avviso', 'server']);
+const BOOST_BTNS = /^(al|cr|alm):/;
+function boostOnly(i) {
+  if (i.guild_id !== MEU || i.member?.premium_since) return null;
+  const pm = BigInt(i.member?.permissions || 0);
+  if (pm & 8n || pm & 32n || pm & 0x10000000n || pm & 0x2000n || pm & (1n << 40n)) return null;
+  const locked = (i.type === 2 && BOOST_CMDS.has(i.data?.name)) || ((i.type === 3 || i.type === 5) && BOOST_BTNS.test(i.data?.custom_id || ''));
+  if (!locked) return null;
+  return oops('💎 This is a perk for **server boosters**: boost the server to unlock `/item`, `/deals`, `/craft`, `/alert` and `/server`.\n' +
+    'Free for everyone: `/favorites`, `/character`, `/help`.');
+}
 const MAPPED = new Set(['info', 'craft', 'server', ...Object.values(CMD_IT)]);
 function toItalianNames(d) {
   if (!d?.name || d.type > 1) return;
@@ -1977,6 +1993,8 @@ export default {
         const names = q ? search(Object.entries(sum), q) : Object.entries(sum).filter(([, r]) => r.s === 'Compra per rivendere').map(([n]) => n).slice(0, 25);
         return Response.json({type: 8, data: {choices: names.map((n) => ({name: n.slice(0, 100), value: n.slice(0, 100)}))}});
       }
+      const boostWall = boostOnly(i);
+      if (boostWall) return boostWall;
       if (i.type === 2) {
         if (i.data.name === 'info' || i.data.name === 'prezzo') return await prezzo(i, env);
         if (i.data.name === 'affari') return await affari(i, env);
