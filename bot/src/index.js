@@ -997,13 +997,31 @@ async function join(req, env) {
 const LEGION = {name: 'Legione', server: 2305};      // in-game legion (profile.regionName in the official data) on Marchutan
 const CLASS_ROLES = ['Gladiator', 'Templar', 'Assassin', 'Ranger', 'Sorcerer', 'Spiritmaster', 'Cleric', 'Chanter'];
 // MarchutanEU role groups (1 Nov): separator roles 'Class✧･ﾟ:' etc. shown only while the member has a role of the group; Gear Score tiers GS 700+ … GS 3000+
-const SEPS = {cls: 'Class', gs: 'Gear Score', lang: 'Languages', style: 'Playstyle'}, GS_TIERS = [3000, 2800, 2500, 2100, 1400, 700];
+const SEPS = {srv: 'Server', cls: 'Class', gs: 'Gear Score', lang: 'Languages', style: 'Playstyle'}, GS_TIERS = [3000, 2800, 2500, 2100, 1400, 700];
 const sepRole = (roles, k) => (Array.isArray(roles) ? roles : []).find((r) => r.name.startsWith(SEPS[k]) && /[✧\u3164]/.test(r.name));   // 'Class' + U+3164 padding (full-width pill)
 async function setGroup(env, g, uid, have, group, want, sep) {   // member ends with exactly 'want' out of 'group'; separator iff any
   for (const r of group) if (!want.includes(r) && have.has(r)) { await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${r}`).catch(() => {}); have.delete(r); }
   for (const r of want) if (!have.has(r)) { await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${r}`).catch(() => {}); have.add(r); }
   if (sep && want.length && !have.has(sep.id)) { await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${sep.id}`).catch(() => {}); have.add(sep.id); }
   if (sep && !want.length && have.has(sep.id)) { await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${sep.id}`).catch(() => {}); have.delete(sep.id); }
+}
+// 'Server' separator group = staff roles (Admins, Moderator, *-Mod…) + every role between the Server and Class separators (Marchutans, Shotcallers…), not the bots' 'bot' role
+const LANGS_R = ['Russian', 'Ukrainian', 'Spanish', 'French', 'German', 'Polish', 'Italian', 'Balkan', 'Romanian'];
+function sepGroups(roles) {
+  const rs = Array.isArray(roles) ? roles : [], srv = sepRole(rs, 'srv'), cls = sepRole(rs, 'cls'), ids = (f) => rs.filter(f).map((r) => r.id);
+  return {
+    srv: ids((r) => r.name !== 'bot' && r !== srv && (['Admins', 'Moderator', 'Bot Moderator', 'LanguageModerator'].includes(r.name) || /-Mod$/.test(r.name) || (srv && cls && r.position < srv.position && r.position > cls.position))),
+    cls: ids((r) => CLASS_ROLES.includes(r.name)), gs: ids((r) => /^GS \d+\+$/.test(r.name)), lang: ids((r) => LANGS_R.includes(r.name)), style: ids((r) => ['PvE', 'PvP'].includes(r.name)),
+  };
+}
+async function fixSeps(env, g, uid, have, roles) {   // each separator iff the member has a role of its group
+  const grp = sepGroups(roles);
+  for (const k of Object.keys(SEPS)) {
+    const sep = sepRole(roles, k); if (!sep) continue;
+    const any = grp[k].some((r) => have.has(r));
+    if (any && !have.has(sep.id)) { await dapi(env, 'PUT', `/guilds/${g}/members/${uid}/roles/${sep.id}`).catch(() => {}); have.add(sep.id); }
+    if (!any && have.has(sep.id)) { await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${sep.id}`).catch(() => {}); have.delete(sep.id); }
+  }
 }
 async function setGs(env, g, uid, have, roles, il) {             // Gear Score tier role (il = official ItemLevel); unknown il changes nothing
   if (!(il >= 0) || !Array.isArray(roles)) return null;
@@ -1022,9 +1040,10 @@ async function gsSweep(env) {
   const roles = await (await dapi(env, 'GET', `/guilds/${MEU}/roles`)).json().catch(() => []), N = 10, start = (Math.floor(Date.now() / 900e3) * N) % ver.length;
   for (let k = 0; k < Math.min(N, ver.length); k++) {
     const m = ver[(start + k) % ver.length], link = JSON.parse(await env.USERS.get(`vlink:${MEU}:${m.user.id}`) || 'null');
-    if (!link?.id) continue;
-    const c = await charProfile(link.server, link.id).catch(() => null);
-    if (c?.name) await setGs(env, MEU, m.user.id, new Set(m.roles), roles, c.il);
+    const c = link?.id ? await charProfile(link.server, link.id).catch(() => null) : null;
+    const have = new Set(m.roles);
+    if (c?.name) await setGs(env, MEU, m.user.id, have, roles, c.il);
+    await fixSeps(env, MEU, m.user.id, have, roles);
   }
 }
 // /refresh (MarchutanEU): your Gear Score role now (official profile is cached 10 min, so spamming it costs nothing)
@@ -1579,7 +1598,7 @@ async function applyVerify(env, g, cfg, uid, req, by) {
   if (tmp && (mem.roles || []).includes(tmp.id)) await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${tmp.id}`).catch(() => {});
   const have = new Set(mem.roles || []);
   await setGroup(env, g, uid, have, cls.map((r) => r.id), want ? [want.id] : [], sepRole(roles, 'cls'));
-  if (g === MEU) await setGs(env, g, uid, have, roles, req.il);
+  if (g === MEU) { have.add(cfg.role); await setGs(env, g, uid, have, roles, req.il); await fixSeps(env, g, uid, have, roles); }
   await env.USERS.put(`vlink:${g}:${uid}`, JSON.stringify({...req, by, t: Date.now()})).catch(() => {});   // best effort: KV can hit its daily write limit
   await env.USERS.put(`vchar:${g}:${req.server}:${req.id}`, uid).catch(() => {});
   await env.USERS.delete(`vreq:${g}:${uid}`).catch(() => {});
@@ -1746,8 +1765,9 @@ async function verifyRemove(i, env, ctx) {
     await env.USERS.delete(`vreq:${g}:${uid}`).catch(() => {});
     if (!keep) {
       const roles = await (await dapi(env, 'GET', `/guilds/${g}/roles`)).json().catch(() => []), mem = await (await dapi(env, 'GET', `/guilds/${g}/members/${uid}`)).json().catch(() => ({}));
-      const drop = (Array.isArray(roles) ? roles : []).filter((r) => r.id === cfg.role || CLASS_ROLES.includes(r.name) || /^GS \d+\+$/.test(r.name) || r === sepRole(roles, 'cls') || r === sepRole(roles, 'gs')).filter((r) => (mem.roles || []).includes(r.id));
+      const drop = (Array.isArray(roles) ? roles : []).filter((r) => r.id === cfg.role || CLASS_ROLES.includes(r.name) || r.name === 'All Classes' || /^GS \d+\+$/.test(r.name)).filter((r) => (mem.roles || []).includes(r.id));
       for (const r of drop) await dapi(env, 'DELETE', `/guilds/${g}/members/${uid}/roles/${r.id}`).catch(() => {});
+      if (g === MEU) await fixSeps(env, g, uid, new Set((mem.roles || []).filter((r) => !drop.some((d) => d.id === r))), roles);
       await dapi(env, 'PATCH', `/guilds/${g}/members/${uid}`, {nick: null}).catch(() => {});
     }
     await hook(i, env, {content: `🔓 <@${uid}> unlinked${link ? ` from **${link.name}**` : ' (no character was linked)'}${keep ? ' · roles and nickname kept.' : ' · verified role, class role and nickname removed: they have to `/verify` again.'}`, allowed_mentions: {parse: []}});

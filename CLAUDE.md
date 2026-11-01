@@ -271,7 +271,11 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   Gear Score tiers 'GS 700+' 'GS 1400+' 'GS 2100+' 'GS 2500+' 'GS 2800+' 'GS 3000+' (one at a time, official ItemLevel; below 700 none): set on verification (applyVerify -> setGs),
   by /refresh (MarchutanEU guild command, registered in register.mjs meuCommands) and by gsSweep() in the cron: 10 verified members per run by clock rotation
   (Discord member list + KV vlink reads + charProfile, no KV writes) = everyone about once a day at 1,000 members. Errors in KV gs_err (/timers/status 'gs').
-  /verify-remove also drops the GS tier, the class role and their separators.
+  /verify-remove also drops the GS tier, the class role, All Classes and the separators left empty.
+  'Server' separator (1 Nov): over the staff/community roles (Admins, Moderator, Bot Moderator, LanguageModerator, *-Mod, and everything between it and the Class separator:
+  Server Booster, Faction-Leaders, Shotcallers, Marchutans; not the bots' 'bot' role). Mauro can't place it above 'bot', so an admin must drag it above Admins by hand.
+  sepGroups()/fixSeps() in index.js: applyVerify, /verify-remove and gsSweep (10 members per cron run) keep every separator in sync.
+  🧙 CLASS CHATS (1 Nov): each class channel visible only to its class role + 'All Classes' (peek role, menu rp:peek in #pick-your-roles; gives NO class role) + Admins/Moderator.
   '🎙️ Podcast' voice (Caller speaks, others listen) was made 29 Oct and later deleted by someone on the server; role 'Caller' still exists.
   30 Oct (user agreed): server switched to COMMUNITY (rules channel = server-rules, updates = staff, verification level low, explicit filter all) to allow
   Stage channels; '🏯 Siege Stage' (type 13, top of VOICE CHANNELS): Marchutans listen + raise hand; Shotcallers, Caller, Faction-Leaders, Admins, Moderator are stage moderators.
