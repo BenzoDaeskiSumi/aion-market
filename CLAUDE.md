@@ -194,6 +194,11 @@ GUILD commands of the Legione (1553398446524731435) only, still Italian.
 1 Nov 2026: /info renamed /item (CMD_IT item -> 'info'). /deals lists only DEAL_CATS (Gathering / Crafting / Special Material + every Consumables category).
 Booster perk on MarchutanEU only: boostOnly() before dispatch locks /item, /deals, /craft, /alert, /server and the card buttons al:/cr:/alm: unless member.premium_since
 (admins/moderators pass); free: /favorites, /character, /help, verify and roles. Other guilds and DMs are not limited.
+Extra commands (1 Nov 2026, English, internal names = English): /compare name1 name2 (global, free; charChoices autocomplete; deferred, two charInfo),
+/whois @user and /top [gs|cp] (MarchutanEU guild commands, free; /top reads KV meu:board {uid: {n, c, il, cp}} that gsSweep updates for the 10 members it
+refreshes per run and writes once per run only when changed), and boosters-only (BOOST_CMDS): /price-history item (90-day daily low from data/s/<id>/h/<slug>.json),
+/shopping item [quantity] (craftEngine expanded into raw ingredients, averages incl. failures/combo), /watch (toggle in KV watch:list; watchDigest() in the cron
+DMs favourites' prices 18:00–22:00 Europe/Rome, users split by index % 16 over the 16 runs, max 6 per run, boosters only checked at send time; errors KV watch_err).
 Repo secrets (set by the user, never in chat): CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, DISCORD_PUBLIC_KEY, DISCORD_APP_ID, DISCORD_TOKEN, SUPABASE_SERVICE_KEY.
 Worker URL: https://aion-market-bot.aion2-market.workers.dev (Discord Interactions Endpoint URL). Deploy errors are printed as run annotations.
 Price alerts: profiles.alerts = [{item, server, price, dir below|above}] (max 25), set on the site (detail pane '#alertbox', logged in)

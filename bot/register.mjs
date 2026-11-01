@@ -32,6 +32,15 @@ const commands = [
   {name: 'character', description: 'EU character card: Combat Power, gear, Daevanion (official NCSOFT data)', ...it('personaggio', 'Scheda di un personaggio EU: Combat Power, equipaggiamento, Daevanion (dati ufficiali NCSOFT)'), options: [
     {type: 3, name: 'name', description: 'Character name', ...it('nome', 'Nome del personaggio (vuoto = il tuo, se l’hai collegato con /collega)'), required: false, autocomplete: true},
     {type: 3, name: 'server', description: 'EU server, to narrow the search', ...it(null, 'Server EU, per restringere la ricerca'), required: false, autocomplete: true}]},
+  {name: 'compare', description: 'Two characters side by side: Combat Power, Gear Score, gear', dm_permission: false, options: [
+    {type: 3, name: 'name1', description: 'First character (pick from the suggestions)', required: true, autocomplete: true},
+    {type: 3, name: 'name2', description: 'Second character (pick from the suggestions)', required: true, autocomplete: true}]},
+  {name: 'price-history', description: '90-day price chart of a Market item (boosters)', options: [
+    {type: 3, name: 'item', description: 'Item name (English, as in game)', required: true, autocomplete: true}]},
+  {name: 'shopping', description: 'Shopping list to craft an item, with the total cost (boosters)', options: [
+    {type: 3, name: 'item', description: 'Item to craft (English)', required: true, autocomplete: true},
+    {type: 4, name: 'quantity', description: 'How many (default 1)', required: false, min_value: 1, max_value: 999}]},
+  {name: 'watch', description: 'Daily DM with the prices of your site favourites, on/off (boosters)'},
   {name: 'verify', description: 'Verify your character: pick it and attach a screenshot where the name is readable', dm_permission: false, options: [
     {type: 3, name: 'character', description: 'Your character: pick it from the suggestions (EU servers)', required: true, autocomplete: true},
     {type: 11, name: 'screenshot', description: 'In-game screenshot where your character name is readable', required: true}]},
@@ -75,7 +84,10 @@ const r2 = await fetch(`https://discord.com/api/v10/applications/${DISCORD_APP_I
 console.log('register Legione commands:', r2.status, r2.ok ? 'ok' : await r2.text());
 if (!r2.ok) process.exit(1);
 // MarchutanEU-only commands (1 Nov)
-const meuCommands = [{name: 'refresh', description: 'Update your Gear Score role from the official Aion 2 armory', dm_permission: false}];
+const meuCommands = [{name: 'refresh', description: 'Update your Gear Score role from the official Aion 2 armory', dm_permission: false},
+  {name: 'top', description: 'Verified members ranked by Gear Score or Combat Power', dm_permission: false, options: [
+    {type: 3, name: 'by', description: 'Ranking (default: Gear Score)', required: false, choices: [{name: 'Gear Score', value: 'gs'}, {name: 'Combat Power', value: 'cp'}]}]},
+  {name: 'whois', description: "A member's verified character", dm_permission: false, options: [{type: 6, name: 'user', description: 'The member', required: true}]}];
 const r3 = await fetch(`https://discord.com/api/v10/applications/${DISCORD_APP_ID}/guilds/1564968231410864160/commands`, {
   method: 'PUT', headers: {Authorization: `Bot ${DISCORD_TOKEN}`, 'Content-Type': 'application/json'}, body: JSON.stringify(meuCommands)});
 console.log('register MarchutanEU commands:', r3.status, r3.ok ? 'ok' : await r3.text());

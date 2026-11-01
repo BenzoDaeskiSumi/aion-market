@@ -497,6 +497,9 @@ function aiuto(env) {
     '-# On MarchutanEU `/item`, `/deals`, `/craft`, `/alert` and `/server` are a perk for server boosters 💎.',
     '`/craft <item>` — what crafting it costs right now, ingredient by ingredient, and whether it beats buying it.',
     '`/character <name>` — character card (EU servers): Combat Power, gear, Daevanion. Official NCSOFT data.',
+    '`/compare <name1> <name2>` — two characters side by side.',
+    '`/whois @member` · `/top [gs|cp]` — a member\'s verified character · the server ranking (MarchutanEU).',
+    '`/price-history <item>` — 90-day chart 💎 · `/shopping <item> [quantity]` — what to buy to craft it 💎 · `/watch` — daily DM with your favourites\' prices 💎',
     '',
     '**Your data** (needs a site login with Discord, just once)',
     '`/favorites` — your favourites, one at a time with ◀ ▶.',
@@ -1071,13 +1074,16 @@ async function gsSweep(env) {
   if (!ver.length) return;
   await pickCounts(env, all.filter((m) => !m.user?.bot)).catch(() => {});
   const roles = await (await dapi(env, 'GET', `/guilds/${MEU}/roles`)).json().catch(() => []), N = 10, start = (Math.floor(Date.now() / 900e3) * N) % ver.length;
+  const board = JSON.parse(await env.USERS.get('meu:board') || '{}'), before = JSON.stringify(board), vset = new Set(ver.map((m) => m.user.id));
+  for (const u of Object.keys(board)) if (!vset.has(u)) delete board[u];
   for (let k = 0; k < Math.min(N, ver.length); k++) {
     const m = ver[(start + k) % ver.length], link = JSON.parse(await env.USERS.get(`vlink:${MEU}:${m.user.id}`) || 'null');
     const c = link?.id ? await charProfile(link.server, link.id).catch(() => null) : null;
     const have = new Set(m.roles);
-    if (c?.name) await setGs(env, MEU, m.user.id, have, roles, c.il);
+    if (c?.name) { await setGs(env, MEU, m.user.id, have, roles, c.il); boardPut(board, m.user.id, c); }
     await fixSeps(env, MEU, m.user.id, have, roles);
   }
+  if (JSON.stringify(board) !== before) await env.USERS.put('meu:board', JSON.stringify(board)).catch(() => {});
 }
 // /refresh (MarchutanEU): your Gear Score role now (official profile is cached 10 min, so spamming it costs nothing)
 async function gsRefresh(i, env, ctx) {
@@ -1932,9 +1938,134 @@ async function raidReminders(env) {               // cron: tag the sign-ups once
 // English command/option names (30 Oct, MarchutanEU is an English server) mapped back to the Italian names the handlers use
 const CMD_IT = {item: 'info', deals: 'affari', alert: 'avviso', help: 'aiuto', character: 'personaggio', favorites: 'preferiti'};
 const OPT_IT = {item: 'oggetto', type: 'tipo', price: 'prezzo', when: 'quando', name: 'nome', add: 'aggiungi', list: 'lista'};
+
+// ================= 1 Nov 2026: extra commands (English) =================
+// /compare <name1> <name2> (everyone): two characters side by side, live official data
+async function compareCmd(i, env, ctx) {
+  const a = String(opt(i.data, 'name1')?.value || ''), b = String(opt(i.data, 'name2')?.value || ''), re = /^(\d{4}):([A-Za-z0-9_\-=]{10,80})$/;
+  const ma = a.match(re), mb = b.match(re);
+  if (!ma || !mb) return oops('Pick both characters from the **suggestions** that appear while you type.');
+  ctx.waitUntil((async () => {
+    const [d1, d2] = await Promise.all([charInfo(ma[2], +ma[1]), charInfo(mb[2], +mb[1])]);
+    const col = (d) => {
+      const pr = d.profile || {}, il = (d.stat?.statList || []).find((x) => x.type === 'ItemLevel')?.value, w = (d.equipment || []).find((x) => x.slotPosName === 'MainHand');
+      return {pr, il: il || 0, cp: pr.combatPower || 0, lines: [`${pr.className || '?'} · Lv ${pr.characterLevel ?? '?'}`, `${pr.serverName || ''}${pr.regionName ? ` · ${pr.regionName}` : ''}`,
+        `⚔️ CP **${kin(pr.combatPower)}**`, `🛡️ Gear Score **${kin(il)}**`, `🏅 Titles ${d.title?.ownedCount ?? '—'}`, w ? `🗡️ ${w.name}${w.enchantLevel ? ` \`+${w.enchantLevel}\`` : ''}` : null].filter(Boolean).join('\n')};
+    };
+    const x = col(d1), y = col(d2), diff = (p, q) => (p === q ? '=' : `${p > q ? '▲' : '▼'} ${kin(Math.abs(p - q))}`);
+    await hook(i, env, {embeds: [{title: `⚖️ ${x.pr.characterName} vs ${y.pr.characterName}`, color: 0x5b8cff, fields: [
+      {name: x.pr.characterName || 'Character 1', value: x.lines, inline: true}, {name: y.pr.characterName || 'Character 2', value: y.lines, inline: true},
+      {name: `Difference (${x.pr.characterName} vs ${y.pr.characterName})`, value: `CP ${diff(x.cp, y.cp)} · Gear Score ${diff(x.il, y.il)}`, inline: false}],
+      footer: {text: 'Official NCSOFT data'}, timestamp: new Date().toISOString()}]});
+  })().catch(() => hook(i, env, {content: 'The official NCSOFT site is not answering right now, try again in a moment.'}).catch(() => {})));
+  return Response.json({type: 5});
+}
+
+// /whois @member (everyone, MarchutanEU): the member's verified character card
+async function whoisCmd(i, env, ctx) {
+  const uid = opt(i.data, 'user')?.value, link = uid && JSON.parse(await env.USERS.get(`vlink:${i.guild_id}:${uid}`) || 'null');
+  if (!link?.id) return oops(`<@${uid}> has no verified character yet.`);
+  ctx.waitUntil((async () => {
+    const view = await charView(link.server, link.id, 'card', userId(i), env);
+    await hook(i, env, {content: `<@${uid}> plays **${link.name}**`, ...view, allowed_mentions: {parse: []}});
+  })().catch(() => hook(i, env, {content: 'The official NCSOFT site is not answering right now, try again in a moment.'}).catch(() => {})));
+  return Response.json({type: 5});
+}
+
+// /top [by] (everyone, MarchutanEU): verified members by Gear Score or CP, from the board gsSweep keeps (KV meu:board, written at most once per cron run)
+async function topCmd(i, env) {
+  const by = opt(i.data, 'by')?.value === 'cp' ? 'cp' : 'il', board = JSON.parse(await env.USERS.get('meu:board') || '{}');
+  const rows = Object.entries(board).filter(([, r]) => r[by] > 0).sort((a, b) => b[1][by] - a[1][by]);
+  if (rows.length < 3) return oops('The ranking is still being built: Mauro reads every verified character about once a day. Try again later.');
+  const me = rows.findIndex(([u]) => u === userId(i)), medal = (k) => ['🥇', '🥈', '🥉'][k] || `**${k + 1}.**`;
+  const line = ([u, r], k) => `${medal(k)} **${r.n}** · ${r.c || '?'} — ${by === 'cp' ? `CP ${kin(r.cp)}` : `GS ${kin(r.il)}`}`;
+  return reply({embeds: [{title: `🏆 Top ${by === 'cp' ? 'Combat Power' : 'Gear Score'} · verified members`, color: 0xf0c43f,
+    description: rows.slice(0, 15).map(line).join('\n') + (me >= 15 ? `\n…\n${line(rows[me], me)}` : ''),
+    footer: {text: `${rows.length} characters · updated about once a day · /refresh to update yours`}}]});
+}
+// called by gsSweep for each member it refreshed
+function boardPut(board, uid, c) { board[uid] = {n: c.name, c: c.cls, il: c.il || 0, cp: c.cp || 0}; }
+
+// /price-history <item> (boosters): lowest price per day for the last 90 days (per-item history file of the site)
+async function priceHistory(i, env) {
+  const sid = await serverOf(i, env), q = String(opt(i.data, 'item')?.value || '').trim();
+  const [sum, srv, ico] = await Promise.all([summary(env, sid), servers(env), icons(env)]);
+  const name = sum[q] ? q : search(Object.entries(sum), q, 1)[0];
+  if (!name) return oops(`I can't find **${q}** on the Market. Pick a name from the suggestions.`);
+  const rows = await json(env, `data/s/${sid}/h/${slug(name)}.json`, 900).catch(() => []);
+  const from = Date.now() / 6e4 - 90 * 1440, days = new Map();
+  for (const [m, p] of rows) if (m >= from && p > 0) { const d = Math.floor(m / 1440); days.set(d, Math.min(days.get(d) ?? Infinity, p)); }
+  const pts = [...days.entries()].sort((a, b) => a[0] - b[0]).map(([d, p]) => [d * 24, p]);
+  const r = sum[name], [, color] = GRADE[r?.g] || GRADE.white, base = {title: name, url: itemUrl(env, sid, name), color,
+    thumbnail: {url: `${env.SITE}/${ico[name] || `icons/${slug(name)}.png`}`}, footer: {text: `${serverName(srv, sid)} · Asmodian · data aion2.exchange`}};
+  if (pts.length < 2) return reply({embeds: [{...base, description: '📈 Not enough prices yet for a 90-day chart.'}]});
+  const vals = pts.map(([, p]) => p), url = await chartUrl(pts, r?.a, 0x5b8cff), first = vals[0], last = vals[vals.length - 1];
+  return reply({embeds: [{...base, description: `📈 **Lowest price per day**, last ${Math.round((Date.now() / 36e5 - pts[0][0]) / 24)} days` + (r?.a ? ` · dashed = 3-day average (${kin(r.a)})` : ''),
+    fields: [{name: 'Now', value: r?.p > 0 ? `**${kin(r.p)}**` : 'Not on sale', inline: true}, {name: 'Low', value: kin(Math.min(...vals)), inline: true},
+      {name: 'High', value: kin(Math.max(...vals)), inline: true}, {name: 'Change', value: `${last > first ? '▲ +' : last < first ? '▼ ' : ''}${pct((last - first) / first)}`, inline: true}],
+    image: url ? {url} : undefined}]});
+}
+
+// /shopping <item> [quantity] (boosters): raw shopping list to craft it, ingredients that are cheaper to craft expanded into their own ingredients
+async function shoppingCmd(i, env) {
+  const sid = await serverOf(i, env), q = String(opt(i.data, 'item')?.value || '').trim(), qty = Math.max(1, Math.min(999, +(opt(i.data, 'quantity')?.value || 1)));
+  const [sum, rec, srv] = await Promise.all([summary(env, sid), recipes(env), servers(env)]), names = crafts(rec);
+  const name = names.has(q) ? q : search([...names].map((n) => [n, {p: 1}]), q, 1)[0];
+  if (!name) return oops(`**${q}** can't be crafted (or I can't find it). Pick a name from the suggestions.`);
+  const E = craftEngine(sum, rec), w = E.craftBest(name);
+  if (!w || w.est == null) return oops('Some ingredient prices are missing right now: try `/craft` for the details.');
+  const need = new Map(), crafted = new Map();
+  const expand = (way, n, depth) => {                       // n = how many of way.name we want; runs = n / per (failures and combo included)
+    const runs = n / way.per;
+    for (const p of way.parts) {
+      const u = E.unit(p.name), amount = p.q * runs;
+      if (u.src === 'craft' && u.way && depth < 6) { crafted.set(p.name, (crafted.get(p.name) || 0) + amount); expand(u.way, amount, depth + 1); }
+      else { const x = need.get(p.name) || {q: 0, price: u.price, src: u.src}; x.q += amount; need.set(p.name, x); }
+    }
+  };
+  expand(w, qty, 0);
+  const list = [...need.entries()].sort((a, b) => b[1].q * b[1].price - a[1].q * a[1].price);
+  const total = list.reduce((t, [, x]) => t + x.q * x.price, 0), src = (s) => (s === 'npc' ? 'NPC shop' : 'Market');
+  const lines = list.slice(0, 25).map(([n, x]) => `**${Math.ceil(x.q).toLocaleString('en-GB')} ×** ${n} — ${kin(x.price)} each · ${src(x.src)} · **${kin(x.q * x.price)}**`);
+  return reply({embeds: [{title: `🛒 Shopping list · ${qty} × ${name}`, url: itemUrl(env, sid, name), color: 0x62e07a,
+    description: [...lines, '', `Total: **${kin(total)}** kinah` + (E.market.get(name) ? ` · buying ${qty} on the Market: **${kin(E.market.get(name) * qty)}**` : ''),
+      crafted.size ? `-# Craft first: ${[...crafted.entries()].map(([n, c]) => `${Math.ceil(c)} × ${n}`).join(', ')}` : null,
+      '-# Quantities are averages that include failed crafts (and the combo for Splendent items).'].filter((l) => l != null).join('\n').slice(0, 4000),
+    footer: {text: `${serverName(srv, sid)} · cheapest of Market, NPC shop and crafting · recipes MetaBot.GG`}}]});
+}
+
+// /watch (boosters): turn on/off a daily DM with the prices of your site favourites (KV watch:list, written only when someone toggles)
+async function watchCmd(i, env) {
+  const uid = userId(i), list = JSON.parse(await env.USERS.get('watch:list') || '[]'), on = !list.includes(uid);
+  const prof = on ? await profile(env, uid).catch(() => null) : null;
+  if (on && !prof?.favorites?.length) return oops(`You have no favourites yet: log in with Discord on ${env.SITE}, press the ⭐ next to the items you care about, then run /watch again.`);
+  await env.USERS.put('watch:list', JSON.stringify(on ? [...list, uid] : list.filter((u) => u !== uid)));
+  return oops(on ? '👀 Daily watch **on**: every evening (18:00–22:00 server time) I DM you the prices of your favourites. Keep your DMs open for this server. Run /watch again to stop.'
+    : '🔕 Daily watch **off**.');
+}
+// cron: from 18:00 to 22:00 Europe/Rome, each 15-minute run DMs the users whose turn it is (index % 16), so nobody gets two in a day and no KV writes are needed
+async function watchDigest(env) {
+  const now = new Date(), [h, m] = now.toLocaleString('en-GB', {timeZone: 'Europe/Rome', hour: '2-digit', minute: '2-digit', hour12: false}).split(':').map(Number);
+  if (h < 18 || h >= 22) return;
+  const slot = (h - 18) * 4 + Math.floor(m / 15), list = JSON.parse(await env.USERS.get('watch:list') || '[]').filter((_, k) => k % 16 === slot).slice(0, 6);
+  if (!list.length) return;
+  const sum = await summary(env, 12305);
+  for (const uid of list) {
+    const mem = await (await dapi(env, 'GET', `/guilds/${MEU}/members/${uid}`)).json().catch(() => ({}));
+    if (!mem?.premium_since) continue;                               // boosters only
+    const prof = await profile(env, uid).catch(() => null), favs = (prof?.favorites || []).slice().sort().slice(0, 25);
+    if (!favs.length) continue;
+    const lines = favs.map((n) => { const r = sum[n]; if (!r) return `**${n}** — no data`;
+      return `**${n}** — ${r.p > 0 ? kin(r.p) : 'not on sale'}${r.t7 != null ? ` · 7d ${r.t7 > 0 ? '▲ +' : r.t7 < 0 ? '▼ ' : ''}${pct(r.t7)}` : ''}${r.s === 'Compra per rivendere' ? ' · 🟢 buy' : r.s === 'Vendi ora' ? ' · 🔴 sell' : ''}`; });
+    const ch = await (await dapi(env, 'POST', '/users/@me/channels', {recipient_id: uid})).json().catch(() => null);
+    if (ch?.id) await dapi(env, 'POST', `/channels/${ch.id}/messages`, {embeds: [{title: '👀 Your favourites today · Marchutan', url: env.SITE, color: 0x5b8cff,
+      description: lines.join('\n').slice(0, 4000), footer: {text: 'Daily watch · /watch to turn it off'}}]}).catch(() => {});
+  }
+}
+
 // 1 Nov 2026 (the user asked): on MarchutanEU the market commands are a perk for server boosters (member.premium_since);
 // free for everyone: /favorites, /character, /help (and the role / verify features). Admins and moderators are let through to help and test.
-const BOOST_CMDS = new Set(['info', 'affari', 'craft', 'avviso', 'server']);
+const BOOST_CMDS = new Set(['info', 'affari', 'craft', 'avviso', 'server', 'price-history', 'shopping', 'watch']);
 const BOOST_BTNS = /^(al|cr|alm):/;
 function boostOnly(i) {
   if (i.guild_id !== MEU || i.member?.premium_since) return null;
@@ -1942,8 +2073,8 @@ function boostOnly(i) {
   if (pm & 8n || pm & 32n || pm & 0x10000000n || pm & 0x2000n || pm & (1n << 40n)) return null;
   const locked = (i.type === 2 && BOOST_CMDS.has(i.data?.name)) || ((i.type === 3 || i.type === 5) && BOOST_BTNS.test(i.data?.custom_id || ''));
   if (!locked) return null;
-  return oops('💎 This is a perk for **server boosters**: boost the server to unlock `/item`, `/deals`, `/craft`, `/alert` and `/server`.\n' +
-    'Free for everyone: `/favorites`, `/character`, `/help`.');
+  return oops('💎 This is a perk for **server boosters**: boost the server to unlock `/item`, `/deals`, `/craft`, `/alert`, `/server`, `/price-history`, `/shopping` and `/watch`.\n' +
+    'Free for everyone: `/favorites`, `/character`, `/compare`, `/whois`, `/top`, `/help`.');
 }
 const MAPPED = new Set(['info', 'craft', 'server', ...Object.values(CMD_IT)]);
 function toItalianNames(d) {
@@ -1955,7 +2086,7 @@ function toItalianNames(d) {
 }
 // ---------- entry point ----------
 export default {
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.allSettled([checkAlerts(env).catch((e) => putErr(env, 'alert_err', String(e?.message || e).slice(0, 300))), checkStale(env).catch(() => {}), updateTimers(env).catch((e) => putErr(env, 'timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => putErr(env, 'sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300))), weekFix(env).catch((e) => env.USERS.put('timer_err', 'weekfix ' + String(e?.stack || e).slice(0, 300))), artChallenge(env).catch((e) => putErr(env, 'art_err', String(e?.stack || e).slice(0, 300))), verifyClean(env).catch(() => {}), gsSweep(env).catch((e) => putErr(env, 'gs_err', String(e?.stack || e).slice(0, 300))), exposedBulk(env).catch((e) => putErr(env, 'exposed_err', String(e?.message || e).slice(0, 300)))])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.allSettled([checkAlerts(env).catch((e) => putErr(env, 'alert_err', String(e?.message || e).slice(0, 300))), checkStale(env).catch(() => {}), updateTimers(env).catch((e) => putErr(env, 'timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => putErr(env, 'sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300))), weekFix(env).catch((e) => env.USERS.put('timer_err', 'weekfix ' + String(e?.stack || e).slice(0, 300))), artChallenge(env).catch((e) => putErr(env, 'art_err', String(e?.stack || e).slice(0, 300))), verifyClean(env).catch(() => {}), gsSweep(env).catch((e) => putErr(env, 'gs_err', String(e?.stack || e).slice(0, 300))), watchDigest(env).catch((e) => putErr(env, 'watch_err', String(e?.message || e).slice(0, 300))), exposedBulk(env).catch((e) => putErr(env, 'exposed_err', String(e?.message || e).slice(0, 300)))])); },
   async fetch(req, env, ctx) {
     if (new URL(req.url).pathname === '/hit') return hit(req, env);
     if (/^\/join(\/cb)?$/.test(new URL(req.url).pathname)) return join(req, env);
@@ -1977,13 +2108,14 @@ export default {
           return Response.json({type: 8, data: {choices: list.filter((x) => x.name.toLowerCase().includes(q2)).slice(0, 25)
             .map((x) => ({name: `${x.name} · ${x.race === 1 ? 'Elyos' : 'Asmodian'}`, value: String(x.id)}))}});
         }
+        if (i.data.name === 'compare') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), null, true)}});
         if (i.data.name === 'verify' || i.data.name === 'verify-user' || i.data.name === 'legion-apply') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), null, true)}});
         if (i.data.name === 'collega') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), /^\d{4}$/.test(String(opt(i.data, 'server')?.value || '')) ? opt(i.data, 'server').value : null)}});
         if (i.data.name === 'personaggio') {
           const srv = /^\d{4}$/.test(String(opt(i.data, 'server')?.value || '')) ? opt(i.data, 'server').value : null;
           return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), srv)}});
         }
-        if (i.data.name === 'craft') {
+        if (i.data.name === 'craft' || i.data.name === 'shopping') {
           const names = [...crafts(await recipes(env))].map((n) => [n, {p: 1}]);
           const hits = q ? search(names, q) : names.map(([n]) => n).sort().slice(0, 25);
           return Response.json({type: 8, data: {choices: hits.map((n) => ({name: n.slice(0, 100), value: n.slice(0, 100)}))}});
@@ -2011,6 +2143,12 @@ export default {
         if (i.data.name === 'verify') return await verifyRequest(i, env, ctx);
         if (i.data.name === 'verify-user') return await verifyUser(i, env, ctx);
         if (i.data.name === 'verify-remove') return await verifyRemove(i, env, ctx);
+        if (i.data.name === 'compare') return await compareCmd(i, env, ctx);
+        if (i.data.name === 'whois') return await whoisCmd(i, env, ctx);
+        if (i.data.name === 'top') return await topCmd(i, env);
+        if (i.data.name === 'price-history') return await priceHistory(i, env);
+        if (i.data.name === 'shopping') return await shoppingCmd(i, env);
+        if (i.data.name === 'watch') return await watchCmd(i, env);
         if (i.data.name === 'refresh') return await gsRefresh(i, env, ctx);
         if (i.data.name === 'legion-apply') return await legionApply(i, env, ctx);
         if (i.data.name === 'verify-setup') return await verifySetup(i, env);
