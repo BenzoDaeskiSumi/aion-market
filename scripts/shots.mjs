@@ -20,17 +20,14 @@ const shot = async (url, file, wait = 2500, after) => {
   if (after) await after();
   await p.screenshot({path: OUT + file, type: 'jpeg', quality: 90}); console.log(file);
 };
-await shot('?s=12305', 'market.jpg');
+await shot('market.html', 'market.jpg');
 rects.market = {table: await box('#maintab'), row1: await row('#maintab', 1), latest: await col('#maintab', 'data-k="latest"'), trend7: await col('#maintab', 'data-k="trend7"'), signal: await col('#maintab', 'data-k="signal"')};
-await shot('?s=12305&item=' + encodeURIComponent('Courage Longsword'), 'detail.jpg');
+await shot('market.html?item=' + encodeURIComponent('Courage Longsword'), 'detail.jpg');
 rects.detail = {aside: await box('.aside')};
-await shot('?s=12305&v=deals', 'deals.jpg');
-rects.deals = {table: await box('#maintab'), flip: await col('#maintab', 'data-k="flip_profit"'), signal: await col('#maintab', 'data-k="signal"')};
-await shot('?s=12305&v=craft', 'craft_detail.jpg', 2500, async () => { await p.click('#crows tr'); await p.waitForTimeout(1500); });
+await shot('market.html?v=craft', 'craft_detail.jpg', 2500, async () => { await p.click('#crows tr'); await p.waitForTimeout(1500); });
 rects.craft = {table: await box('#crafttab'), aside: await box('.aside')};
-await shot('?s=12305&v=db', 'db.jpg', 5000);
-await shot('market.html?s=12305&v=char&q=Benzo&cs=2305', 'chars.jpg', 5000, async () => { await p.locator('#chrows tr[data-ch]', {hasText: 'Spiritmaster'}).first().click().catch(() => {}); await p.waitForTimeout(4000); });   // the user's own character
-await shot('map.html', 'map.jpg', 7000);
+await shot('market.html?v=db', 'db.jpg', 5000);
+await shot('market.html?v=char&q=Benzo', 'chars.jpg', 5000, async () => { await p.locator('#chrows tr[data-ch]', {hasText: 'Spiritmaster'}).first().click().catch(() => {}); await p.waitForTimeout(4000); });   // the user's own character
 writeFileSync(OUT + 'rects.json', JSON.stringify(rects, null, 1));
 console.log(JSON.stringify(rects));
 await b.close();

@@ -27,7 +27,7 @@ export const Intro = () => {
           <div style={{fontFamily: marcellus, fontSize: 150, color: C.text, letterSpacing: 2}}>Aion 2 Market</div>
         </Rise>
         <Rise delay={34}>
-          <div style={{fontFamily: inter, fontSize: 48, color: C.dim}}>Il Market di Aion 2, letto per te</div>
+          <div style={{fontFamily: inter, fontSize: 48, color: C.dim}}>The Aion 2 Market, read for you</div>
         </Rise>
       </AbsoluteFill>
     </AbsoluteFill>
@@ -46,12 +46,12 @@ export const Overview = () => (
     <Backdrop />
     <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', gap: 80}}>
       <Rise delay={4}>
-        <div style={{fontFamily: marcellus, fontSize: 104, color: C.text, textAlign: 'center'}}>Prezzi aggiornati ogni ora</div>
+        <div style={{fontFamily: marcellus, fontSize: 104, color: C.text, textAlign: 'center'}}>Marchutan prices, every hour</div>
       </Rise>
       <div style={{display: 'flex', gap: 48}}>
-        <Stat value="23" label="server EU Asmodian" color={C.accent} delay={16} />
-        <Stat value="1.252" label="oggetti su Marchutan" color={C.kinah} delay={26} />
-        <Stat value="24/7" label="dati da aion2.exchange" color={C.up} delay={36} />
+        <Stat value="1,250+" label="items tracked" color={C.kinah} delay={16} />
+        <Stat value="1 h" label="between updates" color={C.accent} delay={26} />
+        <Stat value="Free" label="no account needed" color={C.up} delay={36} />
       </div>
     </AbsoluteFill>
   </AbsoluteFill>
@@ -60,7 +60,7 @@ export const Overview = () => (
 export const Market = () => (
   <AbsoluteFill>
     <Backdrop />
-    <Caption kicker="Market" title="Ogni prezzo, a colpo d'occhio" lines={['Prezzo più basso, media e trend a 7 giorni', 'Filtri per categoria, grado e preferiti', 'Segnale: Compra, Vendi o Tieni']} />
+    <Caption kicker="Market" title="Every price at a glance" lines={['Lowest price, average and 7-day trend', 'Filter by category, grade and favourites', 'Signal: Buy, Sell or Hold']} />
     <ScreenPan src="market.jpg" from={{x: 0, y: 0, w: 1920}} to={{x: R.market.table.x - 16, y: R.market.table.y - 16, w: R.market.table.w + 32}} startAt={30} moveFor={100}
       highlight={{...pad({...R.market.row1, ...span(R.market.latest, R.market.trend7)}, 4), at: 140}} />
   </AbsoluteFill>
@@ -69,24 +69,15 @@ export const Market = () => (
 export const Detail = () => (
   <AbsoluteFill>
     <Backdrop />
-    <Caption kicker="Dettaglio" title="La storia di ogni oggetto" lines={['Grafico a 24 ore, 7, 30 e 90 giorni', 'Affidabilità, liquidità e volatilità', 'Quanto guadagni se lo rivendi']} />
+    <Caption kicker="Details" title="The story of every item" lines={['Charts for 24 hours, 7, 30 and 90 days', 'Confidence, liquidity and volatility', 'What you make if you resell it']} />
     <ScreenPan src="detail.jpg" from={{x: R.detail.aside.x - 24, y: R.detail.aside.y - 16, w: R.detail.aside.w + 48}} to={{x: R.detail.aside.x - 24, y: 1080, w: R.detail.aside.w + 48}} startAt={60} moveFor={90} />
-  </AbsoluteFill>
-);
-
-export const Deals = () => (
-  <AbsoluteFill>
-    <Backdrop />
-    <Caption kicker="Affari" title="Le occasioni del momento" lines={['Cosa comprare sotto la media', 'Cosa rivendere, con il profitto stimato', 'Calcoli già al netto della tassa']} />
-    <ScreenPan src="deals.jpg" from={{x: 0, y: 0, w: 1920}} to={{x: R.deals.table.x - 16, y: R.deals.table.y - 16, w: R.deals.table.w + 32}} startAt={30} moveFor={100}
-      highlight={{...pad(R.deals.flip, 4), at: 140}} />
   </AbsoluteFill>
 );
 
 export const Crafting = () => (
   <AbsoluteFill>
     <Backdrop />
-    <Caption kicker="Crafting" title="Craftarlo o comprarlo?" lines={['Costo stimato con i prezzi di oggi', 'Ricetta passo per passo', 'Confronto con la media dei 7 giorni']} />
+    <Caption kicker="Crafting" title="Craft it or buy it?" lines={['Estimated cost at today\'s prices', 'Recipe step by step', 'Compared with the 7-day average']} />
     <ScreenPan src="craft_detail.jpg" from={{x: R.craft.table.x - 16, y: R.craft.table.y - 16, w: R.craft.table.w + 32}} to={{x: R.craft.aside.x - 24, y: R.craft.aside.y - 16, w: R.craft.aside.w + 48}} startAt={70} moveFor={100} />
   </AbsoluteFill>
 );
@@ -108,29 +99,27 @@ const Shot = ({src, label, delay, top, left}: {readonly src: string; readonly la
   );
 };
 
-export const DbMap = () => (
+export const DbChars = () => (
   <AbsoluteFill>
     <Backdrop />
-    <Caption kicker="E non solo" title="Database, Mappa, Personaggi" lines={['Tutti gli oggetti ufficiali del gioco', 'Mappa con raccolta, boss e cubi nascosti', 'Scheda ufficiale di ogni personaggio EU']} />
-    <Shot src="db.jpg" label="Database" delay={20} top={70} left={800} />
-    <Shot src="map.jpg" label="Mappa" delay={50} top={300} left={960} />
-    <Shot src="chars.jpg" label="Personaggi" delay={80} top={530} left={1120} />
+    <Caption kicker="And more" title="Database and Characters" lines={['Every official item in the game', 'Stats and Market price side by side', 'Any Marchutan character: Gear Score, gear, Daevanion']} />
+    <Shot src="db.jpg" label="Database" delay={20} top={130} left={860} />
+    <Shot src="chars.jpg" label="Characters" delay={50} top={470} left={1080} />
   </AbsoluteFill>
 );
 
 const COMMANDS: readonly (readonly [string, string])[] = [
-  ['/info', 'scheda e grafico di un oggetto'],
-  ['/affari', 'i migliori affari ora'],
-  ['/craft', 'conviene craftarlo?'],
-  ['/avviso', 'ti tagga quando il prezzo arriva'],
-  ['/preferiti', 'i tuoi oggetti del sito'],
-  ['/personaggio', 'scheda ufficiale di un PG'],
+  ['/info', 'card and chart of any item'],
+  ['/craft', 'is it worth crafting?'],
+  ['/alert', 'pings you when the price hits'],
+  ['/favorites', 'your items from the site'],
+  ['/character', 'official character card'],
 ];
 
 export const Bot = () => (
   <AbsoluteFill>
     <Backdrop />
-    <Caption kicker="Discord" title="Il Market nel tuo server" lines={['Un bot con i dati del sito', 'Avvisi di prezzo con il tuo account']} />
+    <Caption kicker="Discord" title="The Market in your server" lines={['A bot with the site\'s data', 'Price alerts on your account']} />
     <div style={{position: 'absolute', left: 790, top: 150, width: 1030, display: 'flex', flexDirection: 'column', gap: 22}}>
       {COMMANDS.map(([cmd, what], i) => (
         <Rise key={cmd} delay={16 + i * 10}>
@@ -155,8 +144,8 @@ export const Outro = () => (
           benzodaeskisumi.github.io/aion-market
         </div>
       </Rise>
-      <Rise delay={34}><div style={{fontFamily: inter, fontSize: 44, color: C.kinah}}>Tutti i server Asmodian EU · gratis, senza account</div></Rise>
-      <Rise delay={46}><div style={{fontFamily: inter, fontSize: 30, color: C.dim, marginTop: 30}}>Prezzi: aion2.exchange · Ricette e mappa: MetaBot.GG</div></Rise>
+      <Rise delay={34}><div style={{fontFamily: inter, fontSize: 44, color: C.kinah}}>Marchutan · EU · free, no account needed</div></Rise>
+      <Rise delay={46}><div style={{fontFamily: inter, fontSize: 30, color: C.dim, marginTop: 30}}>Prices: aion2.exchange · Recipes: MetaBot.GG · Not affiliated with NCSOFT</div></Rise>
     </AbsoluteFill>
   </AbsoluteFill>
 );

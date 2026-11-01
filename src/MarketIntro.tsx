@@ -2,11 +2,11 @@ import {Audio} from '@remotion/media';
 import {TransitionSeries, linearTiming} from '@remotion/transitions';
 import {fade} from '@remotion/transitions/fade';
 import {AbsoluteFill, Sequence, staticFile, useVideoConfig} from 'remotion';
-import {Bot, Crafting, DbMap, Deals, Detail, Intro, Market, Outro, Overview} from './scenes';
+import {Bot, Crafting, DbChars, Detail, Intro, Market, Outro, Overview} from './scenes';
 
-// Scene lengths (seconds) and the cross-fade between them; total = sum - 8 fades.
+// Scene lengths (seconds) and the cross-fade between them; total = sum - 7 fades.
 const T = 15;
-const WHOOSH_AT = [5, 10, 18, 25, 32, 40, 47, 54];   // scene starts (seconds), roughly, for a soft whoosh
+const WHOOSH_AT = [5, 10, 18, 25, 33, 40, 47];   // scene starts (seconds), roughly, for a soft whoosh
 
 export const MarketIntro = () => {
   const {fps} = useVideoConfig();
@@ -21,11 +21,9 @@ export const MarketIntro = () => {
         <TransitionSeries.Transition presentation={fade()} timing={linearTiming({durationInFrames: T})} />
         <TransitionSeries.Sequence name="Dettaglio" durationInFrames={7 * fps}><Detail /></TransitionSeries.Sequence>
         <TransitionSeries.Transition presentation={fade()} timing={linearTiming({durationInFrames: T})} />
-        <TransitionSeries.Sequence name="Affari" durationInFrames={7 * fps}><Deals /></TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={fade()} timing={linearTiming({durationInFrames: T})} />
         <TransitionSeries.Sequence name="Crafting" durationInFrames={8 * fps}><Crafting /></TransitionSeries.Sequence>
         <TransitionSeries.Transition presentation={fade()} timing={linearTiming({durationInFrames: T})} />
-        <TransitionSeries.Sequence name="Database e Mappa" durationInFrames={7 * fps}><DbMap /></TransitionSeries.Sequence>
+        <TransitionSeries.Sequence name="Database and Characters" durationInFrames={7 * fps}><DbChars /></TransitionSeries.Sequence>
         <TransitionSeries.Transition presentation={fade()} timing={linearTiming({durationInFrames: T})} />
         <TransitionSeries.Sequence name="Bot Discord" durationInFrames={7 * fps}><Bot /></TransitionSeries.Sequence>
         <TransitionSeries.Transition presentation={fade()} timing={linearTiming({durationInFrames: T})} />
