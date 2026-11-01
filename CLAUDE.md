@@ -273,6 +273,8 @@ To limit the bot to one channel: Discord server settings → Integrations → th
 
 - Live on MarchutanEU AION2 (guild 1564968231410864160, English server): set up by scripts/discord/verify_setup.py (mode vsetup-plan/apply), texts in English
   (commands /verify and /verify-setup, English only, no Italian localizations). Approval gives the existing role 'Marchutans'; #✅・verify (top, hidden from Marchutans but visible to Admins/Moderator; @everyone CAN send — Discord hides the command box otherwise — slowmode 5 min, the cron's verifyClean() deletes every message not by Mauro) and
+  1 Nov: in #verify only /verify works (the request handler answers every other Mauro command there with an ephemeral note; reads vcfg.ch) and every other bot
+  (its managed role + its member) is denied view/send/threads/reactions there (bots with Administrator ignore overwrites).
   #verify instructions (30 Oct): ONE Mauro message = big markdown headings (3 steps incl. how to screenshot) + video media/verify-howto.mp4 (user's recording,
   cropped, voice panel blurred, no audio); verify_setup.py re-runs no longer touch it.
   #🛡️・verify-requests (Admins, Moderator), #🆘・verify-help (under #verify: @everyone can write, Marchutans can't see it, Admins/Moderator answer; slowmode 30 s). All categories are hidden from @everyone and visible to Marchutans (NEWS too since 30 Oct): a member with no role sees ONLY #server-rules (read-only), #verify, #verify-help, #verify-now.
