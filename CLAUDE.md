@@ -276,7 +276,7 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   2 Nov: #📜・server-rules = Mauro's message (banner img/discord/rules.png + embeds General 1-10, Voice 11-13, Aion 2 14-18 (new: fair play, no RMT, honest verify,
   language channels, no leaks), sanctions); the old text message by _zer0zinga_ must be deleted by a human (Mauro can't read other users' messages: no Message Content intent).
   Category '💰 MARKET' (right after 💬 GENERAL, Marchutans only): 🌐・market-site (read-only, banner market.png + site features + link buttons), 🤖・market-bot
-  (command channel, slowmode 5 s, pinned command list free/booster, banner market-bot.png), 💱・wts-wtb (slowmode 2 min, pinned format: [WTS]/[WTB] item · price · name, kinah only).
+  (command channel, slowmode 5 s, pinned command list free/booster, banner market-bot.png). (💱・wts-wtb was made and deleted the same day: player trading doesn't work that way on Aion 2 global.)
   1 Nov: in #verify only /verify works (the request handler answers every other Mauro command there with an ephemeral note; reads vcfg.ch) and every other bot
   (its managed role + its member) is denied view/send/threads/reactions there (bots with Administrator ignore overwrites).
   #verify instructions (30 Oct): ONE Mauro message = big markdown headings (3 steps incl. how to screenshot) + video media/verify-howto.mp4 (user's recording,
