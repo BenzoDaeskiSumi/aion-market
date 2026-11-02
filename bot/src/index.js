@@ -1041,6 +1041,30 @@ async function roleButton(i, env, ctx) {
   return Response.json({type: 5, data: {flags: 64}});
 }
 // once an hour (from gsSweep, which already has the member list): the buttons in #pick-your-roles show how many members have each role
+// #💎・boosters (MarchutanEU, 2 Nov 2026): history of who boosted. gsSweep passes the member list; a new booster (premium_since not seen before)
+// gets a thank-you line in the channel, and the 'Current boosters' message is edited. KV boost:seen {uid: premium_since} written only on change.
+async function boostLog(env, members) {
+  const now = Object.fromEntries(members.filter((m) => m.premium_since && !m.user?.bot).map((m) => [m.user.id, m.premium_since]));
+  const raw = await env.USERS.get('boost:seen');
+  if (raw === null) return void await env.USERS.put('boost:seen', JSON.stringify(now));        // first run: baseline only (the history was posted by the setup script)
+  const seen = JSON.parse(raw), fresh = Object.keys(now).filter((u) => seen[u] !== now[u]);
+  if (!fresh.length && Object.keys(seen).every((u) => now[u])) return;
+  const chs = await (await dapi(env, 'GET', `/guilds/${MEU}/channels`)).json().catch(() => []);
+  const ch = (Array.isArray(chs) ? chs : []).find((c) => c.name.includes('boosters'));
+  if (ch) {
+    for (const u of fresh) await dapi(env, 'POST', `/channels/${ch.id}/messages`, {content: `💎 <@${u}> boosted the server · <t:${Math.floor(Date.parse(now[u]) / 1000)}:f>. Thank you!`, allowed_mentions: {parse: []}}).catch(() => {});
+    const msgs = await (await dapi(env, 'GET', `/channels/${ch.id}/messages?limit=50`)).json().catch(() => []);
+    const cur = (Array.isArray(msgs) ? msgs : []).find((m) => m.embeds?.[0]?.title?.startsWith('💎 Current boosters'));
+    if (cur) await dapi(env, 'PATCH', `/channels/${ch.id}/messages/${cur.id}`, {embeds: [boostersEmbed(now)]}).catch(() => {});
+  }
+  await env.USERS.put('boost:seen', JSON.stringify(now));
+}
+function boostersEmbed(now) {
+  const rows = Object.entries(now).sort((a, b) => Date.parse(a[1]) - Date.parse(b[1]));
+  return {color: 0xf47fff, title: `💎 Current boosters (${rows.length})`, description: rows.length
+    ? rows.map(([u, t], k) => `**${k + 1}.** <@${u}> · since <t:${Math.floor(Date.parse(t) / 1000)}:D>`).join('\n').slice(0, 4000) : 'Nobody is boosting right now.',
+    footer: {text: 'Updated automatically · boost the server to unlock the 💎 bot perks'}};
+}
 async function pickCounts(env, members) {
   if (Math.floor(Date.now() / 900e3) % 4) return;
   const chs = await (await dapi(env, 'GET', `/guilds/${MEU}/channels`)).json().catch(() => []);
@@ -1073,6 +1097,7 @@ async function gsSweep(env) {
   const ver = all.filter((m) => (m.roles || []).includes(cfg.role) && !m.user?.bot).sort((a, b) => (BigInt(a.user.id) < BigInt(b.user.id) ? -1 : 1));
   if (!ver.length) return;
   await pickCounts(env, all.filter((m) => !m.user?.bot)).catch(() => {});
+  await boostLog(env, all).catch((e) => putErr(env, 'boost_err', String(e?.message || e).slice(0, 300)));
   const roles = await (await dapi(env, 'GET', `/guilds/${MEU}/roles`)).json().catch(() => []), N = 10, start = (Math.floor(Date.now() / 900e3) * N) % ver.length;
   const board = JSON.parse(await env.USERS.get('meu:board') || '{}'), before = JSON.stringify(board), vset = new Set(ver.map((m) => m.user.id));
   for (const u of Object.keys(board)) if (!vset.has(u)) delete board[u];

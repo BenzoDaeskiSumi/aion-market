@@ -279,6 +279,9 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   INTERNATIONAL, PVP·SIEGE·ABYSS, CLASS CHATS, PVE, LEGIONS, MEDIA, VOICE) with each channel's purpose (staff and LEADERS not described). Re-post it when channels change.
   #🎫・support (2 Nov, last in 📌 INFO; Marchutans view + write only inside threads, Admins/Moderator full): buttons st:open:idea|bug|help -> supportTicket()
   opens a PRIVATE thread '<emoji> <kind> · <username>' with the member + pings Admins/Moderator; 🔒 st:close:<uid> (opener or mod) archives+locks; one open ticket each.
+  #💎・boosters (2 Nov, last in 📌 INFO, read-only, Marchutans): '📜 Boost history' (posted once: system-channel boost messages types 8-11 + current boosters'
+  premium_since) and '💎 Current boosters' (edited by boostLog() from gsSweep's member list); each new booster gets a thank-you line. KV boost:seen {uid: premium_since}
+  (baseline on first run, written only on change), errors KV boost_err.
   Category '💰 MARKET' (right after 💬 GENERAL, Marchutans only): 🌐・market-site (read-only, banner market.png + site features + link buttons), 🤖・market-bot
   (command channel, slowmode 5 s, pinned command list free/booster, banner market-bot.png). (💱・wts-wtb was made and deleted the same day: player trading doesn't work that way on Aion 2 global.)
   1 Nov: in #verify only /verify works (the request handler answers every other Mauro command there with an ephemeral note; reads vcfg.ch) and every other bot
