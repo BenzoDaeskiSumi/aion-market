@@ -2186,7 +2186,7 @@ export default {
         const names = q ? search(Object.entries(sum), q) : Object.entries(sum).filter(([, r]) => r.s === 'Compra per rivendere').map(([n]) => n).slice(0, 25);
         return Response.json({type: 8, data: {choices: names.map((n) => ({name: n.slice(0, 100), value: n.slice(0, 100)}))}});
       }
-      if (i.type === 2 && i.guild_id === MEU && i.data?.name !== 'verify') {   // #verify: only /verify (1 Nov 2026, the user asked)
+      if (i.type === 2 && i.guild_id === MEU && !['verify', 'verify-user', 'verify-remove'].includes(i.data?.name)) {   // #verify: only /verify (+ the moderators' /verify-user, /verify-remove)
         const vc = JSON.parse(await env.USERS.get('vcfg:' + MEU) || 'null');
         if (vc?.ch && i.channel_id === vc.ch) return oops('Only `/verify` works in this channel. Pick your character and attach a screenshot.');
       }
