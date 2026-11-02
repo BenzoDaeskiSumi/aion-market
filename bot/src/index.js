@@ -1729,6 +1729,42 @@ async function legionTicket(i, env, ctx) {
   }
   return oops('Unknown action.');
 }
+// Support tickets (MarchutanEU, 2 Nov 2026): buttons st:open:<kind> in #🎫・support (📌 INFO) open a PRIVATE thread with the member + Admins/Moderator;
+// 🔒 st:close:<uid> (opener or a moderator) archives and locks it. One open ticket per person.
+const SUPPORT = {idea: ['💡', 'Suggestion', 'Tell us your idea for the server: what, where, and why it would help.'],
+  bug: ['🐞', 'Bug report', 'What happened, where (channel / command), and what you expected. Screenshots help a lot.'],
+  help: ['❓', 'Question / other', 'Ask anything about the server, roles, verification or the bot.']};
+async function supportTicket(i, env, ctx) {
+  const g = i.guild_id, uid = userId(i), [, act, arg] = (i.data.custom_id || '').split(':'), pm = BigInt(i.member?.permissions || 0);
+  const isMod = isAdmin(i) || !!(pm & 0x2000n || pm & (1n << 40n) || pm & 2n || pm & 0x400000000n);
+  if (act === 'open') {
+    const kind = SUPPORT[arg] || SUPPORT.help, name = (i.member?.user?.username || 'member').slice(0, 60), ch = i.channel_id;
+    const active = await (await dapi(env, 'GET', `/guilds/${g}/threads/active`)).json().catch(() => ({}));
+    const mine = (active.threads || []).find((t) => t.parent_id === ch && t.name.endsWith(`· ${name}`));
+    if (mine) return oops(`You already have an open ticket: <#${mine.id}>`);
+    ctx.waitUntil((async () => {
+      const t = await (await dapi(env, 'POST', `/channels/${ch}/threads`, {name: `${kind[0]} ${kind[1]} · ${name}`.slice(0, 100), type: 12, invitable: false, auto_archive_duration: 10080})).json();
+      if (!t?.id) return void await hook(i, env, {content: 'I could not open the ticket: ask a moderator.'});
+      await dapi(env, 'PUT', `/channels/${t.id}/thread-members/${uid}`);
+      const roles = await (await dapi(env, 'GET', `/guilds/${g}/roles`)).json().catch(() => []);
+      const mods = (Array.isArray(roles) ? roles : []).filter((r) => ['Admins', 'Moderator'].includes(r.name)).map((r) => r.id);
+      await dapi(env, 'POST', `/channels/${t.id}/messages`, {content: `<@${uid}> ${mods.map((r) => `<@&${r}>`).join(' ')}`, allowed_mentions: {users: [uid], roles: mods},
+        embeds: [{color: 0x5b8cff, title: `${kind[0]} ${kind[1]}`, description: [kind[2], '', 'Only you and the staff can see this ticket. Write here, a moderator will answer soon.'].join('\n')}],
+        components: [{type: 1, components: [{type: 2, style: 2, label: 'Close ticket', emoji: {name: '🔒'}, custom_id: `st:close:${uid}`}]}]});
+      await hook(i, env, {content: `🎫 Your ticket is open: <#${t.id}>`});
+    })().catch(() => hook(i, env, {content: 'Something went wrong: please try again.'}).catch(() => {})));
+    return Response.json({type: 5, data: {flags: 64}});
+  }
+  if (act === 'close') {
+    if (!isMod && uid !== arg) return oops('Only the person who opened it or a moderator can close it.');
+    ctx.waitUntil((async () => {
+      await dapi(env, 'POST', `/channels/${i.channel_id}/messages`, {content: `🔒 Ticket closed by <@${uid}>.`, allowed_mentions: {parse: []}});
+      await dapi(env, 'PATCH', `/channels/${i.channel_id}`, {archived: true, locked: true});
+    })());
+    return Response.json({type: 6});
+  }
+  return oops('Unknown action.');
+}
 async function legionApply(i, env, ctx) {
   const g = i.guild_id, cfg = JSON.parse(await env.USERS.get('vcfg:' + g) || 'null'), uid = userId(i);
   if (!cfg?.mod) return oops('Legion applications are not active on this server.');
@@ -2178,6 +2214,7 @@ export default {
       if (i.type === 3 && i.data.custom_id === 'vt:get') return await tempAccess(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('ll:')) return await legionDecide(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('lt:')) return await legionTicket(i, env, ctx);
+      if (i.type === 3 && i.data.custom_id?.startsWith('st:')) return await supportTicket(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('vf:')) return await verifyDecide(i, env, ctx);
       if (i.type === 5 && i.data.custom_id?.startsWith('vfm:')) return await verifyDecide({...i, data: {...i.data, custom_id: i.data.custom_id.replace('vfm:', 'vf:')}}, env, ctx, String(i.data.components?.[0]?.components?.[0]?.value || '').trim());
       if (i.type === 5 && i.data.custom_id?.startsWith('alm:')) return await alertSubmit(i, env);

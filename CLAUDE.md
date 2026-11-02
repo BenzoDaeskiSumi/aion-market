@@ -275,6 +275,8 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   (commands /verify and /verify-setup, English only, no Italian localizations). Approval gives the existing role 'Marchutans'; #✅・verify (top, hidden from Marchutans but visible to Admins/Moderator; @everyone CAN send — Discord hides the command box otherwise — slowmode 5 min, the cron's verifyClean() deletes every message not by Mauro) and
   2 Nov: #📜・server-rules = Mauro's message (banner img/discord/rules.png + embeds General 1-10, Voice 11-13, Aion 2 14-18 (new: fair play, no RMT, honest verify,
   language channels, no leaks), sanctions); the old text message by _zer0zinga_ must be deleted by a human (Mauro can't read other users' messages: no Message Content intent).
+  #🎫・support (2 Nov, last in 📌 INFO; Marchutans view + write only inside threads, Admins/Moderator full): buttons st:open:idea|bug|help -> supportTicket()
+  opens a PRIVATE thread '<emoji> <kind> · <username>' with the member + pings Admins/Moderator; 🔒 st:close:<uid> (opener or mod) archives+locks; one open ticket each.
   Category '💰 MARKET' (right after 💬 GENERAL, Marchutans only): 🌐・market-site (read-only, banner market.png + site features + link buttons), 🤖・market-bot
   (command channel, slowmode 5 s, pinned command list free/booster, banner market-bot.png). (💱・wts-wtb was made and deleted the same day: player trading doesn't work that way on Aion 2 global.)
   1 Nov: in #verify only /verify works (the request handler answers every other Mauro command there with an ephemeral note; reads vcfg.ch) and every other bot
