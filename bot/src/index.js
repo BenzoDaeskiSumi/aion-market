@@ -1039,6 +1039,11 @@ async function roleButton(i, env, ctx) {
     if (add) have.add(rid); else have.delete(rid);
     if (r.ok) await fixSeps(env, g, uid, have, roles);
     await hook(i, env, {content: !r.ok ? '⚠️ I could not change your role: ask a moderator.' : add ? `✅ Added <@&${rid}>` : `➖ Removed <@&${rid}>`, allowed_mentions: {parse: []}});
+    if (r.ok && i.message?.components) {      // bump this button's count now (the hourly pickCounts() recount corrects any drift)
+      const comps = i.message.components.map((row) => ({type: 1, components: row.components.map((c) => c.custom_id !== i.data.custom_id ? c
+        : {type: 2, style: c.style, custom_id: c.custom_id, emoji: c.emoji, label: String(Math.max(0, (parseInt(c.label, 10) || 0) + (add ? 1 : -1)))})}));
+      await dapi(env, 'PATCH', `/channels/${i.channel_id}/messages/${i.message.id}`, {components: comps}).catch(() => {});
+    }
   })().catch(() => hook(i, env, {content: 'Something went wrong: please try again.'}).catch(() => {})));
   return Response.json({type: 5, data: {flags: 64}});
 }
