@@ -1026,7 +1026,7 @@ async function fixSeps(env, g, uid, have, roles) {   // each separator iff the m
 }
 // #pick-your-roles buttons rb:<roleId> (MarchutanEU, 1 Nov): toggle that role; only the pickable roles below
 // force roles (3 Nov): pingable to gather a group; an AutoMod rule blocks pinging them outside #pvp
-const FORCE_R = ['Corridors', 'Abyss Bosses', 'Duty', 'Spacetime Rift'];
+const FORCE_R = ['Corridors', 'Abyss Bosses', 'Duty', 'Spacetime Rift', 'Battlefield'];
 const PICKABLE = [...LANGS_R, 'PvE', 'PvP', ...FORCE_R, 'All Classes'];
 async function roleButton(i, env, ctx) {
   const g = i.guild_id, uid = userId(i), rid = (i.data.custom_id || '').split(':')[1], have = new Set(i.member?.roles || []);

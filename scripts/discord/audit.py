@@ -1,4 +1,4 @@
-# one-off (3 Nov): force roles Corridors / Abyss Bosses / Duty / Spacetime Rift (pickable in #pick-your-roles, pingable),
+# one-off (3 Nov): force roles Corridors / Abyss Bosses / Duty / Spacetime Rift / Battlefield (pickable in #pick-your-roles, pingable),
 # placed under PvP in the Playstyle block; AutoMod blocks pinging them outside #pvp (staff exempt)
 import json, os, re, time, urllib.request, urllib.error
 T, G = os.environ['DISCORD_TOKEN'], '1564968231410864160'
@@ -12,7 +12,7 @@ def api(m, p, b=None):
             body = e.read()
             if e.code == 429: time.sleep(json.loads(body).get('retry_after', 2) + 0.2); continue
             print('ERR', m, p, e.code, body[:400]); raise
-FORCE = [('Corridors', '🌀', 'Corridors runs'), ('Abyss Bosses', '👹', 'Abyss boss kills'), ('Duty', '🛡️', 'Duty'), ('Spacetime Rift', '🌌', 'Spacetime Rift')]
+FORCE = [('Corridors', '🌀', 'Corridors runs'), ('Abyss Bosses', '👹', 'Abyss boss kills'), ('Duty', '🛡️', 'Duty'), ('Spacetime Rift', '🌌', 'Spacetime Rift'), ('Battlefield', '🚩', 'Battlefield')]
 roles = api('GET', f'/guilds/{G}/roles'); by = {r['name']: r for r in roles}
 for n, _, _ in FORCE:
     if n in by:
@@ -36,7 +36,7 @@ pvp = pvp[0]
 # AutoMod: block role pings of these roles outside #pvp
 ids = '|'.join(rs[n] for n, _, _ in FORCE)
 rule = {'name': 'Force pings only in #pvp', 'event_type': 1, 'trigger_type': 1, 'trigger_metadata': {'regex_patterns': [f'<@&({ids})>']},
-        'actions': [{'type': 1, 'metadata': {'custom_message': 'Force roles (Corridors, Abyss Bosses, Duty, Spacetime Rift) can only be pinged in #pvp.'}}],
+        'actions': [{'type': 1, 'metadata': {'custom_message': 'Force roles (Corridors, Abyss Bosses, Duty, Spacetime Rift, Battlefield) can only be pinged in #pvp.'}}],
         'enabled': True, 'exempt_channels': [pvp['id']], 'exempt_roles': [rs[x] for x in ('Admins', 'Moderator') if x in rs]}
 old = next((r for r in api('GET', f'/guilds/{G}/auto-moderation/rules') if r['name'] == rule['name']), None)
 if old: api('PATCH', f'/guilds/{G}/auto-moderation/rules/{old["id"]}', {k: v for k, v in rule.items() if k not in ('event_type', 'trigger_type')}); print('automod updated')

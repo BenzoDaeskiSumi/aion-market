@@ -314,7 +314,7 @@ To limit the bot to one channel: Discord server settings → Integrations → th
   1200x300, rendered with Playwright from bg/abyss.svg + Cormorant Garamond) + an embed listing 'emoji ➜ @role' + grey buttons rb:<roleId> (emoji + member count;
   roleButton() toggles, only PICKABLE roles; pickCounts() in gsSweep refreshes the counts hourly) and, for Gear Score, a 🔄 button gs:refresh (= /refresh).
   The old select menus rp:lang/style/peek were deleted (rolePick still handles them).
-  Force roles (3 Nov): Corridors / Abyss Bosses / Duty / Spacetime Rift (FORCE_R, mentionable, under PvP in the Playstyle group, buttons in the Playstyle section of the board);
+  Force roles (3 Nov): Corridors / Abyss Bosses / Duty / Spacetime Rift / Battlefield (FORCE_R, mentionable, under PvP in the Playstyle group, buttons in the Playstyle section of the board);
   AutoMod rule 'Force pings only in #pvp' (regex <@&id>, exempt channel ⚔️・pvp + Admins/Moderator) blocks pinging them elsewhere.
   🧙 CLASS CHATS (1 Nov): each class channel visible only to its class role + 'All Classes' (peek role, menu rp:peek in #pick-your-roles; gives NO class role) + Admins/Moderator.
   '🎙️ Podcast' voice (Caller speaks, others listen) was made 29 Oct and later deleted by someone on the server; role 'Caller' still exists.
