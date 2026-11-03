@@ -1012,7 +1012,7 @@ function sepGroups(roles) {
   const rs = Array.isArray(roles) ? roles : [], srv = sepRole(rs, 'srv'), cls = sepRole(rs, 'cls'), ids = (f) => rs.filter(f).map((r) => r.id);
   return {
     srv: ids((r) => r.name !== 'bot' && r !== srv && (['Admins', 'Moderator', 'Bot Moderator', 'LanguageModerator'].includes(r.name) || /-Mod$/.test(r.name) || (srv && cls && r.position < srv.position && r.position > cls.position))),
-    cls: ids((r) => CLASS_ROLES.includes(r.name)), gs: ids((r) => /^GS \d+\+$/.test(r.name)), lang: ids((r) => LANGS_R.includes(r.name)), style: ids((r) => ['PvE', 'PvP'].includes(r.name)),
+    cls: ids((r) => CLASS_ROLES.includes(r.name)), gs: ids((r) => /^GS \d+\+$/.test(r.name)), lang: ids((r) => LANGS_R.includes(r.name)), style: ids((r) => ['PvE', 'PvP', ...FORCE_R].includes(r.name)),
   };
 }
 async function fixSeps(env, g, uid, have, roles) {   // each separator iff the member has a role of its group
@@ -1025,7 +1025,9 @@ async function fixSeps(env, g, uid, have, roles) {   // each separator iff the m
   }
 }
 // #pick-your-roles buttons rb:<roleId> (MarchutanEU, 1 Nov): toggle that role; only the pickable roles below
-const PICKABLE = [...LANGS_R, 'PvE', 'PvP', 'All Classes'];
+// force roles (3 Nov): pingable to gather a group; an AutoMod rule blocks pinging them outside #pvp
+const FORCE_R = ['Corridors', 'Abyss Bosses', 'Duty'];
+const PICKABLE = [...LANGS_R, 'PvE', 'PvP', ...FORCE_R, 'All Classes'];
 async function roleButton(i, env, ctx) {
   const g = i.guild_id, uid = userId(i), rid = (i.data.custom_id || '').split(':')[1], have = new Set(i.member?.roles || []);
   const roles = await (await dapi(env, 'GET', `/guilds/${g}/roles`)).json().catch(() => []);
