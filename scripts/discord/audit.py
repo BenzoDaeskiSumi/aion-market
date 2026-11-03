@@ -1,20 +1,31 @@
-# one-off (3 Nov): Naiyuki renamed to Kryth in game - does the official search find it, and is the verified character id still valid?
-import json, os, time, urllib.request, urllib.parse, urllib.error
+# one-off (3 Nov): recount the role board buttons now (same as pickCounts in the Worker)
+import json, os, time, urllib.request, urllib.error
 T, G = os.environ['DISCORD_TOKEN'], '1564968231410864160'
-CF, ACC = os.environ['CF_TOKEN'], os.environ['CF_ACCOUNT']
-def get(url, h=None):
-    try:
-        r = urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0', **(h or {})}), timeout=20); return r.status, r.read().decode()
-    except urllib.error.HTTPError as e: return e.code, e.read().decode()[:300]
-dc = lambda p: json.loads(get('https://discord.com/api/v10' + p, {'Authorization': f'Bot {T}'})[1])
-for q in ('Kryth', 'Naiyuki', 'kryth'):
-    for srv in ('', '2305'):
-        u = 'https://api-search.plaync.com/aion2global/search/v2/character?' + urllib.parse.urlencode({'keyword': q, 'page': 1, 'size': 20, 'region': 'eu', 'localeInfo': 'en-US', **({'serverId': srv} if srv else {})})
-        s, b = get(u)
-        try: d = json.loads(b); print(q, srv or 'all', s, 'total', d.get('pagination', {}).get('total'), [(c['name'], c['serverName'], c['level'], urllib.parse.unquote(c['characterId'])) for c in d.get('list', [])][:8])
-        except Exception: print(q, srv, s, b[:200])
-qs = urllib.parse.urlencode({'lang': 'en-US', 'characterId': 'QhPFlr9sgZ2je80XMs3YDxnZX6Vp9ZPreewBKzF4PV4=', 'serverId': 2305, 'region': 'eu'})
-s2, b2 = get('https://aion2.plaync.com/api/character/info?' + qs)
-try: pr = json.loads(b2).get('profile', {}); print('official by id:', s2, pr.get('characterName'), pr.get('serverName'), pr.get('characterLevel'), pr.get('className'), pr.get('regionName'))
-except Exception: print('official by id:', s2, b2[:300])
-print('member search:', str(dc(f'/guilds/{G}/members/search?query=Kryth&limit=5'))[:300])
+def api(m, p, b=None):
+    for _ in range(8):
+        try:
+            r = urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v10' + p, method=m, data=json.dumps(b).encode() if b is not None else None,
+                headers={'Authorization': f'Bot {T}', 'User-Agent': 'DiscordBot (x, 1)', 'Content-Type': 'application/json'}))
+            t = r.read(); return json.loads(t) if t else None
+        except urllib.error.HTTPError as e:
+            body = e.read()
+            if e.code == 429: time.sleep(json.loads(body).get('retry_after', 2) + 0.2); continue
+            print('ERR', m, p, e.code, body[:300]); raise
+mem, after = [], '0'
+while True:
+    page = api('GET', f'/guilds/{G}/members?limit=1000&after={after}')
+    if not page: break
+    mem += page; after = page[-1]['user']['id']
+    if len(page) < 1000: break
+n = {}
+for m in mem:
+    if not m['user'].get('bot'):
+        for r in m['roles']: n[r] = n.get(r, 0) + 1
+names = {r['id']: r['name'] for r in api('GET', f'/guilds/{G}/roles')}
+pick = next(c for c in api('GET', f'/guilds/{G}/channels') if 'pick-your-roles' in c['name'])
+for m in api('GET', f'/channels/{pick["id"]}/messages?limit=20'):
+    if not any(c.get('custom_id', '').startswith('rb:') for row in m.get('components', []) for c in row['components']): continue
+    comps = [{'type': 1, 'components': [c if not c.get('custom_id', '').startswith('rb:') else
+              {'type': 2, 'style': c['style'], 'custom_id': c['custom_id'], 'emoji': c.get('emoji'), 'label': str(n.get(c['custom_id'][3:], 0))} for c in row['components']]} for row in m['components']]
+    api('PATCH', f'/channels/{pick["id"]}/messages/{m["id"]}', {'components': comps})
+    print([(names.get(c['custom_id'][3:]), c['label']) for row in comps for c in row['components'] if c.get('custom_id', '').startswith('rb:')])
