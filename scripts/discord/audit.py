@@ -1,31 +1,31 @@
-# one-off (3 Nov): recount the role board buttons now (same as pickCounts in the Worker)
+# one-off (7 Nov): Legione - AutoMod mention-spam rule blocked a 10-name party list and timed Benzo out: lift the timeout, raise the limit
 import json, os, time, urllib.request, urllib.error
-T, G = os.environ['DISCORD_TOKEN'], '1564968231410864160'
+T, G = os.environ['DISCORD_TOKEN'], '1553398446524731435'
 def api(m, p, b=None):
     for _ in range(8):
         try:
             r = urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v10' + p, method=m, data=json.dumps(b).encode() if b is not None else None,
-                headers={'Authorization': f'Bot {T}', 'User-Agent': 'DiscordBot (x, 1)', 'Content-Type': 'application/json'}))
+                headers={'Authorization': f'Bot {T}', 'User-Agent': 'DiscordBot (x, 1)', 'Content-Type': 'application/json', 'X-Audit-Log-Reason': 'Party lists: raise mention limit, lift timeout'}))
             t = r.read(); return json.loads(t) if t else None
         except urllib.error.HTTPError as e:
             body = e.read()
             if e.code == 429: time.sleep(json.loads(body).get('retry_after', 2) + 0.2); continue
-            print('ERR', m, p, e.code, body[:300]); raise
+            print('ERR', m, p, e.code, body[:300]); return None
+for r in api('GET', f'/guilds/{G}/auto-moderation/rules') or []:
+    print('rule', r['name'], 'trigger', r['trigger_type'], r['trigger_metadata'], 'actions', [a['type'] for a in r['actions']], 'enabled', r['enabled'], 'creator', r['creator_id'])
+    if r['trigger_type'] == 5:
+        md = dict(r['trigger_metadata']); old = md.get('mention_total_limit'); md['mention_total_limit'] = max(old or 0, 25)
+        x = api('PATCH', f'/guilds/{G}/auto-moderation/rules/{r["id"]}', {'trigger_metadata': md})
+        print('  mention limit', old, '->', x and x['trigger_metadata'].get('mention_total_limit'))
 mem, after = [], '0'
 while True:
-    page = api('GET', f'/guilds/{G}/members?limit=1000&after={after}')
-    if not page: break
-    mem += page; after = page[-1]['user']['id']
+    page = api('GET', f'/guilds/{G}/members?limit=1000&after={after}') or []
+    mem += page
     if len(page) < 1000: break
-n = {}
+    after = page[-1]['user']['id']
 for m in mem:
-    if not m['user'].get('bot'):
-        for r in m['roles']: n[r] = n.get(r, 0) + 1
-names = {r['id']: r['name'] for r in api('GET', f'/guilds/{G}/roles')}
-pick = next(c for c in api('GET', f'/guilds/{G}/channels') if 'pick-your-roles' in c['name'])
-for m in api('GET', f'/channels/{pick["id"]}/messages?limit=20'):
-    if not any(c.get('custom_id', '').startswith('rb:') for row in m.get('components', []) for c in row['components']): continue
-    comps = [{'type': 1, 'components': [c if not c.get('custom_id', '').startswith('rb:') else
-              {'type': 2, 'style': c['style'], 'custom_id': c['custom_id'], 'emoji': c.get('emoji'), 'label': str(n.get(c['custom_id'][3:], 0))} for c in row['components']]} for row in m['components']]
-    api('PATCH', f'/channels/{pick["id"]}/messages/{m["id"]}', {'components': comps})
-    print([(names.get(c['custom_id'][3:]), c['label']) for row in comps for c in row['components'] if c.get('custom_id', '').startswith('rb:')])
+    if m.get('communication_disabled_until'):
+        print('timed out:', m['user']['username'], m.get('nick'), m['communication_disabled_until'])
+        if m['user']['username'] == 'benzodaeskisumi':
+            x = api('PATCH', f'/guilds/{G}/members/{m["user"]["id"]}', {'communication_disabled_until': None})
+            print('  lifted' if x is not None else '  could not lift')
