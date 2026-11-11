@@ -282,6 +282,11 @@ each legion will get its own section later; verification like MarchutanEU; separ
   * Ciro (was Marcello) = ita-mod (mod.js): /avverti (3rd = 1 h timeout) /avvertimenti /azzera-avvertimenti /timeout /togli-timeout /kick /ban /sban /pulisci, all logged in 🧹・log;
     tickets in 🎫・ticket (tk:open:segnalazione|idea|aiuto -> private thread, tk:close:<uid>); /setup also owns the AutoMod rules (mention spam 15, invite links, Kinah selling,
     spam; the single-instance types are taken over from older rules). Its role got Manage Server for AutoMod.
+- Content (11 Nov): scripts/discord/ita_msgs.py (Discord setup mode itamsg, re-run safe: replaces Mauro's own messages, forum posts once by title): banners img/discord/ita/*.png
+  (1200x300, Playwright from bg/abyss.svg, top line 'AION 2 · COMMUNITY ITALIANA'), rules (14 + sanctions), server guide, market (site buttons), comandi-bot (pinned list of
+  all four bots), cerca-gruppo how-to, pinned+locked posts in the forums domande / guide / legioni (legion template), patch-e-news intro; it also re-posts Alberto's
+  role board in order (Interessi, Ping, Force PvP, Ruoli automatici, each with a banner) and sets Mauro's KV cfg:alert_channel to 🤖・comandi-bot.
+  Force PvP roles (Corridors, Abyss Bosses, Duty, Spacetime Rift, Battlefield; mentionable, separator 'Force PvP') + AutoMod 'Force PvP solo in #pvp-abisso' (ita.py).
 - Mauro: no guild commands there any more (register.mjs puts [] for that guild); its global commands (/item, /character, /verify…) still show: hide /verify* in the server's
   Integrations settings if confusing.
 
