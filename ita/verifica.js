@@ -8,8 +8,11 @@ import {GUILD, verified, dapi, djson, reply, oops, defer, hook, opt, uidOf, role
 
 const FACTIONS = ['Elyos', 'Asmodiani'];
 const PICK = {Interessi: [['PvE', '🐉', 'dungeon, boss, raid'], ['PvP', '⚔️', 'Abisso, assedi, arene'], ['Market e Crafting', '💰', 'prezzi, craft, affari']],
-  Ping: [['Ping Ludra', '🔥', 'ti taggo quando si cerca gente per il Ludra'], ['Ping Assedi', '🏯', 'chiamate per gli assedi'], ['Ping Dungeon', '🏰', 'chi cerca gruppo per i dungeon']]};
-const GROUPS = {Verificato: ['Verificato'], Fazione: FACTIONS, Classe: CLASSES, 'Gear Score': GS_TIERS.map((t) => `GS ${t}+`), Interessi: PICK.Interessi.map((x) => x[0]), Ping: PICK.Ping.map((x) => x[0])};
+  Ping: [['Ping Ludra', '🔥', 'ti taggo quando si cerca gente per il Ludra'], ['Ping Assedi', '🏯', 'chiamate per gli assedi'], ['Ping Dungeon', '🏰', 'chi cerca gruppo per i dungeon']],
+  'Force PvP': [['Corridors', '🌀', 'Corridoi'], ['Abyss Bosses', '👹', 'boss dell\'Abisso'], ['Duty', '🛡️', 'Duty'], ['Spacetime Rift', '🌌', 'Spaccature spaziotemporali'], ['Battlefield', '🚩', 'Battlefield']]};
+const SITE = 'https://benzodaeskisumi.github.io/aion-market';
+const BANNER = {Interessi: 'interessi', Ping: 'ping', 'Force PvP': 'force', auto: 'auto'};
+const GROUPS = {Verificato: ['Verificato'], Fazione: FACTIONS, Classe: CLASSES, 'Gear Score': GS_TIERS.map((t) => `GS ${t}+`), Interessi: PICK.Interessi.map((x) => x[0]), Ping: PICK.Ping.map((x) => x[0]), 'Force PvP': PICK['Force PvP'].map((x) => x[0])};
 const CARD_COLOR = {Elyos: 0x7fc8f8, Asmodiani: 0xb565d8};
 
 const member = (env, uid) => djson(env, 'GET', `/guilds/${GUILD}/members/${uid}`);
@@ -299,12 +302,14 @@ async function setup(env) {
       'Problemi? Scrivi in #🆘・aiuto-verifica.'].join('\n')}]});
   const rch = await channelId(env, '・ruoli');
   for (const [g, items] of Object.entries(PICK)) {
-    out['board_' + g] = await postOrEdit(env, 'setup:board:' + g, rch, {embeds: [{color: 0xc9a227, title: g === 'Interessi' ? '🎯 Cosa ti piace fare?' : '🔔 Vuoi essere chiamato?',
-      description: items.map(([r, e, d]) => `${e} ➜ <@&${id(r)}>  ·  ${d}`).join('\n') + '\n\nPremi un pulsante per prendere il ruolo, di nuovo per toglierlo.'}],
+    const head = {Interessi: ['🎯 Cosa ti piace fare?', 0x2ecc71, ''], Ping: ['🔔 Vuoi essere chiamato?', 0xe67e22, 'Chi ha il ruolo viene taggato quando si cerca gente.\n\n'],
+      'Force PvP': ['⚔️ Force PvP', 0xd9485f, 'Per formare le force: chiunque può taggare questi ruoli, ma **solo in #⚔️・pvp-abisso**.\n\n']}[g];
+    out['board_' + g] = await postOrEdit(env, 'setup:board:' + g, rch, {embeds: [{color: head[1], image: {url: `${SITE}/img/discord/ita/${BANNER[g]}.png`}},
+      {color: head[1], title: head[0], description: head[2] + items.map(([r, e, d]) => `${e} ➜ <@&${id(r)}>  ·  ${d}`).join('\n') + '\n\nPremi un pulsante per prendere il ruolo, di nuovo per toglierlo.'}],
       components: [{type: 1, components: items.map(([r, e]) => ({type: 2, style: 2, custom_id: `rb:${id(r)}`, emoji: {name: e}, label: String(n[id(r)] || 0)}))}],
       allowed_mentions: {parse: []}});
   }
-  out.auto = await postOrEdit(env, 'setup:board:auto', rch, {embeds: [{color: 0x5b8cff, title: '🤖 Ruoli automatici',
+  out.auto = await postOrEdit(env, 'setup:board:auto', rch, {embeds: [{color: 0x3fb6d0, image: {url: `${SITE}/img/discord/ita/auto.png`}}, {color: 0x3fb6d0, title: '🤖 Ruoli automatici',
     description: 'Fazione (**Elyos** / **Asmodiani**), **classe** e fascia di **Gear Score** li dà Alberto dalla verifica e li aggiorna ogni giorno dal sito ufficiale.\nHai appena migliorato l\'equipaggiamento? Premi il pulsante.'}],
     components: [{type: 1, components: [{type: 2, style: 1, custom_id: 'gs:refresh', emoji: {name: '🔄'}, label: 'Aggiorna i miei ruoli'}]}]});
   const tch = await channelId(env, '・ticket');

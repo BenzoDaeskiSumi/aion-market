@@ -44,6 +44,7 @@ def check():
 BOLD = {c: chr(0x1D5D4 + i) for i, c in enumerate('ABCDEFGHIJKLMNOPQRSTUVWXYZ')} | {c: chr(0x1D5EE + i) for i, c in enumerate('abcdefghijklmnopqrstuvwxyz')}
 def sep(name): return ''.join(BOLD.get(c, c) for c in name) + ' ' + 'ㅤ' * 40
 
+FORCE = ['Corridors', 'Abyss Bosses', 'Duty', 'Spacetime Rift', 'Battlefield']     # like MarchutanEU: pingable only in #pvp-abisso (AutoMod)
 # top -> bottom (bots' own roles are moved right under Helper by the script)
 ROLES = [
     ('Admin', 0xE74C3C, True, 'admin'), ('Moderatore', 0xE67E22, True, 'mod'), ('Helper', 0x2ECC71, True, 'helper'),
@@ -53,6 +54,7 @@ ROLES = [
     (sep('Gear Score'), 0, False, None), *[(f'GS {n}+', 0, False, None) for n in (3000, 2800, 2500, 2100, 1400, 700)],
     (sep('Interessi'), 0, False, None), ('PvE', 0, False, None), ('PvP', 0, False, None), ('Market e Crafting', 0, False, None),
     (sep('Ping'), 0, False, None), ('Ping Ludra', 0, False, 'ment'), ('Ping Assedi', 0, False, 'ment'), ('Ping Dungeon', 0, False, 'ment'),
+    (sep('Force PvP'), 0, False, None), *[(n, 0, False, 'ment') for n in FORCE],
     ('Verificato', 0x95A5A6, False, None),
 ]
 P = dict(VIEW=0x400, SEND=0x800, EMBED=0x4000, ATTACH=0x8000, HIST=0x10000, REACT=0x40, MSGMAN=0x2000, CONNECT=0x100000, SPEAK=0x200000, STREAM=0x200,
@@ -206,6 +208,16 @@ def run_apply():
     tav = next((c for c in chs if c['type'] == 2 and c['name'] == '🍻 Taverna'), None); voc = find('『🔊 𝐕𝐎𝐂𝐀𝐋𝐈』', 4)
     if tav and voc:
         api('PATCH', f'/channels/{tav["id"]}', {'parent_id': voc['id'], 'position': 0, 'permission_overwrites': [{'id': G, 'type': 0, 'allow': bits(*VOICE), 'deny': '0'}] + BOT_ALL})
+    # AutoMod: Force PvP roles can be pinged only in #pvp-abisso (staff exempt)
+    pvp = find('⚔️・pvp-abisso', 0)
+    if pvp:
+        ids = '|'.join(rid(n) for n in FORCE)
+        rule = {'name': 'Force PvP solo in #pvp-abisso', 'event_type': 1, 'trigger_type': 1, 'trigger_metadata': {'regex_patterns': [f'<@&({ids})>']},
+                'actions': [{'type': 1, 'metadata': {'custom_message': 'I ruoli Force PvP si taggano solo in #pvp-abisso.'}}], 'enabled': True,
+                'exempt_channels': [pvp['id']], 'exempt_roles': STAFF}
+        old = next((r for r in (api('GET', f'/guilds/{G}/auto-moderation/rules') or []) if r['name'] == rule['name']), None)
+        if old: api('PATCH', f'/guilds/{G}/auto-moderation/rules/{old["id"]}', {k: v for k, v in rule.items() if k not in ('event_type', 'trigger_type')})
+        else: print('automod force:', bool(api('POST', f'/guilds/{G}/auto-moderation/rules', rule)))
     afk = find('💤 AFK', 2)
     if afk: api('PATCH', f'/guilds/{G}', {'afk_channel_id': afk['id'], 'afk_timeout': 900})
     out = api('GET', f'/guilds/{G}/channels'); cats = {c['id']: c['name'] for c in out if c['type'] == 4}
