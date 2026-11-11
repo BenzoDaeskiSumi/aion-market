@@ -5,6 +5,7 @@ import hashlib, json, os, time, urllib.parse, urllib.request, urllib.error
 G, T = '1553398446524731435', os.environ['DISCORD_TOKEN']
 SITE = 'https://benzodaeskisumi.github.io/aion-market'
 IMG = SITE + '/img/discord/ita/'
+V = '?v=2'   # Discord caches a failed image fetch: new query string = new fetch
 GOLD, BLUE, CYAN, RED, GREEN, VIOLET = 0xc9a227, 0x5b8cff, 0x3fb6d0, 0xd9485f, 0x2ecc71, 0x8f6bff
 
 
@@ -50,7 +51,7 @@ def forum_post(suffix, title, text, tags=()):
 
 # ---------------- 📜 regole ----------------
 replace('・regole', [{'embeds': [
-    {'color': GOLD, 'image': {'url': IMG + 'regole.png'}},
+    {'color': GOLD, 'image': {'url': IMG + 'regole.png' + V}},
     {'color': GOLD, 'title': '📜 Generali', 'description': '\n'.join([
         '**1.** Rispetto per tutti: niente insulti, razzismo, discriminazioni o molestie. Puoi discutere anche in modo acceso, ma senza attacchi personali.',
         '**2.** Siamo una community italiana: nei canali pubblici si scrive in italiano.',
@@ -88,7 +89,7 @@ cats = [
     ('💰 MARKET', CYAN, [('・market', 'il sito Aion 2 Market: prezzi, storico, crafting'), ('・comandi-bot', 'qui si usano i comandi dei bot (`/item`, `/craft`, `/character`…)')]),
     ('🛡️ LEGIONI', GOLD, [('・legioni', 'forum: un post per legione, lo apre il Legion Leader')]),
 ]
-emb = [{'color': BLUE, 'image': {'url': IMG + 'guida.png'}}]
+emb = [{'color': BLUE, 'image': {'url': IMG + 'guida.png' + V}}]
 for title, col, items in cats:
     emb.append({'color': col, 'title': title, 'description': '\n'.join(f"{link(s)} · {d}" for s, d in items)})
 emb.append({'color': VIOLET, 'title': '🔊 VOCALI', 'description': '🍻 **Taverna** e **Taverna 2** per stare in compagnia · ⚔️ **Party 1-4** per i gruppi · 💤 **AFK** per chi si allontana'})
@@ -99,7 +100,7 @@ emb.append({'color': 0x95a5a6, 'title': '🤖 I bot', 'description': '\n'.join([
 replace('・guida-server', [{'embeds': emb[:6]}, {'embeds': emb[6:]}])
 
 # ---------------- 🌐 market ----------------
-replace('・market', [{'embeds': [{'color': BLUE, 'image': {'url': IMG + 'market.png'}},
+replace('・market', [{'embeds': [{'color': BLUE, 'image': {'url': IMG + 'market.png' + V}},
     {'color': BLUE, 'title': 'I prezzi del Market, aggiornati ogni ora', 'url': SITE, 'description': '\n'.join([
         '📊 **Market**: prezzo più basso, media di 3 giorni, trend di 7 giorni e segnale Compra / Vendi / Tieni per oltre 1.200 oggetti',
         '📈 **Dettagli**: grafici di 24 ore, 7, 30 e 90 giorni, liquidità e volatilità',
@@ -112,7 +113,7 @@ replace('・market', [{'embeds': [{'color': BLUE, 'image': {'url': IMG + 'market
         {'type': 2, 'style': 5, 'label': 'Crafting', 'url': SITE + '/market.html?v=craft'}, {'type': 2, 'style': 5, 'label': 'Personaggi', 'url': SITE + '/market.html?v=char'}]}]}])
 
 # ---------------- 🤖 comandi-bot ----------------
-replace('・comandi-bot', [{'embeds': [{'color': CYAN, 'image': {'url': IMG + 'comandi.png'}},
+replace('・comandi-bot', [{'embeds': [{'color': CYAN, 'image': {'url': IMG + 'comandi.png' + V}},
     {'color': CYAN, 'title': '🔨 Mauro · market e personaggi', 'description': '\n'.join([
         '`/item <oggetto>` · prezzo, media, trend, segnale e grafici', '`/deals` · i migliori affari su materiali e consumabili adesso',
         '`/craft <oggetto>` · `/shopping <oggetto>` · costo del craft e lista della spesa', '`/price-history <oggetto>` · grafico di 90 giorni',
@@ -128,7 +129,7 @@ replace('・comandi-bot', [{'embeds': [{'color': CYAN, 'image': {'url': IMG + 'c
     {'color': CYAN, 'description': '-# Le risposte che vedi solo tu restano nascoste, così il canale resta pulito.'}]}], pin_last=True)
 
 # ---------------- 🏰 cerca-gruppo ----------------
-replace('・cerca-gruppo', [{'embeds': [{'color': VIOLET, 'image': {'url': IMG + 'cercagruppo.png'}},
+replace('・cerca-gruppo', [{'embeds': [{'color': VIOLET, 'image': {'url': IMG + 'cercagruppo.png' + V}},
     {'color': VIOLET, 'title': 'Come cercare un gruppo', 'description': '\n'.join([
         '**Al volo:** scrivi cosa fai, quando e chi ti serve. Esempio: `Spedizione stasera 21:30 · cerco 1 cleric e 1 tank · GS 1400+`',
         f"**Con la lista:** `/raid titolo quando` crea una lista con i pulsanti Tank / Healer / DPS e le riserve; Gettulio tagga tutti 15 minuti prima. Aggiungi `ruolo:` {R('Ping Dungeon')} per chiamare chi cerca gruppo.",

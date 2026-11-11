@@ -285,14 +285,16 @@ async function postOrEdit(env, key, ch, body) {
 async function memberCounts(env) {
   const n = {}; let after = '0';
   for (;;) {
-    const page = await djson(env, 'GET', `/guilds/${GUILD}/members?limit=1000&after=${after}`) || [];
+    const page = await djson(env, 'GET', `/guilds/${GUILD}/members?limit=1000&after=${after}`);
+    if (!page) return null;                         // no Server Members Intent: counts unknown
     for (const m of page) if (!m.user.bot) for (const r of m.roles) n[r] = (n[r] || 0) + 1;
     if (page.length < 1000) break; after = page[page.length - 1].user.id;
   }
   return n;
 }
-async function setup(env) {
+async function setup(env, hourly) {
   const out = {}, all = await roles(env), id = (n) => all.find((r) => r.name === n)?.id, n = await memberCounts(env);
+  if (hourly && !n) return {skip: 'no member list'};
   const vch = await channelId(env, '・verifica');
   out.verify = await postOrEdit(env, 'setup:verify', vch, {embeds: [{color: 0xc9a227, title: '✅ Verificati per entrare nella community',
     description: ['Aperta a **tutti i giocatori italiani** di Aion 2, **Elyos e Asmodiani**, su qualsiasi server EU.', '',
@@ -304,12 +306,12 @@ async function setup(env) {
   for (const [g, items] of Object.entries(PICK)) {
     const head = {Interessi: ['🎯 Cosa ti piace fare?', 0x2ecc71, ''], Ping: ['🔔 Vuoi essere chiamato?', 0xe67e22, 'Chi ha il ruolo viene taggato quando si cerca gente.\n\n'],
       'Force PvP': ['⚔️ Force PvP', 0xd9485f, 'Per formare le force: chiunque può taggare questi ruoli, ma **solo in #⚔️・pvp-abisso**.\n\n']}[g];
-    out['board_' + g] = await postOrEdit(env, 'setup:board:' + g, rch, {embeds: [{color: head[1], image: {url: `${SITE}/img/discord/ita/${BANNER[g]}.png`}},
+    out['board_' + g] = await postOrEdit(env, 'setup:board:' + g, rch, {embeds: [{color: head[1], image: {url: `${SITE}/img/discord/ita/${BANNER[g]}.png?v=2`}},
       {color: head[1], title: head[0], description: head[2] + items.map(([r, e, d]) => `${e} ➜ <@&${id(r)}>  ·  ${d}`).join('\n') + '\n\nPremi un pulsante per prendere il ruolo, di nuovo per toglierlo.'}],
-      components: [{type: 1, components: items.map(([r, e]) => ({type: 2, style: 2, custom_id: `rb:${id(r)}`, emoji: {name: e}, label: String(n[id(r)] || 0)}))}],
+      components: [{type: 1, components: items.map(([r, e]) => ({type: 2, style: 2, custom_id: `rb:${id(r)}`, emoji: {name: e}, label: String(n?.[id(r)] || 0)}))}],
       allowed_mentions: {parse: []}});
   }
-  out.auto = await postOrEdit(env, 'setup:board:auto', rch, {embeds: [{color: 0x3fb6d0, image: {url: `${SITE}/img/discord/ita/auto.png`}}, {color: 0x3fb6d0, title: '🤖 Ruoli automatici',
+  out.auto = await postOrEdit(env, 'setup:board:auto', rch, {embeds: [{color: 0x3fb6d0, image: {url: `${SITE}/img/discord/ita/auto.png?v=2`}}, {color: 0x3fb6d0, title: '🤖 Ruoli automatici',
     description: 'Fazione (**Elyos** / **Asmodiani**), **classe** e fascia di **Gear Score** li dà Alberto dalla verifica e li aggiorna ogni giorno dal sito ufficiale.\nHai appena migliorato l\'equipaggiamento? Premi il pulsante.'}],
     components: [{type: 1, components: [{type: 2, style: 1, custom_id: 'gs:refresh', emoji: {name: '🔄'}, label: 'Aggiorna i miei ruoli'}]}]});
   const tch = await channelId(env, '・ticket');
@@ -337,7 +339,8 @@ async function cleanVerify(env) {                // #✅・verifica: only Albert
 const keyOf = async (env) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(env.DISCORD_TOKEN)))].slice(0, 8).map((b) => b.toString(16).padStart(2, '0')).join('');
 export default {
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(Promise.allSettled([sweep(env).catch((e) => putErr(env, 'sweep_err', String(e?.stack || e).slice(0, 300))), cleanVerify(env).catch(() => {})]));
+    const min = +new Date().toLocaleString('en-GB', {timeZone: 'Europe/Rome', minute: '2-digit'});
+    ctx.waitUntil(Promise.allSettled([...(min < 15 ? [setup(env, true).catch((e) => putErr(env, 'setup_err', String(e?.message || e).slice(0, 200)))] : []), sweep(env).catch((e) => putErr(env, 'sweep_err', String(e?.stack || e).slice(0, 300))), cleanVerify(env).catch(() => {})]));
   },
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
