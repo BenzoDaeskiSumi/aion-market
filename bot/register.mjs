@@ -80,7 +80,7 @@ console.log('register commands:', r.status, r.ok ? 'ok' : await r.text());
 if (!r.ok) process.exit(1);
 const LEGIONE_GUILD = '1553398446524731435';
 const r2 = await fetch(`https://discord.com/api/v10/applications/${DISCORD_APP_ID}/guilds/${LEGIONE_GUILD}/commands`, {
-  method: 'PUT', headers: {Authorization: `Bot ${DISCORD_TOKEN}`, 'Content-Type': 'application/json'}, body: JSON.stringify(legionCommands)});
+  method: 'PUT', headers: {Authorization: `Bot ${DISCORD_TOKEN}`, 'Content-Type': 'application/json'}, body: JSON.stringify([])});     // 11 Nov: Legione server rebuilt as the Italian community, its commands now belong to Alberto/Fabrizio/Marcello
 console.log('register Legione commands:', r2.status, r2.ok ? 'ok' : await r2.text());
 if (!r2.ok) process.exit(1);
 // MarchutanEU-only commands (1 Nov)
