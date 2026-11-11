@@ -2003,6 +2003,69 @@ async function raidReminders(env) {               // cron: tag the sign-ups once
   }
 }
 
+// ---------- Ludra sign-up (Legione, 11 Nov): one board in KV cfg:ludra_ch, every evening at LUDRA.hour Europe/Rome ----------
+// 2 parties (10 players), each 1 tank + 1 cleric + 1 chanter + 2 DPS; the first to sign for a role get the slots, the rest are reserves.
+// KV ludra:<YYYY-MM-DD> = {t: [uid], c: [], ch: [], d: [], pinged}; buttons lu:<date>:t|c|ch|d|out. The cron edits the board when the day changes
+// and ~1 h before the start tags the reserves in the channel; a reserve who moves up after that gets tagged too.
+const LUDRA = {hour: 22, min: 0, parties: 2, tz: 'Europe/Rome'};
+const LU_ROLES = [['t', 'Tank', '🛡️', 1], ['c', 'Cleric', '✨', 1], ['ch', 'Chanter', '🎶', 1], ['d', 'DPS', '⚔️', 2]];   // [key, label, emoji, per party]
+function ludraDay(now = Date.now()) {
+  const d = localDay(now, LUDRA.tz), key = `${d.y}-${String(d.m).padStart(2, '0')}-${String(d.d).padStart(2, '0')}`;
+  return {key, t: atLocal(d.y, d.m, d.d, LUDRA.hour * 60 + LUDRA.min, LUDRA.tz)};
+}
+const luEmpty = () => ({t: [], c: [], ch: [], d: [], pinged: false});
+const luMain = (L) => new Set(LU_ROLES.flatMap(([k, , , n]) => L[k].slice(0, n * LUDRA.parties)));
+async function ludraBoard(env, key, t, L) {
+  const all = LU_ROLES.flatMap(([k]) => L[k]), info = Object.fromEntries(await Promise.all(all.map(async (u) => [u, await linkOf(env, u)])));
+  const who = (u) => (u ? (info[u] ? `**${info[u].name}** · ${info[u].cls}` : `<@${u}>`) : '*libero*');
+  const past = Date.now() > t, ts = Math.floor(t / 1000);
+  const fields = [...Array(LUDRA.parties)].map((_, p) => ({name: `Party ${p + 1}`, inline: true, value: LU_ROLES.flatMap(([k, , emo, n]) =>
+    [...Array(n)].map((__, j) => `${emo} ${who(L[k][p * n + j])}`)).join('\n')}));
+  const res = LU_ROLES.flatMap(([k, , emo, n]) => L[k].slice(n * LUDRA.parties).map((u) => `${emo} ${who(u)}`));
+  fields.push({name: `🪑 Riserve (${res.length})`, inline: false, value: res.join('\n') || '—'});
+  const main = luMain(L).size, tot = LU_ROLES.reduce((a, [, , , n]) => a + n * LUDRA.parties, 0);
+  const btn = (k, label, emo, style) => ({type: 2, style, custom_id: `lu:${key}:${k}`, label, emoji: {name: emo}, disabled: past});
+  return {content: '', embeds: [{title: `🔥 Ludra · ${new Date(t).toLocaleDateString('it-IT', {timeZone: LUDRA.tz, weekday: 'long', day: 'numeric', month: 'long'})}`, color: past ? 0x5c5f66 : 0xe8603c,
+      description: `🕙 <t:${ts}:F> · <t:${ts}:R>\n\nFirma con il ruolo che porti. Ogni party: 1 tank, 1 cleric, 1 chanter, 2 DPS.\nI primi entrano nei party, chi firma dopo va in **riserva**: Mauro tagga le riserve un'ora prima.\n\n**${main}/${tot}** posti presi`,
+      fields, footer: {text: past ? 'Iscrizioni chiuse: a domani' : 'Premi di nuovo un ruolo per cambiarlo · Ritira per toglierti'}}],
+    components: [{type: 1, components: [btn('t', 'Tank', '🛡️', 1), btn('c', 'Cleric', '✨', 3), btn('ch', 'Chanter', '🎶', 3), btn('d', 'DPS', '⚔️', 4), btn('out', 'Ritira', '✖️', 2)]}],
+    allowed_mentions: {parse: []}};
+}
+async function ludraButton(i, env) {
+  const [, key, k] = i.data.custom_id.split(':'), cur = ludraDay();
+  if (key !== cur.key) { await ludraTick(env).catch(() => {}); return oops('Questa lista è di un altro giorno: usa quella aggiornata.'); }
+  if (Date.now() > cur.t) return oops('Le iscrizioni di stasera sono chiuse: il Ludra è già iniziato.');
+  const uid = (i.member?.user || i.user).id, L = JSON.parse(await env.USERS.get('ludra:' + key) || 'null') || luEmpty(), before = luMain(L);
+  for (const [r] of LU_ROLES) L[r] = L[r].filter((x) => x !== uid);
+  if (k !== 'out') L[k].push(uid);
+  await env.USERS.put('ludra:' + key, JSON.stringify(L), {expiration: Math.floor(cur.t / 1000) + 86400});
+  if (L.pinged) {                                   // after the reserve call: whoever moves up into a party gets tagged
+    const up = [...luMain(L)].filter((u) => !before.has(u) && u !== uid);
+    if (up.length) await dapi(env, 'POST', `/channels/${i.channel_id}/messages`, {content: `🔁 ${up.map((u) => `<@${u}>`).join(' ')} si è liberato un posto: sei nel party del Ludra delle ${LUDRA.hour}:${String(LUDRA.min).padStart(2, '0')}!`, allowed_mentions: {users: up}}).catch(() => {});
+  }
+  return Response.json({type: 7, data: await ludraBoard(env, key, cur.t, L)});
+}
+async function ludraTick(env) {                     // cron: keep the board on today's date, tag the reserves ~1 h before
+  const ch = await env.USERS.get('cfg:ludra_ch'); if (!ch) return;
+  const {key, t} = ludraDay(), L = JSON.parse(await env.USERS.get('ludra:' + key) || 'null') || luEmpty();
+  const msg = await env.USERS.get('cfg:ludra_msg'), shown = await env.USERS.get('cfg:ludra_day'), now = Date.now();
+  const closing = now > t && now < t + 20 * 6e4;                                   // disable the buttons once it has started
+  if (!msg || shown !== key || closing) {
+    const body = await ludraBoard(env, key, t, L);
+    let r = msg ? await dapi(env, 'PATCH', `/channels/${ch}/messages/${msg}`, body) : null;
+    if (!r || r.status === 404) { r = await dapi(env, 'POST', `/channels/${ch}/messages`, body); if (r.ok) await env.USERS.put('cfg:ludra_msg', (await r.json()).id); }
+    if (r.ok && shown !== key) await env.USERS.put('cfg:ludra_day', key);
+    if (!r.ok) await putErr(env, 'ludra_err', `board ${r.status} ${(await r.text()).slice(0, 200)}`);
+  }
+  if (!L.pinged && t - now <= 65 * 6e4 && t - now > 30 * 6e4) {
+    const main = luMain(L), res = LU_ROLES.flatMap(([k]) => L[k]).filter((u) => !main.has(u));
+    L.pinged = true;
+    await env.USERS.put('ludra:' + key, JSON.stringify(L), {expiration: Math.floor(t / 1000) + 86400});
+    if (res.length) await dapi(env, 'POST', `/channels/${ch}/messages`, {content: `🪑 **Riserve del Ludra** <t:${Math.floor(t / 1000)}:R>: ${res.map((u) => `<@${u}>`).join(' ')}\nI party sono pieni, ma potreste servire: restate disponibili. Se qualcuno si ritira, Mauro vi tagga qui.`,
+      allowed_mentions: {users: res.slice(0, 100)}});
+  }
+}
+
 // English command/option names (30 Oct, MarchutanEU is an English server) mapped back to the Italian names the handlers use
 const CMD_IT = {item: 'info', deals: 'affari', alert: 'avviso', help: 'aiuto', character: 'personaggio', favorites: 'preferiti'};
 const OPT_IT = {item: 'oggetto', type: 'tipo', price: 'prezzo', when: 'quando', name: 'nome', add: 'aggiungi', list: 'lista'};
@@ -2154,12 +2217,12 @@ function toItalianNames(d) {
 }
 // ---------- entry point ----------
 export default {
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.allSettled([checkAlerts(env).catch((e) => putErr(env, 'alert_err', String(e?.message || e).slice(0, 300))), checkStale(env).catch(() => {}), updateTimers(env).catch((e) => putErr(env, 'timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => putErr(env, 'sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300))), weekFix(env).catch((e) => env.USERS.put('timer_err', 'weekfix ' + String(e?.stack || e).slice(0, 300))), artChallenge(env).catch((e) => putErr(env, 'art_err', String(e?.stack || e).slice(0, 300))), verifyClean(env).catch(() => {}), gsSweep(env).catch((e) => putErr(env, 'gs_err', String(e?.stack || e).slice(0, 300))), watchDigest(env).catch((e) => putErr(env, 'watch_err', String(e?.message || e).slice(0, 300))), exposedBulk(env).catch((e) => putErr(env, 'exposed_err', String(e?.message || e).slice(0, 300)))])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.allSettled([checkAlerts(env).catch((e) => putErr(env, 'alert_err', String(e?.message || e).slice(0, 300))), checkStale(env).catch(() => {}), updateTimers(env).catch((e) => putErr(env, 'timer_err', String(e?.stack || e).slice(0, 500))), raidReminders(env).catch(() => {}), ludraTick(env).catch((e) => putErr(env, 'ludra_err', String(e?.stack || e).slice(0, 300))), signupCalls(env).catch((e) => env.USERS.put('timer_err', 'calls ' + String(e?.stack || e).slice(0, 400))), legionSweep(env).catch((e) => putErr(env, 'sweep_err', String(e?.stack || e).slice(0, 400))), weeklyReport(env).catch((e) => env.USERS.put('timer_err', 'week ' + String(e?.stack || e).slice(0, 300))), weekFix(env).catch((e) => env.USERS.put('timer_err', 'weekfix ' + String(e?.stack || e).slice(0, 300))), artChallenge(env).catch((e) => putErr(env, 'art_err', String(e?.stack || e).slice(0, 300))), verifyClean(env).catch(() => {}), gsSweep(env).catch((e) => putErr(env, 'gs_err', String(e?.stack || e).slice(0, 300))), watchDigest(env).catch((e) => putErr(env, 'watch_err', String(e?.message || e).slice(0, 300))), exposedBulk(env).catch((e) => putErr(env, 'exposed_err', String(e?.message || e).slice(0, 300)))])); },
   async fetch(req, env, ctx) {
     if (new URL(req.url).pathname === '/hit') return hit(req, env);
     if (/^\/join(\/cb)?$/.test(new URL(req.url).pathname)) return join(req, env);
-    if (new URL(req.url).pathname === '/timers/run') { try { await callChannel(env); await updateTimers(env); } catch (e) { await env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500)); } }
-    if (new URL(req.url).pathname.startsWith('/timers/')) return Response.json({channel: await env.USERS.get('cfg:timer_channel'), msg: await env.USERS.get('cfg:timer_msg'), err: await env.USERS.get('timer_err'), alerts: await env.USERS.get('alert_err'), sweep: await env.USERS.get('sweep_err'), art: await env.USERS.get('art_err'), sweepAt: await env.USERS.get('cfg:sweep_at'), exposed: await env.USERS.get('exposed:bulk'), exposedErr: await env.USERS.get('exposed_err'), gs: await env.USERS.get('gs_err')});
+    if (new URL(req.url).pathname === '/timers/run') { try { await callChannel(env); await updateTimers(env); await ludraTick(env); } catch (e) { await env.USERS.put('timer_err', String(e?.stack || e).slice(0, 500)); } }
+    if (new URL(req.url).pathname.startsWith('/timers/')) return Response.json({channel: await env.USERS.get('cfg:timer_channel'), msg: await env.USERS.get('cfg:timer_msg'), err: await env.USERS.get('timer_err'), alerts: await env.USERS.get('alert_err'), sweep: await env.USERS.get('sweep_err'), art: await env.USERS.get('art_err'), sweepAt: await env.USERS.get('cfg:sweep_at'), exposed: await env.USERS.get('exposed:bulk'), exposedErr: await env.USERS.get('exposed_err'), gs: await env.USERS.get('gs_err'), ludra: await env.USERS.get('ludra_err')});
     if (new URL(req.url).pathname.startsWith('/char/')) return charApi(req, env);
     // /legion and /legion/me (public Legione roster for the site) switched off on 29 Oct: the site no longer shows the Legione
     if (req.method !== 'POST') return new Response('Aion 2 Market bot: ok');
@@ -2240,6 +2303,7 @@ export default {
       if (i.type === 3 && /^lks(:|$)/.test(i.data.custom_id || '')) return await linkSelect(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('ts:')) return await signupButton(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('rs:')) return await raidButton(i, env);
+      if (i.type === 3 && i.data.custom_id?.startsWith('lu:')) return await ludraButton(i, env);
       if (i.type === 3 && i.data.custom_id?.startsWith('rp:')) return await rolePick(i, env, ctx);
       if (i.type === 3 && i.data.custom_id?.startsWith('rb:')) return await roleButton(i, env, ctx);
       if (i.type === 3 && i.data.custom_id === 'gs:refresh') return await gsRefresh(i, env, ctx);
