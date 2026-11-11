@@ -119,7 +119,7 @@ async function setup(env) {
       actions: [{type: 1, metadata: {custom_message: 'Troppe menzioni in un solo messaggio.'}}, {type: 3, metadata: {duration_seconds: 600}}, ...alert]},
     {name: 'Marcello · link di invito', event_type: 1, trigger_type: 1, trigger_metadata: {regex_patterns: ['discord(?:app)?\\.(?:gg|com/invite)/[A-Za-z0-9-]+']},
       actions: [{type: 1, metadata: {custom_message: 'Gli inviti ad altri server non sono ammessi: chiedi allo staff.'}}, ...alert]},
-    {name: 'Marcello · vendita Kinah', event_type: 1, trigger_type: 1, trigger_metadata: {regex_patterns: ['(?i)\\b(?:vend\\w*|compr\\w*|sell\\w*|buy\\w*|wts|wtb)\\b.{0,20}\\b(?:kinah|kina|gold|oro)\\b'],
+    {name: 'Marcello · vendita Kinah', event_type: 1, trigger_type: 1, trigger_metadata: {regex_patterns: ['(?i)(vend|compr|sell|buy|wts|wtb).{0,20}(kinah|kina)'],
       keyword_filter: ['*kinah.com*', '*cheap kinah*', '*buy kinah*', '*sell kinah*']},
       actions: [{type: 1, metadata: {custom_message: 'La compravendita di Kinah con soldi veri (RMT) è vietata dalle regole di NCSOFT e del server.'}}, ...alert]},
     {name: 'Marcello · spam', event_type: 1, trigger_type: 3, actions: [{type: 1}, ...alert]},
@@ -127,7 +127,8 @@ async function setup(env) {
   const have = await djson(env, 'GET', `/guilds/${GUILD}/auto-moderation/rules`) || [];
   for (const rule of RULES) {
     const body2 = {...rule, enabled: true, exempt_roles: staff};
-    const ex = have.find((x) => x.name === rule.name);
+    // mention spam, spam and keyword-preset rules can exist only once per server: take over the one already there
+    const ex = have.find((x) => x.name === rule.name) || ([3, 4, 5].includes(rule.trigger_type) ? have.find((x) => x.trigger_type === rule.trigger_type) : null);
     const r = ex ? await dapi(env, 'PATCH', `/guilds/${GUILD}/auto-moderation/rules/${ex.id}`, {name: body2.name, trigger_metadata: body2.trigger_metadata, actions: body2.actions, enabled: true, exempt_roles: staff})
       : await dapi(env, 'POST', `/guilds/${GUILD}/auto-moderation/rules`, body2);
     out[rule.name] = r.ok ? (ex ? 'updated' : 'created') : `${r.status} ${(await r.text()).slice(0, 160)}`;
