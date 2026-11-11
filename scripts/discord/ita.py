@@ -137,10 +137,13 @@ def run_apply():
     botroles = [r for r in roles if r.get('managed') and r.get('tags', {}).get('bot_id') in bot_ids.values()]
     order = [byn['Admin'], byn['Moderatore'], byn['Helper'], *botroles, *[byn[n] for n, *_ in ROLES[3:]]]
     top = mine['position'] - 1
-    for i, r in enumerate(order):
-        want = top - i
-        cur = {x['id']: x['position'] for x in api('GET', f'/guilds/{G}/roles')}
-        if cur.get(r['id']) != want: api('PATCH', f'/guilds/{G}/roles', [{'id': r['id'], 'position': want}])
+    for _ in range(4):                     # one move at a time (bulk moves are refused); repeat until nothing moves
+        moved = 0
+        for i, r in enumerate(order):
+            want = top - i
+            cur = {x['id']: x['position'] for x in api('GET', f'/guilds/{G}/roles')}
+            if cur.get(r['id']) != want: api('PATCH', f'/guilds/{G}/roles', [{'id': r['id'], 'position': want}]); moved += 1
+        if not moved: break
     roles = api('GET', f'/guilds/{G}/roles'); byn = {r['name']: r for r in roles}
     print('roles:', [r['name'][:16] for r in sorted(roles, key=lambda r: -r['position'])])
     rid = lambda n: byn[n]['id']
