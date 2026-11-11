@@ -264,12 +264,13 @@ each legion will get its own section later; verification like MarchutanEU; separ
   Categories: 📌 BENVENUTO (everyone: regole, verifica, aiuto-verifica) · 📢 INFO (annunci, guida-server, ruoli, patch-e-news, ticket) · 💬 COMMUNITY (chiacchiere,
   forum domande, screenshot-e-clip, meme) · ⚔️ GIOCO (cerca-gruppo, ludra, pvp-abisso, assedi, forum guide) · 💰 MARKET · 🛡️ LEGIONI (forum legioni: Legion Leader posts) ·
   🔊 VOCALI · 🔒 STAFF (staff-chat, richieste-verifica, log). Not verified = only BENVENUTO + 🍻 Taverna (left open to everyone for now). Community mode + Stage 🏯 Assedi: not yet.
-  Role moves: one role per PATCH; swapping two neighbours works only as a 2-item PATCH.
+  Role moves: one role per PATCH; swapping two neighbours works only as a 2-item PATCH. ita.py bits() ORs permission names (a sum counted VIEW twice: 11 Nov bug, members saw nothing).
 - Bots = separate Workers in ita/ (shared ita/lib.js), workflow 'Community italiana (bot)' (.github/workflows/ita.yml, on push ita/**): KV namespace ita-<bot> each,
   secrets VERIFY_/EVENTS_/MOD_ + APP_ID/PUBLIC_KEY/TOKEN (repo) -> Worker secrets DISCORD_*; ita/register.mjs registers GUILD commands (Italian) and sets each app's
   Interactions Endpoint URL (https://ita-<bot>.aion2-market.workers.dev) through PATCH /applications/@me; then GET /setup?k=<sha256(token)[:16]> refreshes fixed messages.
   * Alberto = ita-verifica (verifica.js): /verifica personaggio screenshot -> card in 📥・richieste-verifica (staff pinged) vf:ok|no -> Verificato + Elyos|Asmodiani (official raceId 1/2)
-    + class + GS tier + separators + nick; /verifica-utente, /verifica-rimuovi [tieni_accesso], /aggiorna; role board in 🎭・ruoli (rb:<roleId>, Interessi + Ping) + 🔄 gs:refresh;
+    + class + GS tier + separators + nick 'Name ⚔️ [MAR]' (lib nickFor: CLASS_EMOJI Unicode + SERVER_CODE from metabot.gg/en/aion-2/servers; the member's own nick is kept and the
+    tail re-added; members above Alberto's role, e.g. Admin, and the owner can't be renamed); /verifica-utente, /verifica-rimuovi [tieni_accesso], /aggiorna; role board in 🎭・ruoli (rb:<roleId>, Interessi + Ping) + 🔄 gs:refresh;
     cron: 10 vlinks per run (refresh, nick follows an in-game rename if the nick still was the old name), deletes other people's messages in ✅・verifica.
     KV vlink:<uid> {server,id,name,t}, vchar:<server>:<id> = uid, vreq:<uid> = 'channel:message' of the pending card. /sweep?k&from&n = manual batches (used for the migration
     of the old /collega links, 11 Nov). Staff = Admin/Moderatore/Helper or admin/manage-server/manage-roles/moderate perms (lib isStaff).
