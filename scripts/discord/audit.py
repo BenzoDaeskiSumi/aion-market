@@ -1,8 +1,8 @@
-# one-off (11 Nov): bot usernames = their role names (the user asked): EVENTS Fabrizio -> Gettulio, MOD Marcello -> Ciro
 import json, os, urllib.request, urllib.error
-for key, name in (('EVENTS', 'Gettulio'), ('MOD', 'Ciro')):
-    try:
-        r = urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v10/users/@me', method='PATCH', data=json.dumps({'username': name}).encode(),
-            headers={'Authorization': f"Bot {os.environ[key + '_TOKEN']}", 'User-Agent': 'DiscordBot (x, 1)', 'Content-Type': 'application/json'}))
-        print(key, '->', json.loads(r.read())['username'])
-    except urllib.error.HTTPError as e: print(key, 'ERR', e.code, e.read()[:300])
+for u in ['https://benzodaeskisumi.github.io/aion-market/img/discord/ita/interessi.png', 'https://benzodaeskisumi.github.io/aion-market/img/discord/rules.png']:
+    try: r = urllib.request.urlopen(urllib.request.Request(u, headers={'User-Agent': 'Mozilla/5.0'})); print(u, r.status, r.headers.get('content-type'), len(r.read()))
+    except urllib.error.HTTPError as e: print(u, e.code)
+G = '1553398446524731435'
+for key in ('VERIFY',):
+    try: urllib.request.urlopen(urllib.request.Request(f'https://discord.com/api/v10/guilds/{G}/members?limit=5', headers={'Authorization': f"Bot {os.environ[key + '_TOKEN']}", 'User-Agent': 'DiscordBot (x, 1)'})); print(key, 'member list ok')
+    except urllib.error.HTTPError as e: print(key, 'member list', e.code, e.read()[:150])
