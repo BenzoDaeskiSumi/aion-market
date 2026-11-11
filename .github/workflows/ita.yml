@@ -38,9 +38,8 @@ jobs:
           printf '\n[[kv_namespaces]]\nbinding = "KV"\nid = "%s"\n' "$id" >> wrangler-${{ matrix.bot }}.toml
           npx -y wrangler@4 deploy -c wrangler-${{ matrix.bot }}.toml > deploy.txt 2>&1 || true
           if ! grep -q 'workers.dev' deploy.txt || grep -q 'ERROR' deploy.txt; then report deploy.txt error; exit 1; fi
-          for s in DISCORD_PUBLIC_KEY:PUB DISCORD_TOKEN:TOKEN DISCORD_APP_ID:APP_ID; do
-            printf '%s' "${!s#*:}" | npx -y wrangler@4 secret put "${s%%:*}" -c wrangler-${{ matrix.bot }}.toml > secret.txt 2>&1 || { report secret.txt error; exit 1; }
-          done
+          put() { printf '%s' "$2" | npx -y wrangler@4 secret put "$1" -c wrangler-${{ matrix.bot }}.toml > secret.txt 2>&1 || { report secret.txt error; exit 1; }; }
+          put DISCORD_PUBLIC_KEY "$PUB"; put DISCORD_TOKEN "$TOKEN"; put DISCORD_APP_ID "$APP_ID"
           echo "URL=$(grep -o 'https://[^ ]*workers.dev' deploy.txt | head -1)" >> $GITHUB_ENV
       - name: Commands + endpoint + fixed messages
         env:
