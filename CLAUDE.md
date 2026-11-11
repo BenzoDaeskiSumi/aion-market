@@ -212,6 +212,10 @@ Apri sul sito. Anyone can press them, each for their own account; the item is th
 /craft <oggetto> (autocomplete from data/recipes.json products) ports craftEngine() from js/craft.js — keep the two in sync. /aiuto lists all commands.
 /raid <titolo> <quando> [posti=8] [ruolo] [note]: sign-up embed with buttons rs:<id>:tank|heal|dps|out|del (beyond 'posti' -> riserve; del = creator or admin);
 KV raid:<id> (expires start+1 day); parseQuando() reads Italian time ('21', 'domani 21', 'sabato 21:30', '25/10 21:00'); the cron (raidReminders) tags the sign-ups once, ~15 min before.
+Ludra sign-up (11 Nov, Legione): channel '🔥・ludra' (after 🏰・dungeon-e-raid, read-only, KV cfg:ludra_ch / cfg:ludra_msg / cfg:ludra_day) with ONE board, every evening at
+LUDRA.hour 22:00 Europe/Rome (change LUDRA in index.js); 2 parties of 1 tank + 1 cleric + 1 chanter + 2 DPS; buttons lu:<date>:t|c|ch|d|out, KV ludra:<date> lists by role in
+sign-up order (first n per role = parties, rest = reserves); ludraTick() in the cron moves the board to the new day at midnight, disables it at the start and tags the reserves
+~1 h before (pinged); after that, a reserve who moves up is tagged by the button handler. Errors KV ludra_err (/timers/status 'ludra').
 /collega <personaggio> (same autocomplete as /personaggio): KV link:<uid> = {server, id, name, cls, cp, serverName, t} + linkc:<server>:<id> = uid (one each way;
 self-declared, no NCSOFT login exists); sets nick + class role (+ 𝐂𝐋𝐀𝐒𝐒𝐈 separator). /scollega removes the keys. /personaggio with no name = own link.
 /collega has 'server' (autocomplete; filters the name suggestions) and admin-only 'utente' (Administrator/Manage Server/Manage Roles: links someone else, may take a
