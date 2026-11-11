@@ -234,6 +234,12 @@ export default {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
     if (url.pathname === '/setup') return url.searchParams.get('k') === await keyOf(env) ? Response.json(await setup(env)) : new Response('no', {status: 403});
+    if (url.pathname === '/sweep') {           // one-off batches after a migration: /sweep?k=…&from=0&n=5
+      if (url.searchParams.get('k') !== await keyOf(env)) return new Response('no', {status: 403});
+      const keys = (await env.KV.list({prefix: 'vlink:'})).keys, from = +url.searchParams.get('from') || 0, n = Math.min(6, +url.searchParams.get('n') || 5), out = [];
+      for (const k of keys.slice(from, from + n)) { const uid = k.name.slice(6), m = await member(env, uid); out.push(m ? (await refresh(env, uid, m).catch((e) => ({err: String(e)}))).err || 'ok' : 'gone'); }
+      return Response.json({total: keys.length, from, out});
+    }
     if (url.pathname === '/status') return Response.json({verify: await env.KV.get('verify_err'), sweep: await env.KV.get('sweep_err')});
     if (req.method !== 'POST') return new Response('Alberto: ok');
     const body = await req.text();
