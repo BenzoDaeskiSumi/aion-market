@@ -2005,7 +2005,7 @@ async function raidReminders(env) {               // cron: tag the sign-ups once
 
 // ---------- Ludra sign-up (Legione, 11 Nov): one board in KV cfg:ludra_ch, every evening at LUDRA.hour Europe/Rome ----------
 // 2 parties (10 players), each 1 tank + 1 cleric + 1 chanter + 2 DPS; the first to sign for a role get the slots, the rest are reserves.
-// KV ludra:<YYYY-MM-DD> = {t: [uid], c: [], ch: [], d: [], pinged}; buttons lu:<date>:t|c|ch|d|out. The cron edits the board when the day changes
+// KV ludra:<YYYY-MM-DD> (format below, luEmpty); buttons lu:<date>:<party>:t|c|ch|d and lu:<date>:out. The cron edits the board when the day changes
 // and ~1 h before the start tags the reserves in the channel; a reserve who moves up after that gets tagged too.
 const LUDRA = {hour: 22, min: 0, parties: 2, tz: 'Europe/Rome'};
 const LU_ROLES = [['t', 'Tank', '🛡️', 1], ['c', 'Cleric', '✨', 1], ['ch', 'Chanter', '🎶', 1], ['d', 'DPS', '⚔️', 2]];   // [key, label, emoji, per party]
@@ -2013,31 +2013,52 @@ function ludraDay(now = Date.now()) {
   const d = localDay(now, LUDRA.tz), key = `${d.y}-${String(d.m).padStart(2, '0')}-${String(d.d).padStart(2, '0')}`;
   return {key, t: atLocal(d.y, d.m, d.d, LUDRA.hour * 60 + LUDRA.min, LUDRA.tz)};
 }
-const luEmpty = () => ({t: [], c: [], ch: [], d: [], pinged: false});
-const luMain = (L) => new Set(LU_ROLES.flatMap(([k, , , n]) => L[k].slice(0, n * LUDRA.parties)));
+// 11 Nov (later): everyone picks the party too. KV ludra:<date> = {p: [{t, c, ch, d}, {…}] (uid lists in sign-up order), pinged}.
+// Slots = the first n of each list; a reserve fills an empty slot of the same role in the other party before staying a reserve.
+const luEmpty = () => ({p: [...Array(LUDRA.parties)].map(() => ({t: [], c: [], ch: [], d: []})), pinged: false});
+function luNorm(L) {                                // old one-list format (first hours of 11 Nov) -> per party, in the old fill order
+  if (!L) return luEmpty();
+  if (L.p) return L;
+  const N = luEmpty();
+  for (const [k, , , n] of LU_ROLES) (L[k] || []).forEach((u, i) => N.p[Math.min(LUDRA.parties - 1, Math.floor(i / n) % LUDRA.parties)][k].push(u));
+  N.pinged = !!L.pinged; return N;
+}
+function luSeat(L) {                                // -> {slots: [party][role] = [uid|null x n], res: [[role, party, uid]]}
+  const slots = L.p.map(() => ({})), res = [];
+  for (const [k, , , n] of LU_ROLES) {
+    const extra = [];
+    L.p.forEach((P, pi) => { slots[pi][k] = [...Array(n)].map((_, j) => P[k][j] || null); P[k].slice(n).forEach((u) => extra.push([pi, u])); });
+    for (const [pi, u] of extra) {
+      const q = slots.findIndex((S) => S[k].includes(null));
+      if (q >= 0) slots[q][k][slots[q][k].indexOf(null)] = u; else res.push([k, pi, u]);
+    }
+  }
+  return {slots, res};
+}
+const luMain = (L) => new Set(luSeat(L).slots.flatMap((S) => Object.values(S).flat()).filter(Boolean));
 async function ludraBoard(env, key, t, L) {
-  const all = LU_ROLES.flatMap(([k]) => L[k]), info = Object.fromEntries(await Promise.all(all.map(async (u) => [u, await linkOf(env, u)])));
+  const all = LU_ROLES.flatMap(([k]) => L.p.flatMap((P) => P[k])), info = Object.fromEntries(await Promise.all(all.map(async (u) => [u, await linkOf(env, u)])));
   const who = (u) => (u ? (info[u] ? `**${info[u].name}** · ${info[u].cls}` : `<@${u}>`) : '*libero*');
-  const past = Date.now() > t, ts = Math.floor(t / 1000);
-  const fields = [...Array(LUDRA.parties)].map((_, p) => ({name: `Party ${p + 1}`, inline: true, value: LU_ROLES.flatMap(([k, , emo, n]) =>
-    [...Array(n)].map((__, j) => `${emo} ${who(L[k][p * n + j])}`)).join('\n')}));
-  const res = LU_ROLES.flatMap(([k, , emo, n]) => L[k].slice(n * LUDRA.parties).map((u) => `${emo} ${who(u)}`));
-  fields.push({name: `🪑 Riserve (${res.length})`, inline: false, value: res.join('\n') || '—'});
-  const main = luMain(L).size, tot = LU_ROLES.reduce((a, [, , , n]) => a + n * LUDRA.parties, 0);
-  const btn = (k, label, emo, style) => ({type: 2, style, custom_id: `lu:${key}:${k}`, label, emoji: {name: emo}, disabled: past});
+  const past = Date.now() > t, ts = Math.floor(t / 1000), {slots, res} = luSeat(L);
+  const fields = slots.map((S, p) => ({name: `Party ${p + 1}`, inline: true, value: LU_ROLES.flatMap(([k, , emo]) => S[k].map((u) => `${emo} ${who(u)}`)).join('\n')}));
+  fields.push({name: `🪑 Riserve (${res.length})`, inline: false, value: res.map(([k, pi, u]) => `${LU_ROLES.find((r) => r[0] === k)[2]} ${who(u)} · voleva il Party ${pi + 1}`).join('\n') || '—'});
+  const main = slots.reduce((a, S) => a + Object.values(S).flat().filter(Boolean).length, 0), tot = LU_ROLES.reduce((a, [, , , n]) => a + n * LUDRA.parties, 0);
+  const btn = (id, label, emo, style) => ({type: 2, style, custom_id: `lu:${key}:${id}`, label, emoji: {name: emo}, disabled: past});
+  const STY = {t: 1, c: 3, ch: 3, d: 4};
   return {content: '', embeds: [{title: `🔥 Ludra · ${new Date(t).toLocaleDateString('it-IT', {timeZone: LUDRA.tz, weekday: 'long', day: 'numeric', month: 'long'})}`, color: past ? 0x5c5f66 : 0xe8603c,
-      description: `🕙 <t:${ts}:F> · <t:${ts}:R>\n\nFirma con il ruolo che porti. Ogni party: 1 tank, 1 cleric, 1 chanter, 2 DPS.\nI primi entrano nei party, chi firma dopo va in **riserva**: Mauro tagga le riserve un'ora prima.\n\n**${main}/${tot}** posti presi`,
-      fields, footer: {text: past ? 'Iscrizioni chiuse: a domani' : 'Premi di nuovo un ruolo per cambiarlo · Ritira per toglierti'}}],
-    components: [{type: 1, components: [btn('t', 'Tank', '🛡️', 1), btn('c', 'Cleric', '✨', 3), btn('ch', 'Chanter', '🎶', 3), btn('d', 'DPS', '⚔️', 4), btn('out', 'Ritira', '✖️', 2)]}],
+      description: `🕙 <t:${ts}:F> · <t:${ts}:R>\n\nScegli party e ruolo. Ogni party: 1 tank, 1 cleric, 1 chanter, 2 DPS.\nSe il tuo posto è preso ma nell'altro party c'è spazio per il tuo ruolo, Mauro ti mette lì; altrimenti vai in **riserva** e Mauro ti tagga un'ora prima.\n\n**${main}/${tot}** posti presi`,
+      fields, footer: {text: past ? 'Iscrizioni chiuse: a domani' : 'Premi un altro pulsante per cambiare party o ruolo · Ritira per toglierti'}}],
+    components: [...L.p.map((_, pi) => ({type: 1, components: LU_ROLES.map(([k, label, emo]) => btn(`${pi}:${k}`, `${pi + 1} · ${label}`, emo, STY[k]))})),
+      {type: 1, components: [btn('out', 'Ritira', '✖️', 2)]}],
     allowed_mentions: {parse: []}};
 }
 async function ludraButton(i, env) {
-  const [, key, k] = i.data.custom_id.split(':'), cur = ludraDay();
+  const [, key, a, b] = i.data.custom_id.split(':'), cur = ludraDay();
   if (key !== cur.key) { await ludraTick(env).catch(() => {}); return oops('Questa lista è di un altro giorno: usa quella aggiornata.'); }
   if (Date.now() > cur.t) return oops('Le iscrizioni di stasera sono chiuse: il Ludra è già iniziato.');
-  const uid = (i.member?.user || i.user).id, L = JSON.parse(await env.USERS.get('ludra:' + key) || 'null') || luEmpty(), before = luMain(L);
-  for (const [r] of LU_ROLES) L[r] = L[r].filter((x) => x !== uid);
-  if (k !== 'out') L[k].push(uid);
+  const uid = (i.member?.user || i.user).id, L = luNorm(JSON.parse(await env.USERS.get('ludra:' + key) || 'null')), before = luMain(L);
+  for (const P of L.p) for (const [r] of LU_ROLES) P[r] = P[r].filter((x) => x !== uid);
+  if (a !== 'out') { const pi = +a, k = b; if (!L.p[pi] || !LU_ROLES.some((r) => r[0] === k)) return oops('Pulsante non valido.'); L.p[pi][k].push(uid); }
   await env.USERS.put('ludra:' + key, JSON.stringify(L), {expiration: Math.floor(cur.t / 1000) + 86400});
   if (L.pinged) {                                   // after the reserve call: whoever moves up into a party gets tagged
     const up = [...luMain(L)].filter((u) => !before.has(u) && u !== uid);
@@ -2047,7 +2068,7 @@ async function ludraButton(i, env) {
 }
 async function ludraTick(env) {                     // cron: keep the board on today's date, tag the reserves ~1 h before
   const ch = await env.USERS.get('cfg:ludra_ch'); if (!ch) return;
-  const {key, t} = ludraDay(), L = JSON.parse(await env.USERS.get('ludra:' + key) || 'null') || luEmpty();
+  const {key, t} = ludraDay(), L = luNorm(JSON.parse(await env.USERS.get('ludra:' + key) || 'null'));
   const msg = await env.USERS.get('cfg:ludra_msg'), shown = await env.USERS.get('cfg:ludra_day'), now = Date.now();
   const closing = now > t && now < t + 20 * 6e4;                                   // disable the buttons once it has started
   if (!msg || shown !== key || closing) {
@@ -2058,7 +2079,7 @@ async function ludraTick(env) {                     // cron: keep the board on t
     if (!r.ok) await putErr(env, 'ludra_err', `board ${r.status} ${(await r.text()).slice(0, 200)}`);
   }
   if (!L.pinged && t - now <= 65 * 6e4 && t - now > 30 * 6e4) {
-    const main = luMain(L), res = LU_ROLES.flatMap(([k]) => L[k]).filter((u) => !main.has(u));
+    const res = luSeat(L).res.map(([, , u]) => u);
     L.pinged = true;
     await env.USERS.put('ludra:' + key, JSON.stringify(L), {expiration: Math.floor(t / 1000) + 86400});
     if (res.length) await dapi(env, 'POST', `/channels/${ch}/messages`, {content: `🪑 **Riserve del Ludra** <t:${Math.floor(t / 1000)}:R>: ${res.map((u) => `<@${u}>`).join(' ')}\nI party sono pieni, ma potreste servire: restate disponibili. Se qualcuno si ritira, Mauro vi tagga qui.`,
