@@ -1,9 +1,8 @@
-# one-off (11 Nov): avatars of the Italian community bots (img/discord/bots/*.png, drawn over Mauro's avatar)
-import base64, json, os, urllib.request, urllib.error
-for key, f in (('VERIFY', 'alberto'), ('EVENTS', 'fabrizio'), ('MOD', 'ciro')):
-    data = 'data:image/png;base64,' + base64.b64encode(open(f'img/discord/bots/{f}.png', 'rb').read()).decode()
+# one-off (11 Nov): bot usernames = their role names (the user asked): EVENTS Fabrizio -> Gettulio, MOD Marcello -> Ciro
+import json, os, urllib.request, urllib.error
+for key, name in (('EVENTS', 'Gettulio'), ('MOD', 'Ciro')):
     try:
-        r = urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v10/users/@me', method='PATCH', data=json.dumps({'avatar': data}).encode(),
+        r = urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v10/users/@me', method='PATCH', data=json.dumps({'username': name}).encode(),
             headers={'Authorization': f"Bot {os.environ[key + '_TOKEN']}", 'User-Agent': 'DiscordBot (x, 1)', 'Content-Type': 'application/json'}))
-        u = json.loads(r.read()); print(key, u['username'], 'avatar set', u['avatar'])
-    except urllib.error.HTTPError as e: print(key, 'ERR', e.code, e.read()[:200])
+        print(key, '->', json.loads(r.read())['username'])
+    except urllib.error.HTTPError as e: print(key, 'ERR', e.code, e.read()[:300])
