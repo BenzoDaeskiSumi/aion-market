@@ -1,0 +1,6 @@
+# verifica bot of the Italian Aion 2 community (deployed by .github/workflows/ita.yml)
+name = "ita-verifica"
+main = "verifica.js"
+compatibility_date = "2025-09-01"
+[triggers]
+crons = ["*/15 * * * *"]

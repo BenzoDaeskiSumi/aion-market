@@ -1,0 +1,57 @@
+name: Community italiana (bot)
+# Deploys the three bots of the Italian Aion 2 community (ita/*.js, one Cloudflare Worker + one KV namespace each),
+# registers their guild commands, points each app's Interactions Endpoint URL at its Worker and refreshes the fixed messages.
+on:
+  push:
+    branches: [main]
+    paths: ['ita/**', '.github/workflows/ita.yml']
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {bot: verifica, p: VERIFY}
+          - {bot: eventi, p: EVENTS}
+          - {bot: mod, p: MOD}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Deploy ita-${{ matrix.bot }}
+        working-directory: ita
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PUB: ${{ secrets[format('{0}_PUBLIC_KEY', matrix.p)] }}
+          TOKEN: ${{ secrets[format('{0}_TOKEN', matrix.p)] }}
+          APP_ID: ${{ secrets[format('{0}_APP_ID', matrix.p)] }}
+        run: |
+          report() { tail -n 25 "$1" | sed 's/\x1b\[[0-9;]*m//g' | grep -v '^\s*$' | while IFS= read -r l; do echo "::$2::$l"; done; }
+          [ -n "$PUB" ] && [ -n "$TOKEN" ] && [ -n "$APP_ID" ] || { echo "::error::secrets ${{ matrix.p }}_* missing"; exit 1; }
+          T=ita-${{ matrix.bot }}
+          kvid() { npx -y wrangler@4 kv namespace list 2>/dev/null | jq -r --arg t "$T" '[.[] | select(.title == $t)][0].id // empty'; }
+          id=$(kvid); if [ -z "$id" ]; then npx -y wrangler@4 kv namespace create "$T" > kv.txt 2>&1 || report kv.txt error; id=$(kvid); fi
+          [ -n "$id" ] || { echo "::error::KV namespace $T missing"; exit 1; }
+          printf '\n[[kv_namespaces]]\nbinding = "KV"\nid = "%s"\n' "$id" >> wrangler-${{ matrix.bot }}.toml
+          npx -y wrangler@4 deploy -c wrangler-${{ matrix.bot }}.toml > deploy.txt 2>&1 || true
+          if ! grep -q 'workers.dev' deploy.txt || grep -q 'ERROR' deploy.txt; then report deploy.txt error; exit 1; fi
+          for s in DISCORD_PUBLIC_KEY:PUB DISCORD_TOKEN:TOKEN DISCORD_APP_ID:APP_ID; do
+            printf '%s' "${!s#*:}" | npx -y wrangler@4 secret put "${s%%:*}" -c wrangler-${{ matrix.bot }}.toml > secret.txt 2>&1 || { report secret.txt error; exit 1; }
+          done
+          echo "URL=$(grep -o 'https://[^ ]*workers.dev' deploy.txt | head -1)" >> $GITHUB_ENV
+      - name: Commands + endpoint + fixed messages
+        env:
+          TOKEN: ${{ secrets[format('{0}_TOKEN', matrix.p)] }}
+          APP_ID: ${{ secrets[format('{0}_APP_ID', matrix.p)] }}
+        run: |
+          sleep 15
+          node ita/register.mjs ${{ matrix.bot }} "$URL" 2>&1 | tee reg.txt; s=${PIPESTATUS[0]}; [ $s -eq 0 ] || sed 's/^/::error::/' reg.txt
+          K=$(printf '%s' "$TOKEN" | sha256sum | cut -c1-16)
+          case ${{ matrix.bot }} in
+            verifica|mod) echo "::notice::setup $(curl -s "$URL/setup?k=$K" | head -c 900)";;
+            eventi) echo "::notice::tick $(curl -s "$URL/tick" | head -c 300)";;
+          esac
+          exit $s
