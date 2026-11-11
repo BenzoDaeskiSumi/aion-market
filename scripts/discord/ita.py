@@ -59,7 +59,10 @@ P = dict(VIEW=0x400, SEND=0x800, EMBED=0x4000, ATTACH=0x8000, HIST=0x10000, REAC
          VAD=0x2000000, THREADS=0x4000000000, PUBTH=0x800000000, PRIVTH=0x1000000000, SLASH=0x80000000, MENTION=0x20000, MUTE=0x400000, MOVE=0x1000000,
          DEAF=0x800000, KICK=0x2, BAN=0x4, MODERATE=0x10000000000, NICK=0x8000000, ROLES=0x10000000, CHANNELS=0x10, AUDIT=0x80, ADMIN=0x8, MGUILD=0x20,
          MTHREADS=0x400000000, EVENTS=0x200000000)
-def bits(*names): return str(sum(P[n] for n in names))
+def bits(*names):                     # OR, not sum: the same permission can appear twice (CHAT and VOICE both have VIEW)
+    v = 0
+    for n in names: v |= P[n]
+    return str(v)
 GUILD_PERMS = {
     'admin': bits('ADMIN'),
     'mod': bits('KICK', 'BAN', 'MODERATE', 'MSGMAN', 'MTHREADS', 'NICK', 'MUTE', 'MOVE', 'DEAF', 'AUDIT', 'MENTION', 'EVENTS'),
