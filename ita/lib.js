@@ -115,6 +115,17 @@ export async function charProfile(server, id) {   // one official call: name, cl
     serverName: pr.serverName || '', legion: pr.regionName || '', race: pr.raceId === 1 ? 'Elyos' : pr.raceId === 2 ? 'Asmodiani' : (/elyos/i.test(pr.raceName || '') ? 'Elyos' : 'Asmodiani')};
 }
 export const CLASSES = ['Gladiator', 'Templar', 'Assassin', 'Ranger', 'Sorcerer', 'Spiritmaster', 'Cleric', 'Chanter'];
+// nickname = 'Name ⚔️ [MAR]': class emoji (plain Unicode: custom emojis can't go in nicknames) + server code as listed by MetaBot.GG (metabot.gg/en/aion-2/servers)
+export const CLASS_EMOJI = {Gladiator: '⚔️', Templar: '🛡️', Assassin: '🗡️', Ranger: '🏹', Sorcerer: '🔮', Spiritmaster: '👻', Cleric: '✨', Chanter: '🎶'};
+export const SERVER_CODE = {Bakarma: 'BAK', Daminu: 'DAM', Fregion: 'FRE', Gauss: 'GAU', Hithanya: 'HIT', Ishtar: 'ISH', Kaisinel: 'KAI', Kasaka: 'KAS', Kochi: 'KOC',
+  Lamuatan: 'LAM', Luteros: 'LUT', Meslamtaeda: 'MES', Nania: 'NAN', Nathara: 'NAT', Nezekan: 'NEZ', Phernos: 'PHE', Siel: 'SIE', Tahavatha: 'TAH', Tiamat: 'TIA',
+  Tsenka: 'TSE', Vaizel: 'VAI', Yustiel: 'YUS', Ariel: 'ARI', Agnita: 'AGN', Atiel: 'ATI', Azphel: 'AZP', Baba: 'BAB', Beritra: 'BER', Ereshkigal: 'ERE', Fafnir: 'FAF',
+  Hadala: 'HAD', Indnath: 'IND', Israphel: 'ISR', Kromede: 'KRO', Liumiel: 'LUM', Ludra: 'LUD', Marchutan: 'MAR', Munin: 'MUN', Nemon: 'NEM', Odar: 'ODA', Quai: 'QUA',
+  Tassin: 'TAS', Triniel: 'TRI', Ulgorn: 'ULG', Zemurru: 'ZEM', Zikel: 'ZIK'};
+export function nickFor(prof) {
+  const tail = `${CLASS_EMOJI[prof.cls] ? ' ' + CLASS_EMOJI[prof.cls] : ''} [${SERVER_CODE[prof.serverName] || String(prof.serverName || '').slice(0, 3).toUpperCase()}]`;
+  return prof.name.slice(0, 32 - [...tail].length - 1) + tail;
+}
 export const GS_TIERS = [3000, 2800, 2500, 2100, 1400, 700];
 export const gsTier = (il) => GS_TIERS.find((t) => il >= t);
 export const fmt = (v) => (v == null ? '—' : new Intl.NumberFormat('it-IT').format(Math.round(v)));

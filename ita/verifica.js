@@ -4,7 +4,7 @@
 // Role board in #🎭・ruoli: buttons rb:<roleId> (Interessi + Ping). Cron: refreshes 10 verified members per run, keeps #✅・verifica clean.
 // KV: vlink:<uid> = {server, id, name, t}, vchar:<server>:<id> = uid (one character per account), vreq:<uid> = card message id (7 days), setup:* = message ids.
 import {GUILD, verified, dapi, djson, reply, oops, defer, hook, opt, uidOf, roles, roleId, sepId, channelId, isStaff, logTo, dm, putErr,
-  charChoices, charProfile, CLASSES, GS_TIERS, gsTier, fmt} from './lib.js';
+  charChoices, charProfile, CLASSES, GS_TIERS, gsTier, fmt, nickFor} from './lib.js';
 
 const FACTIONS = ['Elyos', 'Asmodiani'];
 const PICK = {Interessi: [['PvE', '🐉', 'dungeon, boss, raid'], ['PvP', '⚔️', 'Abisso, assedi, arene'], ['Market e Crafting', '💰', 'prezzi, craft, affari']],
@@ -44,7 +44,7 @@ async function applyVerify(env, uid, prof, by) {
   const tier = gsTier(prof.il);
   const ok = await syncRoles(env, uid, new Set(m.roles), {Verificato: 'Verificato', Fazione: prof.race, Classe: CLASSES.includes(prof.cls) ? prof.cls : null, 'Gear Score': tier ? `GS ${tier}+` : null},
     `Verifica: ${prof.name}`);
-  const nick = (await dapi(env, 'PATCH', `/guilds/${GUILD}/members/${uid}`, {nick: prof.name.slice(0, 32)}, 'Verifica: nome del personaggio')).ok;
+  const nick = (await dapi(env, 'PATCH', `/guilds/${GUILD}/members/${uid}`, {nick: nickFor(prof)}, 'Verifica: nome del personaggio')).ok;
   await logTo(env, {color: 0x2ecc71, title: '✅ Verificato', description: `<@${uid}> → **${prof.name}** · ${prof.serverName} · ${prof.race} · ${prof.cls} · GS ${fmt(prof.il)}${by ? `\nda <@${by}>` : ''}`});
   return {ok, nick};
 }
@@ -122,10 +122,10 @@ async function refresh(env, uid, m) {           // own roles from the official p
   m = m || await member(env, uid); if (!m) return {err: 'Non sei nel server.'};
   const tier = gsTier(prof.il);
   await syncRoles(env, uid, new Set(m.roles), {Verificato: 'Verificato', Fazione: prof.race, Classe: CLASSES.includes(prof.cls) ? prof.cls : null, 'Gear Score': tier ? `GS ${tier}+` : null}, 'Aggiornamento dal profilo ufficiale');
-  if (prof.name !== L.name) {
-    if (!m.nick || m.nick === L.name) await dapi(env, 'PATCH', `/guilds/${GUILD}/members/${uid}`, {nick: prof.name.slice(0, 32)}, 'Nome del personaggio cambiato');
-    await env.KV.put('vlink:' + uid, JSON.stringify({...L, name: prof.name, t: Date.now()}));
-  }
+  // nick 'Name ⚔️ [MAR]': set it when it is still the character name (old format) or our format, so a nick someone chose by hand is left alone
+  const want = nickFor(prof), ours = !m.nick || m.nick === L.name || m.nick.startsWith(L.name + ' ') || m.nick === prof.name || m.nick.startsWith(prof.name + ' ');
+  if (ours && m.nick !== want) await dapi(env, 'PATCH', `/guilds/${GUILD}/members/${uid}`, {nick: want}, 'Nick: nome · classe · server');
+  if (prof.name !== L.name) await env.KV.put('vlink:' + uid, JSON.stringify({...L, name: prof.name, t: Date.now()}));
   return {prof};
 }
 async function decide(i, env, ctx) {
@@ -196,7 +196,7 @@ async function setup(env) {
     description: ['Aperta a **tutti i giocatori italiani** di Aion 2, **Elyos e Asmodiani**, su qualsiasi server EU.', '',
       '**1.** Fai uno screenshot del gioco in cui si legge il **nome del tuo personaggio** (per esempio la finestra del personaggio, tasto P).',
       '**2.** Scrivi `/verifica` qui sotto, scegli il personaggio dai suggerimenti e allega lo screenshot.',
-      '**3.** Lo staff controlla e ti approva: ricevi un messaggio privato e ottieni fazione, classe e Gear Score in automatico. Il tuo nick diventa il nome del personaggio.', '',
+      '**3.** Lo staff controlla e ti approva: ricevi un messaggio privato e ottieni fazione, classe e Gear Score in automatico. Il tuo nick diventa `Nome ⚔️ [SERVER]`: personaggio, classe e sigla del server.', '',
       'Problemi? Scrivi in #🆘・aiuto-verifica.'].join('\n')}]});
   const rch = await channelId(env, '・ruoli');
   for (const [g, items] of Object.entries(PICK)) {
