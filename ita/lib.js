@@ -122,9 +122,10 @@ export const SERVER_CODE = {Bakarma: 'BAK', Daminu: 'DAM', Fregion: 'FRE', Gauss
   Tsenka: 'TSE', Vaizel: 'VAI', Yustiel: 'YUS', Ariel: 'ARI', Agnita: 'AGN', Atiel: 'ATI', Azphel: 'AZP', Baba: 'BAB', Beritra: 'BER', Ereshkigal: 'ERE', Fafnir: 'FAF',
   Hadala: 'HAD', Indnath: 'IND', Israphel: 'ISR', Kromede: 'KRO', Liumiel: 'LUM', Ludra: 'LUD', Marchutan: 'MAR', Munin: 'MUN', Nemon: 'NEM', Odar: 'ODA', Quai: 'QUA',
   Tassin: 'TAS', Triniel: 'TRI', Ulgorn: 'ULG', Zemurru: 'ZEM', Zikel: 'ZIK'};
-export function nickFor(prof) {
+export const TAIL_RE = / (?:\S+ )?\[[A-Z]{3}\]$/u;                 // ' ⚔️ [MAR]' at the end of a nick
+export function nickFor(prof, base) {                                 // base = the nick someone chose (without our tail), else the character name
   const tail = `${CLASS_EMOJI[prof.cls] ? ' ' + CLASS_EMOJI[prof.cls] : ''} [${SERVER_CODE[prof.serverName] || String(prof.serverName || '').slice(0, 3).toUpperCase()}]`;
-  return prof.name.slice(0, 32 - [...tail].length - 1) + tail;
+  return [...String(base || prof.name)].slice(0, 32 - [...tail].length).join('') + tail;
 }
 export const GS_TIERS = [3000, 2800, 2500, 2100, 1400, 700];
 export const gsTier = (il) => GS_TIERS.find((t) => il >= t);

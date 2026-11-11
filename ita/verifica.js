@@ -4,7 +4,7 @@
 // Role board in #🎭・ruoli: buttons rb:<roleId> (Interessi + Ping). Cron: refreshes 10 verified members per run, keeps #✅・verifica clean.
 // KV: vlink:<uid> = {server, id, name, t}, vchar:<server>:<id> = uid (one character per account), vreq:<uid> = card message id (7 days), setup:* = message ids.
 import {GUILD, verified, dapi, djson, reply, oops, defer, hook, opt, uidOf, roles, roleId, sepId, channelId, isStaff, logTo, dm, putErr,
-  charChoices, charProfile, CLASSES, GS_TIERS, gsTier, fmt, nickFor} from './lib.js';
+  charChoices, charProfile, CLASSES, GS_TIERS, gsTier, fmt, nickFor, TAIL_RE} from './lib.js';
 
 const FACTIONS = ['Elyos', 'Asmodiani'];
 const PICK = {Interessi: [['PvE', '🐉', 'dungeon, boss, raid'], ['PvP', '⚔️', 'Abisso, assedi, arene'], ['Market e Crafting', '💰', 'prezzi, craft, affari']],
@@ -122,9 +122,11 @@ async function refresh(env, uid, m) {           // own roles from the official p
   m = m || await member(env, uid); if (!m) return {err: 'Non sei nel server.'};
   const tier = gsTier(prof.il);
   await syncRoles(env, uid, new Set(m.roles), {Verificato: 'Verificato', Fazione: prof.race, Classe: CLASSES.includes(prof.cls) ? prof.cls : null, 'Gear Score': tier ? `GS ${tier}+` : null}, 'Aggiornamento dal profilo ufficiale');
-  // nick 'Name ⚔️ [MAR]': set it when it is still the character name (old format) or our format, so a nick someone chose by hand is left alone
-  const want = nickFor(prof), ours = !m.nick || m.nick === L.name || m.nick.startsWith(L.name + ' ') || m.nick === prof.name || m.nick.startsWith(prof.name + ' ');
-  if (ours && m.nick !== want) await dapi(env, 'PATCH', `/guilds/${GUILD}/members/${uid}`, {nick: want}, 'Nick: nome · classe · server');
+    // the member's own nick is kept (our ' ⚔️ [MAR]' tail is re-added at the end); after an in-game rename the old character name becomes the new one
+  let base = (m.nick || '').replace(TAIL_RE, '').trim();
+  if (!base || base === L.name) base = prof.name;
+  const want = nickFor(prof, base);
+  if (m.nick !== want) await dapi(env, 'PATCH', `/guilds/${GUILD}/members/${uid}`, {nick: want}, 'Nick: nome · classe · server');
   if (prof.name !== L.name) await env.KV.put('vlink:' + uid, JSON.stringify({...L, name: prof.name, t: Date.now()}));
   return {prof};
 }
