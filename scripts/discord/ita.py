@@ -121,7 +121,7 @@ STAGE = '🏯 Assedi'      # created in VOCALI once the server is Community
 
 def run_apply():
     me = api('GET', '/users/@me'); roles = api('GET', f'/guilds/{G}/roles'); byn = {r['name']: r for r in roles}
-    bot_ids = {k: b['app'] for k, b in BOTS.items() if b['app']}
+    bot_ids = {k: b['app'] for k, b in BOTS.items() if b['app'] and api('GET', f'/guilds/{G}/members/{b["app"]}')}
     # ---- roles
     for name, color, hoist, kind in ROLES:
         body = {'name': name, 'color': color, 'hoist': hoist, 'mentionable': kind == 'ment', 'permissions': GUILD_PERMS.get(kind, '0')}
@@ -210,5 +210,5 @@ def run_apply():
 if MODE == 'ita-check':
     check()
 elif MODE == 'ita-apply':
-    if check(): run_apply()
-    else: print('\nFix the bots above first.')
+    check(); print()
+    run_apply()      # bots that are not ready yet get their overwrites on a later re-run
