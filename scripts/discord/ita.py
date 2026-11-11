@@ -152,7 +152,7 @@ def run_apply():
     rid = lambda n: byn[n]['id']
     VER, STAFF = rid('Verificato'), [rid('Admin'), rid('Moderatore'), rid('Helper')]
     bot_member = lambda uid, *perm: {'id': uid, 'type': 1, 'allow': bits(*perm), 'deny': '0'}
-    BOT_ALL = [bot_member(me['id'], *CHAT, 'MSGMAN', 'CONNECT', 'MOVE')] + [bot_member(b, *CHAT, 'MSGMAN', 'CONNECT') for b in bot_ids.values()]
+    BOT_ALL = [bot_member(me['id'], *CHAT, 'MSGMAN', 'CONNECT', 'MOVE')] + [bot_member(b, *CHAT, 'MSGMAN', 'CONNECT', 'PRIVTH', 'MTHREADS') for b in bot_ids.values()]
     # ---- categories + channels
     chs = api('GET', f'/guilds/{G}/channels')
     def find(name, typ, parent=None):

@@ -13,6 +13,8 @@ const CMDS = {
     {name: 'verifica-rimuovi', description: 'Staff: togli la verifica a un membro', default_member_permissions: ROLES,
       options: [o(U, 'utente', 'Il membro'), o(B, 'tieni_accesso', 'Lascia ruoli e nick (toglie solo il collegamento al personaggio)', {required: false})]},
     {name: 'aggiorna', description: 'Aggiorna i tuoi ruoli (fazione, classe, Gear Score) dal sito ufficiale'},
+    {name: 'legione', description: 'Staff: rendi un membro Legion Leader e crea/aggiorna il ruolo della sua legione', default_member_permissions: ROLES,
+      options: [o(U, 'leader', 'Il leader (verificato) della legione')]},
   ],
   eventi: [
     {name: 'raid', description: 'Crea una lista di iscrizione per un raid o un evento',
