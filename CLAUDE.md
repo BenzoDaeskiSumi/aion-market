@@ -257,6 +257,30 @@ each legion will get its own section later; verification like MarchutanEU; separ
 - Mauro's Legione cron tasks are OFF (updateTimers, signupCalls, raidReminders, ludraTick, legionSweep, weeklyReport, weekFix removed from scheduled(); /timers/run does nothing):
   they would re-create deleted channels. KV link:/linkc: (/collega) still there for the new verification. Everything in the Legione notes above describes the OLD server.
 
+## Italian community (ex Legione server, 11 Nov 2026): structure + three bots
+- Structure: scripts/discord/ita.py (Discord setup mode ita-check = secrets + bots in the server; ita-apply = roles, categories, channels, permissions; idempotent by name).
+  Roles: Admin (Administrator), Moderatore, Helper, [bots' roles], Shotcaller, Legion Leader, separators (bold + U+3164) Fazione (Elyos, Asmodiani) / Classe (8) /
+  Gear Score (GS 3000+ … 700+) / Interessi (PvE, PvP, Market e Crafting) / Ping (Ping Ludra, Ping Assedi, Ping Dungeon), Verificato.
+  Categories: 📌 BENVENUTO (everyone: regole, verifica, aiuto-verifica) · 📢 INFO (annunci, guida-server, ruoli, patch-e-news, ticket) · 💬 COMMUNITY (chiacchiere,
+  forum domande, screenshot-e-clip, meme) · ⚔️ GIOCO (cerca-gruppo, ludra, pvp-abisso, assedi, forum guide) · 💰 MARKET · 🛡️ LEGIONI (forum legioni: Legion Leader posts) ·
+  🔊 VOCALI · 🔒 STAFF (staff-chat, richieste-verifica, log). Not verified = only BENVENUTO + 🍻 Taverna (left open to everyone for now). Community mode + Stage 🏯 Assedi: not yet.
+  Role moves: one role per PATCH; swapping two neighbours works only as a 2-item PATCH.
+- Bots = separate Workers in ita/ (shared ita/lib.js), workflow 'Community italiana (bot)' (.github/workflows/ita.yml, on push ita/**): KV namespace ita-<bot> each,
+  secrets VERIFY_/EVENTS_/MOD_ + APP_ID/PUBLIC_KEY/TOKEN (repo) -> Worker secrets DISCORD_*; ita/register.mjs registers GUILD commands (Italian) and sets each app's
+  Interactions Endpoint URL (https://ita-<bot>.aion2-market.workers.dev) through PATCH /applications/@me; then GET /setup?k=<sha256(token)[:16]> refreshes fixed messages.
+  * Alberto = ita-verifica (verifica.js): /verifica personaggio screenshot -> card in 📥・richieste-verifica (staff pinged) vf:ok|no -> Verificato + Elyos|Asmodiani (official raceId 1/2)
+    + class + GS tier + separators + nick; /verifica-utente, /verifica-rimuovi [tieni_accesso], /aggiorna; role board in 🎭・ruoli (rb:<roleId>, Interessi + Ping) + 🔄 gs:refresh;
+    cron: 10 vlinks per run (refresh, nick follows an in-game rename if the nick still was the old name), deletes other people's messages in ✅・verifica.
+    KV vlink:<uid> {server,id,name,t}, vchar:<server>:<id> = uid, vreq:<uid> = 'channel:message' of the pending card. /sweep?k&from&n = manual batches (used for the migration
+    of the old /collega links, 11 Nov). Staff = Admin/Moderatore/Helper or admin/manage-server/manage-roles/moderate perms (lib isStaff).
+  * Fabrizio = ita-eventi (eventi.js): Ludra board in 🔥・ludra (same rules as Mauro's old one; 19:00 tags 'Ping Ludra' once if slots are free), /raid (Italian, rs: buttons,
+    reminders ~15 min before). /tick runs the board once.
+  * Marcello = ita-mod (mod.js): /avverti (3rd = 1 h timeout) /avvertimenti /azzera-avvertimenti /timeout /togli-timeout /kick /ban /sban /pulisci, all logged in 🧹・log;
+    tickets in 🎫・ticket (tk:open:segnalazione|idea|aiuto -> private thread, tk:close:<uid>); /setup also owns the AutoMod rules (mention spam 15, invite links, Kinah selling,
+    spam; the single-instance types are taken over from older rules). Its role got Manage Server for AutoMod.
+- Mauro: no guild commands there any more (register.mjs puts [] for that guild); its global commands (/item, /character, /verify…) still show: hide /verify* in the server's
+  Integrations settings if confusing.
+
 ## Concept-art friends' server (not Aion; the user's academy friends, guild 1565296605257670727, Mauro is admin there)
 - scripts/discord/art.py (Discord setup mode art-plan / art-apply): never deletes; renames Discord's defaults, creates INFO (benvenuto/regole/annunci read-only),
   STUDIO (wip, forum aiuto with tags — the user dislikes the word 'critica': use 'aiuto', lavori-finiti, sfida-settimanale, studi), RISORSE, CHIACCHIERE, VOCALI; specialty roles via the picker rp:spec (generic rolePick).
