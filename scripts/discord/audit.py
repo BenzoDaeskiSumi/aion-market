@@ -1,7 +1,9 @@
-# one-off (11 Nov): Mauro's avatar, base for the three bots' avatars (saved on the probe branch as mauro.png)
-import base64, json, os, urllib.request
-T = os.environ['DISCORD_TOKEN']
-me = json.loads(urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v10/users/@me', headers={'Authorization': f'Bot {T}', 'User-Agent': 'DiscordBot (x, 1)'})).read())
-url = f"https://cdn.discordapp.com/avatars/{me['id']}/{me['avatar']}.png?size=1024"
-data = urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})).read()
-print('B64', base64.b64encode(data).decode())
+# one-off (11 Nov): avatars of the Italian community bots (img/discord/bots/*.png, drawn over Mauro's avatar)
+import base64, json, os, urllib.request, urllib.error
+for key, f in (('VERIFY', 'alberto'), ('EVENTS', 'fabrizio'), ('MOD', 'ciro')):
+    data = 'data:image/png;base64,' + base64.b64encode(open(f'img/discord/bots/{f}.png', 'rb').read()).decode()
+    try:
+        r = urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v10/users/@me', method='PATCH', data=json.dumps({'avatar': data}).encode(),
+            headers={'Authorization': f"Bot {os.environ[key + '_TOKEN']}", 'User-Agent': 'DiscordBot (x, 1)', 'Content-Type': 'application/json'}))
+        u = json.loads(r.read()); print(key, u['username'], 'avatar set', u['avatar'])
+    except urllib.error.HTTPError as e: print(key, 'ERR', e.code, e.read()[:200])
