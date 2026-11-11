@@ -265,7 +265,7 @@ each legion will get its own section later; verification like MarchutanEU; separ
   forum domande, screenshot-e-clip, meme) · ⚔️ GIOCO (cerca-gruppo, ludra, pvp-abisso, assedi, forum guide) · 💰 MARKET · 🛡️ LEGIONI (forum legioni: Legion Leader posts) ·
   🔊 VOCALI · 🔒 STAFF (staff-chat, richieste-verifica, log). Not verified = only BENVENUTO + 🍻 Taverna (left open to everyone for now). Community mode + Stage 🏯 Assedi: not yet.
   Role moves: one role per PATCH; swapping two neighbours works only as a 2-item PATCH. ita.py bits() ORs permission names (a sum counted VIEW twice: 11 Nov bug, members saw nothing).
-- Bots = separate Workers in ita/ (shared ita/lib.js), workflow 'Community italiana (bot)' (.github/workflows/ita.yml, on push ita/**): KV namespace ita-<bot> each,
+- Bots (usernames = their role names since 11 Nov; avatars img/discord/bots/*.png, drawn over Mauro's) = separate Workers in ita/ (shared ita/lib.js), workflow 'Community italiana (bot)' (.github/workflows/ita.yml, on push ita/**): KV namespace ita-<bot> each,
   secrets VERIFY_/EVENTS_/MOD_ + APP_ID/PUBLIC_KEY/TOKEN (repo) -> Worker secrets DISCORD_*; ita/register.mjs registers GUILD commands (Italian) and sets each app's
   Interactions Endpoint URL (https://ita-<bot>.aion2-market.workers.dev) through PATCH /applications/@me; then GET /setup?k=<sha256(token)[:16]> refreshes fixed messages.
   * Alberto = ita-verifica (verifica.js): /verifica personaggio screenshot -> card in 📥・richieste-verifica (staff pinged) vf:ok|no -> Verificato + Elyos|Asmodiani (official raceId 1/2)
@@ -277,9 +277,9 @@ each legion will get its own section later; verification like MarchutanEU; separ
   * Legions (Alberto): button 🏰 lg:open in 🎫・ticket -> private thread (verified only; legion = official profile.regionName) with ✅ lg:ok:<uid> (staff) / 🔒 lg:close;
     approve (or /legione leader:@x) = Legion Leader role + role '🏰 <legion>' (created once, under Legion Leader) on every verified member whose vlink.legion matches (35 at once,
     the cron does the rest); refresh() keeps exactly the member's legion role (KV legrole:<server>:<legion> = {role, leader, name}). vlink.legion filled by refresh.
-  * Fabrizio = ita-eventi (eventi.js): Ludra board in 🔥・ludra (same rules as Mauro's old one; 19:00 tags 'Ping Ludra' once if slots are free), /raid (Italian, rs: buttons,
+  * Gettulio (was Fabrizio) = ita-eventi (eventi.js): Ludra board in 🔥・ludra (same rules as Mauro's old one; 19:00 tags 'Ping Ludra' once if slots are free), /raid (Italian, rs: buttons,
     reminders ~15 min before). /tick runs the board once.
-  * Marcello = ita-mod (mod.js): /avverti (3rd = 1 h timeout) /avvertimenti /azzera-avvertimenti /timeout /togli-timeout /kick /ban /sban /pulisci, all logged in 🧹・log;
+  * Ciro (was Marcello) = ita-mod (mod.js): /avverti (3rd = 1 h timeout) /avvertimenti /azzera-avvertimenti /timeout /togli-timeout /kick /ban /sban /pulisci, all logged in 🧹・log;
     tickets in 🎫・ticket (tk:open:segnalazione|idea|aiuto -> private thread, tk:close:<uid>); /setup also owns the AutoMod rules (mention spam 15, invite links, Kinah selling,
     spam; the single-instance types are taken over from older rules). Its role got Manage Server for AutoMod.
 - Mauro: no guild commands there any more (register.mjs puts [] for that guild); its global commands (/item, /character, /verify…) still show: hide /verify* in the server's
