@@ -274,6 +274,9 @@ each legion will get its own section later; verification like MarchutanEU; separ
     cron: 10 vlinks per run (refresh, nick follows an in-game rename if the nick still was the old name), deletes other people's messages in ✅・verifica.
     KV vlink:<uid> {server,id,name,t}, vchar:<server>:<id> = uid, vreq:<uid> = 'channel:message' of the pending card. /sweep?k&from&n = manual batches (used for the migration
     of the old /collega links, 11 Nov). Staff = Admin/Moderatore/Helper or admin/manage-server/manage-roles/moderate perms (lib isStaff).
+  * Legions (Alberto): button 🏰 lg:open in 🎫・ticket -> private thread (verified only; legion = official profile.regionName) with ✅ lg:ok:<uid> (staff) / 🔒 lg:close;
+    approve (or /legione leader:@x) = Legion Leader role + role '🏰 <legion>' (created once, under Legion Leader) on every verified member whose vlink.legion matches (35 at once,
+    the cron does the rest); refresh() keeps exactly the member's legion role (KV legrole:<server>:<legion> = {role, leader, name}). vlink.legion filled by refresh.
   * Fabrizio = ita-eventi (eventi.js): Ludra board in 🔥・ludra (same rules as Mauro's old one; 19:00 tags 'Ping Ludra' once if slots are free), /raid (Italian, rs: buttons,
     reminders ~15 min before). /tick runs the board once.
   * Marcello = ita-mod (mod.js): /avverti (3rd = 1 h timeout) /avvertimenti /azzera-avvertimenti /timeout /togli-timeout /kick /ban /sban /pulisci, all logged in 🧹・log;

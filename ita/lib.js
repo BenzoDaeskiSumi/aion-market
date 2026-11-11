@@ -112,7 +112,7 @@ export async function charProfile(server, id) {   // one official call: name, cl
   if (!pr.characterName) return null;
   const il = (d?.stat?.statList || []).find((x) => x.type === 'ItemLevel')?.value || 0;
   return {server: +server, id, name: pr.characterName, il, lv: pr.characterLevel || 0, img: avatar(pr.profileImage), cls: pr.className || '', cp: pr.combatPower || 0,
-    serverName: pr.serverName || '', legion: pr.regionName || '', race: pr.raceId === 1 ? 'Elyos' : pr.raceId === 2 ? 'Asmodiani' : (/elyos/i.test(pr.raceName || '') ? 'Elyos' : 'Asmodiani')};
+    serverName: pr.serverName || '', legion: /^(none|null)?$/i.test(pr.regionName || '') ? '' : pr.regionName, race: pr.raceId === 1 ? 'Elyos' : pr.raceId === 2 ? 'Asmodiani' : (/elyos/i.test(pr.raceName || '') ? 'Elyos' : 'Asmodiani')};
 }
 export const CLASSES = ['Gladiator', 'Templar', 'Assassin', 'Ranger', 'Sorcerer', 'Spiritmaster', 'Cleric', 'Chanter'];
 // nickname = 'Name ⚔️ [MAR]': class emoji (plain Unicode: custom emojis can't go in nicknames) + server code as listed by MetaBot.GG (metabot.gg/en/aion-2/servers)
