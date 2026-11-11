@@ -251,6 +251,12 @@ Third-party 'Auto Role Bot' in the guild was giving Legionario to everyone on jo
 Needs repo secret DISCORD_CLIENT_SECRET (bot.yml puts it + DISCORD_APP_ID as Worker secrets); without it /join redirects to a permanent invite (KV cfg:site_invite).
 To limit the bot to one channel: Discord server settings → Integrations → the bot → channels (no code).
 
+## Legione server WIPED (11 Nov 2026, the user confirmed) -> becoming an ITALIAN Aion 2 community (Elyos + Asmodian, everything in common, distinction by role only;
+each legion will get its own section later; verification like MarchutanEU; separate bots: Verifica e ruoli, Eventi, Mauro (market), Moderazione).
+- Left: voice '🍻 Taverna' (open to @everyone) and Mauro's role; 40 channels + 20 roles deleted (structure backup only in the session scratchpad, not in the repo: it lists members).
+- Mauro's Legione cron tasks are OFF (updateTimers, signupCalls, raidReminders, ludraTick, legionSweep, weeklyReport, weekFix removed from scheduled(); /timers/run does nothing):
+  they would re-create deleted channels. KV link:/linkc: (/collega) still there for the new verification. Everything in the Legione notes above describes the OLD server.
+
 ## Concept-art friends' server (not Aion; the user's academy friends, guild 1565296605257670727, Mauro is admin there)
 - scripts/discord/art.py (Discord setup mode art-plan / art-apply): never deletes; renames Discord's defaults, creates INFO (benvenuto/regole/annunci read-only),
   STUDIO (wip, forum aiuto with tags — the user dislikes the word 'critica': use 'aiuto', lavori-finiti, sfida-settimanale, studi), RISORSE, CHIACCHIERE, VOCALI; specialty roles via the picker rp:spec (generic rolePick).
