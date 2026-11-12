@@ -79,7 +79,7 @@ async function ludraTick(env) {
 }
 
 // ---------- /raid ----------
-const RAID_ROLES = [['tank', 'Tank', '🛡️'], ['heal', 'Healer', '✚'], ['dps', 'DPS', '⚔️']];
+const RAID_ROLES = [['tank', 'Tank', '🛡️'], ['heal', 'Healer', '💚'], ['dps', 'DPS', '⚔️']];
 const GIORNI = {dom: 0, domenica: 0, lun: 1, lunedi: 1, 'lunedì': 1, mar: 2, martedi: 2, 'martedì': 2, mer: 3, mercoledi: 3, 'mercoledì': 3, gio: 4, giovedi: 4, 'giovedì': 4, ven: 5, venerdi: 5, 'venerdì': 5, sab: 6, sabato: 6};
 function parseQuando(txt, now = Date.now()) {
   const t = String(txt || '').toLowerCase().trim().replace(/\s+alle\s+|\s+ore\s+/g, ' ');
@@ -103,7 +103,7 @@ function raidMessage(id, r) {
   return {embeds: [{title: `⚔️ ${r.title}`, color: past ? 0x5c5f66 : 0xe8b64a,
       description: `🕘 <t:${ts}:F> · <t:${ts}:R>${r.note ? `\n\n${r.note}` : ''}\n\n**${n}/${r.slots}** iscritti${n >= r.slots ? ' · pieno, chi arriva va in riserva' : ''}`,
       fields, footer: {text: past ? 'Iscrizioni chiuse' : `Organizza ${r.byName} · tagghiamo gli iscritti 15 minuti prima`}}],
-    components: [{type: 1, components: [btn('tank', 'Tank', '🛡️', 1), btn('heal', 'Healer', '✚', 3), btn('dps', 'DPS', '⚔️', 4), btn('out', 'Esci', '✖️'), btn('del', 'Annulla', '🗑️')]}],
+    components: [{type: 1, components: [btn('tank', 'Tank', '🛡️', 1), btn('heal', 'Healer', '💚', 3), btn('dps', 'DPS', '⚔️', 4), btn('out', 'Esci', '✖️'), btn('del', 'Annulla', '🗑️')]}],
     allowed_mentions: {parse: []}};
 }
 async function raidCreate(i, env) {
