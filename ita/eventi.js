@@ -207,6 +207,19 @@ async function upgradeRoom(env, k, R) {
   await env.KV.put(k, JSON.stringify(R), {expiration: Math.floor((R.t + VOICE_TTL) / 1000) + 86400});
   return true;
 }
+// tonight's automatic list (22:00) still had sign-ups when it was switched off: turn it into a /raid room with the same people (once)
+async function convertDaily(env) {
+  const d = localDay(Date.now()), key = `ludra:${d.y}-${String(d.m).padStart(2, '0')}-${String(d.d).padStart(2, '0')}`, t = atLocal(d.y, d.m, d.d, 22 * 60);
+  const old = JSON.parse(await env.KV.get(key) || 'null');
+  if (!old || !Array.isArray(old.p) || t < Date.now()) return 'none';
+  const R = {title: 'Ludra', t, note: '', by: null, byName: 'Gettulio', ch: await channelId(env, '・ludra'), msg: null, p: old.p, voice: old.voice || null, pinged: false, called: false};
+  if (!allIn(R).size) { await env.KV.delete(key); return 'empty'; }
+  const k = 'raid:' + crypto.randomUUID().slice(0, 8);
+  await env.KV.put(k, JSON.stringify(R), {expiration: Math.floor((t + VOICE_TTL) / 1000) + 86400});
+  const ok = await upgradeRoom(env, k, R);
+  if (ok) await env.KV.delete(key);
+  return ok ? `converted ${allIn(R).size}` : 'failed';
+}
 async function dropOldDaily(env) {        // the automatic daily list was switched off on 12 Nov: delete its last board once
   const msg = await env.KV.get('cfg:ludra_msg'); if (!msg) return;
   const ch = await channelId(env, '・ludra');
@@ -251,15 +264,15 @@ async function raidCreate(i, env) {
 
 export default {
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(Promise.allSettled([dropOldDaily(env).catch(() => {}), roomsTick(env).catch((e) => putErr(env, 'raid_err', String(e?.stack || e).slice(0, 300)))]));
+    ctx.waitUntil(Promise.allSettled([convertDaily(env).catch(() => {}).then(() => dropOldDaily(env)).catch(() => {}), roomsTick(env).catch((e) => putErr(env, 'raid_err', String(e?.stack || e).slice(0, 300)))]));
   },
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
     if (url.pathname === '/status') return Response.json({ludra: await env.KV.get('ludra_err'), raid: await env.KV.get('raid_err'), voice: await env.KV.get('voice_err'), ev: await env.KV.get('ev_err')});
-    if (url.pathname === '/tick') { let err = null; await dropOldDaily(env).catch(() => {}); await roomsTick(env).catch((e) => { err = String(e?.stack || e).slice(0, 300); }); if (!err) await env.KV.delete('raid_err');
+    if (url.pathname === '/tick') { let err = null; const conv = await convertDaily(env).catch((e) => 'err ' + e); await dropOldDaily(env).catch(() => {}); await roomsTick(env).catch((e) => { err = String(e?.stack || e).slice(0, 300); }); if (!err) await env.KV.delete('raid_err');
       const rooms = [];
       for (const {name: k} of (await env.KV.list({prefix: 'raid:'})).keys) { const R = JSON.parse(await env.KV.get(k) || 'null'); if (R) rooms.push({k, v: R.v || 1, when: R.t ? new Date(R.t).toISOString() : null, n: Array.isArray(R.p) ? allIn(R).size : null, role: !!R.role, msg: !!R.msg, done: !!R.done}); }
-      return Response.json({raid: err, rooms}); }
+      return Response.json({raid: err, conv, rooms}); }
     if (req.method !== 'POST') return new Response('Gettulio: ok');
     const body = await req.text();
     if (!(await verified(req, body, env))) return new Response('bad signature', {status: 401});

@@ -51,6 +51,6 @@ jobs:
           K=$(printf '%s' "$TOKEN" | sha256sum | cut -c1-16)
           case ${{ matrix.bot }} in
             verifica|mod) echo "::notice::setup $(curl -s "$URL/setup?k=$K" | head -c 900)";;
-            eventi) echo "::notice::tick $(curl -s "$URL/tick" | head -c 300)";;
+            eventi) echo "::notice::tick $(curl -s "$URL/tick" | head -c 1500)";;
           esac
           exit $s
