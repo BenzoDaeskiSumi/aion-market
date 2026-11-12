@@ -32,6 +32,14 @@ jobs:
           for d in "$DOMAIN" "www.$DOMAIN"; do
             echo "== add $d"; api POST "/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PROJECT/domains" "{\"name\":\"$d\"}" | python3 -c "import json,sys;r=json.load(sys.stdin);print(r.get('success'),r.get('errors'),(r.get('result') or {}).get('status'))"
           done
+          # DNS: both names point at the Pages project (proxied CNAME; the apex works through CNAME flattening). Only created when missing.
+          ZONE=$(api GET "/zones?name=$DOMAIN" | python3 -c "import json,sys;r=json.load(sys.stdin)['result'];print(r[0]['id'] if r else '')")
+          for d in "$DOMAIN" "www.$DOMAIN"; do
+            have=$(api GET "/zones/$ZONE/dns_records?name=$d" | python3 -c "import json,sys;print(' '.join(f\"{x['type']}:{x['content']}\" for x in json.load(sys.stdin).get('result') or []))")
+            echo "== dns $d: ${have:-none}"
+            if [ -z "$have" ]; then api POST "/zones/$ZONE/dns_records" "{\"type\":\"CNAME\",\"name\":\"$d\",\"content\":\"$PROJECT.pages.dev\",\"proxied\":true}" | python3 -c "import json,sys;r=json.load(sys.stdin);print('created',r.get('success'),r.get('errors'))"; fi
+          done
+          sleep 20
           echo "== domains"; api GET "/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PROJECT/domains" | python3 -c "import json,sys;r=json.load(sys.stdin);[print(d['name'],d.get('status'),(d.get('validation_data') or {}).get('status'),(d.get('verification_data') or {}).get('status'),d.get('validation_data',{}).get('error_message')) for d in r.get('result') or []];print(r.get('errors'))"
           echo "== zone"; api GET "/zones?name=$DOMAIN" | python3 -c "import json,sys;r=json.load(sys.stdin);[print(z['name'],z['status'],z.get('name_servers'),z.get('account',{}).get('id')==__import__('os').environ['CLOUDFLARE_ACCOUNT_ID']) for z in r.get('result') or []];print('zones:',len(r.get('result') or []),r.get('errors'))"
           echo "== project"; api GET "/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PROJECT" | python3 -c "import json,sys;r=json.load(sys.stdin);print((r.get('result') or {}).get('subdomain'),r.get('errors'))"
