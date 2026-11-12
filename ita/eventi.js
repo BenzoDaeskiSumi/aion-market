@@ -173,6 +173,7 @@ async function roomsTick(env) {
   const now = Date.now();
   for (const {name: k} of (await env.KV.list({prefix: 'raid:'})).keys) {
     const R = JSON.parse(await env.KV.get(k) || 'null'); if (!R || R.done || !Array.isArray(R.p)) continue;   // old-style lists (before 12 Nov) have no parties
+    if (R.v !== 2 && R.t > now) { await upgradeRoom(env, k, R); continue; }
     let dirty = false;
     const tag = R.role ? `<@&${R.role}>` : [...allIn(R)].map((u) => `<@${u}>`).join(' '), am = R.role ? {roles: [R.role]} : {users: [...allIn(R)].slice(0, 100)};
     if (now > R.t + VOICE_TTL) { await endRoom(env, R); R.done = true; dirty = true; }
@@ -188,6 +189,23 @@ async function roomsTick(env) {
     }
     if (dirty) await env.KV.put(k, JSON.stringify(R), {expiration: Math.floor((R.t + VOICE_TTL) / 1000) + 86400});
   }
+}
+// rooms opened before the 12 Nov evening update (no role, old buttons, maybe outside #ludra): give them a role, give it to everyone
+// already signed up, and re-post the board in #ludra with the new buttons (the old message is deleted). Runs once per room (R.v = 2).
+async function upgradeRoom(env, k, R) {
+  const id = k.slice(5), ludra = await channelId(env, '・ludra') || R.ch;
+  let old = R.msg ? {id: R.msg} : null;
+  if (!old && R.ch) old = ((await djson(env, 'GET', `/channels/${R.ch}/messages?limit=100`)) || [])
+    .find((m) => m.author?.id === env.DISCORD_APP_ID && JSON.stringify(m.components || []).includes(`"lr:${id}:`));
+  const role = await djson(env, 'POST', `/guilds/${GUILD}/roles`, {name: `🔥 ${R.title} ${ddmm(R.t)} ${hhmm(R.t)}`.slice(0, 100), color: 0xe8603c, mentionable: true, hoist: false}, `Stanza ${R.title}`);
+  R.role = role?.id || null;
+  if (R.role) for (const u of allIn(R)) await dapi(env, 'PUT', `/guilds/${GUILD}/members/${u}/roles/${R.role}`, undefined, `Iscritto a ${R.title}`);
+  const posted = await djson(env, 'POST', `/channels/${ludra}/messages`, board(R, `lr:${id}`));
+  if (!posted) return false;
+  if (old) await dapi(env, 'DELETE', `/channels/${R.ch}/messages/${old.id}`, undefined, 'Lista rifatta con i nuovi pulsanti');
+  Object.assign(R, {ch: ludra, msg: posted.id, v: 2});
+  await env.KV.put(k, JSON.stringify(R), {expiration: Math.floor((R.t + VOICE_TTL) / 1000) + 86400});
+  return true;
 }
 async function dropOldDaily(env) {        // the automatic daily list was switched off on 12 Nov: delete its last board once
   const msg = await env.KV.get('cfg:ludra_msg'); if (!msg) return;
@@ -221,7 +239,7 @@ async function raidCreate(i, env) {
   const role = await djson(env, 'POST', `/guilds/${GUILD}/roles`, {name: `🔥 ${title} ${ddmm(t)} ${hhmm(t)}`.slice(0, 100), color: 0xe8603c, mentionable: true, hoist: false}, `Stanza /raid di ${u.username}`);
   if (!role) await putErr(env, 'ev_err', 'role create failed (Manage Roles?)');
   const R = {title, t, note: String(opt(i.data, 'note') || '').slice(0, 300), by: u.id, byName: i.member?.nick || u.global_name || u.username,
-    ch, msg: null, role: role?.id || null, p: emptyParties(), voice: null, pinged: false, called: false};
+    ch, msg: null, role: role?.id || null, p: emptyParties(), voice: null, pinged: false, called: false, v: 2};
   const msg = board(R, `lr:${id}`), ping = opt(i.data, 'ping') !== false ? await roleId(env, 'Ping Ludra') : null;
   if (ping) { msg.content = `<@&${ping}> nuova stanza **${R.title}** <t:${Math.floor(t / 1000)}:R>: firmate qui sotto!`; msg.allowed_mentions = {roles: [ping]}; }
   const posted = await djson(env, 'POST', `/channels/${ch}/messages`, msg);
