@@ -207,13 +207,6 @@ async function upgradeRoom(env, k, R) {
   await env.KV.put(k, JSON.stringify(R), {expiration: Math.floor((R.t + VOICE_TTL) / 1000) + 86400});
   return true;
 }
-async function dropEmptyOnce(env, k) {          // one-off, 12 Nov: an empty 22:00 room re-posted by the upgrade next to the real one
-  const R = JSON.parse(await env.KV.get(k) || 'null');
-  if (!R || !Array.isArray(R.p) || allIn(R).size) return 'skip';
-  if (R.msg) await dapi(env, 'DELETE', `/channels/${R.ch}/messages/${R.msg}`, undefined, 'Lista vuota doppia');
-  await endRoom(env, R); await env.KV.delete(k);
-  return 'dropped';
-}
 // tonight's automatic list (22:00) still had sign-ups when it was switched off: turn it into a /raid room with the same people (once)
 async function convertDaily(env) {
   const d = localDay(Date.now()), key = `ludra:${d.y}-${String(d.m).padStart(2, '0')}-${String(d.d).padStart(2, '0')}`, t = atLocal(d.y, d.m, d.d, 22 * 60);
@@ -276,10 +269,10 @@ export default {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
     if (url.pathname === '/status') return Response.json({ludra: await env.KV.get('ludra_err'), raid: await env.KV.get('raid_err'), voice: await env.KV.get('voice_err'), ev: await env.KV.get('ev_err')});
-    if (url.pathname === '/tick') { let err = null; const conv = await convertDaily(env).catch((e) => 'err ' + e), merge = await dropEmptyOnce(env, 'raid:219f30c4').catch((e) => 'err ' + e); await dropOldDaily(env).catch(() => {}); await roomsTick(env).catch((e) => { err = String(e?.stack || e).slice(0, 300); }); if (!err) await env.KV.delete('raid_err');
+    if (url.pathname === '/tick') { let err = null; const conv = await convertDaily(env).catch((e) => 'err ' + e); await dropOldDaily(env).catch(() => {}); await roomsTick(env).catch((e) => { err = String(e?.stack || e).slice(0, 300); }); if (!err) await env.KV.delete('raid_err');
       const rooms = [];
       for (const {name: k} of (await env.KV.list({prefix: 'raid:'})).keys) { const R = JSON.parse(await env.KV.get(k) || 'null'); if (R) rooms.push({k, keys: R.v === 2 ? undefined : Object.keys(R).join(','), list: R.v === 2 ? undefined : JSON.stringify(Object.fromEntries(Object.entries(R).filter(([x, y]) => Array.isArray(y) || (y && typeof y === 'object')).map(([x, y]) => [x, Array.isArray(y) ? y.length : Object.keys(y).length]))), v: R.v || 1, when: R.t ? new Date(R.t).toISOString() : null, n: Array.isArray(R.p) ? allIn(R).size : null, role: !!R.role, msg: !!R.msg, done: !!R.done}); }
-      return Response.json({raid: err, conv, merge, rooms}); }
+      return Response.json({raid: err, conv, rooms}); }
     if (req.method !== 'POST') return new Response('Gettulio: ok');
     const body = await req.text();
     if (!(await verified(req, body, env))) return new Response('bad signature', {status: 401});
