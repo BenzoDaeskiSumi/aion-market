@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="it">
+<head>
+<!--head-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15111c">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Aion 2 Market Italia">
+<meta property="og:locale" content="it_IT">
+<meta property="og:image" content="https://benzodaeskisumi.github.io/aion2-market-italia/img/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="apple-touch-icon" href="img/favicon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preload" href="fonts/figtree.woff" as="font" type="font/woff" crossorigin>
+<script>try { if (localStorage.getItem('aion-it-theme') === 'elysea') document.documentElement.dataset.theme = 'elysea'; } catch (e) {}</script>
+<link rel="stylesheet" href="css/base.css">
+<!--/head-->
+<title>Community italiana di Aion 2 · Aion 2 Market Italia</title>
+<meta name="description" content="Il server Discord della community italiana di Aion 2: Elyos e Asmodiani insieme, verifica del personaggio, Ludra ogni sera e i prezzi del Market con il bot Mauro.">
+<link rel="stylesheet" href="css/pagine.css">
+</head>
+<body data-page="community">
+<!--header-->
+<header class="bar">
+  <a class="brand" href="./"><img src="img/favicon-256.png" alt="" width="32" height="32"><span class="bt">Aion 2 Market Italia</span><span class="flag" role="img" aria-label="Italia"><i></i><i></i><i></i></span></a>
+  <nav class="tabs" aria-label="Sezioni">
+    <a href="market.html" data-view="market">Market</a>
+    <a href="market.html?v=craft" data-view="craft">Crafting <span id="tab-craft"></span></a>
+    <a href="market.html?v=db" data-view="db">Database <span id="tab-db"></span></a>
+    <a href="market.html?v=char" data-view="char">Personaggi</a>
+    <span class="gap" aria-hidden="true"></span>
+    <a href="mappa.html" data-page="mappa">Mappa</a>
+    <a href="guide.html" data-page="guide">Guide</a>
+    <a href="community.html" data-page="community" aria-current="page">Community</a>
+  </nav>
+  <div class="barend">
+    <button class="srvbtn" id="srvbtn" type="button" aria-expanded="false" aria-controls="srvpop" title="Cambia server"><small>Server</small><b>Marchutan</b></button>
+    <select id="server" aria-label="Server" hidden><option value="12305">Marchutan</option></select>
+    <button class="menubtn" id="menubtn" type="button" aria-expanded="false" aria-controls="barright" aria-label="Impostazioni" title="Impostazioni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    <div class="pop srvpop" id="srvpop" role="dialog" aria-label="Scegli il server" hidden>
+      <h2>Scegli il server</h2>
+      <p><span class="srvn">23</span> server europei con i prezzi aggiornati ogni ora.</p>
+      <input type="search" placeholder="Cerca un server…" aria-label="Cerca un server" autocomplete="off">
+      <div class="srvlist"></div>
+    </div>
+    <div class="pop right" id="barright" role="dialog" aria-label="Impostazioni">
+      <div class="setrow"><span class="setlbl">Tema</span><div class="themes" role="group" aria-label="Tema">
+        <button type="button" data-theme="asmodae"><i style="background:#2a2038"></i>Asmodae</button>
+        <button type="button" data-theme="elysea"><i style="background:#f4f5fa"></i>Elysea</button>
+      </div></div>
+      
+    </div>
+  </div>
+</header>
+<!--/header-->
+<main class="page widepage">
+  <h1>La community italiana di Aion 2</h1>
+  <p class="lead">Un server Discord per chi gioca ad Aion 2 in italiano, su qualsiasi server europeo. Elyos e Asmodiani stanno negli stessi canali: la fazione si vede dal ruolo, non da dove puoi scrivere.</p>
+  <div class="cta">
+    <a class="btn discord" href="https://aion-market-bot.aion2-market.workers.dev/join" rel="noopener">Entra nel server Discord</a>
+    <a class="btn" href="market.html">Apri il Market</a>
+  </div>
+
+  <h2>Come si entra</h2>
+  <ol class="steps">
+    <li><div><b>Entra nel server</b><span>All'inizio vedi solo le regole e il canale di verifica.</span></div></li>
+    <li><div><b>Fai uno screenshot in gioco</b><span>Deve leggersi il nome del tuo personaggio, per esempio dalla finestra del personaggio (tasto P).</span></div></li>
+    <li><div><b>Scrivi /verifica</b><span>Scegli il personaggio dai suggerimenti e allega lo screenshot. Lo staff controlla e ti approva: ricevi fazione, classe e fascia di Gear Score, e il tuo nome diventa quello del personaggio con classe e sigla del server.</span></div></li>
+  </ol>
+
+  <h2>Cosa trovi dentro</h2>
+  <p>Canali per cercare gruppo, la lista del Ludra di ogni sera, PvP e assedi, un forum per le domande e uno per le guide, la sezione delle legioni dove i Legion Leader presentano la propria, e i canali del Market con i comandi dei bot.</p>
+
+  <h2>I quattro bot</h2>
+  <p>Ognuno fa una cosa sola, così se uno si ferma gli altri continuano a funzionare.</p>
+  <div class="bots">
+    <article class="bot">
+      <img src="img/bots/mauro.png" alt="" width="76" height="76" loading="lazy">
+      <h3>Mauro</h3>
+      <p class="role">Market: porta su Discord i prezzi di questo sito.</p>
+      <dl>
+        <div><dt>/item</dt><dd>Prezzo più basso, media e grafico a 7 o 30 giorni di un oggetto.</dd></div>
+        <div><dt>/craft</dt><dd>Quanto costa craftare un oggetto, passo per passo.</dd></div>
+        <div><dt>/alert add</dt><dd>Ti avvisa quando un oggetto scende o sale al prezzo che scegli.</dd></div>
+        <div><dt>/favorites</dt><dd>I tuoi preferiti del sito, uno alla volta.</dd></div>
+        <div><dt>/server</dt><dd>Ricorda il tuo server, così non devi scriverlo ogni volta.</dd></div>
+        <div><dt>/character</dt><dd>La scheda ufficiale di un personaggio: equipaggiamento, statistiche, Daevanion.</dd></div>
+      </dl>
+    </article>
+    <article class="bot">
+      <img src="img/bots/alberto.png" alt="" width="76" height="76" loading="lazy">
+      <h3>Alberto</h3>
+      <p class="role">Verifica e ruoli.</p>
+      <dl>
+        <div><dt>/verifica</dt><dd>Chiede l'accesso con il tuo personaggio e uno screenshot.</dd></div>
+        <div><dt>/aggiorna</dt><dd>Rilegge classe e Gear Score dal sito ufficiale e aggiorna i tuoi ruoli. Lo fa anche da solo, ogni giorno.</dd></div>
+        <div><dt>Canale ruoli</dt><dd>Pulsanti per scegliere interessi, ruoli da taggare e ruoli Force PvP.</dd></div>
+        <div><dt>Legion Leader</dt><dd>Un ticket per farsi riconoscere come leader: Alberto crea il ruolo della legione e lo dà ai suoi membri verificati.</dd></div>
+      </dl>
+    </article>
+    <article class="bot">
+      <img src="img/bots/gettulio.png" alt="" width="76" height="76" loading="lazy">
+      <h3>Gettulio</h3>
+      <p class="role">Eventi: per ora il Ludra.</p>
+      <dl>
+        <div><dt>Lista delle 22</dt><dd>Ogni sera una stanza da 10: due party da 1 tank, 1 cleric, 1 chanter e 2 DPS. Scegli party e ruolo con i pulsanti.</dd></div>
+        <div><dt>/raid</dt><dd>Apre una stanza Ludra in più, all'orario che vuoi.</dd></div>
+        <div><dt>Vocali dei party</dt><dd>Quando la stanza è piena crea un canale vocale per party e li cancella a fine serata.</dd></div>
+      </dl>
+    </article>
+    <article class="bot">
+      <img src="img/bots/ciro.png" alt="" width="76" height="76" loading="lazy">
+      <h3>Ciro</h3>
+      <p class="role">Moderazione e ticket.</p>
+      <dl>
+        <div><dt>Ticket</dt><dd>Segnalazioni, idee e richieste di aiuto in una conversazione privata con lo staff.</dd></div>
+        <div><dt>Regole automatiche</dt><dd>Blocca spam, link di invito e vendita di Kinah.</dd></div>
+      </dl>
+    </article>
+  </div>
+
+  <h2>Regole in due righe</h2>
+  <p>Rispetto per tutti, niente vendita di Kinah o account per soldi veri, niente spam. Le regole complete sono nel primo canale del server.</p>
+</main>
+<!--footer-->
+<footer class="foot">
+  <div>
+    <p>Prezzi aggiornati ogni ora dai dati pubblici di <a href="https://aion2.exchange/" target="_blank" rel="noopener">aion2.exchange</a>. Ricette, mappa e nomi: <a href="https://metabot.gg/en/aion-2" target="_blank" rel="noopener">MetaBot.GG</a>, usati con il loro permesso. Database oggetti e personaggi: dati ufficiali NCSOFT.</p>
+    <p>Sito della community italiana di Aion 2, fatto da giocatori. Non affiliato a NCSOFT.</p>
+  </div>
+  <nav aria-label="Altre pagine">
+    <a href="community.html">Community e Discord</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="https://benzodaeskisumi.github.io/aion-market/" target="_blank" rel="noopener">Sito in inglese (Marchutan)</a>
+  </nav>
+</footer>
+<!--/footer-->
+<script src="js/base.js"></script>
+<script>countVisit();</script>
+</body>
+</html>

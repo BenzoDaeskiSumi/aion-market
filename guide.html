@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="it">
+<head>
+<!--head-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15111c">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Aion 2 Market Italia">
+<meta property="og:locale" content="it_IT">
+<meta property="og:image" content="https://benzodaeskisumi.github.io/aion2-market-italia/img/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="apple-touch-icon" href="img/favicon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preload" href="fonts/figtree.woff" as="font" type="font/woff" crossorigin>
+<script>try { if (localStorage.getItem('aion-it-theme') === 'elysea') document.documentElement.dataset.theme = 'elysea'; } catch (e) {}</script>
+<link rel="stylesheet" href="css/base.css">
+<!--/head-->
+<title>Guide alle classi · Aion 2 Market Italia</title>
+<meta name="description" content="Guide alle classi di Aion 2 Global, riscritte per essere chiare e facili da leggere: skill, stigmi, rotazione, statistiche ed equipaggiamento.">
+<link rel="stylesheet" href="css/guide.css">
+</head>
+<body data-page="guide">
+<!--header-->
+<header class="bar">
+  <a class="brand" href="./"><img src="img/favicon-256.png" alt="" width="32" height="32"><span class="bt">Aion 2 Market Italia</span><span class="flag" role="img" aria-label="Italia"><i></i><i></i><i></i></span></a>
+  <nav class="tabs" aria-label="Sezioni">
+    <a href="market.html" data-view="market">Market</a>
+    <a href="market.html?v=craft" data-view="craft">Crafting <span id="tab-craft"></span></a>
+    <a href="market.html?v=db" data-view="db">Database <span id="tab-db"></span></a>
+    <a href="market.html?v=char" data-view="char">Personaggi</a>
+    <span class="gap" aria-hidden="true"></span>
+    <a href="mappa.html" data-page="mappa">Mappa</a>
+    <a href="guide.html" data-page="guide" aria-current="page">Guide</a>
+    <a href="community.html" data-page="community">Community</a>
+  </nav>
+  <div class="barend">
+    <button class="srvbtn" id="srvbtn" type="button" aria-expanded="false" aria-controls="srvpop" title="Cambia server"><small>Server</small><b>Marchutan</b></button>
+    <select id="server" aria-label="Server" hidden><option value="12305">Marchutan</option></select>
+    <button class="menubtn" id="menubtn" type="button" aria-expanded="false" aria-controls="barright" aria-label="Impostazioni" title="Impostazioni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    <div class="pop srvpop" id="srvpop" role="dialog" aria-label="Scegli il server" hidden>
+      <h2>Scegli il server</h2>
+      <p><span class="srvn">23</span> server europei con i prezzi aggiornati ogni ora.</p>
+      <input type="search" placeholder="Cerca un server…" aria-label="Cerca un server" autocomplete="off">
+      <div class="srvlist"></div>
+    </div>
+    <div class="pop right" id="barright" role="dialog" aria-label="Impostazioni">
+      <div class="setrow"><span class="setlbl">Tema</span><div class="themes" role="group" aria-label="Tema">
+        <button type="button" data-theme="asmodae"><i style="background:#2a2038"></i>Asmodae</button>
+        <button type="button" data-theme="elysea"><i style="background:#f4f5fa"></i>Elysea</button>
+      </div></div>
+      
+    </div>
+  </div>
+</header>
+<!--/header-->
+<main>
+  <div class="ghead">
+    <span class="eyebrow">Aion 2 · Global · Stagione 1</span>
+    <h1>Guide alle classi</h1>
+    <p class="lead">Una guida per classe, scritta per essere letta in fretta: cosa livellare, come giocare la rotazione e quale equipaggiamento cercare.</p>
+  </div>
+
+  <div class="glist">
+    <a class="gcard" href="guida-spiritmaster.html">
+      <span class="eyebrow">DPS a distanza</span>
+      <h2>Spiritmaster</h2>
+      <p>Evoca spiriti elementali e infligge danni magici. Facile da imparare, resistente e fortissimo in PvE.</p>
+      <div class="facts"><span class="chip">Skill</span><span class="chip">Stigmi</span><span class="chip">Rotazione e macro</span><span class="chip">Equipaggiamento</span></div>
+    </a>
+  </div>
+  <p class="soon">Le altre classi arrivano una alla volta.</p>
+</main>
+<!--footer-->
+<footer class="foot">
+  <div>
+    <p>Prezzi aggiornati ogni ora dai dati pubblici di <a href="https://aion2.exchange/" target="_blank" rel="noopener">aion2.exchange</a>. Ricette, mappa e nomi: <a href="https://metabot.gg/en/aion-2" target="_blank" rel="noopener">MetaBot.GG</a>, usati con il loro permesso. Database oggetti e personaggi: dati ufficiali NCSOFT.</p>
+    <p>Sito della community italiana di Aion 2, fatto da giocatori. Non affiliato a NCSOFT.</p>
+  </div>
+  <nav aria-label="Altre pagine">
+    <a href="community.html">Community e Discord</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="https://benzodaeskisumi.github.io/aion-market/" target="_blank" rel="noopener">Sito in inglese (Marchutan)</a>
+  </nav>
+</footer>
+<!--/footer-->
+<script src="js/base.js"></script>
+<script>countVisit();</script>
+</body>
+</html>

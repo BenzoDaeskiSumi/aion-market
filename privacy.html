@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="it">
+<head>
+<!--head-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15111c">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Aion 2 Market Italia">
+<meta property="og:locale" content="it_IT">
+<meta property="og:image" content="https://benzodaeskisumi.github.io/aion2-market-italia/img/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="apple-touch-icon" href="img/favicon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preload" href="fonts/figtree.woff" as="font" type="font/woff" crossorigin>
+<script>try { if (localStorage.getItem('aion-it-theme') === 'elysea') document.documentElement.dataset.theme = 'elysea'; } catch (e) {}</script>
+<link rel="stylesheet" href="css/base.css">
+<!--/head-->
+<title>Privacy · Aion 2 Market Italia</title>
+<meta name="description" content="Quali dati usa Aion 2 Market Italia, perché, e come cancellarli.">
+<link rel="stylesheet" href="css/pagine.css">
+</head>
+<body data-page="privacy">
+<!--header-->
+<header class="bar">
+  <a class="brand" href="./"><img src="img/favicon-256.png" alt="" width="32" height="32"><span class="bt">Aion 2 Market Italia</span><span class="flag" role="img" aria-label="Italia"><i></i><i></i><i></i></span></a>
+  <nav class="tabs" aria-label="Sezioni">
+    <a href="market.html" data-view="market">Market</a>
+    <a href="market.html?v=craft" data-view="craft">Crafting <span id="tab-craft"></span></a>
+    <a href="market.html?v=db" data-view="db">Database <span id="tab-db"></span></a>
+    <a href="market.html?v=char" data-view="char">Personaggi</a>
+    <span class="gap" aria-hidden="true"></span>
+    <a href="mappa.html" data-page="mappa">Mappa</a>
+    <a href="guide.html" data-page="guide">Guide</a>
+    <a href="community.html" data-page="community">Community</a>
+  </nav>
+  <div class="barend">
+    <button class="srvbtn" id="srvbtn" type="button" aria-expanded="false" aria-controls="srvpop" title="Cambia server"><small>Server</small><b>Marchutan</b></button>
+    <select id="server" aria-label="Server" hidden><option value="12305">Marchutan</option></select>
+    <button class="menubtn" id="menubtn" type="button" aria-expanded="false" aria-controls="barright" aria-label="Impostazioni" title="Impostazioni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    <div class="pop srvpop" id="srvpop" role="dialog" aria-label="Scegli il server" hidden>
+      <h2>Scegli il server</h2>
+      <p><span class="srvn">23</span> server europei con i prezzi aggiornati ogni ora.</p>
+      <input type="search" placeholder="Cerca un server…" aria-label="Cerca un server" autocomplete="off">
+      <div class="srvlist"></div>
+    </div>
+    <div class="pop right" id="barright" role="dialog" aria-label="Impostazioni">
+      <div class="setrow"><span class="setlbl">Tema</span><div class="themes" role="group" aria-label="Tema">
+        <button type="button" data-theme="asmodae"><i style="background:#2a2038"></i>Asmodae</button>
+        <button type="button" data-theme="elysea"><i style="background:#f4f5fa"></i>Elysea</button>
+      </div></div>
+      
+    </div>
+  </div>
+</header>
+<!--/header-->
+<main class="page">
+  <h1>Privacy</h1>
+  <p class="meta">Ultimo aggiornamento: 12 novembre 2026</p>
+
+  <h2>In breve</h2>
+  <p>Il sito si usa senza account, e in quel caso non raccogliamo nessun dato personale. Se scegli "Accedi con Discord" salviamo solo quello che serve per ritrovare i tuoi preferiti, il server e gli avvisi di prezzo, e per farli usare al bot Mauro su Discord. Puoi cancellare tutto quando vuoi con "Elimina account", nelle impostazioni del Market dopo il login.</p>
+
+  <h2>Chi gestisce il sito</h2>
+  <p>Aion 2 Market Italia è un progetto amatoriale e gratuito della community italiana di Aion 2, non affiliato a NCSOFT. Usa lo stesso account e gli stessi dati del sito in inglese <a href="https://benzodaeskisumi.github.io/aion-market/">Aion 2 Market</a>: un login vale per entrambi. Per domande o richieste sulla privacy: <a href="https://github.com/BenzoDaeskiSumi/aion-market/issues" target="_blank" rel="noopener">github.com/BenzoDaeskiSumi/aion-market/issues</a> oppure in privato su Discord a Benzodaeskisumi.</p>
+
+  <h2>Cosa salviamo, e perché</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Dato</th><th>Perché</th><th>Dove</th></tr></thead>
+    <tbody>
+      <tr><td>ID, nome e immagine del profilo Discord, email dell'account Discord</td><td>Login con Discord (li fornisce Discord quando accetti)</td><td>Supabase, il database del sito</td></tr>
+      <tr><td>Preferiti, server scelto, avvisi di prezzo</td><td>Ritrovarli su ogni dispositivo; Mauro li usa per i preferiti e per gli avvisi</td><td>Supabase</td></tr>
+      <tr><td>Server registrato con /server (con il tuo ID Discord)</td><td>Usarlo come predefinito nei comandi di Mauro</td><td>Cloudflare, dove girano i bot</td></tr>
+      <tr><td>Verifica nel server Discord della community: personaggio scelto e screenshot (con il tuo ID Discord)</td><td>Lo staff controlla e approva; poi Alberto assegna fazione, classe, fascia di Gear Score, eventuale ruolo della legione e il soprannome</td><td>Lo screenshot resta nel canale dello staff su Discord; il collegamento personaggio-account su Cloudflare</td></tr>
+      <tr><td>Iscrizioni alle liste del Ludra, avvertimenti della moderazione</td><td>Far funzionare le liste e tenere traccia delle sanzioni nel server Discord</td><td>Cloudflare</td></tr>
+      <tr><td>Tema, server scelto, preferiti senza login, filtri</td><td>Ricordare le tue scelte</td><td>Solo nel tuo browser: a noi non arrivano</td></tr>
+    </tbody>
+  </table></div>
+  <p style="margin-top:14px"><b>Statistiche di visita.</b> Una volta per sessione la pagina invia a Mauro (Cloudflare) solo la lingua, il server scelto e se usi telefono o computer. Vengono sommati in contatori giornalieri. Niente cookie, nessun indirizzo IP né identificativo viene salvato: non è possibile risalire a te.</p>
+  <p>Non usiamo cookie di profilazione, pubblicità o statistiche di terze parti, e non vendiamo né cediamo dati a nessuno. La base giuridica è l'esecuzione del servizio che chiedi facendo login (art. 6.1.b GDPR).</p>
+
+  <h2>Fornitori tecnici</h2>
+  <p>GitHub Pages ospita il sito e i dati dei prezzi. Supabase gestisce login e database. Cloudflare fa girare i bot. Discord serve per il login e per i bot. Come per ogni sito web, i server che ospitano le pagine registrano tecnicamente l'indirizzo IP delle visite.</p>
+  <p>Nel Database e nella Mappa le icone degli oggetti sono caricate direttamente dai server di NCSOFT (assets.playnccdn.com), che vedono l'indirizzo IP di chi le scarica. La sezione Personaggi legge i dati pubblici dei personaggi dal sito ufficiale di NCSOFT passando da Mauro: il nome cercato lo attraversa, ma non viene salvato. I grafici di Mauro su Discord sono disegnati da QuickChart, che riceve solo i prezzi.</p>
+  <p>I caratteri tipografici sono serviti dal sito stesso: il tuo browser non contatta Google.</p>
+
+  <h2>Per quanto tempo</h2>
+  <p>Finché tieni l'account. Con "Elimina account" cancelliamo subito profilo, preferiti e avvisi. Il server registrato con /server si sovrascrive rifacendo il comando. Per togliere la verifica nel server Discord chiedi allo staff. Puoi anche revocare l'accesso del sito da Discord: Impostazioni, poi App autorizzate.</p>
+
+  <h2>I tuoi diritti</h2>
+  <p>Puoi chiedere di vedere, correggere o cancellare i tuoi dati, e di riceverne una copia, ai contatti qui sopra. Se pensi che non li trattiamo correttamente puoi rivolgerti al Garante per la protezione dei dati personali (<a href="https://www.garanteprivacy.it/" target="_blank" rel="noopener">garanteprivacy.it</a>) o all'autorità del tuo paese.</p>
+</main>
+<!--footer-->
+<footer class="foot">
+  <div>
+    <p>Prezzi aggiornati ogni ora dai dati pubblici di <a href="https://aion2.exchange/" target="_blank" rel="noopener">aion2.exchange</a>. Ricette, mappa e nomi: <a href="https://metabot.gg/en/aion-2" target="_blank" rel="noopener">MetaBot.GG</a>, usati con il loro permesso. Database oggetti e personaggi: dati ufficiali NCSOFT.</p>
+    <p>Sito della community italiana di Aion 2, fatto da giocatori. Non affiliato a NCSOFT.</p>
+  </div>
+  <nav aria-label="Altre pagine">
+    <a href="community.html">Community e Discord</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="https://benzodaeskisumi.github.io/aion-market/" target="_blank" rel="noopener">Sito in inglese (Marchutan)</a>
+  </nav>
+</footer>
+<!--/footer-->
+<script src="js/base.js"></script>
+</body>
+</html>
