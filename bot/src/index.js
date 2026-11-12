@@ -955,43 +955,21 @@ async function signupCalls(env) {         // cron: tag once ~15 min before; dele
 // ---------- "Entra nel Discord" from the site: /join -> Discord login (identify + guilds.join) -> the Worker adds the user to the server, with no role ----------
 // Without DISCORD_CLIENT_SECRET (or if anything fails) it falls back to a plain invite link. Nothing is stored apart from the 10-minute login state.
 const WORKER = (env) => env.WORKER_URL || 'https://aion-market-bot.aion2-market.workers.dev';
-async function siteInvite(env) {
+async function siteInvite(env) {                // a permanent invite to the Italian community; re-created when the saved one no longer works
   let code = await env.USERS.get('cfg:site_invite');
-  if (code) return `https://discord.gg/${code}`;
+  if (code && (await dapi(env, 'GET', `/invites/${code}`)).ok) return `https://discord.gg/${code}`;
   const list = await (await dapi(env, 'GET', `/guilds/${GUILD}/channels`)).json();
-  const ch = list.find((c) => c.type === 0 && /benvenut/i.test(c.name)) || list.find((c) => c.type === 0);
+  const ch = ['・regole', '・verifica'].map((s) => list.find((c) => c.type === 0 && c.name.endsWith(s))).find(Boolean) || list.find((c) => c.type === 0);
   const inv = await (await dapi(env, 'POST', `/channels/${ch.id}/invites`, {max_age: 0, max_uses: 0, unique: true})).json();
   if (!inv.code) throw new Error('invite: ' + JSON.stringify(inv).slice(0, 200));
   await env.USERS.put('cfg:site_invite', inv.code);
   return `https://discord.gg/${inv.code}`;
 }
 async function join(req, env) {
-  const url = new URL(req.url), cb = WORKER(env) + '/join/cb', go = (u) => Response.redirect(u, 302);
-  const fallback = async () => go(await siteInvite(env).catch(() => env.SITE));
-  if (!env.DISCORD_CLIENT_SECRET || !env.DISCORD_APP_ID) return fallback();
-  if (url.pathname === '/join') {
-    const state = crypto.randomUUID();
-    await env.USERS.put('oauth:' + state, '1', {expirationTtl: 600});
-    return go('https://discord.com/oauth2/authorize?' + new URLSearchParams({client_id: env.DISCORD_APP_ID, response_type: 'code',
-      scope: 'identify guilds.join', redirect_uri: cb, state, prompt: 'none'}));
-  }
-  try {
-    const state = url.searchParams.get('state'), code = url.searchParams.get('code');
-    if (!code || !state || !(await env.USERS.get('oauth:' + state))) return fallback();
-    await env.USERS.delete('oauth:' + state);
-    const tok = await (await fetch('https://discord.com/api/v10/oauth2/token', {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: new URLSearchParams({client_id: env.DISCORD_APP_ID, client_secret: env.DISCORD_CLIENT_SECRET, grant_type: 'authorization_code', code, redirect_uri: cb})})).json();
-    if (!tok.access_token) return fallback();
-    const me = await (await fetch('https://discord.com/api/v10/users/@me', {headers: {Authorization: `Bearer ${tok.access_token}`}})).json();
-    // no role on joining: newcomers see only BENVENUTO (benvenuto + assistenza) until they link their character, which gives Recluta or Ospite
-    // 201 = joined now, 204 = already a member (left as they are)
-    const r = await dapi(env, 'PUT', `/guilds/${GUILD}/members/${me.id}`, {access_token: tok.access_token});
-    if (r.status !== 201 && r.status !== 204) return fallback();
-    return go(`https://discord.com/channels/${GUILD}`);
-  } catch (e) {
-    await env.USERS.put('join_err', String(e?.stack || e).slice(0, 500));
-    return fallback();
-  }
+  // 12 Nov 2026: plain invite. The OAuth 'join for you' flow failed ('URI di reindirizzamento non valido': the redirect is not registered
+  // in the Developer Portal) and an invite does the same job: the newcomer lands in the server and sees only BENVENUTO until /verifica.
+  try { return Response.redirect(await siteInvite(env), 302); }
+  catch (e) { await env.USERS.put('join_err', String(e?.stack || e).slice(0, 500)).catch(() => {}); return Response.redirect('https://aion2italia.com/community.html', 302); }
 }
 
 // ---------- /collega: link a Discord account to an EU character (self-declared; one character per account, one account per character) ----------
