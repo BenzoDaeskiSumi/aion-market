@@ -3,7 +3,9 @@
 Site of the Italian Aion 2 community: https://aion2italia.com (domain bought by the user on 12 Nov 2026).
 Hosting: Cloudflare Pages, project 'aion2italia', deployed by .github/workflows/cloudflare.yml on every push to the 'italia-site'
 branch of BenzoDaeskiSumi/aion-market (the site's code lives on that branch, not in a repo of its own: Claude can't create repos).
-www redirects to the bare domain (_redirects, written at deploy). pages.yml (GitHub Pages) is kept for a future own repo but unused.
+www redirects to the bare domain (_redirects, written at deploy).
+The repo's CLOUDFLARE_API_TOKEN can deploy Pages but has NO DNS permission: the two CNAME records (@ and www -> aion2italia.pages.dev, proxied)
+were added by the user in the Cloudflare dashboard (the workflow only creates them when missing, and fails harmlessly without the permission). pages.yml (GitHub Pages) is kept for a future own repo but unused.
 Created 12 Nov 2026 as an Italian-only redesign of the original tracker (repo BenzoDaeskiSumi/aion-market, English, Marchutan only).
 The user is Nicola (Benzodaeskisumi), Italian: answer in Italian. Read the original repo's CLAUDE.md + docs/HANDOFF.md for the data
 pipeline, Mauro (the Discord bot) and the user's rules; this file only covers what is different here.
