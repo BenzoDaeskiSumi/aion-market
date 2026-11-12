@@ -275,12 +275,28 @@ async function legionButton(i, env, ctx) {
 }
 
 // ---------- fixed messages: verification how-to in #✅・verifica, role board in #🎭・ruoli (POST /setup with the key) ----------
-async function postOrEdit(env, key, ch, body) {
+async function postOrEdit(env, key, ch, body, hourly) {   // posts a NEW message only when there is none (no id or 404): a failed edit (429…) never duplicates
   const id = await env.KV.get(key);
-  if (id && (await dapi(env, 'PATCH', `/channels/${ch}/messages/${id}`, body)).ok) return 'edited';
+  if (id) {
+    for (let k = 0; k < 3; k++) {
+      const r = await dapi(env, 'PATCH', `/channels/${ch}/messages/${id}`, body);
+      if (r.ok) return 'edited';
+      if (r.status === 429) { await new Promise((ok) => setTimeout(ok, Math.min(5000, 1000 * (+(await r.json().catch(() => ({}))).retry_after || 1)))); continue; }
+      if (r.status !== 404) return 'edit failed ' + r.status;
+      break;
+    }
+  }
+  if (hourly) return 'missing';                    // the hourly count refresh never posts
   const r = await djson(env, 'POST', `/channels/${ch}/messages`, body);
   if (r) await env.KV.put(key, r.id);
   return r ? 'posted' : 'failed';
+}
+async function dedupe(env, ch, keys) {          // deletes Alberto's own messages in a channel that are not one of the fixed ones
+  const keep = new Set((await Promise.all(keys.map((k) => env.KV.get(k)))).filter(Boolean)), msgs = await djson(env, 'GET', `/channels/${ch}/messages?limit=50`);
+  if (!keep.size || !msgs) return 0;
+  let n = 0;
+  for (const m of msgs) if (m.author?.id === env.DISCORD_APP_ID && !keep.has(m.id)) { await dapi(env, 'DELETE', `/channels/${ch}/messages/${m.id}`, undefined, 'Doppione'); n++; }
+  return n;
 }
 async function memberCounts(env) {
   const n = {}; let after = '0';
@@ -295,22 +311,26 @@ async function memberCounts(env) {
 async function setup(env, hourly) {
   const out = {}, all = await roles(env), id = (n) => all.find((r) => r.name === n)?.id, n = await memberCounts(env);
   if (hourly && !n) return {skip: 'no member list'};
+  const rch = await channelId(env, '・ruoli');
+  if (hourly) {
+    out.dupes = await dedupe(env, rch, [...Object.keys(PICK), 'auto'].map((g) => 'setup:board:' + g));
+  }
   const vch = await channelId(env, '・verifica');
-  out.verify = await postOrEdit(env, 'setup:verify', vch, {embeds: [{color: 0xc9a227, title: '✅ Verificati per entrare nella community',
+  if (!hourly) out.verify = await postOrEdit(env, 'setup:verify', vch, {embeds: [{color: 0xc9a227, title: '✅ Verificati per entrare nella community',
     description: ['Aperta a **tutti i giocatori italiani** di Aion 2, **Elyos e Asmodiani**, su qualsiasi server EU.', '',
       '**1.** Fai uno screenshot del gioco in cui si legge il **nome del tuo personaggio** (per esempio la finestra del personaggio, tasto P).',
       '**2.** Scrivi `/verifica` qui sotto, scegli il personaggio dai suggerimenti e allega lo screenshot.',
       '**3.** Lo staff controlla e ti approva: ricevi un messaggio privato e ottieni fazione, classe e Gear Score in automatico. Il tuo nick diventa `Nome ⚔️ [SERVER]`: personaggio, classe e sigla del server.', '',
       'Problemi? Scrivi in #🆘・aiuto-verifica.'].join('\n')}]});
-  const rch = await channelId(env, '・ruoli');
   for (const [g, items] of Object.entries(PICK)) {
     const head = {Interessi: ['🎯 Cosa ti piace fare?', 0x2ecc71, ''], Ping: ['🔔 Vuoi essere chiamato?', 0xe67e22, 'Chi ha il ruolo viene taggato quando si cerca gente.\n\n'],
       'Force PvP': ['⚔️ Force PvP', 0xd9485f, 'Per formare le force: chiunque può taggare questi ruoli, ma **solo in #⚔️・pvp-abisso**.\n\n']}[g];
     out['board_' + g] = await postOrEdit(env, 'setup:board:' + g, rch, {embeds: [{color: head[1], image: {url: `${SITE}/img/discord/ita/${BANNER[g]}.png?v=2`}},
       {color: head[1], title: head[0], description: head[2] + items.map(([r, e, d]) => `${e} ➜ <@&${id(r)}>  ·  ${d}`).join('\n') + '\n\nPremi un pulsante per prendere il ruolo, di nuovo per toglierlo.'}],
       components: [{type: 1, components: items.map(([r, e]) => ({type: 2, style: 2, custom_id: `rb:${id(r)}`, emoji: {name: e}, label: String(n?.[id(r)] || 0)}))}],
-      allowed_mentions: {parse: []}});
+      allowed_mentions: {parse: []}}, hourly);
   }
+  if (hourly) return out;
   out.auto = await postOrEdit(env, 'setup:board:auto', rch, {embeds: [{color: 0x3fb6d0, image: {url: `${SITE}/img/discord/ita/auto.png?v=2`}}, {color: 0x3fb6d0, title: '🤖 Ruoli automatici',
     description: 'Fazione (**Elyos** / **Asmodiani**), **classe** e fascia di **Gear Score** li dà Alberto dalla verifica e li aggiorna ogni giorno dal sito ufficiale.\nHai appena migliorato l\'equipaggiamento? Premi il pulsante.'}],
     components: [{type: 1, components: [{type: 2, style: 1, custom_id: 'gs:refresh', emoji: {name: '🔄'}, label: 'Aggiorna i miei ruoli'}]}]});
@@ -318,6 +338,7 @@ async function setup(env, hourly) {
   if (tch) out.legion = await postOrEdit(env, 'setup:legion', tch, {embeds: [{color: 0xc9a227, title: '🏰 Sei il leader di una legione?',
     description: 'Apri una richiesta: lo staff controlla e ti dà il ruolo **Legion Leader**, crea il ruolo della tua legione e lo assegna a tutti i membri verificati che ne fanno parte. Da quel momento chi entra in legione lo riceve da solo.\n\nServe essere verificati: il nome della legione lo leggiamo dal tuo personaggio sul sito ufficiale.'}],
     components: [{type: 1, components: [{type: 2, style: 1, custom_id: 'lg:open', emoji: {name: '🏰'}, label: 'Diventa Legion Leader'}]}]});
+  out.dupes = await dedupe(env, rch, [...Object.keys(PICK), 'auto'].map((g) => 'setup:board:' + g));
   return out;
 }
 
