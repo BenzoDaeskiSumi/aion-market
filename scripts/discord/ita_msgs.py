@@ -5,6 +5,7 @@ import hashlib, json, os, time, urllib.parse, urllib.request, urllib.error
 G, T = '1553398446524731435', os.environ['DISCORD_TOKEN']
 SITE = 'https://benzodaeskisumi.github.io/aion-market'
 IMG = SITE + '/img/discord/ita/'
+IT = 'https://aion2italia.com'      # the community's own site (Italian, every server); banners stay on SITE
 V = '?v=2'   # Discord caches a failed image fetch: new query string = new fetch
 GOLD, BLUE, CYAN, RED, GREEN, VIOLET = 0xc9a227, 0x5b8cff, 0x3fb6d0, 0xd9485f, 0x2ecc71, 0x8f6bff
 
@@ -86,7 +87,9 @@ cats = [
                       ('・ludra', 'la lista firme del Ludra di ogni sera: si firma con i pulsanti'),
                       ('・pvp-abisso', 'PvP, Abisso, arene · qui si taggano i ruoli Force PvP per formare le force'),
                       ('・assedi', 'organizzazione degli assedi'), ('・guide', 'forum: guide e build, con il tag della classe')]),
-    ('💰 MARKET', CYAN, [('・market', 'il sito Aion 2 Market: prezzi, storico, crafting'), ('・comandi-bot', 'qui si usano i comandi dei bot (`/item`, `/craft`, `/character`…)')]),
+    ('💰 MARKET', CYAN, [('・market', f'il nostro sito [aion2italia.com]({IT}): prezzi di ogni server, storico, crafting, mappa e guide'),
+                        ('・andamento-prezzi', 'in quali giorni e a che ora i prezzi scendono o salgono, con il file Excel'),
+                        ('・comandi-bot', 'qui si usano i comandi dei bot (`/item`, `/craft`, `/character`…)')]),
     ('🛡️ LEGIONI', GOLD, [('・legioni', 'forum: un post per legione, lo apre il Legion Leader')]),
 ]
 emb = [{'color': BLUE, 'image': {'url': IMG + 'guida.png' + V}}]
@@ -101,16 +104,18 @@ replace('・guida-server', [{'embeds': emb[:6]}, {'embeds': emb[6:]}])
 
 # ---------------- 🌐 market ----------------
 replace('・market', [{'embeds': [{'color': BLUE, 'image': {'url': IMG + 'market.png' + V}},
-    {'color': BLUE, 'title': 'I prezzi del Market, aggiornati ogni ora', 'url': SITE, 'description': '\n'.join([
-        '📊 **Market**: prezzo più basso, media di 3 giorni, trend di 7 giorni e segnale Compra / Vendi / Tieni per oltre 1.200 oggetti',
-        '📈 **Dettagli**: grafici di 24 ore, 7, 30 e 90 giorni, liquidità e volatilità',
-        '🔨 **Crafting**: conviene craftarlo o comprarlo? Costo stimato con i prezzi di oggi e ricetta passo per passo',
-        '📚 **Database**: tutti gli oggetti ufficiali di Aion 2 con le statistiche',
-        '🧙 **Personaggi**: Gear Score, Combat Power, equipaggiamento e Daevanion di qualsiasi personaggio',
-        '⭐ **Preferiti e avvisi**: entra con Discord, i preferiti ti seguono e Mauro ti tagga quando un prezzo arriva al tuo obiettivo', '',
-        '-# Il sito mostra Marchutan; i comandi di Mauro coprono tutti i server Asmodiani EU (`/server` per scegliere il tuo). Gratis, dati da aion2.exchange, non affiliato a NCSOFT.'])}],
-    'components': [{'type': 1, 'components': [{'type': 2, 'style': 5, 'label': 'Apri il Market', 'url': SITE + '/market.html'},
-        {'type': 2, 'style': 5, 'label': 'Crafting', 'url': SITE + '/market.html?v=craft'}, {'type': 2, 'style': 5, 'label': 'Personaggi', 'url': SITE + '/market.html?v=char'}]}]}])
+    {'color': BLUE, 'title': 'Aion 2 Market Italia', 'url': IT, 'description': '\n'.join([
+        'Il sito della community, in italiano, con i prezzi di **tutti i server europei** aggiornati ogni ora.', '',
+        '📊 **Market**: prezzo più basso, media, trend di 7 giorni e segnale Compra / Vendi per oltre 1.200 oggetti',
+        '🌍 **Tutti i server**: scegli il tuo in alto e confronta lo stesso oggetto su ogni server, dal più economico',
+        '🔨 **Crafting**: conviene craftarlo o comprarlo? Costo con i prezzi di oggi e ricetta passo per passo',
+        '📚 **Database** e 🧙 **Personaggi**: tutti gli oggetti ufficiali, e Gear Score, equipaggiamento e Daevanion di qualsiasi personaggio EU',
+        '🗺️ **Mappa** e 📖 **Guide**: boss, raccolta e Hidden Cube; guide alle classi in italiano',
+        '⭐ **Preferiti e avvisi**: entra con Discord e Mauro ti tagga quando un prezzo arriva al tuo obiettivo', '',
+        f"-# Quando conviene comprare e vendere: {link('・andamento-prezzi')}. Gratis, dati da aion2.exchange, non affiliato a NCSOFT."])}],
+    'components': [{'type': 1, 'components': [{'type': 2, 'style': 5, 'label': 'Apri il Market', 'url': IT + '/market.html'},
+        {'type': 2, 'style': 5, 'label': 'Crafting', 'url': IT + '/market.html?v=craft'}, {'type': 2, 'style': 5, 'label': 'Personaggi', 'url': IT + '/market.html?v=char'},
+        {'type': 2, 'style': 5, 'label': 'Mappa', 'url': IT + '/mappa.html'}, {'type': 2, 'style': 5, 'label': 'Guide', 'url': IT + '/guide.html'}]}]}])
 
 # ---------------- 🤖 comandi-bot ----------------
 replace('・comandi-bot', [{'embeds': [{'color': CYAN, 'image': {'url': IMG + 'comandi.png' + V}},
@@ -118,7 +123,7 @@ replace('・comandi-bot', [{'embeds': [{'color': CYAN, 'image': {'url': IMG + 'c
         '`/item <oggetto>` · prezzo, media, trend, segnale e grafici', '`/deals` · i migliori affari su materiali e consumabili adesso',
         '`/craft <oggetto>` · `/shopping <oggetto>` · costo del craft e lista della spesa', '`/price-history <oggetto>` · grafico di 90 giorni',
         '`/alert add|list` · ti tagga quando un prezzo arriva al tuo obiettivo', '`/favorites` · i tuoi preferiti del sito · `/watch` · un DM al giorno con i loro prezzi',
-        '`/server <server>` · il tuo server per i prezzi (server Asmodiani EU)', '`/character <nome>` · `/compare <a> <b>` · schede ufficiali dei personaggi', '`/help` · tutti i comandi di Mauro'])},
+        '`/server <server>` · il tuo server per i prezzi (server Asmodiani EU)', f'Sul sito: [aion2italia.com]({IT}) · i link delle schede di Mauro aprono il nostro sito', '`/character <nome>` · `/compare <a> <b>` · schede ufficiali dei personaggi', '`/help` · tutti i comandi di Mauro'])},
     {'color': GOLD, 'title': '🤵 Alberto · verifica e ruoli', 'description': '\n'.join([
         '`/verifica` · verificati con il tuo personaggio e uno screenshot', '`/aggiorna` · aggiorna fazione, classe e Gear Score dal sito ufficiale',
         f"Interessi, ping e Force PvP: con i pulsanti in {link('・ruoli')}"])},

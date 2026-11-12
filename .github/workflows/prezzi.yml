@@ -1,0 +1,38 @@
+name: Andamento prezzi (Discord)
+# Weekly, after the Wednesday reset: works out when prices are lowest/highest during the game week (scripts/price_patterns.py),
+# draws the images (scripts/discord/prezzi_render.py) and Mauro re-posts #📊・andamento-prezzi on the Italian community server
+# with the Excel file attached (scripts/discord/ita_prezzi.py).
+on:
+  schedule:
+    - cron: '23 7 * * 3'     # Wednesday 08:23 Rome (winter), after the 06:00 reset and the 08:00 sync
+  workflow_dispatch: {}
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: data
+          path: _data
+          sparse-checkout: |
+            data/servers.json
+            data/s/*/price_log.json
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Tools
+        run: |
+          pip install -q pandas openpyxl playwright
+          python -m playwright install --with-deps chromium >/dev/null
+      - name: Numbers, Excel, images
+        run: |
+          python scripts/price_patterns.py out _data/data
+          python scripts/discord/prezzi_render.py out
+      - name: Post on Discord
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+        run: python scripts/discord/ita_prezzi.py out
+      - uses: actions/upload-artifact@v4
+        with: {name: andamento-prezzi, path: out/, retention-days: 30}

@@ -148,7 +148,10 @@ async function itemView(name, sid, view, env) {
   return chartEmbed(name, r, hs[name], view, sid, sname, ico, env);
 }
 
-const itemUrl = (env, sid, name) => `${env.SITE}/market.html?s=${sid}&item=${encodeURIComponent(name)}`;
+// links people click: the Italian community's site (aion2italia.com, all servers, Italian) inside its Discord, the English one elsewhere.
+// Data is always read from env.SITE (the Italian site has no data of its own).
+const siteOf = (env) => env.LINK || env.SITE;
+const itemUrl = (env, sid, name) => `${siteOf(env)}/market.html?s=${sid}&item=${encodeURIComponent(name)}`;
 const serverName = (srv, sid) => srv.find((s) => s.id === sid)?.name || String(sid);
 
 // ---------- /info ----------
@@ -201,7 +204,7 @@ async function favPage(env, uid, sid, idx, view = 'card') {
 async function preferiti(i, env) {
   const uid = userId(i), srv = opt(i.data, 'server')?.value || await savedServer(i, env);
   const page = await favPage(env, uid, srv ? +srv : null, 0);
-  if (!page) return oops(`You have no favourites yet. Log in with Discord on ${env.SITE} and press the ⭐ next to the items you care about.`);
+  if (!page) return oops(`You have no favourites yet. Log in with Discord on ${siteOf(env)} and press the ⭐ next to the items you care about.`);
   return reply(page);
 }
 async function favButton(i, env) {
@@ -255,7 +258,7 @@ const parsePrice = (v) => {
   return Number.isFinite(n) && n > 0 ? Math.round(n) : null;
 };
 const alertText = (a, srv) => `${a.dir === 'above' ? 'above' : 'below'} **${kin(a.price)}** · ${serverName(srv, a.server)}`;
-const NO_LOGIN = (env) => `Alerts need a site login: open ${env.SITE} and press **Log in with Discord** (just once), then try again.`;
+const NO_LOGIN = (env) => `Alerts need a site login: open ${siteOf(env)} and press **Log in with Discord** (just once), then try again.`;
 
 // suggestions for the price box of /avviso aggiungi: what you typed (decoded) + targets around the current price
 function priceChoices(sum, data, q) {
@@ -361,7 +364,7 @@ async function favToggle(i, env) {
   const uid = userId(i), name = cardItem(i);
   if (!name) return oops('I can\'t find this card\'s item any more: run /item again.');
   const prof = await profile(env, uid);
-  if (!prof) return oops(`Favourites need a site login: open ${env.SITE} and press **Log in with Discord** (just once), then try again.`);
+  if (!prof) return oops(`Favourites need a site login: open ${siteOf(env)} and press **Log in with Discord** (just once), then try again.`);
   const favs = new Set(prof.favorites || []), had = favs.has(name);
   had ? favs.delete(name) : favs.add(name);
   try { await rpc(env, 'set_favorites_by_discord', {did: uid, f: [...favs]}); }
@@ -490,7 +493,7 @@ async function craftButton(i, env) {
 
 // ---------- /aiuto ----------
 function aiuto(env) {
-  return reply({flags: 64, embeds: [{title: '📖 Aion 2 Market bot commands', url: env.SITE, color: 0x5b8cff, description: [
+  return reply({flags: 64, embeds: [{title: '📖 Aion 2 Market bot commands', url: siteOf(env), color: 0x5b8cff, description: [
     '**Prices**',
     '`/item <item>` — lowest price, average, sales, trend and signal. Under the card: 📋/📈 card and charts, ⭐ favourite, 🔔 alert, 🔨 craft cost.',
     '`/deals [buy|sell]` — the best deals right now on materials and consumables: to buy and resell, or to sell now.',
@@ -508,7 +511,7 @@ function aiuto(env) {
     '',
     '`/help` — this guide.',
     '',
-    `Site: ${env.SITE} · prices updated every hour from aion2.exchange.`,
+    `Site: ${siteOf(env)} · prices updated every hour from aion2.exchange.`,
   ].join('\n')}]});
 }
 
@@ -644,7 +647,7 @@ async function charView(server, id, view, uid, env) {
   const by = Object.fromEntries(gear.map((x) => [x.slotPosName, x]));
   const il = stats.find((x) => x.type === 'ItemLevel')?.value;
   const race = pr.raceName === 'Elyos' ? 'Elyos' : pr.raceName === 'Asmodian' || pr.raceId === 2 ? 'Asmodian' : pr.raceName;
-  const url = `${env.SITE}/?v=char&ch=${server}:${encodeURIComponent(id)}`;
+  const url = `${siteOf(env)}/${env.LINK ? 'market.html' : ''}?v=char&ch=${server}:${encodeURIComponent(id)}`;
   const base = {
     author: {name: `${pr.className || ''} · Lv ${pr.characterLevel ?? '?'}`, icon_url: classIcon(pr.className)},
     title: pr.characterName || 'Character', url, color: CLASS_COLOR[String(pr.className || '').toLowerCase().replace(/[^a-z]/g, '')] ?? (pr.raceId === 2 ? 0xb06cff : 0xf0c43f),
@@ -2190,7 +2193,7 @@ async function shoppingCmd(i, env) {
 async function watchCmd(i, env) {
   const uid = userId(i), list = JSON.parse(await env.USERS.get('watch:list') || '[]'), on = !list.includes(uid);
   const prof = on ? await profile(env, uid).catch(() => null) : null;
-  if (on && !prof?.favorites?.length) return oops(`You have no favourites yet: log in with Discord on ${env.SITE}, press the ⭐ next to the items you care about, then run /watch again.`);
+  if (on && !prof?.favorites?.length) return oops(`You have no favourites yet: log in with Discord on ${siteOf(env)}, press the ⭐ next to the items you care about, then run /watch again.`);
   await env.USERS.put('watch:list', JSON.stringify(on ? [...list, uid] : list.filter((u) => u !== uid)));
   return oops(on ? '👀 Daily watch **on**: every evening (18:00–22:00 server time) I DM you the prices of your favourites. Keep your DMs open for this server. Run /watch again to stop.'
     : '🔕 Daily watch **off**.');
@@ -2252,6 +2255,7 @@ export default {
     const body = await req.text();
     if (!(await verified(req, body, env))) return new Response('bad signature', {status: 401});
     const i = JSON.parse(body);
+    if (i.guild_id === GUILD) env = {...env, LINK: 'https://aion2italia.com'};      // Italian community (ex Legione server)
     toItalianNames(i.data);                                                 // commands are registered in English (Italian name_localizations): handlers keep the Italian names
     if (i.type === 1) return Response.json({type: 1});                       // PING from Discord
     try {

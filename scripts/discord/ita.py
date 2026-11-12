@@ -103,7 +103,8 @@ CATS = [
         (15, '📚・guide', 'Guide e build, un post per argomento, con il tag della classe.', 'forum_g'),
     ]),
     ('『💰 𝐌𝐀𝐑𝐊𝐄𝐓』', 'members', [
-        (0, '🌐・market', 'Il sito Aion 2 Market: prezzi, storico, crafting.', 'readonly'),
+        (0, '🌐・market', 'Il sito Aion 2 Market Italia: prezzi di ogni server, storico, crafting · aion2italia.com', 'readonly'),
+        (0, '📊・andamento-prezzi', 'Quando conviene comprare e vendere: prezzi per giorno e ora, aggiornati ogni settimana.', 'readonly'),
         (0, '🤖・comandi-bot', 'Usa qui i comandi dei bot (/item, /craft, /character…).', None),
     ]),
     ('『🛡️ 𝐋𝐄𝐆𝐈𝐎𝐍𝐈』', 'members', [
