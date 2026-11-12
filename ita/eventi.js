@@ -3,14 +3,17 @@
 // empty slot in the other party, else reserves.
 //  * /raid quando [titolo] [note] [ping]: the board is posted in #🔥・ludra (KV raid:<id>, buttons lr:<id>:<party>:<role> / out / del / edit).
 //  * Each room has its own Discord role ('🔥 Ludra 12/11 21:30'), given to everyone on the list (reserves too) and taken away when they leave:
-//    Gettulio tags the role 1 hour before and again 15 minutes before; the role is deleted with the voice channels, VOICE_TTL after the start.
+//    Gettulio tags the role 1 hour before and again 15 minutes before; the role is deleted VOICE_TTL after the start.
+//    The party voice channels are visible to every verified member (only the party + staff can join) and stay until the staff presses 🔒 Chiudi vocali.
 //  * When the room is full: two TEMPORARY voice channels (one per party, only its 5 members + staff), kept in sync while people change.
 //  * Staff (Admin/Moderatore/Helper) edit the list with ✏️ Gestisci: ephemeral user select le:<id> -> place select lm:<id>:<uid> (party + role, or out).
 // KV: raid:<id> = {title, t, ch, msg, note, by, byName, p, role, voice: [id, id] | null, pinged, called, done}.
 import {GUILD, verified, dapi, djson, oops, defer, hook, opt, uidOf, roleId, channelId, channels, isStaff, putErr, localDay, atLocal, TZ, STAFF_ROLES} from './lib.js';
 
 const LUDRA = {parties: 2};
-const VOICE_TTL = 3 * 36e5;
+const VOICE_TTL = 3 * 36e5;                 // after this the room's role is deleted; the voice channels stay until an admin closes them
+// KV lifetime: a day after the end, or 30 days while the room still has voice channels (so 'Chiudi vocali' keeps working)
+const EXP = (R) => ({expiration: Math.floor(Math.max(R.t + VOICE_TTL + 864e5, R.voice ? Date.now() + 30 * 864e5 : 0) / 1000)});
 const LU_ROLES = [['t', 'Tank', '🛡️', 1], ['c', 'Cleric', '✨', 1], ['ch', 'Chanter', '🎶', 1], ['d', 'DPS', '⚔️', 2]];
 const TOT = LU_ROLES.reduce((a, [, , , n]) => a + n * LUDRA.parties, 0);
 const hhmm = (t) => new Date(t).toLocaleTimeString('it-IT', {timeZone: TZ, hour: '2-digit', minute: '2-digit'});
@@ -38,7 +41,7 @@ function board(R, prefix) {
     value: LU_ROLES.flatMap(([k, , emo]) => S[k].map((u) => `${emo} ${who(u)}`)).join('\n')}));
   const rs = [...RSV(R).map(([k, u]) => `${LU_ROLES.find((r) => r[0] === k)[2]} ${who(u)}`), ...res.map(([k, pi, u]) => `${LU_ROLES.find((r) => r[0] === k)[2]} ${who(u)} · voleva il Party ${pi + 1}`)];
   fields.push({name: `🪑 Riserve (${rs.length})`, inline: false, value: rs.join('\n') || '—'});
-  const taken = TOT - free(R), btn = (id, label, emo, style) => ({type: 2, style, custom_id: `${prefix}:${id}`, label, emoji: {name: emo}, disabled: past});
+  const taken = TOT - free(R), btn = (id, label, emo, style, off = past) => ({type: 2, style, custom_id: `${prefix}:${id}`, label, emoji: {name: emo}, disabled: off});
   const STY = {t: 1, c: 3, ch: 3, d: 4};
   return {content: '', embeds: [{title: `🔥 ${R.title} · ${dayName(R.t)}`, color: past ? 0x5c5f66 : 0xe8603c,
       description: [`🕙 <t:${ts}:F> · <t:${ts}:R>`, R.note ? `\n${R.note}` : '',
@@ -49,7 +52,7 @@ function board(R, prefix) {
       fields, footer: {text: past ? 'Iscrizioni chiuse' : `${R.byName ? `Organizza ${R.byName} · ` : ''}Premi un altro pulsante per cambiare party o ruolo · lo staff può modificare la lista`}}],
     components: [...R.p.map((_, pi) => ({type: 1, components: LU_ROLES.map(([k, label, emo]) => btn(`${pi}:${k}`, `${pi + 1} · ${label}`, emo, STY[k]))})),
       {type: 1, components: LU_ROLES.map(([k, label, emo]) => btn(`r:${k}`, `Riserva · ${label}`, emo, 2))},
-      {type: 1, components: [btn('out', 'Ritira', '✖️', 2), btn('edit', 'Gestisci (staff)', '✏️', 2), btn('del', 'Annulla', '🗑️', 2)]}],
+      {type: 1, components: [btn('out', 'Ritira', '✖️', 2), btn('edit', 'Gestisci (staff)', '✏️', 2), btn('del', 'Annulla', '🗑️', 2), ...(R.voice ? [btn('close', 'Chiudi vocali (staff)', '🔒', 4, false)] : [])]}],
     allowed_mentions: {parse: []}};
 }
 
@@ -58,7 +61,9 @@ const V = {VIEW: 0x400, CONNECT: 0x100000, SPEAK: 0x200000, STREAM: 0x200, VAD: 
 const bits = (...k) => String(k.reduce((a, x) => a | V[x], 0));
 async function voiceOverwrites(env, members) {
   const staff = (await Promise.all(STAFF_ROLES.map((n) => roleId(env, n)))).filter(Boolean);
+  const ver = await roleId(env, 'Verificato');
   return [{id: GUILD, type: 0, allow: '0', deny: bits('VIEW', 'CONNECT')},
+    ...(ver ? [{id: ver, type: 0, allow: bits('VIEW'), deny: bits('CONNECT')}] : []),
     {id: env.DISCORD_APP_ID, type: 1, allow: bits('VIEW', 'CONNECT', 'MANAGE', 'MOVE'), deny: '0'},
     ...staff.map((id) => ({id, type: 0, allow: bits('VIEW', 'CONNECT', 'SPEAK', 'STREAM', 'VAD', 'MOVE'), deny: '0'})),
     ...members.map((id) => ({id, type: 1, allow: bits('VIEW', 'CONNECT', 'SPEAK', 'STREAM', 'VAD', 'HIST', 'SEND'), deny: '0'}))];
@@ -100,7 +105,7 @@ async function place(env, ctx, R, kvKey, uid, dest) {        // dest = 'p:k' | '
   for (const P of [...R.p, R.r]) for (const [r] of LU_ROLES) P[r] = (P[r] || []).filter((x) => x !== uid);
   if (dest !== 'out') { const [pp, k] = dest.split(':'); (pp === 'r' ? R.r : R.p[+pp])[k].push(uid); }
   const created = await syncVoice(env, R);
-  await env.KV.put(kvKey, JSON.stringify(R), {expiration: Math.floor((R.t + VOICE_TTL) / 1000) + 86400});
+  await env.KV.put(kvKey, JSON.stringify(R), EXP(R));
   const after = allIn(R);
   if (R.role) {                                               // the room's role follows the list
     if (after.has(uid) && !beforeAll.has(uid)) ctx.waitUntil(dapi(env, 'PUT', `/guilds/${GUILD}/members/${uid}/roles/${R.role}`, undefined, `Iscritto a ${R.title}`));
@@ -121,9 +126,18 @@ async function press(i, env, ctx) {
     ctx.waitUntil(endRoom(env, R).then(() => env.KV.delete(kvKey)));
     return Response.json({type: 7, data: {content: '', embeds: [{title: `~~${R.title}~~`, color: 0x5c5f66, description: `Annullata da <@${uid}>.`}], components: [], allowed_mentions: {parse: []}}});
   }
+  if (a === 'close') {
+    if (!await isStaff(env, i)) return oops('Solo lo staff può chiudere i vocali del party.');
+    if (!R.voice) return oops('Questa stanza non ha vocali aperti.');
+    await dropVoice(env, R);
+    if (Date.now() > R.t + VOICE_TTL && R.role) { await dapi(env, 'DELETE', `/guilds/${GUILD}/roles/${R.role}`, undefined, `Fine di ${R.title}`); R.role = null; }
+    if (Date.now() > R.t + VOICE_TTL) R.done = true;
+    await env.KV.put(kvKey, JSON.stringify(R), EXP(R));
+    return Response.json({type: 7, data: board(R, `lr:${key}`)});
+  }
   if (a === 'edit') {
     if (!await isStaff(env, i)) return oops('Solo lo staff può modificare la lista. Per cambiare il tuo posto premi un altro pulsante.');
-    await env.KV.put(kvKey, JSON.stringify(R), {expiration: Math.floor((R.t + VOICE_TTL) / 1000) + 86400});
+    await env.KV.put(kvKey, JSON.stringify(R), EXP(R));
     return Response.json({type: 4, data: editPanel(key, R, null, 'Chi vuoi spostare, aggiungere o togliere?')});
   }
   if (Date.now() > R.t) return oops('Le iscrizioni sono chiuse: è già iniziato.');
@@ -179,13 +193,21 @@ async function roomsTick(env) {
   for (const {name: k} of (await env.KV.list({prefix: 'raid:'})).keys) {
     const R = JSON.parse(await env.KV.get(k) || 'null'); if (!R || R.done || !Array.isArray(R.p)) continue;   // old-style lists (before 12 Nov) have no parties
     if (R.v !== 2 && R.t > now) { await upgradeRoom(env, k, R); continue; }
-    if (R.ui !== 3 && R.msg && R.t > now) {        // boards posted before the Riserva buttons existed: redraw them once
+    if (R.ui !== 4 && R.voice) for (const [p, m] of partyOf(R).entries()) if (R.voice[p]) await dapi(env, 'PATCH', `/channels/${R.voice[p]}`, {permission_overwrites: await voiceOverwrites(env, m)}, 'Vocali visibili a tutti');
+    if (R.ui !== 4 && R.msg) {        // boards posted before the newest buttons: redraw them once
       const r = await dapi(env, 'PATCH', `/channels/${R.ch}/messages/${R.msg}`, board(R, `lr:${k.slice(5)}`));
-      if (r.ok) { R.ui = 3; await env.KV.put(k, JSON.stringify(R), {expiration: Math.floor((R.t + VOICE_TTL) / 1000) + 86400}); }
+      if (r.ok) { R.ui = 4; await env.KV.put(k, JSON.stringify(R), EXP(R)); }
     }
     let dirty = false;
     const tag = R.role ? `<@&${R.role}>` : [...allIn(R)].map((u) => `<@${u}>`).join(' '), am = R.role ? {roles: [R.role]} : {users: [...allIn(R)].slice(0, 100)};
-    if (now > R.t + VOICE_TTL) { await endRoom(env, R); R.done = true; dirty = true; }
+    if (now > R.t + VOICE_TTL) {
+      if (R.role) { await dapi(env, 'DELETE', `/guilds/${GUILD}/roles/${R.role}`, undefined, `Fine di ${R.title}`); R.role = null; dirty = true; }
+      if (!R.voice) { R.done = true; dirty = true; }
+      if (R.voice && !R.closeNote) {          // the board gets the close button; voices stay until the staff closes them
+        R.closeNote = true; dirty = true;
+        if (R.msg) await dapi(env, 'PATCH', `/channels/${R.ch}/messages/${R.msg}`, board(R, `lr:${k.slice(5)}`));
+      }
+    }
     else if (!R.pinged && R.t - now <= 61 * 6e4 && R.t - now > 20 * 6e4) {
       R.pinged = true; dirty = true;
       const res = [...RSV(R).map(([, u]) => u), ...seat(R).res.map(([, , u]) => u)];
@@ -196,7 +218,7 @@ async function roomsTick(env) {
       R.called = true; dirty = true;
       if (allIn(R).size) await dapi(env, 'POST', `/channels/${R.ch}/messages`, {allowed_mentions: am, content: `🔥 ${tag} **${R.title}** tra 15 minuti! Entrate nel vocale del vostro party.\n` + lineup(R)});
     }
-    if (dirty) await env.KV.put(k, JSON.stringify(R), {expiration: Math.floor((R.t + VOICE_TTL) / 1000) + 86400});
+    if (dirty) await env.KV.put(k, JSON.stringify(R), EXP(R));
   }
 }
 // rooms opened before the 12 Nov evening update (no role, old buttons, maybe outside #ludra): give them a role, give it to everyone
@@ -213,7 +235,7 @@ async function upgradeRoom(env, k, R) {
   if (!posted) return false;
   if (old) await dapi(env, 'DELETE', `/channels/${R.ch}/messages/${old.id}`, undefined, 'Lista rifatta con i nuovi pulsanti');
   Object.assign(R, {ch: ludra, msg: posted.id, v: 2});
-  await env.KV.put(k, JSON.stringify(R), {expiration: Math.floor((R.t + VOICE_TTL) / 1000) + 86400});
+  await env.KV.put(k, JSON.stringify(R), EXP(R));
   return true;
 }
 // tonight's automatic list (22:00) still had sign-ups when it was switched off: turn it into a /raid room with the same people (once)
@@ -224,7 +246,7 @@ async function convertDaily(env) {
   const R = {title: 'Ludra', t, note: '', by: null, byName: 'Gettulio', ch: await channelId(env, '・ludra'), msg: null, p: old.p, voice: old.voice || null, pinged: false, called: false};
   if (!allIn(R).size) { await env.KV.delete(key); return 'empty'; }
   const k = 'raid:' + crypto.randomUUID().slice(0, 8);
-  await env.KV.put(k, JSON.stringify(R), {expiration: Math.floor((t + VOICE_TTL) / 1000) + 86400});
+  await env.KV.put(k, JSON.stringify(R), EXP(R));
   const ok = await upgradeRoom(env, k, R);
   if (ok) await env.KV.delete(key);
   return ok ? `converted ${allIn(R).size}` : 'failed';
@@ -261,13 +283,13 @@ async function raidCreate(i, env) {
   const role = await djson(env, 'POST', `/guilds/${GUILD}/roles`, {name: `🔥 ${title} ${ddmm(t)} ${hhmm(t)}`.slice(0, 100), color: 0xe8603c, mentionable: true, hoist: false}, `Stanza /raid di ${u.username}`);
   if (!role) await putErr(env, 'ev_err', 'role create failed (Manage Roles?)');
   const R = {title, t, note: String(opt(i.data, 'note') || '').slice(0, 300), by: u.id, byName: i.member?.nick || u.global_name || u.username,
-    ch, msg: null, role: role?.id || null, p: emptyParties(), voice: null, pinged: false, called: false, v: 2, ui: 3};
+    ch, msg: null, role: role?.id || null, p: emptyParties(), voice: null, pinged: false, called: false, v: 2, ui: 4};
   const msg = board(R, `lr:${id}`), ping = opt(i.data, 'ping') !== false ? await roleId(env, 'Ping Ludra') : null;
   if (ping) { msg.content = `<@&${ping}> nuova stanza **${R.title}** <t:${Math.floor(t / 1000)}:R>: firmate qui sotto!`; msg.allowed_mentions = {roles: [ping]}; }
   const posted = await djson(env, 'POST', `/channels/${ch}/messages`, msg);
   if (!posted) { if (role) await dapi(env, 'DELETE', `/guilds/${GUILD}/roles/${role.id}`); return {content: 'Non riesco a pubblicare la lista: riprova tra poco.'}; }
   R.msg = posted.id;
-  await env.KV.put('raid:' + id, JSON.stringify(R), {expiration: Math.floor((t + VOICE_TTL) / 1000) + 86400});
+  await env.KV.put('raid:' + id, JSON.stringify(R), EXP(R));
   return {content: `✅ Stanza **${R.title}** creata in <#${ch}> per ${dayName(t)} alle ${hhmm(t)}. Chi si iscrive riceve il ruolo${role ? ` <@&${role.id}>` : ''}: lo tagghiamo un'ora prima e 15 minuti prima.`};
 }
 

@@ -284,7 +284,9 @@ each legion will get its own section later; verification like MarchutanEU; separ
     by dropOldDaily; lu: buttons answer 'use /raid'). /raid quando [titolo] [note] [ping] posts a room of 10 in 🔥・ludra (read-only; the command works from any channel,
     deferred answer): 2 parties of 1 tank + 1 cleric + 1 chanter + 2 DPS, buttons lr:<id>:<p>:<role>|r:<role> (chosen reserve, R.r; never seated by itself, staff move them)|out|del|edit, KV raid:<id> {.., ch, msg, role, voice, pinged, called, done}.
     Each room gets its own mentionable role '🔥 <titolo> dd/mm hh:mm' (created by /raid, given to whoever is on the list incl. reserves, removed when they leave):
-    roomsTick tags the role ~1 h before (line-up + reserves) and ~15 min before (with the voice channels), then deletes voices + role VOICE_TTL = 3 h after the start.
+    roomsTick tags the role ~1 h before (line-up + reserves) and ~15 min before (with the voice channels), then deletes the role VOICE_TTL = 3 h after the start.
+    Party voices (12 Nov, the user asked): visible to every Verificato member (only the party + staff can join) and NOT deleted automatically: the staff closes them
+    with '🔒 Chiudi vocali (staff)' (lr:<id>:close, shown while R.voice exists); KV kept 30 days while voices exist (EXP).
     Full room = 2 TEMPORARY voice channels in VOCALI (one per party: its 5 + staff + Gettulio; overwrites follow changes).
     Staff edit: '✏️ Gestisci (staff)' -> ephemeral user select le:<id> -> place select lm:<id>:<uid> (party+role or out); same place() as the buttons, board PATCHed,
     a short note under the board. Gettulio's role has Manage Channels + Manage Roles + voice perms (audit.py one-off, 12 Nov). /tick = cleanup + roomsTick.
