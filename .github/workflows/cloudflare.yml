@@ -1,0 +1,37 @@
+name: Pubblica su Cloudflare (aion2italia.com)
+# The Italian site lives on the 'italia-site' branch of this repo and is served by Cloudflare Pages (project 'aion2italia'),
+# custom domain aion2italia.com. Static site, no build: only the supabase-js CDN script is moved into lib/ (scripts/selfhost.py).
+on:
+  push:
+    branches: [italia-site]
+  workflow_dispatch: {}
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PROJECT: aion2italia
+      DOMAIN: aion2italia.com
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble
+        run: |
+          python3 scripts/selfhost.py market.html
+          mkdir dist
+          rsync -a --exclude .git --exclude .github --exclude tools --exclude scripts --exclude CLAUDE.md --exclude README.md ./ dist/
+          printf 'https://www.aion2italia.com/* https://aion2italia.com/:splat 301\n' > dist/_redirects
+          du -sh dist
+      - name: Create the Pages project (once)
+        run: npx -y wrangler@3 pages project create "$PROJECT" --production-branch main 2>&1 | tail -3 || true
+      - name: Deploy
+        run: npx -y wrangler@3 pages deploy dist --project-name "$PROJECT" --branch main --commit-dirty=true 2>&1 | tail -6
+      - name: Custom domain
+        run: |
+          api() { curl -sS -X "$1" "https://api.cloudflare.com/client/v4$2" -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H 'Content-Type: application/json' ${3:+--data "$3"}; }
+          for d in "$DOMAIN" "www.$DOMAIN"; do
+            echo "== add $d"; api POST "/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PROJECT/domains" "{\"name\":\"$d\"}" | python3 -c "import json,sys;r=json.load(sys.stdin);print(r.get('success'),r.get('errors'),(r.get('result') or {}).get('status'))"
+          done
+          echo "== domains"; api GET "/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PROJECT/domains" | python3 -c "import json,sys;r=json.load(sys.stdin);[print(d['name'],d.get('status'),(d.get('validation_data') or {}).get('status'),(d.get('verification_data') or {}).get('status'),d.get('validation_data',{}).get('error_message')) for d in r.get('result') or []];print(r.get('errors'))"
+          echo "== zone"; api GET "/zones?name=$DOMAIN" | python3 -c "import json,sys;r=json.load(sys.stdin);[print(z['name'],z['status'],z.get('name_servers'),z.get('account',{}).get('id')==__import__('os').environ['CLOUDFLARE_ACCOUNT_ID']) for z in r.get('result') or []];print('zones:',len(r.get('result') or []),r.get('errors'))"
+          echo "== project"; api GET "/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PROJECT" | python3 -c "import json,sys;r=json.load(sys.stdin);print((r.get('result') or {}).get('subdomain'),r.get('errors'))"

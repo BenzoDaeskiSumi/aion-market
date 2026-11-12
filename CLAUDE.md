@@ -1,6 +1,9 @@
 # Aion 2 Market Italia
 
-Site of the Italian Aion 2 community: https://benzodaeskisumi.github.io/aion2-market-italia (GitHub Pages, source = GitHub Actions).
+Site of the Italian Aion 2 community: https://aion2italia.com (domain bought by the user on 12 Nov 2026).
+Hosting: Cloudflare Pages, project 'aion2italia', deployed by .github/workflows/cloudflare.yml on every push to the 'italia-site'
+branch of BenzoDaeskiSumi/aion-market (the site's code lives on that branch, not in a repo of its own: Claude can't create repos).
+www redirects to the bare domain (_redirects, written at deploy). pages.yml (GitHub Pages) is kept for a future own repo but unused.
 Created 12 Nov 2026 as an Italian-only redesign of the original tracker (repo BenzoDaeskiSumi/aion-market, English, Marchutan only).
 The user is Nicola (Benzodaeskisumi), Italian: answer in Italian. Read the original repo's CLAUDE.md + docs/HANDOFF.md for the data
 pipeline, Mauro (the Discord bot) and the user's rules; this file only covers what is different here.
@@ -9,12 +12,12 @@ pipeline, Mauro (the Discord bot) and the user's rules; this file only covers wh
 - Static site, no build step, classic scripts with shared globals loaded in order (same as the original).
 - NO DATA and NO SYNC here. Everything is read at run time from the original site (js/base.js `SRC`):
   data/s/<server>/{summary,meta}.json + h/<slug>.json, data/servers.json, settings.json, icons.json + icons/, recipes.json, db/items.json,
-  data/map/*, img/mapicons/, map/tiles/. Both sites are on benzodaeskisumi.github.io, so it is same-origin (GitHub Pages also sends CORS *).
+  data/map/*, img/mapicons/, map/tiles/. Cross-origin from aion2italia.com: works because GitHub Pages sends Access-Control-Allow-Origin: *.
   Locally SRC = '/aion-market/' (serve a folder that has both sites side by side). If the original site moves, change SRC.
 - Rules for numbers still live in the original repo's scripts/sync.py; craftEngine here (js/craft.js) is a 4th copy to keep in step
   with js/craft.js, js/overlay.js and bot/src/index.js there.
 - Same Supabase project and same Mauro Worker as the original (js/account.js, BOT in js/base.js): one login, favourites and alerts
-  shared by the two sites. The site URL must be in Supabase → Authentication → URL configuration → Redirect URLs, or the Discord login fails.
+  shared by the two sites. https://aion2italia.com must be in Supabase → Authentication → URL configuration → Redirect URLs, or the Discord login fails.
 
 ## Differences from the original
 - Italian only: no js/i18n.js, no language buttons. js/base.js defines LANG 'it', LOCALE 'it-IT', and no-op NAMES/iname for the tracker

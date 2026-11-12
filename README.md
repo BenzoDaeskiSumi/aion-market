@@ -1,6 +1,6 @@
 # Aion 2 Market Italia
 
-Il sito della community italiana di Aion 2: prezzi del Market di ogni server europeo aggiornati ogni ora, storico,
+Il sito della community italiana di Aion 2, su https://aion2italia.com: prezzi del Market di ogni server europeo aggiornati ogni ora, storico,
 costi di crafting, database degli oggetti, personaggi, mappa interattiva e guide alle classi. Solo in italiano
 (nomi di oggetti, categorie e termini di gioco restano in inglese, come nel client).
 
