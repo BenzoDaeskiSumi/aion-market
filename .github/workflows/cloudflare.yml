@@ -20,7 +20,6 @@ jobs:
           python3 scripts/selfhost.py market.html
           mkdir dist
           rsync -a --exclude .git --exclude .github --exclude tools --exclude scripts --exclude CLAUDE.md --exclude README.md ./ dist/
-          printf 'https://www.aion2italia.com/* https://aion2italia.com/:splat 301\n' > dist/_redirects
           du -sh dist
       - name: Create the Pages project (once)
         run: npx -y wrangler@3 pages project create "$PROJECT" --production-branch main 2>&1 | tail -3 || true
@@ -46,11 +45,12 @@ jobs:
       - name: Check the live site
         run: |
           sleep 30
-          for u in https://aion2italia.com/ https://www.aion2italia.com/market.html https://aion2italia.com/market.html https://aion2italia.com/mappa.html https://aion2italia.com/community.html https://aion2italia.com/guide.html https://aion2italia.com/privacy.html https://aion2italia.com/css/base.css https://aion2italia.com/fonts/figtree.woff https://aion2italia.com/lib/supabase.js https://aion2italia.com/nonesiste; do
-            printf '%-48s ' "$u"; curl -s -o /tmp/b -w '%{http_code} %{redirect_url} %{size_download}B ssl=%{ssl_verify_result}\n' "$u" || echo "curl failed"
+          for u in https://aion2italia.com/ https://www.aion2italia.com/market.html https://aion2italia.com/market.html https://aion2italia.com/mappa.html https://aion2italia.com/community.html https://aion2italia.com/guide.html https://aion2italia.com/privacy.html https://aion2italia.com/css/base.css https://aion2italia.com/fonts/figtree.woff https://aion2italia.com/nonesiste; do
+            printf '%-48s ' "$u"; curl -sL -o /tmp/b -w '%{http_code} %{redirect_url} %{size_download}B ssl=%{ssl_verify_result}\n' "$u" || echo "curl failed"
           done
           echo "== title"; curl -s https://aion2italia.com/ | grep -o '<title>[^<]*' | head -1
-          echo "== supabase script in market.html"; curl -s https://aion2italia.com/market.html | grep -o 'src="[^"]*supabase[^"]*"'
+          echo "== supabase script in market.html"; src=$(curl -sL https://aion2italia.com/market.html | grep -o 'src="[^"]*supabase[^"]*"' | cut -d'"' -f2); echo "src=$src"
+          printf 'script: '; curl -s -o /dev/null -w '%{http_code} %{size_download}B\n' "https://aion2italia.com/$src" || true
           echo "== data from the original site, as the browser asks for it (Origin header)"
           for u in data/servers.json data/s/12305/summary.json data/s/12311/meta.json data/recipes.json data/icons.json data/map/index.json; do
             printf '%-32s ' "$u"; curl -s -o /dev/null -D /tmp/h -w '%{http_code} %{size_download}B ' -H 'Origin: https://aion2italia.com' "https://benzodaeskisumi.github.io/aion-market/$u"; grep -i '^access-control-allow-origin' /tmp/h | tr -d '\r' || echo 'NO CORS'
