@@ -17,10 +17,9 @@ const CMDS = {
       options: [o(U, 'leader', 'Il leader (verificato) della legione')]},
   ],
   eventi: [
-    {name: 'raid', description: 'Crea una lista di iscrizione per un raid o un evento',
-      options: [o(S, 'titolo', 'Es. Spedizione, Ludra Hard, Assedio'), o(S, 'quando', "Es. 21:00, domani 21, sabato 21:30, 25/11 21:00 (ora italiana)"),
-        o(I, 'posti', 'Quanti posti (8 se vuoto)', {required: false, min_value: 1, max_value: 40}), o(R, 'ruolo', 'Ruolo da taggare (es. Ping Dungeon)', {required: false}),
-        o(S, 'note', 'Note (requisiti, punto di ritrovo…)', {required: false})]},
+    {name: 'raid', description: 'Crea una stanza Ludra da 10 (2 party); quando è piena creo i vocali dei party',
+      options: [o(S, 'quando', "Es. 21:00, domani 21, sabato 21:30, 25/11 21:00 (ora italiana)"), o(S, 'titolo', 'Nome della stanza (Ludra se vuoto)', {required: false}),
+        o(S, 'note', 'Note (requisiti, punto di ritrovo…)', {required: false}), o(B, 'ping', 'Tagga Ping Ludra (sì se vuoto)', {required: false})]},
   ],
   mod: [
     {name: 'avverti', description: 'Dai un avvertimento (al 3° scatta 1 ora di timeout)', default_member_permissions: MOD, options: [o(U, 'utente', 'Il membro'), o(S, 'motivo', 'Il motivo (lo riceve in privato)')]},
