@@ -207,18 +207,12 @@ async function upgradeRoom(env, k, R) {
   await env.KV.put(k, JSON.stringify(R), {expiration: Math.floor((R.t + VOICE_TTL) / 1000) + 86400});
   return true;
 }
-async function mergeOnce(env, fromK, intoK) {
-  const A = JSON.parse(await env.KV.get(fromK) || 'null'), B = JSON.parse(await env.KV.get(intoK) || 'null');
-  if (!A || !B || !Array.isArray(A.p) || !Array.isArray(B.p)) return 'skip';
-  const have = allIn(B), moved = [];
-  A.p.forEach((P, pi) => { for (const [k] of LU_ROLES) for (const u of P[k] || []) if (!have.has(u)) { B.p[pi][k].push(u); have.add(u); moved.push(u); } });
-  if (B.role) for (const u of moved) await dapi(env, 'PUT', `/guilds/${GUILD}/members/${u}/roles/${B.role}`, undefined, `Iscritto a ${B.title}`);
-  await syncVoice(env, B);
-  await env.KV.put(intoK, JSON.stringify(B), {expiration: Math.floor((B.t + VOICE_TTL) / 1000) + 86400});
-  if (B.msg) await dapi(env, 'PATCH', `/channels/${B.ch}/messages/${B.msg}`, board(B, `lr:${intoK.slice(5)}`));
-  if (A.msg) await dapi(env, 'DELETE', `/channels/${A.ch}/messages/${A.msg}`, undefined, 'Unita alla lista principale');
-  await endRoom(env, A); await env.KV.delete(fromK);
-  return `merged ${moved.length}`;
+async function dropEmptyOnce(env, k) {          // one-off, 12 Nov: an empty 22:00 room re-posted by the upgrade next to the real one
+  const R = JSON.parse(await env.KV.get(k) || 'null');
+  if (!R || !Array.isArray(R.p) || allIn(R).size) return 'skip';
+  if (R.msg) await dapi(env, 'DELETE', `/channels/${R.ch}/messages/${R.msg}`, undefined, 'Lista vuota doppia');
+  await endRoom(env, R); await env.KV.delete(k);
+  return 'dropped';
 }
 // tonight's automatic list (22:00) still had sign-ups when it was switched off: turn it into a /raid room with the same people (once)
 async function convertDaily(env) {
@@ -282,7 +276,7 @@ export default {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
     if (url.pathname === '/status') return Response.json({ludra: await env.KV.get('ludra_err'), raid: await env.KV.get('raid_err'), voice: await env.KV.get('voice_err'), ev: await env.KV.get('ev_err')});
-    if (url.pathname === '/tick') { let err = null; const conv = await convertDaily(env).catch((e) => 'err ' + e), merge = await mergeOnce(env, 'raid:749902d1', 'raid:faf317ad').catch((e) => 'err ' + e); await dropOldDaily(env).catch(() => {}); await roomsTick(env).catch((e) => { err = String(e?.stack || e).slice(0, 300); }); if (!err) await env.KV.delete('raid_err');
+    if (url.pathname === '/tick') { let err = null; const conv = await convertDaily(env).catch((e) => 'err ' + e), merge = await dropEmptyOnce(env, 'raid:219f30c4').catch((e) => 'err ' + e); await dropOldDaily(env).catch(() => {}); await roomsTick(env).catch((e) => { err = String(e?.stack || e).slice(0, 300); }); if (!err) await env.KV.delete('raid_err');
       const rooms = [];
       for (const {name: k} of (await env.KV.list({prefix: 'raid:'})).keys) { const R = JSON.parse(await env.KV.get(k) || 'null'); if (R) rooms.push({k, keys: R.v === 2 ? undefined : Object.keys(R).join(','), list: R.v === 2 ? undefined : JSON.stringify(Object.fromEntries(Object.entries(R).filter(([x, y]) => Array.isArray(y) || (y && typeof y === 'object')).map(([x, y]) => [x, Array.isArray(y) ? y.length : Object.keys(y).length]))), v: R.v || 1, when: R.t ? new Date(R.t).toISOString() : null, n: Array.isArray(R.p) ? allIn(R).size : null, role: !!R.role, msg: !!R.msg, done: !!R.done}); }
       return Response.json({raid: err, conv, merge, rooms}); }
