@@ -298,7 +298,7 @@ each legion will get its own section later; verification like MarchutanEU; separ
   all four bots), cerca-gruppo how-to, pinned+locked posts in the forums domande / guide / legioni (legion template), patch-e-news intro; it also re-posts Alberto's
   role board in order (Interessi, Ping, Force PvP, Ruoli automatici, each with a banner) and sets Mauro's KV cfg:alert_channel to 🤖・comandi-bot.
   Force PvP roles (Corridors, Abyss Bosses, Duty, Spacetime Rift, Battlefield; mentionable, separator 'Force PvP') + AutoMod 'Force PvP solo in #pvp-abisso' (ita.py).
-- Mauro: no guild commands there any more (register.mjs puts [] for that guild); its global commands (/item, /character, /verify…) still show: hide /verify* in the server's
+- Mauro: no guild commands there any more (register.mjs puts [] for that guild); its global commands (/item, /character, /verify…) still show (12 Nov: Mauro answers every /verify* there with 'use Alberto's /verifica'); hide /verify* in the server's
   Integrations settings if confusing.
 
 ## Concept-art friends' server (not Aion; the user's academy friends, guild 1565296605257670727, Mauro is admin there)

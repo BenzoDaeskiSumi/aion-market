@@ -2267,6 +2267,7 @@ export default {
             .map((x) => ({name: `${x.name} · ${x.race === 1 ? 'Elyos' : 'Asmodian'}`, value: String(x.id)}))}});
         }
         if (i.data.name === 'compare') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), null, true)}});
+        if (i.guild_id === GUILD && /^verify/.test(i.data.name)) return Response.json({type: 8, data: {choices: [{name: 'Qui la verifica la fa Alberto: usa /verifica', value: '-'}]}});
         if (i.data.name === 'verify' || i.data.name === 'verify-user' || i.data.name === 'legion-apply') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), null, true)}});
         if (i.data.name === 'collega') return Response.json({type: 8, data: {choices: await charChoices(String(foc?.value || '').trim(), /^\d{4}$/.test(String(opt(i.data, 'server')?.value || '')) ? opt(i.data, 'server').value : null)}});
         if (i.data.name === 'personaggio') {
@@ -2302,6 +2303,8 @@ export default {
         if (i.data.name === 'aiuto') return aiuto(env);
         if (i.data.name === 'raid') return await raidCreate(i, env);
         if (i.data.name === 'collega') return await collega(i, env, ctx);
+        // Italian community (ex Legione server): verification is Alberto's job there, Mauro's verify commands only point to it
+        if (i.guild_id === GUILD && /^verify/.test(i.data.name)) return oops('Qui la verifica la fa **Alberto**: usa `/verifica` (lo staff usa `/verifica-utente` e conferma in #📥・richieste-verifica).');
         if (i.data.name === 'verify') return await verifyRequest(i, env, ctx);
         if (i.data.name === 'verify-user') return await verifyUser(i, env, ctx);
         if (i.data.name === 'verify-remove') return await verifyRemove(i, env, ctx);
