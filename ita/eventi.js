@@ -179,6 +179,10 @@ async function roomsTick(env) {
   for (const {name: k} of (await env.KV.list({prefix: 'raid:'})).keys) {
     const R = JSON.parse(await env.KV.get(k) || 'null'); if (!R || R.done || !Array.isArray(R.p)) continue;   // old-style lists (before 12 Nov) have no parties
     if (R.v !== 2 && R.t > now) { await upgradeRoom(env, k, R); continue; }
+    if (R.ui !== 3 && R.msg && R.t > now) {        // boards posted before the Riserva buttons existed: redraw them once
+      const r = await dapi(env, 'PATCH', `/channels/${R.ch}/messages/${R.msg}`, board(R, `lr:${k.slice(5)}`));
+      if (r.ok) { R.ui = 3; await env.KV.put(k, JSON.stringify(R), {expiration: Math.floor((R.t + VOICE_TTL) / 1000) + 86400}); }
+    }
     let dirty = false;
     const tag = R.role ? `<@&${R.role}>` : [...allIn(R)].map((u) => `<@${u}>`).join(' '), am = R.role ? {roles: [R.role]} : {users: [...allIn(R)].slice(0, 100)};
     if (now > R.t + VOICE_TTL) { await endRoom(env, R); R.done = true; dirty = true; }
@@ -257,7 +261,7 @@ async function raidCreate(i, env) {
   const role = await djson(env, 'POST', `/guilds/${GUILD}/roles`, {name: `🔥 ${title} ${ddmm(t)} ${hhmm(t)}`.slice(0, 100), color: 0xe8603c, mentionable: true, hoist: false}, `Stanza /raid di ${u.username}`);
   if (!role) await putErr(env, 'ev_err', 'role create failed (Manage Roles?)');
   const R = {title, t, note: String(opt(i.data, 'note') || '').slice(0, 300), by: u.id, byName: i.member?.nick || u.global_name || u.username,
-    ch, msg: null, role: role?.id || null, p: emptyParties(), voice: null, pinged: false, called: false, v: 2};
+    ch, msg: null, role: role?.id || null, p: emptyParties(), voice: null, pinged: false, called: false, v: 2, ui: 3};
   const msg = board(R, `lr:${id}`), ping = opt(i.data, 'ping') !== false ? await roleId(env, 'Ping Ludra') : null;
   if (ping) { msg.content = `<@&${ping}> nuova stanza **${R.title}** <t:${Math.floor(t / 1000)}:R>: firmate qui sotto!`; msg.allowed_mentions = {roles: [ping]}; }
   const posted = await djson(env, 'POST', `/channels/${ch}/messages`, msg);
