@@ -256,7 +256,10 @@ export default {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
     if (url.pathname === '/status') return Response.json({ludra: await env.KV.get('ludra_err'), raid: await env.KV.get('raid_err'), voice: await env.KV.get('voice_err'), ev: await env.KV.get('ev_err')});
-    if (url.pathname === '/tick') { let err = null; await dropOldDaily(env).catch(() => {}); await roomsTick(env).catch((e) => { err = String(e?.stack || e).slice(0, 300); }); if (!err) await env.KV.delete('raid_err'); return Response.json({raid: err}); }
+    if (url.pathname === '/tick') { let err = null; await dropOldDaily(env).catch(() => {}); await roomsTick(env).catch((e) => { err = String(e?.stack || e).slice(0, 300); }); if (!err) await env.KV.delete('raid_err');
+      const rooms = [];
+      for (const {name: k} of (await env.KV.list({prefix: 'raid:'})).keys) { const R = JSON.parse(await env.KV.get(k) || 'null'); if (R) rooms.push({k, v: R.v || 1, when: R.t ? new Date(R.t).toISOString() : null, n: Array.isArray(R.p) ? allIn(R).size : null, role: !!R.role, msg: !!R.msg, done: !!R.done}); }
+      return Response.json({raid: err, rooms}); }
     if (req.method !== 'POST') return new Response('Gettulio: ok');
     const body = await req.text();
     if (!(await verified(req, body, env))) return new Response('bad signature', {status: 401});
