@@ -63,7 +63,11 @@ jobs:
           import sys, urllib.parse, base64, json
           q = urllib.parse.parse_qs(urllib.parse.urlparse(sys.argv[1]).query)
           st = (q.get('state') or [''])[0].split('.')
-          if len(st) < 2: print('no state in', sys.argv[1][:80]); sys.exit()
+          if len(st) < 2: print('no JWT state; redirect:', urllib.parse.unquote(sys.argv[1])[:400]); sys.exit()
           body = json.loads(base64.urlsafe_b64decode(st[1] + '=' * (-len(st[1]) % 4)))
           print('referrer =', body.get('referrer'), '->', 'OK' if 'aion2italia.com' in str(body.get('referrer')) else 'NOT ALLOWED (falls back to the Site URL)')
           PY
+      - name: Open every page in a real browser
+        run: |
+          npm i --no-save --silent playwright@1.48.2 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
+          node tools/livecheck.mjs
