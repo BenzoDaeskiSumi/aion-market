@@ -82,7 +82,7 @@ cats = [
                       ('・patch-e-news', 'patch notes e novità di Aion 2'), ('・ticket', 'apri un ticket privato con lo staff o chiedi il ruolo Legion Leader')]),
     ('💬 COMMUNITY', GREEN, [('・chiacchiere', 'chiacchiere libere'), ('・domande', 'forum: una domanda per post, con il tag giusto'),
                             ('・screenshot-e-clip', 'i vostri screenshot e le vostre clip'), ('・meme', 'meme su Aion e dintorni')]),
-    ('⚔️ GIOCO', RED, [('・cerca-gruppo', 'cerchi party per dungeon, raid, spedizioni? scrivilo qui o crea una lista con `/raid`'),
+    ('⚔️ GIOCO', RED, [('・cerca-gruppo', 'cerchi party per dungeon, raid, spedizioni? scrivilo qui o apri una stanza Ludra con `/raid`'),
                       ('・ludra', 'la lista firme del Ludra di ogni sera: si firma con i pulsanti'),
                       ('・pvp-abisso', 'PvP, Abisso, arene · qui si taggano i ruoli Force PvP per formare le force'),
                       ('・assedi', 'organizzazione degli assedi'), ('・guide', 'forum: guide e build, con il tag della classe')]),
@@ -94,7 +94,7 @@ for title, col, items in cats:
     emb.append({'color': col, 'title': title, 'description': '\n'.join(f"{link(s)} · {d}" for s, d in items)})
 emb.append({'color': VIOLET, 'title': '🔊 VOCALI', 'description': '🍻 **Taverna** e **Taverna 2** per stare in compagnia · ⚔️ **Party 1-4** per i gruppi · 💤 **AFK** per chi si allontana'})
 emb.append({'color': 0x95a5a6, 'title': '🤖 I bot', 'description': '\n'.join([
-    '**Alberto** 🤵 · verifica e ruoli (fazione, classe, Gear Score, legioni)', '**Gettulio** 🤡 · eventi: Ludra e liste `/raid`',
+    '**Alberto** 🤵 · verifica e ruoli (fazione, classe, Gear Score, legioni)', '**Gettulio** 🤡 · eventi: Ludra (lista delle 22 e stanze `/raid`)',
     '**Ciro** 👮 · moderazione e ticket', '**Mauro** 🔨 · market, crafting e schede personaggio',
     f"Tutti i comandi in {link('・comandi-bot')}."])})
 replace('・guida-server', [{'embeds': emb[:6]}, {'embeds': emb[6:]}])
@@ -123,7 +123,7 @@ replace('・comandi-bot', [{'embeds': [{'color': CYAN, 'image': {'url': IMG + 'c
         '`/verifica` · verificati con il tuo personaggio e uno screenshot', '`/aggiorna` · aggiorna fazione, classe e Gear Score dal sito ufficiale',
         f"Interessi, ping e Force PvP: con i pulsanti in {link('・ruoli')}"])},
     {'color': RED, 'title': '🤡 Gettulio · eventi', 'description': '\n'.join([
-        '`/raid titolo quando [posti] [ruolo] [note]` · crea una lista di iscrizione (Tank / Healer / DPS, riserve) e tagga tutti 15 minuti prima',
+        '`/raid quando [titolo] [note] [ping]` · apre una stanza Ludra da 10 (2 party: tank, cleric, chanter, 2 DPS); quando è piena crea un vocale per party',
         f"Il Ludra di ogni sera: lista con i pulsanti in {link('・ludra')}"])},
     {'color': 0x95a5a6, 'title': '👮 Ciro · moderazione', 'description': f"Ticket privati con lo staff in {link('・ticket')}. Gli altri comandi sono solo per lo staff."},
     {'color': CYAN, 'description': '-# Le risposte che vedi solo tu restano nascoste, così il canale resta pulito.'}]}], pin_last=True)
@@ -132,7 +132,7 @@ replace('・comandi-bot', [{'embeds': [{'color': CYAN, 'image': {'url': IMG + 'c
 replace('・cerca-gruppo', [{'embeds': [{'color': VIOLET, 'image': {'url': IMG + 'cercagruppo.png' + V}},
     {'color': VIOLET, 'title': 'Come cercare un gruppo', 'description': '\n'.join([
         '**Al volo:** scrivi cosa fai, quando e chi ti serve. Esempio: `Spedizione stasera 21:30 · cerco 1 cleric e 1 tank · GS 1400+`',
-        f"**Con la lista:** `/raid titolo quando` crea una lista con i pulsanti Tank / Healer / DPS e le riserve; Gettulio tagga tutti 15 minuti prima. Aggiungi `ruolo:` {R('Ping Dungeon')} per chiamare chi cerca gruppo.",
+        f"**Stanza Ludra:** `/raid quando` apre una stanza da 10 (2 party da 1 tank, 1 cleric, 1 chanter, 2 DPS) e tagga {R('Ping Ludra')}. Quando è piena Gettulio crea due vocali temporanei, uno per party, visibili solo ai suoi 5; li cancella 3 ore dopo l'orario.",
         f"**Il Ludra** ha la sua lista fissa in {link('・ludra')}.", '',
         f"Vuoi essere chiamato quando qualcuno cerca gente? Prendi {R('Ping Dungeon')} in {link('・ruoli')}."])}]}], pin_last=True)
 

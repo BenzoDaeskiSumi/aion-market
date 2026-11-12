@@ -277,8 +277,11 @@ each legion will get its own section later; verification like MarchutanEU; separ
   * Legions (Alberto): button 🏰 lg:open in 🎫・ticket -> private thread (verified only; legion = official profile.regionName) with ✅ lg:ok:<uid> (staff) / 🔒 lg:close;
     approve (or /legione leader:@x) = Legion Leader role + role '🏰 <legion>' (created once, under Legion Leader) on every verified member whose vlink.legion matches (35 at once,
     the cron does the rest); refresh() keeps exactly the member's legion role (KV legrole:<server>:<legion> = {role, leader, name}). vlink.legion filled by refresh.
-  * Gettulio (was Fabrizio) = ita-eventi (eventi.js): Ludra board in 🔥・ludra (same rules as Mauro's old one; 19:00 tags 'Ping Ludra' once if slots are free), /raid (Italian, rs: buttons,
-    reminders ~15 min before). /tick runs the board once.
+  * Gettulio (was Fabrizio) = ita-eventi (eventi.js): Ludra board in 🔥・ludra (same rules as Mauro's old one; 19:00 tags 'Ping Ludra' once if slots are free), 
+    /raid quando [titolo] [note] [ping] (12 Nov: only Ludra exists for now) = an extra Ludra ROOM of 10 (same 2-party engine, buttons lr:<id>:<p>:<role>|out|del, KV raid:<id>).
+    Every room (daily lu: and /raid) creates 2 TEMPORARY voice channels in VOCALI when full (one per party: its 5 members + staff + Gettulio; overwrites follow
+    sign-up changes; deleted VOICE_TTL = 3 h after the start by roomsTick), tags the 10 with their channel, reserves ~1 h before, everyone ~15 min before.
+    Gettulio's role got Manage Channels + Manage Roles + voice perms (audit.py one-off, 12 Nov). /tick runs the board once; /status shows ludra/raid/voice errors.
   * Ciro (was Marcello) = ita-mod (mod.js): /avverti (3rd = 1 h timeout) /avvertimenti /azzera-avvertimenti /timeout /togli-timeout /kick /ban /sban /pulisci, all logged in 🧹・log;
     tickets in 🎫・ticket (tk:open:segnalazione|idea|aiuto -> private thread, tk:close:<uid>); /setup also owns the AutoMod rules (mention spam 15, invite links, Kinah selling,
     spam; the single-instance types are taken over from older rules). Its role got Manage Server for AutoMod.
