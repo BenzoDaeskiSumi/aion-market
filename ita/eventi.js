@@ -61,9 +61,10 @@ const V = {VIEW: 0x400, CONNECT: 0x100000, SPEAK: 0x200000, STREAM: 0x200, VAD: 
 const bits = (...k) => String(k.reduce((a, x) => a | V[x], 0));
 async function voiceOverwrites(env, members) {
   const staff = (await Promise.all(STAFF_ROLES.map((n) => roleId(env, n)))).filter(Boolean);
-  const ver = await roleId(env, 'Verificato');
+  const ver = await roleId(env, 'Verificato'), osp = await roleId(env, 'Ospite');
   return [{id: GUILD, type: 0, allow: '0', deny: bits('VIEW', 'CONNECT')},
     ...(ver ? [{id: ver, type: 0, allow: bits('VIEW'), deny: bits('CONNECT')}] : []),
+    ...(osp ? [{id: osp, type: 0, allow: bits('VIEW'), deny: bits('CONNECT')}] : []),
     {id: env.DISCORD_APP_ID, type: 1, allow: bits('VIEW', 'CONNECT', 'MANAGE', 'MOVE'), deny: '0'},
     ...staff.map((id) => ({id, type: 0, allow: bits('VIEW', 'CONNECT', 'SPEAK', 'STREAM', 'VAD', 'MOVE'), deny: '0'})),
     ...members.map((id) => ({id, type: 1, allow: bits('VIEW', 'CONNECT', 'SPEAK', 'STREAM', 'VAD', 'HIST', 'SEND'), deny: '0'}))];

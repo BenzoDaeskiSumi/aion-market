@@ -250,7 +250,8 @@ in the server style: categories 『📢 𝐋𝐄𝐆𝐈𝐎𝐍𝐄』 (Unicode
 'Entra nel nostro Discord' (index footer, guild line 'Un progetto della Legione…'): links the Worker's /join -> Discord OAuth (identify guilds.join, redirect
 https://aion-market-bot.aion2-market.workers.dev/join/cb registered in the Developer Portal) -> PUT guild member with NO role (since 29 Oct: newcomers see only BENVENUTO until they link; linking gives Recluta/Ospite).
 Third-party 'Auto Role Bot' in the guild was giving Legionario to everyone on join (seen in the audit log); it is configured on its own dashboard, not by us.
-Needs repo secret DISCORD_CLIENT_SECRET (bot.yml puts it + DISCORD_APP_ID as Worker secrets); without it /join redirects to a permanent invite (KV cfg:site_invite).
+12 Nov 2026: /join is now ALWAYS a plain permanent invite to the Italian community's 📜・regole (KV cfg:site_invite, re-created when invalid); the OAuth flow
+failed ('invalid redirect URI'). Used by aion2italia.com/community.html.
 To limit the bot to one channel: Discord server settings → Integrations → the bot → channels (no code).
 
 ## Legione server WIPED (11 Nov 2026, the user confirmed) -> becoming an ITALIAN Aion 2 community (Elyos + Asmodian, everything in common, distinction by role only;
@@ -263,6 +264,8 @@ each legion will get its own section later; verification like MarchutanEU; separ
 - Structure: scripts/discord/ita.py (Discord setup mode ita-check = secrets + bots in the server; ita-apply = roles, categories, channels, permissions; idempotent by name).
   Roles: Admin (Administrator), Moderatore, Helper, [bots' roles], Shotcaller, Legion Leader, separators (bold + U+3164) Fazione (Elyos, Asmodiani) / Classe (8) /
   Gear Score (GS 3000+ … 700+) / Interessi (PvE, PvP, Market e Crafting) / Ping (Ping Ludra, Ping Assedi, Ping Dungeon), Verificato.
+  'Ospite' (12 Nov, the user asked): given by hand by the staff, sees and uses every members' channel like Verificato without /verifica (ita.py copies every
+  Verificato overwrite to it, except hiding #verifica/#aiuto-verifica; Gettulio's party voices show to it too).
   Categories: 📌 BENVENUTO (everyone: regole, verifica, aiuto-verifica) · 📢 INFO (annunci, guida-server, ruoli, patch-e-news, ticket) · 💬 COMMUNITY (chiacchiere,
   forum domande, screenshot-e-clip, meme) · ⚔️ GIOCO (cerca-gruppo, ludra, pvp-abisso, assedi, forum guide) · 💰 MARKET · 🛡️ LEGIONI (forum legioni: Legion Leader posts) ·
   🔊 VOCALI · 🔒 STAFF (staff-chat, richieste-verifica, log). Not verified = only BENVENUTO + 🍻 Taverna (left open to everyone for now). Community mode + Stage 🏯 Assedi: not yet.

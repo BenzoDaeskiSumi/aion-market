@@ -56,6 +56,7 @@ ROLES = [
     (sep('Ping'), 0, False, None), ('Ping Ludra', 0, False, 'ment'), ('Ping Assedi', 0, False, 'ment'), ('Ping Dungeon', 0, False, 'ment'),
     (sep('Force PvP'), 0, False, None), *[(n, 0, False, 'ment') for n in FORCE],
     ('Verificato', 0x95A5A6, False, None),
+    ('Ospite', 0x7F8C8D, True, None),        # 12 Nov: sees every members' channel like a verified member, without /verifica (given by hand by the staff)
 ]
 P = dict(VIEW=0x400, SEND=0x800, EMBED=0x4000, ATTACH=0x8000, HIST=0x10000, REACT=0x40, MSGMAN=0x2000, CONNECT=0x100000, SPEAK=0x200000, STREAM=0x200,
          VAD=0x2000000, THREADS=0x4000000000, PUBTH=0x800000000, PRIVTH=0x1000000000, SLASH=0x80000000, MENTION=0x20000, MUTE=0x400000, MOVE=0x1000000,
@@ -153,7 +154,7 @@ def run_apply():
     roles = api('GET', f'/guilds/{G}/roles'); byn = {r['name']: r for r in roles}
     print('roles:', [r['name'][:16] for r in sorted(roles, key=lambda r: -r['position'])])
     rid = lambda n: byn[n]['id']
-    VER, STAFF = rid('Verificato'), [rid('Admin'), rid('Moderatore'), rid('Helper')]
+    VER, OSP, STAFF = rid('Verificato'), rid('Ospite'), [rid('Admin'), rid('Moderatore'), rid('Helper')]
     bot_member = lambda uid, *perm: {'id': uid, 'type': 1, 'allow': bits(*perm), 'deny': '0'}
     BOT_ALL = [bot_member(me['id'], *CHAT, 'MSGMAN', 'CONNECT', 'MOVE')] + [bot_member(b, *CHAT, 'MSGMAN', 'CONNECT', 'PRIVTH', 'MTHREADS') for b in bot_ids.values()]
     # ---- categories + channels
@@ -162,7 +163,7 @@ def run_apply():
         return next((c for c in chs if c['name'] == name and c['type'] == typ and (parent is None or c.get('parent_id') == parent)), None)
     for ci, (cname, who, items) in enumerate(CATS):
         if who == 'all': ow = [{'id': G, 'type': 0, 'allow': bits(*READ), 'deny': bits(*NOWRITE)}]
-        elif who == 'members': ow = [{'id': G, 'type': 0, 'allow': '0', 'deny': bits('VIEW')}, {'id': VER, 'type': 0, 'allow': bits(*CHAT, *VOICE), 'deny': '0'}]
+        elif who == 'members': ow = [{'id': G, 'type': 0, 'allow': '0', 'deny': bits('VIEW')}, {'id': VER, 'type': 0, 'allow': bits(*CHAT, *VOICE), 'deny': '0'}, {'id': OSP, 'type': 0, 'allow': bits(*CHAT, *VOICE), 'deny': '0'}]
         else: ow = [{'id': G, 'type': 0, 'allow': '0', 'deny': bits('VIEW')}] + [{'id': s, 'type': 0, 'allow': bits(*CHAT, *VOICE), 'deny': '0'} for s in STAFF]
         if who != 'staff': ow += [{'id': s, 'type': 0, 'allow': bits(*CHAT, *VOICE, 'MSGMAN'), 'deny': '0'} for s in STAFF]
         ow += BOT_ALL
@@ -180,17 +181,17 @@ def run_apply():
                 o['allow'], o['deny'] = str(a), str(d)
             extra = {}
             if special == 'readonly':
-                setr(G, deny=NOWRITE); setr(VER, deny=NOWRITE)
+                setr(G, deny=NOWRITE); setr(VER, deny=NOWRITE); setr(OSP, deny=NOWRITE)
             elif special == 'verify':
                 setr(G, allow=('VIEW', 'SEND', 'SLASH', 'HIST'), deny=('PUBTH', 'PRIVTH', 'ATTACH')); setr(VER, deny=('VIEW',)); extra['rate_limit_per_user'] = 300
             elif special == 'verifyhelp':
                 setr(G, allow=('VIEW', 'SEND', 'HIST', 'ATTACH', 'EMBED')); setr(VER, deny=('VIEW',)); extra['rate_limit_per_user'] = 30
             elif special == 'threadsonly':
-                setr(VER, allow=('THREADS',), deny=('SEND', 'PUBTH', 'PRIVTH'))
+                setr(VER, allow=('THREADS',), deny=('SEND', 'PUBTH', 'PRIVTH')); setr(OSP, allow=('THREADS',), deny=('SEND', 'PUBTH', 'PRIVTH'))
             elif special == 'forum_l':
-                setr(VER, allow=('THREADS',), deny=('SEND', 'PUBTH', 'PRIVTH')); setr(rid('Legion Leader'), allow=('SEND', 'THREADS'))
+                setr(VER, allow=('THREADS',), deny=('SEND', 'PUBTH', 'PRIVTH')); setr(OSP, allow=('THREADS',), deny=('SEND', 'PUBTH', 'PRIVTH')); setr(rid('Legion Leader'), allow=('SEND', 'THREADS'))
             elif special == 'afk':
-                setr(VER, deny=('SPEAK',))
+                setr(VER, deny=('SPEAK',)); setr(OSP, deny=('SPEAK',))
             if typ == 15:
                 extra |= {'default_reaction_emoji': {'emoji_name': '👍'}, 'default_forum_layout': 1}
                 tags = {'forum_q': [('Classi', '🧙'), ('PvE', '🐉'), ('PvP', '⚔️'), ('Gear', '🛡️'), ('Market', '💰'), ('Server', '💬'), ('Risolto', '✅')],
