@@ -15,7 +15,8 @@ const LU_ROLES = [['t', 'Tank', '🛡️', 1], ['c', 'Cleric', '✨', 1], ['ch',
 const TOT = LU_ROLES.reduce((a, [, , , n]) => a + n * LUDRA.parties, 0);
 const hhmm = (t) => new Date(t).toLocaleTimeString('it-IT', {timeZone: TZ, hour: '2-digit', minute: '2-digit'});
 const ddmm = (t) => new Date(t).toLocaleDateString('it-IT', {timeZone: TZ, day: '2-digit', month: '2-digit'});
-const allIn = (R) => new Set(R.p.flatMap((P) => Object.values(P).flat()));
+const allIn = (R) => new Set([...R.p.flatMap((P) => Object.values(P).flat()), ...Object.values(R.r || {}).flat()]);
+const RSV = (R) => LU_ROLES.flatMap(([k]) => (R.r?.[k] || []).map((u) => [k, u]));      // chosen reserves, in sign-up order per role
 const dayName = (t) => new Date(t).toLocaleDateString('it-IT', {timeZone: TZ, weekday: 'long', day: 'numeric', month: 'long'});
 const emptyParties = () => [...Array(LUDRA.parties)].map(() => ({t: [], c: [], ch: [], d: []}));
 function seat(R) {
@@ -35,17 +36,19 @@ function board(R, prefix) {
   const who = (u) => (u ? `<@${u}>` : '*libero*'), past = Date.now() > R.t, ts = Math.floor(R.t / 1000), {slots, res} = seat(R);
   const fields = slots.map((S, p) => ({name: `Party ${p + 1}${R.voice?.[p] ? ` · 🔊 <#${R.voice[p]}>` : ''}`, inline: true,
     value: LU_ROLES.flatMap(([k, , emo]) => S[k].map((u) => `${emo} ${who(u)}`)).join('\n')}));
-  fields.push({name: `🪑 Riserve (${res.length})`, inline: false, value: res.map(([k, pi, u]) => `${LU_ROLES.find((r) => r[0] === k)[2]} ${who(u)} · voleva il Party ${pi + 1}`).join('\n') || '—'});
+  const rs = [...RSV(R).map(([k, u]) => `${LU_ROLES.find((r) => r[0] === k)[2]} ${who(u)}`), ...res.map(([k, pi, u]) => `${LU_ROLES.find((r) => r[0] === k)[2]} ${who(u)} · voleva il Party ${pi + 1}`)];
+  fields.push({name: `🪑 Riserve (${rs.length})`, inline: false, value: rs.join('\n') || '—'});
   const taken = TOT - free(R), btn = (id, label, emo, style) => ({type: 2, style, custom_id: `${prefix}:${id}`, label, emoji: {name: emo}, disabled: past});
   const STY = {t: 1, c: 3, ch: 3, d: 4};
   return {content: '', embeds: [{title: `🔥 ${R.title} · ${dayName(R.t)}`, color: past ? 0x5c5f66 : 0xe8603c,
       description: [`🕙 <t:${ts}:F> · <t:${ts}:R>`, R.note ? `\n${R.note}` : '',
         '\nScegli party e ruolo. Ogni party: 1 tank, 1 cleric, 1 chanter, 2 DPS.',
-        'Se il tuo posto è preso ma nell\'altro party c\'è spazio per il tuo ruolo, ti metto lì; altrimenti vai in **riserva**.',
+        'Se il tuo posto è preso ma nell\'altro party c\'è spazio per il tuo ruolo, ti metto lì; altrimenti vai in **riserva**. Se vuoi venire solo come riserva, usa i pulsanti **Riserva**.',
         R.role ? `Chi è in lista riceve il ruolo <@&${R.role}>: lo tagghiamo **un\'ora prima** e **15 minuti prima**.` : '',
         `\n**${taken}/${TOT}** posti presi${taken === TOT ? ' · 🔊 stanza piena: i vocali dei party sono qui sotto' : ' · quando la stanza è piena creo i vocali dei due party'}`].join('\n'),
       fields, footer: {text: past ? 'Iscrizioni chiuse' : `${R.byName ? `Organizza ${R.byName} · ` : ''}Premi un altro pulsante per cambiare party o ruolo · lo staff può modificare la lista`}}],
     components: [...R.p.map((_, pi) => ({type: 1, components: LU_ROLES.map(([k, label, emo]) => btn(`${pi}:${k}`, `${pi + 1} · ${label}`, emo, STY[k]))})),
+      {type: 1, components: LU_ROLES.map(([k, label, emo]) => btn(`r:${k}`, `Riserva · ${label}`, emo, 2))},
       {type: 1, components: [btn('out', 'Ritira', '✖️', 2), btn('edit', 'Gestisci (staff)', '✏️', 2), btn('del', 'Annulla', '🗑️', 2)]}],
     allowed_mentions: {parse: []}};
 }
@@ -90,11 +93,12 @@ async function fullCall(env, R) {            // once, when the room fills up: ta
 }
 
 // ---------- moving people (members' buttons and staff edits go through the same place) ----------
-const PLACE = (dest) => dest === 'out' ? 'fuori dalla lista' : `Party ${+dest.split(':')[0] + 1} · ${LU_ROLES.find((r) => r[0] === dest.split(':')[1])[1]}`;
+const PLACE = (dest) => dest === 'out' ? 'fuori dalla lista' : `${dest[0] === 'r' ? 'Riserva' : `Party ${+dest.split(':')[0] + 1}`} · ${LU_ROLES.find((r) => r[0] === dest.split(':')[1])[1]}`;
 async function place(env, ctx, R, kvKey, uid, dest) {        // dest = 'p:k' | 'out'
   const before = mains(R), beforeAll = allIn(R), wasFull = free(R) === 0;
-  for (const P of R.p) for (const [r] of LU_ROLES) P[r] = P[r].filter((x) => x !== uid);
-  if (dest !== 'out') { const [pp, k] = dest.split(':'); R.p[+pp][k].push(uid); }
+  R.r ||= {t: [], c: [], ch: [], d: []};
+  for (const P of [...R.p, R.r]) for (const [r] of LU_ROLES) P[r] = (P[r] || []).filter((x) => x !== uid);
+  if (dest !== 'out') { const [pp, k] = dest.split(':'); (pp === 'r' ? R.r : R.p[+pp])[k].push(uid); }
   const created = await syncVoice(env, R);
   await env.KV.put(kvKey, JSON.stringify(R), {expiration: Math.floor((R.t + VOICE_TTL) / 1000) + 86400});
   const after = allIn(R);
@@ -123,7 +127,7 @@ async function press(i, env, ctx) {
     return Response.json({type: 4, data: editPanel(key, R, null, 'Chi vuoi spostare, aggiungere o togliere?')});
   }
   if (Date.now() > R.t) return oops('Le iscrizioni sono chiuse: è già iniziato.');
-  if (a !== 'out' && (!R.p[+a] || !LU_ROLES.some((r) => r[0] === b))) return oops('Pulsante non valido.');
+  if (a !== 'out' && ((a !== 'r' && !R.p[+a]) || !LU_ROLES.some((r) => r[0] === b))) return oops('Pulsante non valido.');
   await place(env, ctx, R, kvKey, uid, a === 'out' ? 'out' : `${a}:${b}`);
   return Response.json({type: 7, data: board(R, `lr:${key}`)});
 }
@@ -133,9 +137,10 @@ function editPanel(key, R, uid, text) {
   const userRow = {type: 1, components: [{type: 5, custom_id: `le:${key}`, placeholder: uid ? 'Scegli un altro membro' : 'Scegli un membro', min_values: 1, max_values: 1}]};
   const rows = [userRow];
   if (uid) {
-    const now = seat(R), where = (() => { for (const [pi, P] of R.p.entries()) for (const [k] of LU_ROLES) if (P[k].includes(uid)) return `${pi}:${k}`; return 'out'; })();
+    const now = seat(R), where = (() => { for (const [pi, P] of R.p.entries()) for (const [k] of LU_ROLES) if (P[k].includes(uid)) return `${pi}:${k}`; for (const [k] of LU_ROLES) if (R.r?.[k]?.includes(uid)) return `r:${k}`; return 'out'; })();
     rows.unshift({type: 1, components: [{type: 3, custom_id: `lm:${key}:${uid}`, placeholder: `Ora: ${PLACE(where)}`, options: [
       ...R.p.flatMap((_, pi) => LU_ROLES.map(([k, label, emo]) => ({label: `Party ${pi + 1} · ${label}`, value: `${pi}:${k}`, emoji: {name: emo}, default: where === `${pi}:${k}`}))),
+      ...LU_ROLES.map(([k, label, emo]) => ({label: `Riserva · ${label}`, value: `r:${k}`, emoji: {name: '🪑'}, default: where === `r:${k}`})),
       {label: 'Togli dalla lista', value: 'out', emoji: {name: '✖️'}, default: where === 'out'}]}]});
   }
   return {flags: 64, content: `✏️ **${R.title}** delle ${hhmm(R.t)}\n${text}`, components: rows, allowed_mentions: {parse: []}};
@@ -179,7 +184,7 @@ async function roomsTick(env) {
     if (now > R.t + VOICE_TTL) { await endRoom(env, R); R.done = true; dirty = true; }
     else if (!R.pinged && R.t - now <= 61 * 6e4 && R.t - now > 20 * 6e4) {
       R.pinged = true; dirty = true;
-      const res = seat(R).res.map(([, , u]) => u);
+      const res = [...RSV(R).map(([, u]) => u), ...seat(R).res.map(([, , u]) => u)];
       if (allIn(R).size) await dapi(env, 'POST', `/channels/${R.ch}/messages`, {allowed_mentions: am, content: `⏰ ${tag} **${R.title}** inizia <t:${Math.floor(R.t / 1000)}:R>, alle ${hhmm(R.t)}.\n` + lineup(R) +
         (res.length ? `\n🪑 **Riserve:** ${res.map((u) => `<@${u}>`).join(' ')}: restate disponibili, se qualcuno si ritira vi taggo.` : '') +
         (free(R) ? `\nMancano ancora **${free(R)}** posti.` : '')});

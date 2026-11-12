@@ -282,7 +282,7 @@ each legion will get its own section later; verification like MarchutanEU; separ
     the cron does the rest); refresh() keeps exactly the member's legion role (KV legrole:<server>:<legion> = {role, leader, name}). vlink.legion filled by refresh.
   * Gettulio (was Fabrizio) = ita-eventi (eventi.js), Ludra only. 12 Nov evening (the user asked): NO automatic daily list any more (the old board was deleted
     by dropOldDaily; lu: buttons answer 'use /raid'). /raid quando [titolo] [note] [ping] posts a room of 10 in 🔥・ludra (read-only; the command works from any channel,
-    deferred answer): 2 parties of 1 tank + 1 cleric + 1 chanter + 2 DPS, buttons lr:<id>:<p>:<role>|out|del|edit, KV raid:<id> {.., ch, msg, role, voice, pinged, called, done}.
+    deferred answer): 2 parties of 1 tank + 1 cleric + 1 chanter + 2 DPS, buttons lr:<id>:<p>:<role>|r:<role> (chosen reserve, R.r; never seated by itself, staff move them)|out|del|edit, KV raid:<id> {.., ch, msg, role, voice, pinged, called, done}.
     Each room gets its own mentionable role '🔥 <titolo> dd/mm hh:mm' (created by /raid, given to whoever is on the list incl. reserves, removed when they leave):
     roomsTick tags the role ~1 h before (line-up + reserves) and ~15 min before (with the voice channels), then deletes voices + role VOICE_TTL = 3 h after the start.
     Full room = 2 TEMPORARY voice channels in VOCALI (one per party: its 5 + staff + Gettulio; overwrites follow changes).
