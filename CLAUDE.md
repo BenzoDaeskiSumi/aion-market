@@ -271,6 +271,7 @@ each legion will get its own section later; verification like MarchutanEU; separ
   * Alberto = ita-verifica (verifica.js): /verifica personaggio screenshot -> card in 📥・richieste-verifica (staff pinged) vf:ok|no -> Verificato + Elyos|Asmodiani (official raceId 1/2)
     + class + GS tier + separators + nick 'Name ⚔️ [MAR]' (lib nickFor: CLASS_EMOJI Unicode + SERVER_CODE from metabot.gg/en/aion-2/servers; the member's own nick is kept and the
     tail re-added; members above Alberto's role, e.g. Admin, and the owner can't be renamed); /verifica-utente, /verifica-rimuovi [tieni_accesso], /aggiorna; role board in 🎭・ruoli (rb:<roleId>, Interessi + Ping) + 🔄 gs:refresh;
+    the hourly cron only EDITS the boards' counts (postOrEdit posts only when the message is gone: 404; 12 Nov a failed edit re-posted 'Ruoli automatici' every hour) and dedupe() deletes Alberto's extra messages in #ruoli;
     cron: 10 vlinks per run (refresh, nick follows an in-game rename if the nick still was the old name), deletes other people's messages in ✅・verifica.
     KV vlink:<uid> {server,id,name,t}, vchar:<server>:<id> = uid, vreq:<uid> = 'channel:message' of the pending card. /sweep?k&from&n = manual batches (used for the migration
     of the old /collega links, 11 Nov). Staff = Admin/Moderatore/Helper or admin/manage-server/manage-roles/moderate perms (lib isStaff).
