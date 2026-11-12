@@ -102,10 +102,19 @@ export async function charSearch(q, server, size = 25) {
   return (d.list || []).map((c) => ({id: decodeURIComponent(c.characterId), name: plain(c.name), level: c.level, pcId: c.pcId, race: c.race, server: c.serverId, serverName: c.serverName}));
 }
 export async function charChoices(q) {          // autocomplete: 'Nome · Server · Fazione · Classe Lv'
-  if (q.length < 2) return [{name: 'Scrivi almeno 2 lettere del nome del personaggio', value: q || '-'}];
-  const [list, meta] = await Promise.all([charSearch(q), charMeta().catch(() => ({classes: {}, servers: []}))]);
+  // a server can be added to the name to narrow the search: 'Nome Azphel', 'Nome azp', 'Nome [AZP]' (the code in the nicknames)
+  if (q.length < 2) return [{name: 'Scrivi almeno 2 lettere del nome del personaggio (puoi aggiungere il server: Nome Azphel)', value: q || '-'}];
+  const meta = await charMeta().catch(() => ({classes: {}, servers: []}));
+  const words = q.replace(/[\[\]]/g, ' ').trim().split(/\s+/), last = (words.length > 1 ? words[words.length - 1] : '').toLowerCase();
+  const code = Object.fromEntries(Object.entries(SERVER_CODE).map(([n, c]) => [c.toLowerCase(), n.toLowerCase()]));
+  const srv = last && meta.servers.find((s) => s.name.toLowerCase() === last || s.name.toLowerCase() === code[last] || (last.length >= 4 && s.name.toLowerCase().startsWith(last)));
+  const name = srv ? words.slice(0, -1).join(' ') : q.trim();
+  const list = await charSearch(name, srv?.id);
   const race = Object.fromEntries(meta.servers.map((s) => [s.id, s.race === 1 ? 'Elyos' : 'Asmodiano']));
-  return list.slice(0, 25).map((c) => ({name: `${c.name} · ${c.serverName} · ${race[c.server] || ''} · ${meta.classes[c.pcId] || ''} Lv ${c.level}`.slice(0, 100), value: `${c.server}:${c.id}`.slice(0, 100)}));
+  const exact = (c) => c.name.toLowerCase() === name.toLowerCase() ? 0 : 1;     // the exact name first
+  const out = list.sort((x, y) => exact(x) - exact(y)).slice(0, 25).map((c) => ({name: `${c.name} · ${c.serverName} · ${race[c.server] || ''} · ${meta.classes[c.pcId] || ''} Lv ${c.level}`.slice(0, 100), value: `${c.server}:${c.id}`.slice(0, 100)}));
+  if (!out.length) return [{name: `Nessun personaggio "${name}"${srv ? ` su ${srv.name}` : ''}: controlla il nome (il sito ufficiale può metterci un po' a vedere i nomi nuovi o cambiati)`.slice(0, 100), value: '-'}];
+  return out;
 }
 export async function charProfile(server, id) {   // one official call: name, class, faction, Gear Score (ItemLevel), CP, legion
   const d = await nc(`https://aion2.plaync.com/api/character/info?lang=en-US&characterId=${encodeURIComponent(id)}&serverId=${server}&region=eu`, 600), pr = d?.profile || {};
