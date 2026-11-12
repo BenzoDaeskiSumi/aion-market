@@ -1,22 +1,22 @@
-// Gettulio — events of the Italian Aion 2 community. Only Ludra for now (12 Nov, the user asked): every list is a Ludra room of 10.
-// A room = 2 parties of 1 tank + 1 cleric + 1 chanter + 2 DPS; members pick party and role; extras fill the same role's empty slot in the other party, else reserves.
-//  * daily room in #🔥・ludra at LUDRA.hour (KV ludra:<date>, buttons lu:<date>:<party>:<role> / lu:<date>:out); 19:00 'Ping Ludra' once if slots are free.
-//  * /raid quando [titolo] [note] [ping]: an extra room anywhere (KV raid:<id>, buttons lr:<id>:<party>:<role> / out / del).
-// When a room is full Gettulio creates two TEMPORARY voice channels (one per party, only its 5 members + staff), keeps them in sync while people change,
-// and deletes them VOICE_TTL after the start. Reserves are tagged ~1 h before; a reserve who moves up after that is tagged; everyone ~15 min before.
-// KV: ludra:<date>, raid:<id> = {title, t, ch, msg, note, by, byName, p, voice: [id, id] | null, pinged, called}; cfg:ludra_msg, cfg:ludra_day, ludra_call:<date>.
-import {GUILD, verified, dapi, djson, oops, opt, uidOf, roleId, channelId, channels, isStaff, putErr, localDay, atLocal, TZ, STAFF_ROLES} from './lib.js';
+// Gettulio — events of the Italian Aion 2 community. Only Ludra for now: every list is a Ludra room of 10, opened with /raid (12 Nov, the user asked:
+// no automatic daily list any more). A room = 2 parties of 1 tank + 1 cleric + 1 chanter + 2 DPS; members pick party and role; extras fill the same role's
+// empty slot in the other party, else reserves.
+//  * /raid quando [titolo] [note] [ping]: the board is posted in #🔥・ludra (KV raid:<id>, buttons lr:<id>:<party>:<role> / out / del / edit).
+//  * Each room has its own Discord role ('🔥 Ludra 12/11 21:30'), given to everyone on the list (reserves too) and taken away when they leave:
+//    Gettulio tags the role 1 hour before and again 15 minutes before; the role is deleted with the voice channels, VOICE_TTL after the start.
+//  * When the room is full: two TEMPORARY voice channels (one per party, only its 5 members + staff), kept in sync while people change.
+//  * Staff (Admin/Moderatore/Helper) edit the list with ✏️ Gestisci: ephemeral user select le:<id> -> place select lm:<id>:<uid> (party + role, or out).
+// KV: raid:<id> = {title, t, ch, msg, note, by, byName, p, role, voice: [id, id] | null, pinged, called, done}.
+import {GUILD, verified, dapi, djson, oops, defer, hook, opt, uidOf, roleId, channelId, channels, isStaff, putErr, localDay, atLocal, TZ, STAFF_ROLES} from './lib.js';
 
-const LUDRA = {hour: 22, min: 0, parties: 2, call: 19};
+const LUDRA = {parties: 2};
 const VOICE_TTL = 3 * 36e5;
 const LU_ROLES = [['t', 'Tank', '🛡️', 1], ['c', 'Cleric', '✨', 1], ['ch', 'Chanter', '🎶', 1], ['d', 'DPS', '⚔️', 2]];
 const TOT = LU_ROLES.reduce((a, [, , , n]) => a + n * LUDRA.parties, 0);
 const hhmm = (t) => new Date(t).toLocaleTimeString('it-IT', {timeZone: TZ, hour: '2-digit', minute: '2-digit'});
+const ddmm = (t) => new Date(t).toLocaleDateString('it-IT', {timeZone: TZ, day: '2-digit', month: '2-digit'});
+const allIn = (R) => new Set(R.p.flatMap((P) => Object.values(P).flat()));
 const dayName = (t) => new Date(t).toLocaleDateString('it-IT', {timeZone: TZ, weekday: 'long', day: 'numeric', month: 'long'});
-function ludraDay(now = Date.now()) {
-  const d = localDay(now), key = `${d.y}-${String(d.m).padStart(2, '0')}-${String(d.d).padStart(2, '0')}`;
-  return {key, t: atLocal(d.y, d.m, d.d, LUDRA.hour * 60 + LUDRA.min)};
-}
 const emptyParties = () => [...Array(LUDRA.parties)].map(() => ({t: [], c: [], ch: [], d: []}));
 function seat(R) {
   const slots = R.p.map(() => ({})), res = [];
@@ -41,11 +41,12 @@ function board(R, prefix) {
   return {content: '', embeds: [{title: `🔥 ${R.title} · ${dayName(R.t)}`, color: past ? 0x5c5f66 : 0xe8603c,
       description: [`🕙 <t:${ts}:F> · <t:${ts}:R>`, R.note ? `\n${R.note}` : '',
         '\nScegli party e ruolo. Ogni party: 1 tank, 1 cleric, 1 chanter, 2 DPS.',
-        'Se il tuo posto è preso ma nell\'altro party c\'è spazio per il tuo ruolo, ti metto lì; altrimenti vai in **riserva** e ti tagghiamo un\'ora prima.',
+        'Se il tuo posto è preso ma nell\'altro party c\'è spazio per il tuo ruolo, ti metto lì; altrimenti vai in **riserva**.',
+        R.role ? `Chi è in lista riceve il ruolo <@&${R.role}>: lo tagghiamo **un\'ora prima** e **15 minuti prima**.` : '',
         `\n**${taken}/${TOT}** posti presi${taken === TOT ? ' · 🔊 stanza piena: i vocali dei party sono qui sotto' : ' · quando la stanza è piena creo i vocali dei due party'}`].join('\n'),
-      fields, footer: {text: past ? 'Iscrizioni chiuse' : `${R.byName ? `Organizza ${R.byName} · ` : ''}Premi un altro pulsante per cambiare party o ruolo`}}],
+      fields, footer: {text: past ? 'Iscrizioni chiuse' : `${R.byName ? `Organizza ${R.byName} · ` : ''}Premi un altro pulsante per cambiare party o ruolo · lo staff può modificare la lista`}}],
     components: [...R.p.map((_, pi) => ({type: 1, components: LU_ROLES.map(([k, label, emo]) => btn(`${pi}:${k}`, `${pi + 1} · ${label}`, emo, STY[k]))})),
-      {type: 1, components: [btn('out', 'Ritira', '✖️', 2), ...(prefix.startsWith('lr:') ? [btn('del', 'Annulla', '🗑️', 2)] : [])]}],
+      {type: 1, components: [btn('out', 'Ritira', '✖️', 2), btn('edit', 'Gestisci (staff)', '✏️', 2), btn('del', 'Annulla', '🗑️', 2)]}],
     allowed_mentions: {parse: []}};
 }
 
@@ -88,79 +89,111 @@ async function fullCall(env, R) {            // once, when the room fills up: ta
     parties.map((P, p) => `**Party ${p + 1}** <#${R.voice[p]}>: ${P.map((u) => `<@${u}>`).join(' ')}`).join('\n'), allowed_mentions: {users: parties.flat()}}).catch(() => {});
 }
 
-// ---------- one handler for both kinds of room ----------
-async function press(i, env, ctx, kind) {
-  const parts = i.data.custom_id.split(':'), key = parts[1], a = parts[2], b = parts[3], uid = uidOf(i);
-  let kvKey, R;
-  if (kind === 'lu') {
-    const cur = ludraDay(); if (key !== cur.key) return oops('Questa lista è di un altro giorno: aspetta un attimo che si aggiorni.');
-    kvKey = 'ludra:' + key;
-    R = JSON.parse(await env.KV.get(kvKey) || 'null') || {p: emptyParties(), pinged: false};
-    Object.assign(R, {title: 'Ludra', t: cur.t, ch: i.channel_id});
-  } else {
-    kvKey = 'raid:' + key; R = JSON.parse(await env.KV.get(kvKey) || 'null');
-    if (!R) return oops('Questa stanza non esiste più.');
-    if (a === 'del') {
-      if (uid !== R.by && !await isStaff(env, i)) return oops(`Solo chi l'ha creata (${R.byName}) o lo staff può annullarla.`);
-      ctx.waitUntil(dropVoice(env, R).then(() => env.KV.delete(kvKey)));
-      return Response.json({type: 7, data: {content: '', embeds: [{title: `~~${R.title}~~`, color: 0x5c5f66, description: `Annullata da <@${uid}>.`}], components: [], allowed_mentions: {parse: []}}});
-    }
-  }
-  if (Date.now() > R.t) return oops('Le iscrizioni sono chiuse: è già iniziato.');
-  const before = mains(R), wasFull = free(R) === 0;
+// ---------- moving people (members' buttons and staff edits go through the same place) ----------
+const PLACE = (dest) => dest === 'out' ? 'fuori dalla lista' : `Party ${+dest.split(':')[0] + 1} · ${LU_ROLES.find((r) => r[0] === dest.split(':')[1])[1]}`;
+async function place(env, ctx, R, kvKey, uid, dest) {        // dest = 'p:k' | 'out'
+  const before = mains(R), beforeAll = allIn(R), wasFull = free(R) === 0;
   for (const P of R.p) for (const [r] of LU_ROLES) P[r] = P[r].filter((x) => x !== uid);
-  if (a !== 'out') { if (!R.p[+a] || !LU_ROLES.some((r) => r[0] === b)) return oops('Pulsante non valido.'); R.p[+a][b].push(uid); }
+  if (dest !== 'out') { const [pp, k] = dest.split(':'); R.p[+pp][k].push(uid); }
   const created = await syncVoice(env, R);
   await env.KV.put(kvKey, JSON.stringify(R), {expiration: Math.floor((R.t + VOICE_TTL) / 1000) + 86400});
+  const after = allIn(R);
+  if (R.role) {                                               // the room's role follows the list
+    if (after.has(uid) && !beforeAll.has(uid)) ctx.waitUntil(dapi(env, 'PUT', `/guilds/${GUILD}/members/${uid}/roles/${R.role}`, undefined, `Iscritto a ${R.title}`));
+    if (!after.has(uid) && beforeAll.has(uid)) ctx.waitUntil(dapi(env, 'DELETE', `/guilds/${GUILD}/members/${uid}/roles/${R.role}`, undefined, `Uscito da ${R.title}`));
+  }
   const up = [...mains(R)].filter((u) => !before.has(u) && u !== uid);
   if ((R.pinged || R.voice) && up.length)
-    ctx.waitUntil(dapi(env, 'POST', `/channels/${i.channel_id}/messages`, {content: `🔁 ${up.map((u) => `<@${u}>`).join(' ')} si è liberato un posto: sei nel party di **${R.title}** delle ${hhmm(R.t)}!`, allowed_mentions: {users: up}}).catch(() => {}));
+    ctx.waitUntil(dapi(env, 'POST', `/channels/${R.ch}/messages`, {content: `🔁 ${up.map((u) => `<@${u}>`).join(' ')} si è liberato un posto: sei nel party di **${R.title}** delle ${hhmm(R.t)}!`, allowed_mentions: {users: up}}).catch(() => {}));
   if (created && !wasFull) ctx.waitUntil(fullCall(env, R));
-  return Response.json({type: 7, data: board(R, `${kind}:${key}`)});
+}
+async function press(i, env, ctx) {
+  const parts = i.data.custom_id.split(':'), key = parts[1], a = parts[2], b = parts[3], uid = uidOf(i), kvKey = 'raid:' + key;
+  const R = JSON.parse(await env.KV.get(kvKey) || 'null');
+  if (!R) return oops('Questa stanza non esiste più.');
+  if (!R.msg && i.message?.id) { R.msg = i.message.id; R.ch = i.channel_id; }
+  if (a === 'del') {
+    if (uid !== R.by && !await isStaff(env, i)) return oops(`Solo chi l'ha creata (${R.byName}) o lo staff può annullarla.`);
+    ctx.waitUntil(endRoom(env, R).then(() => env.KV.delete(kvKey)));
+    return Response.json({type: 7, data: {content: '', embeds: [{title: `~~${R.title}~~`, color: 0x5c5f66, description: `Annullata da <@${uid}>.`}], components: [], allowed_mentions: {parse: []}}});
+  }
+  if (a === 'edit') {
+    if (!await isStaff(env, i)) return oops('Solo lo staff può modificare la lista. Per cambiare il tuo posto premi un altro pulsante.');
+    await env.KV.put(kvKey, JSON.stringify(R), {expiration: Math.floor((R.t + VOICE_TTL) / 1000) + 86400});
+    return Response.json({type: 4, data: editPanel(key, R, null, 'Chi vuoi spostare, aggiungere o togliere?')});
+  }
+  if (Date.now() > R.t) return oops('Le iscrizioni sono chiuse: è già iniziato.');
+  if (a !== 'out' && (!R.p[+a] || !LU_ROLES.some((r) => r[0] === b))) return oops('Pulsante non valido.');
+  await place(env, ctx, R, kvKey, uid, a === 'out' ? 'out' : `${a}:${b}`);
+  return Response.json({type: 7, data: board(R, `lr:${key}`)});
 }
 
-// ---------- daily board + cron ----------
-async function ludraTick(env) {
-  const ch = await channelId(env, '・ludra'); if (!ch) return;
-  const {key, t} = ludraDay(), now = Date.now();
-  const R = Object.assign(JSON.parse(await env.KV.get('ludra:' + key) || 'null') || {p: emptyParties(), pinged: false}, {title: 'Ludra', t, ch});
-  const msg = await env.KV.get('cfg:ludra_msg'), shown = await env.KV.get('cfg:ludra_day');
-  if (!msg || shown !== key || (now > t && now < t + 20 * 6e4)) {
-    const body = board(R, `lu:${key}`);
-    let r = msg ? await dapi(env, 'PATCH', `/channels/${ch}/messages/${msg}`, body) : null;
-    if (!r || r.status === 404) { r = await dapi(env, 'POST', `/channels/${ch}/messages`, body); if (r.ok) await env.KV.put('cfg:ludra_msg', (await r.json()).id); }
-    if (r.ok && shown !== key) await env.KV.put('cfg:ludra_day', key);
-    if (!r.ok) await putErr(env, 'ludra_err', `board ${r.status} ${(await r.text()).slice(0, 200)}`);
+// ---------- staff edit panel (ephemeral): pick a member, then where to put them ----------
+function editPanel(key, R, uid, text) {
+  const userRow = {type: 1, components: [{type: 5, custom_id: `le:${key}`, placeholder: uid ? 'Scegli un altro membro' : 'Scegli un membro', min_values: 1, max_values: 1}]};
+  const rows = [userRow];
+  if (uid) {
+    const now = seat(R), where = (() => { for (const [pi, P] of R.p.entries()) for (const [k] of LU_ROLES) if (P[k].includes(uid)) return `${pi}:${k}`; return 'out'; })();
+    rows.unshift({type: 1, components: [{type: 3, custom_id: `lm:${key}:${uid}`, placeholder: `Ora: ${PLACE(where)}`, options: [
+      ...R.p.flatMap((_, pi) => LU_ROLES.map(([k, label, emo]) => ({label: `Party ${pi + 1} · ${label}`, value: `${pi}:${k}`, emoji: {name: emo}, default: where === `${pi}:${k}`}))),
+      {label: 'Togli dalla lista', value: 'out', emoji: {name: '✖️'}, default: where === 'out'}]}]});
   }
-  const hour = +new Date(now).toLocaleString('en-GB', {timeZone: TZ, hour: '2-digit', hour12: false});
-  if (hour === LUDRA.call && now < t && free(R) > 0 && !(await env.KV.get('ludra_call:' + key))) {
-    await env.KV.put('ludra_call:' + key, '1', {expirationTtl: 86400 * 2});
-    const r = await roleId(env, 'Ping Ludra'), msgId = await env.KV.get('cfg:ludra_msg');
-    if (r) await dapi(env, 'POST', `/channels/${ch}/messages`, {content: `<@&${r}> stasera Ludra <t:${Math.floor(t / 1000)}:R>: ci sono ancora **${free(R)}** posti liberi, firmate qui sopra!`,
-      allowed_mentions: {roles: [r]}, ...(msgId ? {message_reference: {message_id: msgId, fail_if_not_exists: false}} : {})});
-  }
+  return {flags: 64, content: `✏️ **${R.title}** delle ${hhmm(R.t)}\n${text}`, components: rows, allowed_mentions: {parse: []}};
 }
-async function roomsTick(env) {            // every room (daily + /raid): reserves 1 h before, everyone 15 min before, voice cleanup
-  const now = Date.now(), keys = [...(await env.KV.list({prefix: 'raid:'})).keys.map((k) => k.name)];
-  for (const d of [now, now - 864e5]) keys.push('ludra:' + ludraDay(d).key);
-  for (const k of keys) {
-    let R = JSON.parse(await env.KV.get(k) || 'null'); if (!R) continue;
-    if (k.startsWith('ludra:')) { const t = ludraDay(Date.parse(k.slice(6) + 'T12:00:00Z')).t; R = Object.assign(R, {title: 'Ludra', t, ch: await channelId(env, '・ludra')}); }
+async function editPick(i, env) {                             // le:<key>  (user select)
+  if (!await isStaff(env, i)) return oops('Solo lo staff può modificare la lista.');
+  const key = i.data.custom_id.split(':')[1], R = JSON.parse(await env.KV.get('raid:' + key) || 'null');
+  if (!R) return oops('Questa stanza non esiste più.');
+  const uid = i.data.values[0], u = i.data.resolved?.users?.[uid];
+  if (u?.bot) return Response.json({type: 7, data: editPanel(key, R, null, 'I bot non possono iscriversi. Scegli un membro.')});
+  return Response.json({type: 7, data: editPanel(key, R, uid, `Dove metto <@${uid}>? Se il posto è occupato va nell'altro party o in riserva, come con i pulsanti.`)});
+}
+async function editMove(i, env, ctx) {                        // lm:<key>:<uid>  (place select)
+  if (!await isStaff(env, i)) return oops('Solo lo staff può modificare la lista.');
+  const [, key, uid] = i.data.custom_id.split(':'), kvKey = 'raid:' + key, R = JSON.parse(await env.KV.get(kvKey) || 'null');
+  if (!R) return oops('Questa stanza non esiste più.');
+  if (!R.msg) return oops('Non trovo il messaggio della lista: chiedi a qualcuno di premere un pulsante della lista, poi riprova.');
+  const dest = i.data.values[0];
+  await place(env, ctx, R, kvKey, uid, dest);
+  const r = await dapi(env, 'PATCH', `/channels/${R.ch}/messages/${R.msg}`, board(R, `lr:${key}`));
+  if (!r.ok) await putErr(env, 'ev_err', `edit board ${r.status}`);
+  const by = i.member?.nick || i.member?.user?.global_name || i.member?.user?.username;
+  ctx.waitUntil(dapi(env, 'POST', `/channels/${R.ch}/messages`, {content: `✏️ ${by} ha messo <@${uid}> ${dest === 'out' ? 'fuori dalla lista' : 'in ' + PLACE(dest)} di **${R.title}**.`,
+    allowed_mentions: {users: [uid]}, message_reference: {message_id: R.msg, fail_if_not_exists: false}}).catch(() => {}));
+  return Response.json({type: 7, data: editPanel(key, R, null, `✅ <@${uid}> → ${PLACE(dest)}. Vuoi modificare qualcun altro?`)});
+}
+
+// ---------- cron: tags 1 hour and 15 minutes before, cleanup after ----------
+async function endRoom(env, R) {
+  await dropVoice(env, R);
+  if (R.role) { await dapi(env, 'DELETE', `/guilds/${GUILD}/roles/${R.role}`, undefined, `Fine di ${R.title}`); R.role = null; }
+}
+const lineup = (R) => partyOf(R).map((m, p) => `**Party ${p + 1}**${R.voice?.[p] ? ` <#${R.voice[p]}>` : ''}: ${m.map((u) => `<@${u}>`).join(' ') || '—'}`).join('\n');
+async function roomsTick(env) {
+  const now = Date.now();
+  for (const {name: k} of (await env.KV.list({prefix: 'raid:'})).keys) {
+    const R = JSON.parse(await env.KV.get(k) || 'null'); if (!R || R.done) continue;
     let dirty = false;
-    if (R.voice && now > R.t + VOICE_TTL) { await dropVoice(env, R); dirty = true; }
-    if (!R.pinged && R.t - now <= 65 * 6e4 && R.t - now > 30 * 6e4) {
+    const tag = R.role ? `<@&${R.role}>` : [...allIn(R)].map((u) => `<@${u}>`).join(' '), am = R.role ? {roles: [R.role]} : {users: [...allIn(R)].slice(0, 100)};
+    if (now > R.t + VOICE_TTL) { await endRoom(env, R); R.done = true; dirty = true; }
+    else if (!R.pinged && R.t - now <= 61 * 6e4 && R.t - now > 20 * 6e4) {
       R.pinged = true; dirty = true;
       const res = seat(R).res.map(([, , u]) => u);
-      if (res.length) await dapi(env, 'POST', `/channels/${R.ch}/messages`, {content: `🪑 **Riserve di ${R.title}** <t:${Math.floor(R.t / 1000)}:R>: ${res.map((u) => `<@${u}>`).join(' ')}\nLa stanza è piena, ma potreste servire: restate disponibili. Se qualcuno si ritira, vi taggo.`, allowed_mentions: {users: res.slice(0, 100)}});
-    }
-    if (!R.called && R.t - now <= 20 * 6e4 && R.t - now > -5 * 6e4) {
+      if (allIn(R).size) await dapi(env, 'POST', `/channels/${R.ch}/messages`, {allowed_mentions: am, content: `⏰ ${tag} **${R.title}** inizia <t:${Math.floor(R.t / 1000)}:R>, alle ${hhmm(R.t)}.\n` + lineup(R) +
+        (res.length ? `\n🪑 **Riserve:** ${res.map((u) => `<@${u}>`).join(' ')}: restate disponibili, se qualcuno si ritira vi taggo.` : '') +
+        (free(R) ? `\nMancano ancora **${free(R)}** posti.` : '')});
+    } else if (!R.called && R.t - now <= 16 * 6e4 && R.t - now > -5 * 6e4) {
       R.called = true; dirty = true;
-      const P = partyOf(R);
-      if (P.flat().length) await dapi(env, 'POST', `/channels/${R.ch}/messages`, {content: `⏰ **${R.title}** inizia <t:${Math.floor(R.t / 1000)}:R>!\n` +
-        P.map((m, p) => `**Party ${p + 1}**${R.voice?.[p] ? ` <#${R.voice[p]}>` : ''}: ${m.map((u) => `<@${u}>`).join(' ') || '—'}`).join('\n'), allowed_mentions: {users: P.flat()}});
+      if (allIn(R).size) await dapi(env, 'POST', `/channels/${R.ch}/messages`, {allowed_mentions: am, content: `🔥 ${tag} **${R.title}** tra 15 minuti! Entrate nel vocale del vostro party.\n` + lineup(R)});
     }
     if (dirty) await env.KV.put(k, JSON.stringify(R), {expiration: Math.floor((R.t + VOICE_TTL) / 1000) + 86400});
   }
+}
+async function dropOldDaily(env) {        // the automatic daily list was switched off on 12 Nov: delete its last board once
+  const msg = await env.KV.get('cfg:ludra_msg'); if (!msg) return;
+  const ch = await channelId(env, '・ludra');
+  if (ch) await dapi(env, 'DELETE', `/channels/${ch}/messages/${msg}`, undefined, 'Lista automatica sostituita da /raid');
+  await env.KV.delete('cfg:ludra_msg'); await env.KV.delete('cfg:ludra_day');
 }
 
 // ---------- /raid = an extra Ludra room ----------
@@ -180,26 +213,32 @@ function parseQuando(txt, now = Date.now()) {
   return ts;
 }
 async function raidCreate(i, env) {
+  // the board goes in #🔥・ludra (read-only: everybody signs up with the buttons); the command can be used from any channel
   const t = parseQuando(opt(i.data, 'quando'));
-  if (!t) return oops('Non ho capito quando. Esempi: `21:00`, `domani 21`, `sabato 21:30`, `25/11 21:00` (ora italiana).');
-  const id = crypto.randomUUID().slice(0, 8), u = i.member?.user || i.user;
-  const R = {title: String(opt(i.data, 'titolo') || 'Ludra').slice(0, 60), t, note: String(opt(i.data, 'note') || '').slice(0, 300), by: u.id,
-    byName: i.member?.nick || u.global_name || u.username, ch: i.channel_id, p: emptyParties(), voice: null, pinged: false, called: false};
-  await env.KV.put('raid:' + id, JSON.stringify(R), {expiration: Math.floor((t + VOICE_TTL) / 1000) + 86400});
+  if (!t) return {content: 'Non ho capito quando. Esempi: `21:00`, `domani 21`, `sabato 21:30`, `25/11 21:00` (ora italiana).'};
+  const id = crypto.randomUUID().slice(0, 8), u = i.member?.user || i.user, ch = await channelId(env, '・ludra') || i.channel_id;
+  const title = String(opt(i.data, 'titolo') || 'Ludra').slice(0, 60);
+  const role = await djson(env, 'POST', `/guilds/${GUILD}/roles`, {name: `🔥 ${title} ${ddmm(t)} ${hhmm(t)}`.slice(0, 100), color: 0xe8603c, mentionable: true, hoist: false}, `Stanza /raid di ${u.username}`);
+  if (!role) await putErr(env, 'ev_err', 'role create failed (Manage Roles?)');
+  const R = {title, t, note: String(opt(i.data, 'note') || '').slice(0, 300), by: u.id, byName: i.member?.nick || u.global_name || u.username,
+    ch, msg: null, role: role?.id || null, p: emptyParties(), voice: null, pinged: false, called: false};
   const msg = board(R, `lr:${id}`), ping = opt(i.data, 'ping') !== false ? await roleId(env, 'Ping Ludra') : null;
   if (ping) { msg.content = `<@&${ping}> nuova stanza **${R.title}** <t:${Math.floor(t / 1000)}:R>: firmate qui sotto!`; msg.allowed_mentions = {roles: [ping]}; }
-  return Response.json({type: 4, data: msg});
+  const posted = await djson(env, 'POST', `/channels/${ch}/messages`, msg);
+  if (!posted) { if (role) await dapi(env, 'DELETE', `/guilds/${GUILD}/roles/${role.id}`); return {content: 'Non riesco a pubblicare la lista: riprova tra poco.'}; }
+  R.msg = posted.id;
+  await env.KV.put('raid:' + id, JSON.stringify(R), {expiration: Math.floor((t + VOICE_TTL) / 1000) + 86400});
+  return {content: `✅ Stanza **${R.title}** creata in <#${ch}> per ${dayName(t)} alle ${hhmm(t)}. Chi si iscrive riceve il ruolo${role ? ` <@&${role.id}>` : ''}: lo tagghiamo un'ora prima e 15 minuti prima.`};
 }
 
 export default {
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(Promise.allSettled([ludraTick(env).catch((e) => putErr(env, 'ludra_err', String(e?.stack || e).slice(0, 300))),
-      roomsTick(env).catch((e) => putErr(env, 'raid_err', String(e?.stack || e).slice(0, 300)))]));
+    ctx.waitUntil(Promise.allSettled([dropOldDaily(env).catch(() => {}), roomsTick(env).catch((e) => putErr(env, 'raid_err', String(e?.stack || e).slice(0, 300)))]));
   },
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
     if (url.pathname === '/status') return Response.json({ludra: await env.KV.get('ludra_err'), raid: await env.KV.get('raid_err'), voice: await env.KV.get('voice_err'), ev: await env.KV.get('ev_err')});
-    if (url.pathname === '/tick') { await ludraTick(env).catch((e) => putErr(env, 'ludra_err', String(e?.stack || e).slice(0, 300))); return Response.json({ludra: await env.KV.get('ludra_err')}); }
+    if (url.pathname === '/tick') { await dropOldDaily(env).catch(() => {}); await roomsTick(env).catch((e) => putErr(env, 'raid_err', String(e?.stack || e).slice(0, 300))); return Response.json({raid: await env.KV.get('raid_err')}); }
     if (req.method !== 'POST') return new Response('Gettulio: ok');
     const body = await req.text();
     if (!(await verified(req, body, env))) return new Response('bad signature', {status: 401});
@@ -207,9 +246,15 @@ export default {
     if (i.type === 1) return Response.json({type: 1});
     if (i.guild_id && i.guild_id !== GUILD) return oops('Funziono solo nella community italiana di Aion 2.');
     try {
-      if (i.type === 2 && i.data.name === 'raid') return await raidCreate(i, env);
-      if (i.type === 3 && i.data.custom_id.startsWith('lu:')) return await press(i, env, ctx, 'lu');
-      if (i.type === 3 && i.data.custom_id.startsWith('lr:')) return await press(i, env, ctx, 'lr');
+      if (i.type === 2 && i.data.name === 'raid') {        // role + post can take a moment: answer at once, finish in the background
+        ctx.waitUntil(raidCreate(i, env).catch(async (e) => { await putErr(env, 'ev_err', String(e?.stack || e).slice(0, 300)); return {content: 'Qualcosa è andato storto, riprova tra poco.'}; })
+          .then((d) => hook(i, env, {...d, allowed_mentions: {parse: []}})));
+        return defer();
+      }
+      if (i.type === 3 && i.data.custom_id.startsWith('lr:')) return await press(i, env, ctx);
+      if (i.type === 3 && i.data.custom_id.startsWith('le:')) return await editPick(i, env);
+      if (i.type === 3 && i.data.custom_id.startsWith('lm:')) return await editMove(i, env, ctx);
+      if (i.type === 3 && i.data.custom_id.startsWith('lu:')) return oops('La lista automatica non c\'è più: le stanze del Ludra si aprono con /raid.');
       if (i.type === 3 && i.data.custom_id.startsWith('rs:')) return oops('Questa vecchia lista non è più attiva: crea una stanza nuova con /raid.');
       return oops('Comando sconosciuto.');
     } catch (e) {

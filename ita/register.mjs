@@ -17,7 +17,7 @@ const CMDS = {
       options: [o(U, 'leader', 'Il leader (verificato) della legione')]},
   ],
   eventi: [
-    {name: 'raid', description: 'Crea una stanza Ludra da 10 (2 party); quando è piena creo i vocali dei party',
+    {name: 'raid', description: 'Apri una stanza Ludra da 10 in #ludra: chi si iscrive viene taggato 1 ora e 15 minuti prima',
       options: [o(S, 'quando', "Es. 21:00, domani 21, sabato 21:30, 25/11 21:00 (ora italiana)"), o(S, 'titolo', 'Nome della stanza (Ludra se vuoto)', {required: false}),
         o(S, 'note', 'Note (requisiti, punto di ritrovo…)', {required: false}), o(B, 'ping', 'Tagga Ping Ludra (sì se vuoto)', {required: false})]},
   ],

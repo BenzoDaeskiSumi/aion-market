@@ -280,11 +280,14 @@ each legion will get its own section later; verification like MarchutanEU; separ
   * Legions (Alberto): button 🏰 lg:open in 🎫・ticket -> private thread (verified only; legion = official profile.regionName) with ✅ lg:ok:<uid> (staff) / 🔒 lg:close;
     approve (or /legione leader:@x) = Legion Leader role + role '🏰 <legion>' (created once, under Legion Leader) on every verified member whose vlink.legion matches (35 at once,
     the cron does the rest); refresh() keeps exactly the member's legion role (KV legrole:<server>:<legion> = {role, leader, name}). vlink.legion filled by refresh.
-  * Gettulio (was Fabrizio) = ita-eventi (eventi.js): Ludra board in 🔥・ludra (same rules as Mauro's old one; 19:00 tags 'Ping Ludra' once if slots are free), 
-    /raid quando [titolo] [note] [ping] (12 Nov: only Ludra exists for now) = an extra Ludra ROOM of 10 (same 2-party engine, buttons lr:<id>:<p>:<role>|out|del, KV raid:<id>).
-    Every room (daily lu: and /raid) creates 2 TEMPORARY voice channels in VOCALI when full (one per party: its 5 members + staff + Gettulio; overwrites follow
-    sign-up changes; deleted VOICE_TTL = 3 h after the start by roomsTick), tags the 10 with their channel, reserves ~1 h before, everyone ~15 min before.
-    Gettulio's role got Manage Channels + Manage Roles + voice perms (audit.py one-off, 12 Nov). /tick runs the board once; /status shows ludra/raid/voice errors.
+  * Gettulio (was Fabrizio) = ita-eventi (eventi.js), Ludra only. 12 Nov evening (the user asked): NO automatic daily list any more (the old board was deleted
+    by dropOldDaily; lu: buttons answer 'use /raid'). /raid quando [titolo] [note] [ping] posts a room of 10 in 🔥・ludra (read-only; the command works from any channel,
+    deferred answer): 2 parties of 1 tank + 1 cleric + 1 chanter + 2 DPS, buttons lr:<id>:<p>:<role>|out|del|edit, KV raid:<id> {.., ch, msg, role, voice, pinged, called, done}.
+    Each room gets its own mentionable role '🔥 <titolo> dd/mm hh:mm' (created by /raid, given to whoever is on the list incl. reserves, removed when they leave):
+    roomsTick tags the role ~1 h before (line-up + reserves) and ~15 min before (with the voice channels), then deletes voices + role VOICE_TTL = 3 h after the start.
+    Full room = 2 TEMPORARY voice channels in VOCALI (one per party: its 5 + staff + Gettulio; overwrites follow changes).
+    Staff edit: '✏️ Gestisci (staff)' -> ephemeral user select le:<id> -> place select lm:<id>:<uid> (party+role or out); same place() as the buttons, board PATCHed,
+    a short note under the board. Gettulio's role has Manage Channels + Manage Roles + voice perms (audit.py one-off, 12 Nov). /tick = cleanup + roomsTick.
   * Ciro (was Marcello) = ita-mod (mod.js): /avverti (3rd = 1 h timeout) /avvertimenti /azzera-avvertimenti /timeout /togli-timeout /kick /ban /sban /pulisci, all logged in 🧹・log;
     tickets in 🎫・ticket (tk:open:segnalazione|idea|aiuto -> private thread, tk:close:<uid>); /setup also owns the AutoMod rules (mention spam 15, invite links, Kinah selling,
     spam; the single-instance types are taken over from older rules). Its role got Manage Server for AutoMod.

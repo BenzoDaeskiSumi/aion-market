@@ -84,7 +84,7 @@ cats = [
     ('💬 COMMUNITY', GREEN, [('・chiacchiere', 'chiacchiere libere'), ('・domande', 'forum: una domanda per post, con il tag giusto'),
                             ('・screenshot-e-clip', 'i vostri screenshot e le vostre clip'), ('・meme', 'meme su Aion e dintorni')]),
     ('⚔️ GIOCO', RED, [('・cerca-gruppo', 'cerchi party per dungeon, raid, spedizioni? scrivilo qui o apri una stanza Ludra con `/raid`'),
-                      ('・ludra', 'la lista firme del Ludra di ogni sera: si firma con i pulsanti'),
+                      ('・ludra', 'le stanze del Ludra aperte con `/raid`: ti iscrivi con i pulsanti e vieni taggato 1 ora e 15 minuti prima'),
                       ('・pvp-abisso', 'PvP, Abisso, arene · qui si taggano i ruoli Force PvP per formare le force'),
                       ('・assedi', 'organizzazione degli assedi'), ('・guide', 'forum: guide e build, con il tag della classe')]),
     ('💰 MARKET', CYAN, [('・market', f'il nostro sito [aion2italia.com]({IT}): prezzi di ogni server, storico, crafting, mappa e guide'),
@@ -97,7 +97,7 @@ for title, col, items in cats:
     emb.append({'color': col, 'title': title, 'description': '\n'.join(f"{link(s)} · {d}" for s, d in items)})
 emb.append({'color': VIOLET, 'title': '🔊 VOCALI', 'description': '🍻 **Taverna** e **Taverna 2** per stare in compagnia · ⚔️ **Party 1-4** per i gruppi · 💤 **AFK** per chi si allontana'})
 emb.append({'color': 0x95a5a6, 'title': '🤖 I bot', 'description': '\n'.join([
-    '**Alberto** 🤵 · verifica e ruoli (fazione, classe, Gear Score, legioni)', '**Gettulio** 🤡 · eventi: Ludra (lista delle 22 e stanze `/raid`)',
+    '**Alberto** 🤵 · verifica e ruoli (fazione, classe, Gear Score, legioni)', '**Gettulio** 🤡 · eventi: stanze del Ludra con `/raid`',
     '**Ciro** 👮 · moderazione e ticket', '**Mauro** 🔨 · market, crafting e schede personaggio',
     f"Tutti i comandi in {link('・comandi-bot')}."])})
 replace('・guida-server', [{'embeds': emb[:6]}, {'embeds': emb[6:]}])
@@ -128,8 +128,8 @@ replace('・comandi-bot', [{'embeds': [{'color': CYAN, 'image': {'url': IMG + 'c
         '`/verifica` · verificati con il tuo personaggio e uno screenshot', '`/aggiorna` · aggiorna fazione, classe e Gear Score dal sito ufficiale',
         f"Interessi, ping e Force PvP: con i pulsanti in {link('・ruoli')}"])},
     {'color': RED, 'title': '🤡 Gettulio · eventi', 'description': '\n'.join([
-        '`/raid quando [titolo] [note] [ping]` · apre una stanza Ludra da 10 (2 party: tank, cleric, chanter, 2 DPS); quando è piena crea un vocale per party',
-        f"Il Ludra di ogni sera: lista con i pulsanti in {link('・ludra')}"])},
+        '`/raid quando [titolo] [note] [ping]` · apre una stanza Ludra da 10 (2 party: tank, cleric, chanter, 2 DPS)',
+        f"La lista compare in {link('・ludra')}: chi si iscrive riceve il ruolo della stanza ed è taggato 1 ora e 15 minuti prima; quando è piena ogni party ha il suo vocale. Lo staff può modificare la lista con ✏️ Gestisci."])},
     {'color': 0x95a5a6, 'title': '👮 Ciro · moderazione', 'description': f"Ticket privati con lo staff in {link('・ticket')}. Gli altri comandi sono solo per lo staff."},
     {'color': CYAN, 'description': '-# Le risposte che vedi solo tu restano nascoste, così il canale resta pulito.'}]}], pin_last=True)
 
@@ -137,9 +137,11 @@ replace('・comandi-bot', [{'embeds': [{'color': CYAN, 'image': {'url': IMG + 'c
 replace('・cerca-gruppo', [{'embeds': [{'color': VIOLET, 'image': {'url': IMG + 'cercagruppo.png' + V}},
     {'color': VIOLET, 'title': 'Come cercare un gruppo', 'description': '\n'.join([
         '**Al volo:** scrivi cosa fai, quando e chi ti serve. Esempio: `Spedizione stasera 21:30 · cerco 1 cleric e 1 tank · GS 1400+`',
-        f"**Stanza Ludra:** `/raid quando` apre una stanza da 10 (2 party da 1 tank, 1 cleric, 1 chanter, 2 DPS) e tagga {R('Ping Ludra')}. Quando è piena Gettulio crea due vocali temporanei, uno per party, visibili solo ai suoi 5; li cancella 3 ore dopo l'orario.",
-        f"**Il Ludra** ha la sua lista fissa in {link('・ludra')}.", '',
+        f"**Ludra:** `/raid quando` apre una stanza da 10 (2 party da 1 tank, 1 cleric, 1 chanter, 2 DPS) in {link('・ludra')} e tagga {R('Ping Ludra')}. Chi si iscrive riceve il ruolo della stanza ed è taggato un'ora e 15 minuti prima; quando la stanza è piena Gettulio crea un vocale per party.",
+        f"Il Ludra non ha più una lista automatica: chiunque può aprirne una con `/raid`.", '',
         f"Vuoi essere chiamato quando qualcuno cerca gente? Prendi {R('Ping Dungeon')} in {link('・ruoli')}."])}]}], pin_last=True)
+
+api('PATCH', f"/channels/{ch('・ludra')['id']}", {'topic': 'Le stanze del Ludra: aprine una con /raid, iscriviti con i pulsanti.'})
 
 # ---------------- forums ----------------
 forum_post('・domande', '📌 Come fare una domanda', '\n'.join([
