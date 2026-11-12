@@ -4,7 +4,7 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 
 Overview for a new model: docs/HANDOFF.md (architecture, how-to, Mauro, rules). This file is the detailed log.
 
-
+## Layout (read first)
 - Home page: index.html + css/home.css + js/home.js (hero with the presentation video media/intro.mp4 + poster, live numbers of the saved server from
   meta.json/summary.json, section cards with img/home/*.jpg, Discord bot + Legione panels). Any query string or a login hash (#access_token/error)
   is redirected to market.html with the same search/hash, so old links (bot cards, shared ?s=&item=) still open the tracker. Uses js/i18n.js (home strings at the top of EN/ES/FR).
