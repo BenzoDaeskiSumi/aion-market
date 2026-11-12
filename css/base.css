@@ -35,6 +35,7 @@ button, input, select { font: inherit; color: inherit; }
 a { color: var(--accent); text-underline-offset: 3px; }
 h1, h2, h3 { font-family: var(--display); font-weight: 600; letter-spacing: -.01em; line-height: 1.15; margin: 0; text-wrap: balance; }
 [hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 .g-white { color: var(--g-white); } .g-green { color: var(--g-green); } .g-blue { color: var(--g-blue); } .g-gold { color: var(--g-gold); } .g-orange { color: var(--g-orange); } .g-teal { color: var(--g-teal); }
 .up { color: var(--up); } .down { color: var(--down); } .err { color: var(--down); }
