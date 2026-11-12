@@ -281,7 +281,7 @@ async function postOrEdit(env, key, ch, body, hourly) {   // posts a NEW message
     for (let k = 0; k < 3; k++) {
       const r = await dapi(env, 'PATCH', `/channels/${ch}/messages/${id}`, body);
       if (r.ok) return 'edited';
-      if (r.status === 429) { await new Promise((ok) => setTimeout(ok, Math.min(5000, 1000 * (+(await r.json().catch(() => ({}))).retry_after || 1)))); continue; }
+      if (r.status === 429) { const w = Math.min(5000, 1000 * (+(await r.json().catch(() => ({}))).retry_after || 1)); await new Promise((ok) => setTimeout(ok, w)); continue; }
       if (r.status !== 404) return 'edit failed ' + r.status;
       break;
     }
