@@ -4,6 +4,7 @@
 Reads every server's data/s/<id>/price_log.json (API rows only) and, for consumables and crafting materials:
   1. builds an hourly price series per item and server (a row is written only when the price changes, so the last price
      holds until the next row; at most 13 h, the sync writes a keep-alive row every 12 h);
+     Wednesday 07:00-11:59 is left out: the weekly maintenance, when the Market is closed and the last prices are stale;
   2. drops spikes: a price more than 2.5x or less than 0.4x the median of the 24 hours around it (troll listings, typos);
   3. splits the series into game weeks (weekly reset: Wednesday 06:00 Europe/Rome) and, inside each week, divides each
      hourly price by the week's geometric mean. Prices move a lot from week to week as the game progresses, so only the
@@ -16,6 +17,8 @@ import json, math, os, sys
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore", category=RuntimeWarning)          # nanmean of empty cells (maintenance) is expected
 import pandas as pd
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else 'out'
@@ -24,6 +27,8 @@ ROME = ZoneInfo('Europe/Rome')
 WEEKS = 6                      # most recent complete + current game weeks used
 MIN_HOURS = 72                 # a week counts for an item only with at least 3 days of prices
 CAP = math.log(1.5)
+MAINT = (2, 7, 12)             # weekday (Wednesday), from hour, to hour: usual weekly maintenance, left out of every number
+MIN_BAND_H = 3                 # a day/time-band cell needs at least 3 usable hours, else it stays empty (Wednesday morning)
 GROUPS = {
     'Consumabili': ['Potions', 'Food', 'Scroll', 'Candy', 'Manastone/Soulstone', 'Theostone', 'Wings', 'Duration Ticket', 'Chest', 'Consumable Miscellaneous'],
     'Materiali per il craft': ['Gathering Material', 'Crafting Material', 'Special Material', 'Substance Morph Material', 'Miscellaneous'],
@@ -53,6 +58,7 @@ def main():
     first_week = week_start(now) - timedelta(days=7 * (WEEKS - 1))
     grid = pd.date_range(first_week, now, freq='h')
     gpos = np.array([DOW_POS[t.weekday()] for t in grid]); ghour = np.array([t.hour for t in grid])
+    maint = np.array([t.weekday() == MAINT[0] and MAINT[1] <= t.hour < MAINT[2] for t in grid])
     gweek = np.array([int((week_start(t.to_pydatetime()) - first_week).days // 7) for t in grid])
     units = []        # one per (server, item): {server, item, cat, dev[7,24] mean, n[7,24], weeks, price, listings}
     for s in servers:
@@ -65,14 +71,16 @@ def main():
         for item, rows in log.groupby('item'):
             if item.startswith(('Artwork #', 'Sealed wings #')): continue
             r = rows.sort_values('t').drop_duplicates('t', keep='last').set_index('t')
-            price = r.lowest_price.astype(float).where(r.lowest_price > 0)
-            # hourly series: the last price holds until the next row, at most 13 hours
-            hp = price.reindex(price.index.union(grid)).ffill(limit=13).reindex(grid)
+            # hourly series: the last row holds until the next one, at most 13 hours. 0 = nothing on sale: it holds too
+            # (it ends the previous price) and only then becomes 'no price'
+            raw = r.lowest_price.astype(float)
+            hp = raw.reindex(raw.index.union(grid)).ffill(limit=13).reindex(grid)
+            hp = hp.where(hp > 0)
             hl = r.listings.astype(float).reindex(r.index.union(grid)).ffill(limit=13).reindex(grid)
             v = hp.to_numpy()
             if np.isfinite(v).sum() < MIN_HOURS: continue
             med = pd.Series(v).rolling(49, center=True, min_periods=6).median().to_numpy()
-            v = np.where((v > 2.5 * med) | (v < 0.4 * med), np.nan, v)
+            v = np.where((v > 2.5 * med) | (v < 0.4 * med) | maint, np.nan, v)
             dev_sum = np.zeros((7, 24)); dev_n = np.zeros((7, 24)); weeks = 0
             for w in range(WEEKS):
                 m = (gweek == w) & np.isfinite(v)
@@ -93,9 +101,11 @@ def main():
 
     def profiles(us):
         g, _ = mean_grid(us)
+        g[DOW_POS[MAINT[0]], MAINT[1]:MAINT[2]] = np.nan          # maintenance: never a number, even if a stale row slipped in
         lg = np.log1p(g)
+        cell = lambda x: np.nanmean(x) if np.isfinite(x).sum() >= MIN_BAND_H else np.nan
         return {'grid': g, 'day': np.expm1(np.nanmean(lg, axis=1)), 'hour': np.expm1(np.nanmean(lg, axis=0)),
-                'band': np.expm1(np.array([[np.nanmean(lg[d, a:b]) for (_, a, b) in BANDS] for d in range(7)]))}
+                'band': np.expm1(np.array([[cell(lg[d, a:b]) for (_, a, b) in BANDS] for d in range(7)]))}
 
     allp = profiles(units)
     groups = {g: profiles([u for u in units if u['group'] == g]) for g in GROUPS if any(u['group'] == g for u in units)}
@@ -144,6 +154,12 @@ def write_xlsx(path, S, allp, groups, cats, srv, items):
     pct = '+0.0%;-0.0%;0.0%'
     scale = lambda rng, ws: ws.conditional_formatting.add(rng, ColorScaleRule(start_type='num', start_value=-0.06, start_color='2E9E6B', mid_type='num', mid_value=0, mid_color='FFFFFF', end_type='num', end_value=0.06, end_color='E8A33C'))
 
+    def put(ws, r, c, v):
+        """A percentage cell; maintenance / no data -> grey 'manutenzione' text (Excel can't store NaN)."""
+        if v is None or not math.isfinite(v):
+            x = ws.cell(r, c, 'manut.'); x.font = DIM; x.alignment = Alignment(horizontal='center'); return x
+        x = ws.cell(r, c, round(float(v), 4)); x.number_format = pct; return x
+
     def head(ws, row, values, widths=None):
         for i, v in enumerate(values, 1):
             c = ws.cell(row, i, v); c.font = H; c.fill = HF; c.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
@@ -157,6 +173,8 @@ def write_xlsx(path, S, allp, groups, cats, srv, items):
              ('Ogni numero dice quanto il prezzo più basso di quel momento è sopra (+) o sotto (−) la media della sua settimana di gioco.',),
              ('La settimana di gioco parte dal reset del mercoledì alle 06:00. Si confronta solo dentro la stessa settimana, perché da una settimana',),
              ('all\'altra i prezzi cambiano molto con l\'avanzare del gioco.',),
+             ('La colonna Mercoledì mette insieme la fine di una settimana (00-06) e l\'inizio della successiva (dalle 06).',),
+             ('Il mercoledì dalle 7 alle 12 c\'è di solito la manutenzione: quelle ore sono escluse da tutti i calcoli (celle «manut.»).',),
              ('Verde = più economico del solito (momento buono per comprare). Arancione = più caro del solito (momento buono per vendere).',), ('',),
              ('Come è calcolato', Font(bold=True)),
              ('1. Per ogni oggetto e server si ricostruisce il prezzo ora per ora (l\'ultimo prezzo visto vale fino al successivo, al massimo 13 ore).',),
@@ -178,10 +196,11 @@ def write_xlsx(path, S, allp, groups, cats, srv, items):
     head(ws, 3, ['Giorno'] + [f'{h:02d}' for h in range(24)] + ['Giorno intero'], [14] + [7.2] * 24 + [12])
     for d in range(7):
         ws.cell(4 + d, 1, S['days'][d]).font = Font(bold=True)
-        for h in range(24): ws.cell(4 + d, 2 + h, round(allp['grid'][d][h], 4)).number_format = pct
-        ws.cell(4 + d, 26, round(allp['day'][d], 4)).number_format = pct
+        for h in range(24): put(ws, 4 + d, 2 + h, allp['grid'][d][h])
+        put(ws, 4 + d, 26, allp['day'][d])
     ws.cell(11, 1, 'Ora intera').font = Font(bold=True)
-    for h in range(24): ws.cell(11, 2 + h, round(allp['hour'][h], 4)).number_format = pct
+    for h in range(24): put(ws, 11, 2 + h, allp['hour'][h])
+    ws.cell(13, 1, 'manut. = mercoledì dalle 7 alle 12, manutenzione settimanale: quelle ore non sono contate.').font = DIM
     scale('B4:Z11', ws); ws.freeze_panes = 'B4'
 
     def band_sheet(name, profs, label):
@@ -191,8 +210,8 @@ def write_xlsx(path, S, allp, groups, cats, srv, items):
             head(ws, r + 1, ['Giorno'] + [b.capitalize() for b in S['bands']] + ['Giorno intero'], [24, 13, 13, 13, 13, 14])
             for d in range(7):
                 ws.cell(r + 2 + d, 1, S['days'][d])
-                for b in range(4): ws.cell(r + 2 + d, 2 + b, round(float(p['band'][d][b]), 4)).number_format = pct
-                ws.cell(r + 2 + d, 6, round(float(p['day'][d]), 4)).number_format = pct
+                for b in range(4): put(ws, r + 2 + d, 2 + b, p['band'][d][b])
+                put(ws, r + 2 + d, 6, p['day'][d])
             scale(f'B{r + 2}:F{r + 8}', ws); r += 11
     band_sheet('Per gruppo', groups, lambda g: g)
     band_sheet('Per categoria', cats, lambda c: f'{CAT_IT.get(c, c)} ({c})')
@@ -202,10 +221,10 @@ def write_xlsx(path, S, allp, groups, cats, srv, items):
                  'Differenza', 'Server', 'Settimane x server'] + S['days'], [34, 22, 20, 14, 14, 13, 13, 14, 13, 13, 12, 9, 12] + [11] * 7)
     for i, x in enumerate(items, 2):
         vals = [x['item'], CAT_IT.get(x['cat'], x['cat']), x['group'], x['price'], x['buy_day'], x['buy_band'], round(x['buy_pct'], 4), x['sell_day'], x['sell_band'],
-                round(x['sell_pct'], 4), round(x['swing'], 4), x['servers'], x['server_weeks']] + [round(v, 4) for v in x['day']]
+                x['sell_pct'], x['swing'], x['servers'], x['server_weeks']] + list(x['day'])
         for j, v in enumerate(vals, 1):
+            if j in (7, 10, 11) or j > 13: put(ws, i, j, v); continue
             c = ws.cell(i, j, v)
-            if j in (7, 10, 11) or j > 13: c.number_format = pct
             if j == 4: c.number_format = '#,##0'
     n = len(items) + 1
     scale(f'N2:T{n}', ws); ws.freeze_panes = 'B2'; ws.auto_filter.ref = f'A1:T{n}'
@@ -214,7 +233,7 @@ def write_xlsx(path, S, allp, groups, cats, srv, items):
     head(ws, 1, ['Server', 'Oggetti'] + S['days'] + ['Più economico', 'Più caro'], [16, 10] + [12] * 7 + [16, 16])
     for i, (s, p) in enumerate(srv.items(), 2):
         ws.cell(i, 1, s).font = Font(bold=True); ws.cell(i, 2, p['n'])
-        for d in range(7): ws.cell(i, 3 + d, round(float(p['day'][d]), 4)).number_format = pct
+        for d in range(7): put(ws, i, 3 + d, p['day'][d])
         ws.cell(i, 10, S['days'][int(np.nanargmin(p['day']))]); ws.cell(i, 11, S['days'][int(np.nanargmax(p['day']))])
     scale(f'C2:I{len(srv) + 1}', ws); ws.freeze_panes = 'B2'
     for w in wb.worksheets:

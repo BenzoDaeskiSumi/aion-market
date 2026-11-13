@@ -4,7 +4,7 @@ Discord shrinks embed images to ~400-520 px, so they are drawn at 1000 px with b
   settimana.png = game week x hour of day, colour only (green = cheaper than the week's average, orange = dearer)
   giorni.png    = day by day, with the number, for all items / consumables / crafting materials
 Run: python3 scripts/discord/prezzi_render.py out"""
-import base64, json, os, sys
+import base64, json, math, os, sys
 from playwright.sync_api import sync_playwright
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else 'out'
@@ -48,18 +48,21 @@ h1 {{ font-family: B; font-weight: 700; font-size: 44px; letter-spacing: -.02em;
 
 def week_html():
     g = S['all']['grid']
-    rows = ''.join(f'<div class="d">{SHORT[d]}</div>' + ''.join(f'<i style="background:{color(g[i][h])}"></i>' for h in range(24)) for i, d in enumerate(S['days']))
+    cell = lambda v: '<i class="m"></i>' if v is None or not math.isfinite(v) else f'<i style="background:{color(v)}"></i>'
+    rows = ''.join(f'<div class="d">{SHORT[d]}</div>' + ''.join(cell(g[i][h]) for h in range(24)) for i, d in enumerate(S['days']))
     hours = '<div></div>' + ''.join(f'<span>{h if h % 3 == 0 else ""}</span>' for h in range(24))
     return f"""<style>{CSS}
 .grid {{ display: grid; grid-template-columns: 78px repeat(24, 1fr); gap: 5px; margin-top: 30px; }}
 .grid i {{ display: block; height: 62px; border-radius: 7px; }}
+.grid i.m, .legend .m {{ background: repeating-linear-gradient(135deg, #2a2335 0 7px, #1d1727 7px 14px); }}
+.legend .m {{ width: 34px; height: 18px; border-radius: 5px; margin-left: 22px; }}
 .grid .d {{ font-size: 27px; font-weight: 700; align-self: center; }}
 .grid span {{ font-size: 22px; color: #ab9fbe; margin-top: 4px; white-space: nowrap; }}
 </style><div class="card">
 <h1>La settimana del Market</h1>
 <div class="sub">Ora per ora (ora italiana), rispetto alla media della settimana di gioco.</div>
 <div class="grid">{rows}{hours}</div>
-<div class="legend">Più economico <span class="bar"></span> Più caro</div>
+<div class="legend">Più economico <span class="bar"></span> Più caro <span class="m"></span> Manutenzione</div>
 </div>"""
 
 

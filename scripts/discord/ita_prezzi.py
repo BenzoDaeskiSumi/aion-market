@@ -73,7 +73,7 @@ api('POST', f"/channels/{ch['id']}/messages", {'allowed_mentions': {'parse': []}
         f"🟢 **Il momento più economico:** {A['buy'][0].lower()} {A['buy'][1]}, circa {pct(A['buy'][2])} rispetto alla media",
         f"🟠 **Il momento più caro:** {A['sell'][0].lower()} {A['sell'][1]}, circa {pct(A['sell'][2])}",
         f"🕘 **Nell'arco della giornata** si spende meno verso le {A['cheap_hour']}:00 e di più verso le {A['dear_hour']}:00.", '',
-        '-# In media le differenze sono piccole; su alcuni oggetti arrivano al 20-40%: li trovi più sotto.'])}]},
+        '-# In media le differenze sono piccole; su alcuni oggetti arrivano al 20-40%: li trovi più sotto. Il mercoledì dalle 7 alle 12 (manutenzione) non è contato.'])}]},
     files=[('settimana.png', read('settimana.png'), 'image/png')])
 
 # 2. day by day, per group

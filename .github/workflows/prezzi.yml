@@ -5,7 +5,7 @@ name: Andamento prezzi (Discord)
 # with the Excel file attached (scripts/discord/ita_prezzi.py).
 on:
   schedule:
-    - cron: '23 7 * * 3'     # Wednesday 08:23 Rome (winter), after the 06:00 reset and the 08:00 sync
+    - cron: '23 12 * * 3'    # Wednesday 13:23 Rome (winter): after the reset and the usual 07-12 maintenance (left out of the numbers)
   workflow_dispatch: {}
 jobs:
   post:
