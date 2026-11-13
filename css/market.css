@@ -280,3 +280,18 @@ details.help[open] summary { margin-bottom: 8px; }
   .sheetclose svg { width: 14px; height: 14px; }
   .hero b { font-size: 23px; }
 }
+
+/* ingredients already owned (js/craft.js: OWNED) */
+.craft .owned { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; margin: 12px 0 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r-sm, 10px); }
+.craft .ownnums { display: flex; flex-wrap: wrap; gap: 4px 22px; }
+.craft .ownnums div { display: flex; flex-direction: column; }
+.craft .ownnums span { color: var(--dim); font-size: 13px; }
+.craft .ownnums b { font-size: 18px; font-variant-numeric: tabular-nums; }
+.craft .ownhint { grid-column: 1 / -1; margin: 2px 0 0; color: var(--dim); font-size: 13px; }
+.craft .ownclear { grid-column: 2; grid-row: 1; min-height: 32px; padding: 4px 12px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: inherit; font: inherit; font-size: 13px; cursor: pointer; }
+.craft .ownclear:hover { border-color: var(--accent); }
+.craft .ownck { flex: none; width: 20px; height: 20px; margin: 0; accent-color: var(--accent); cursor: pointer; }
+.craft .ownck:disabled { cursor: default; opacity: .4; }
+.craft tr.own .nm, .craft tr.own td.n { text-decoration: line-through; opacity: .55; }
+.craft tr.left td { font-weight: 700; color: var(--accent); }
+.craft .step.skip { opacity: .55; }
