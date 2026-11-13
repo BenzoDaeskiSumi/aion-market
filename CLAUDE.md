@@ -5,9 +5,11 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 Overview for a new model: docs/HANDOFF.md (architecture, how-to, Mauro, rules). This file is the detailed log.
 
 ## Crafting: ingredients already owned (13 Nov 2026, the user asked; same js/craft.js on main and italia-site)
-- Recipe detail: a checkbox per ingredient ('Ce l'ho già'), localStorage 'aion-owned' {product: ['step|ingredient']}; leftCost() = what one craft still costs
-  (ticked = 0, crafted ingredients = their own step's remaining / per); box '.owned' (Costo rimanente / Già tuo / Togli le spunte), row 'Ti manca' per step,
-  steps whose product is ticked everywhere get .skip. Ticks are for one craft: the cost with failures is not reduced. EN/ES/FR entries in js/i18n.js.
+- Recipe detail (redesigned the same evening, the user asked for exact amounts): per ingredient a stepper '− have/q +' under the price (tap the count = all/none),
+  localStorage 'aion-owned' {product: {'step|ingredient': pieces | true}} (old ticked-array format migrated); leftCost() = what one craft still costs (missing pieces only;
+  crafted ingredients = their step's remaining / per); summary card '.owned' (Ti resta da spendere, green bar 'Hai già il x%', Azzera), row 'Ti manca' per step,
+  steps whose product you fully have get .skip. For one craft: the cost with failures is not reduced. EN/ES/FR entries + patterns in js/i18n.js.
+- Deploys stamp every local css/js link with ?v=<commit> (pages.yml, cloudflare.yml): aion2italia.com sends max-age 4 h for assets.
 
 ## #andamento-prezzi analysis (scripts/price_patterns.py)
 - 13 Nov 2026 (the user asked): Wednesday 07:00-11:59 Rome (usual maintenance, MAINT) is left out of every number ('manut.' cells in the Excel, striped cells in the image);

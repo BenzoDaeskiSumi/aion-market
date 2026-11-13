@@ -94,6 +94,14 @@ const EN = {
   "Cerca": "Search",
   "Filtra gli affari…": "Filter deals…",
   "Sito completo": "Full site",
+  "Ti resta da spendere": "Still to spend",
+  "Azzera": "Reset",
+  "Azzera i pezzi che hai già": "Reset the pieces you already have",
+  "Vale per un craft: se fallisce, gli ingredienti vanno ricomprati.": "For one craft: if it fails, the ingredients must be bought again.",
+  "Indica quanti pezzi hai già di ogni ingrediente: il conto si aggiorna.": "Set how many pieces of each ingredient you already have: the total updates.",
+  "Non serve: hai già questo ingrediente per il passo che lo usa.": "Not needed: you already have this ingredient for the step that uses it.",
+  "Tocca se li hai tutti": "Tap if you have them all",
+  "Ce l'hai già · tocca per azzerare": "You already have it · tap to reset",
   "Costo rimanente": "Remaining cost",
   "Già tuo": "Already yours",
   "Togli le spunte": "Clear ticks",
@@ -266,6 +274,7 @@ const EN = {
 const RLABEL = {'nelle ultime 24 ore': 'in the last 24 hours', 'negli ultimi 7 giorni': 'in the last 7 days', 'negli ultimi 30 giorni': 'in the last 30 days', 'negli ultimi 90 giorni': 'in the last 90 days'};
 const rl = (x) => RLABEL[x] || x;
 const EN_RE = [
+  [/^Hai già il (\d+)%$/, 'You already have $1%'], [/^Ne hai (\d+), ne mancano (\d+)$/, 'You have $1, $2 missing'],
   [/^Prezzi: (.+)$/, "Prices: $1"],
   [/^media (.+)$/, "avg $1"],
   [/^Daevanion: (.+)$/, "Daevanion: $1"],
@@ -387,6 +396,14 @@ const ES = {
   "Cerca": "Buscar",
   "Filtra gli affari…": "Filtra las ofertas…",
   "Sito completo": "Sitio completo",
+  "Ti resta da spendere": "Te queda por gastar",
+  "Azzera": "Reiniciar",
+  "Azzera i pezzi che hai già": "Reinicia las piezas que ya tienes",
+  "Vale per un craft: se fallisce, gli ingredienti vanno ricomprati.": "Para un craft: si falla, hay que volver a comprar los ingredientes.",
+  "Indica quanti pezzi hai già di ogni ingrediente: il conto si aggiorna.": "Indica cuántas piezas de cada ingrediente ya tienes: el total se actualiza.",
+  "Non serve: hai già questo ingrediente per il passo che lo usa.": "No hace falta: ya tienes este ingrediente para el paso que lo usa.",
+  "Tocca se li hai tutti": "Toca si los tienes todos",
+  "Ce l'hai già · tocca per azzerare": "Ya lo tienes · toca para reiniciar",
   "Costo rimanente": "Coste restante",
   "Già tuo": "Ya es tuyo",
   "Togli le spunte": "Quitar marcas",
@@ -549,6 +566,7 @@ const ES = {
 const RLABEL_ES = {'nelle ultime 24 ore': 'en las últimas 24 horas', 'negli ultimi 7 giorni': 'en los últimos 7 días', 'negli ultimi 30 giorni': 'en los últimos 30 días', 'negli ultimi 90 giorni': 'en los últimos 90 días'};
 const rlEs = (x) => RLABEL_ES[x] || x;
 const ES_RE = [
+  [/^Hai già il (\d+)%$/, 'Ya tienes el $1%'], [/^Ne hai (\d+), ne mancano (\d+)$/, 'Tienes $1, faltan $2'],
   [/^Prezzi: (.+)$/, "Precios: $1"],
   [/^media (.+)$/, "media $1"],
   [/^Daevanion: (.+)$/, "Daevanion: $1"],
@@ -671,6 +689,14 @@ const FR = {
   "Cerca": "Chercher",
   "Filtra gli affari…": "Filtrer les affaires…",
   "Sito completo": "Site complet",
+  "Ti resta da spendere": "Reste à dépenser",
+  "Azzera": "Réinitialiser",
+  "Azzera i pezzi che hai già": "Réinitialise les pièces que tu as déjà",
+  "Vale per un craft: se fallisce, gli ingredienti vanno ricomprati.": "Pour un craft : en cas d'échec, il faut racheter les ingrédients.",
+  "Indica quanti pezzi hai già di ogni ingrediente: il conto si aggiorna.": "Indique combien de pièces de chaque ingrédient tu as déjà : le total se met à jour.",
+  "Non serve: hai già questo ingrediente per il passo che lo usa.": "Pas nécessaire : tu as déjà cet ingrédient pour l'étape qui l'utilise.",
+  "Tocca se li hai tutti": "Touche si tu les as tous",
+  "Ce l'hai già · tocca per azzerare": "Tu l'as déjà · touche pour réinitialiser",
   "Costo rimanente": "Coût restant",
   "Già tuo": "Déjà à toi",
   "Togli le spunte": "Tout décocher",
@@ -834,6 +860,7 @@ const FR = {
 const RLABEL_FR = {'nelle ultime 24 ore': 'sur les dernières 24 heures', 'negli ultimi 7 giorni': 'sur les 7 derniers jours', 'negli ultimi 30 giorni': 'sur les 30 derniers jours', 'negli ultimi 90 giorni': 'sur les 90 derniers jours'};
 const rlFr = (x) => RLABEL_FR[x] || x;
 const FR_RE = [
+  [/^Hai già il (\d+)%$/, 'Tu as déjà $1 %'], [/^Ne hai (\d+), ne mancano (\d+)$/, 'Tu en as $1, il en manque $2'],
   [/^Prezzi: (.+)$/, "Prix : $1"],
   [/^media (.+)$/, "moy. $1"],
   [/^Daevanion: (.+)$/, "Daevanion : $1"],
