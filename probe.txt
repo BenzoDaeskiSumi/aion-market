@@ -1,0 +1,8 @@
+https://aion2italia.com/js/craft.js 200 | cache-control: public, max-age=14400, must-revalidate | age: None | cf-cache: MISS | aion-owned  | craft.js src: 
+https://aion2italia.com/market.html 200 | cache-control: public, max-age=0, must-revalidate | age: None | cf-cache: DYNAMIC   | craft.js src: ['<script src="js/craft.js?v=a64f9f7"></script>']
+https://aion2italia.com/css/market.css 200 | cache-control: public, max-age=14400, must-revalidate | age: None | cf-cache: MISS  | .ownck css | craft.js src: 
+https://aion2italia.com/css/style.css ERR HTTP Error 404: Not Found
+https://benzodaeskisumi.github.io/aion-market/js/craft.js 200 | cache-control: max-age=600 | age: 0 | cf-cache: None | aion-owned  | craft.js src: 
+https://benzodaeskisumi.github.io/aion-market/market.html 200 | cache-control: max-age=600 | age: 0 | cf-cache: None   | craft.js src: ['<script src="js/craft.js?v=659116f"></script>']
+https://benzodaeskisumi.github.io/aion-market/css/market.css ERR HTTP Error 503: Service Unavailable
+https://benzodaeskisumi.github.io/aion-market/css/style.css 200 | cache-control: max-age=600 | age: 0 | cf-cache: None  | .ownck css | craft.js src: 
