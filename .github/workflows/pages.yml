@@ -41,6 +41,9 @@ jobs:
           python3 scripts/selfhost.py map.html
           python3 scripts/selfhost.py guide.html
           python3 scripts/selfhost.py guida-spiritmaster.html
+          # cache bust: every deploy gives local css/js a new ?v=, so browsers never keep an old copy (GitHub Pages: 10 min)
+          for f in $(ls *.html); do sed -i -E "s#((src|href)=\"(\\./)?(js|css|lib|fonts)/[^\"?]+\\.(js|css))\"#\\1?v=${GITHUB_SHA::7}\"#g" "$f"; done
+          grep -ho "craft.js?v=[a-z0-9]*" market.html || true
       - uses: actions/upload-pages-artifact@v3
         with: {path: .}
       - id: deployment
