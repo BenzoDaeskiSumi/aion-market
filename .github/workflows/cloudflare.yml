@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market Italia (aion2italia.com). Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 name: Pubblica su Cloudflare (aion2italia.com)
 # The Italian site lives on the 'italia-site' branch of this repo and is served by Cloudflare Pages (project 'aion2italia'),
 # custom domain aion2italia.com. Static site, no build: only the supabase-js CDN script is moved into lib/ (scripts/selfhost.py).

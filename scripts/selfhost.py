@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market Italia (aion2italia.com). Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Run by 'Publish site' before uploading: serve Google Fonts and CDN scripts from the site itself, so visitors'
 browsers never contact Google or jsDelivr (privacy, GDPR). If anything fails the page is left as it is."""
 import re, sys, urllib.request

@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market Italia (aion2italia.com). Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 /* ---------- phone layout: menu button for the header controls, details as a sheet sliding up from the bottom ---------- */
 const MOBILE = () => window.matchMedia('(max-width: 760px)').matches;
 function showDetail() {

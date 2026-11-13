@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market Italia (aion2italia.com). Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 /* Aion 2 Market Italia — start-up of the tracker (market.html): settings, icons, recipes, then the chosen server.
    Classic script: shares globals with the others, loaded last. */
 Promise.all([get(SRC + 'data/settings.json'), get(SRC + 'data/icons.json').catch(() => ({})), SERVERS_READY, get(SRC + 'data/recipes.json').catch(() => null)])

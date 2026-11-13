@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market Italia (aion2italia.com). Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 /* Aion 2 Market Italia — home page: the same item on every server.
    The item list comes from the chosen server's summary.json; each server's current price is the last row of its small
    per-item history file (data/s/<id>/h/<slug>.json), so one comparison costs one small request per server. */

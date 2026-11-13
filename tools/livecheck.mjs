@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market Italia (aion2italia.com). Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 // Opens the live site in a real browser (run by the Cloudflare workflow) and prints, per page, errors and a few facts.
 import {chromium, devices} from 'playwright';
 const B = 'https://aion2italia.com/';

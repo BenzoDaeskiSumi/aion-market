@@ -12,3 +12,7 @@ Per chi ci lavora: leggi `CLAUDE.md`.
 Crediti: prezzi da [aion2.exchange](https://aion2.exchange/); ricette, mappa e nomi da [MetaBot.GG](https://metabot.gg/en/aion-2)
 (usati con il loro permesso); oggetti e personaggi dai dati ufficiali NCSOFT. Non affiliato a NCSOFT.
 Caratteri: Bricolage Grotesque e Figtree (SIL Open Font License, vedi `fonts/`).
+
+## Copyright
+
+© 2026 BenzoDaeskiSumi. Tutti i diritti riservati / All rights reserved. Il codice è visibile ma **non** è libero: copiarlo o riusarlo (anche solo in parte, anche nei bot) è vietato senza permesso scritto. Vedi [LICENSE](LICENSE).

@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market Italia (aion2italia.com). Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 /* Aion 2 Market — Formatting, Market structure, state, theme, loading the computed items. Classic script: shares globals with the others, loaded in order by index.html. */
 const fmtK = d3.format(',.0f');
 const fmtC = (v) => Math.abs(v) >= 100000 ? new Intl.NumberFormat('en', {notation: 'compact', maximumSignificantDigits: 3}).format(v) : fmtK(v);

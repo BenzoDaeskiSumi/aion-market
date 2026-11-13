@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market Italia (aion2italia.com). Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 /* Aion 2 Market — Shareable links: the address bar always describes what is on screen (server, tab, category, search,
    grades, favourites filter, open item), the browser's Back/Forward buttons move between items and tabs, and a copied
    link opens the same view. Classic script: shares globals with the others, loaded in order by index.html. */

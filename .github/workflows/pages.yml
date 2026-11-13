@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market Italia (aion2italia.com). Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 name: Pubblica il sito
 # Static site, no build step. The only thing done here is serving the supabase-js CDN script from the site itself
 # (scripts/selfhost.py), so visitors' browsers never contact jsDelivr. Pages source = GitHub Actions.

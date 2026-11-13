@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market Italia (aion2italia.com). Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 /* Aion 2 Market — Status line (last update) and price alerts box. Classic script: shares globals with the others, loaded in order by index.html. */
 /* ---------- status line at the top: time of the latest prices (also when no price changed) ---------- */
 function paintUpd() {

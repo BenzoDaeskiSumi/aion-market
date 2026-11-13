@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market Italia (aion2italia.com). Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 /* Aion 2 Market — interactive map (map.html). Map data, icons and tiles come from MetaBot.GG (scripts/map_import.mjs: data/map/*.json,
    img/mapicons/, map/tiles/ from the 'tiles' branch), reused with their permission and a followed credit link.
    Gathering nodes show what they give and its Market price (data/map/items.json names + data/s/<server>/summary.json).

@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market Italia (aion2italia.com). Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 /* Aion 2 Market Italia — shared by every page: where the data lives, Italian locale, theme, header menu, server picker.
    Classic script (no modules): the other scripts use these globals, so it is loaded first.
 

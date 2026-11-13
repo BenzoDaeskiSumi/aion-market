@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market Italia (aion2italia.com). Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Keeps the parts every page shares in step: <head> basics, header and footer.
 Edit tools/head.html, tools/header.html or tools/footer.html, then run:  python3 tools/chrome.py
 Each page marks the three places with <!--head-->…<!--/head-->, <!--header-->…<!--/header-->, <!--footer-->…<!--/footer-->.
