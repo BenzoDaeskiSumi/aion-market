@@ -19,6 +19,9 @@ jobs:
       - name: Assemble
         run: |
           python3 scripts/selfhost.py market.html
+          # cache bust: every deploy gives local css/js a new ?v=, so browsers never keep an old copy (aion2italia.com sends max-age 4 h)
+          for f in $(ls *.html); do sed -i -E "s#((src|href)=\"(\\./)?(js|css|lib|fonts)/[^\"?]+\\.(js|css))\"#\\1?v=${GITHUB_SHA::7}\"#g" "$f"; done
+          grep -ho "craft.js?v=[a-z0-9]*" market.html || true
           mkdir dist
           rsync -a --exclude .git --exclude .github --exclude tools --exclude scripts --exclude CLAUDE.md --exclude README.md ./ dist/
           du -sh dist
