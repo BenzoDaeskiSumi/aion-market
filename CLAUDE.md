@@ -4,6 +4,11 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 
 Overview for a new model: docs/HANDOFF.md (architecture, how-to, Mauro, rules). This file is the detailed log.
 
+## Crafting: ingredients already owned (13 Nov 2026, the user asked; same js/craft.js on main and italia-site)
+- Recipe detail: a checkbox per ingredient ('Ce l'ho già'), localStorage 'aion-owned' {product: ['step|ingredient']}; leftCost() = what one craft still costs
+  (ticked = 0, crafted ingredients = their own step's remaining / per); box '.owned' (Costo rimanente / Già tuo / Togli le spunte), row 'Ti manca' per step,
+  steps whose product is ticked everywhere get .skip. Ticks are for one craft: the cost with failures is not reduced. EN/ES/FR entries in js/i18n.js.
+
 ## #andamento-prezzi analysis (scripts/price_patterns.py)
 - 13 Nov 2026 (the user asked): Wednesday 07:00-11:59 Rome (usual maintenance, MAINT) is left out of every number ('manut.' cells in the Excel, striped cells in the image);
   a day/band cell needs >= 3 usable hours (MIN_BAND_H), so Wednesday 'mattina' is empty. Price 0 (nothing on sale) now ends the previous price instead of being skipped by the 13 h fill.

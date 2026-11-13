@@ -112,6 +112,27 @@ function drawCraft() {
     return tr;
   }));
 }
+// ---------- ingredients the player already has: ticked in the recipe, remembered per product in this browser ('aion-owned') ----------
+// key 'step|ingredient'. A ticked ingredient costs nothing; a crafted ingredient counts only what its own step still needs.
+// Ticks are for ONE craft: the estimated cost with failures is not reduced (a failed craft eats the ingredients).
+const OWN_KEY = 'aion-owned';
+let OWNED = (() => { try { return JSON.parse(localStorage.getItem(OWN_KEY)) || {}; } catch { return {}; } })();
+const ownSet = (prod) => new Set(OWNED[prod] || []);
+function saveOwned(prod, set) {
+  if (set.size) OWNED[prod] = [...set]; else delete OWNED[prod];
+  try { localStorage.setItem(OWN_KEY, JSON.stringify(OWNED)); } catch {}
+}
+function leftCost(w, own) {                   // what one craft of w still costs, given the ticks
+  let s = 0;
+  for (const p of w.parts) {
+    if (own.has(w.name + '|' + p.name)) continue;
+    if (!isFinite(p.price)) return null;
+    if (p.src === 'craft') { const sub = leftCost(p.way, own); if (sub == null) return null; s += p.q * sub / p.way.per; }
+    else s += p.q * p.price;
+  }
+  return s;
+}
+let craftOpen = null;                         // open/closed steps kept across a redraw caused by a tick
 const estLabel = (w) => w.mode === 'combo' ? `Costo stimato (combo ${Math.round(w.r.c * 100)}%)` : 'Costo stimato (con fallimenti)';
 function drawCraftDetail() {
   const cd = document.getElementById('craftdetail'), pick = document.getElementById('pick'), facts = document.getElementById('facts');
@@ -132,7 +153,28 @@ function drawCraftDetail() {
     ['Media 7 giorni', r.avg7 == null ? '—' : fmtK(r.avg7)], ['Craft rispetto alla media', r.vs7 == null ? '—' : `${r.vs7 > 0 ? '−' : '+'}${Math.round(Math.abs(r.vs7) * 100)}% (${signed(r.avg7 - r.est)})`],
     ['Profitto se lo rivendi', r.sell == null ? '—' : signed(r.sell)], ['Professione', r.skill], ['Prezzi aggiornati', when]];
   facts.replaceChildren(...f.map(([k, v]) => { const d = document.createElement('div'); d.textContent = k; const b = document.createElement('b'); b.textContent = v; d.appendChild(b); return d; }));
+  const keep = craftOpen; craftOpen = null;
   cd.replaceChildren();
+  const own = ownSet(r.name), needed = new Set();
+  (function need(w) {                         // steps still to do: not needed when every use of their product is ticked
+    if (!w || needed.has(w.name)) return; needed.add(w.name);
+    w.parts.forEach((p) => { if (p.src === 'craft' && !own.has(w.name + '|' + p.name)) need(p.way); });
+  })(r.way);
+  const left = leftCost(r.way, own);
+  const box0 = document.createElement('div'); box0.className = 'owned';
+  const row = (label, val) => { const d = document.createElement('div'); const k = document.createElement('span'); k.textContent = label; const b = document.createElement('b'); b.textContent = val; d.append(k, b); return d; };
+  const nums = document.createElement('div'); nums.className = 'ownnums';
+  nums.append(row('Costo rimanente', left == null ? '—' : fmtK(Math.round(left))), row('Già tuo', left == null || r.cost == null ? '—' : fmtK(Math.round(r.cost - left))));
+  const hint = document.createElement('p'); hint.className = 'ownhint';
+  hint.textContent = own.size ? 'Le spunte valgono per un craft: se fallisce, gli ingredienti vanno ricomprati.' : 'Spunta gli ingredienti che hai già: il costo rimanente si aggiorna.';
+  box0.append(nums, hint);
+  if (own.size) {
+    const clr = document.createElement('button'); clr.type = 'button'; clr.className = 'ownclear'; clr.textContent = 'Togli le spunte';
+    clr.addEventListener('click', () => { saveOwned(r.name, new Set()); craftOpen = openSteps(); drawCraftDetail(); });
+    box0.appendChild(clr);
+  }
+  cd.appendChild(box0);
+  const openSteps = () => new Map([...cd.querySelectorAll('details.step')].map((d) => [d.dataset.step, d.open]));
   const gradeOf = (name) => ITEMS.find((x) => x.item === name)?.grade || RECIPES.grades?.[name] || 'white';
   // the chain: ingredients that are cheaper to craft get their own (closed) step before the item itself
   const steps = [], seen = new Set();
@@ -144,7 +186,9 @@ function drawCraftDetail() {
   const stepNo = new Map(steps.map((w, k) => [w.name, k + 1]));
   steps.forEach((w, k) => {
     const main = k === steps.length - 1;
-    const box = document.createElement('details'); box.className = 'step'; box.open = main;
+    const skip = !needed.has(w.name);
+    const box = document.createElement('details'); box.className = 'step' + (skip ? ' skip' : ''); box.dataset.step = w.name;
+    box.open = keep?.has(w.name) ? keep.get(w.name) : main && !skip;
     box.style.setProperty('--gc', `var(--g-${gradeOf(w.name)})`);
     const head = document.createElement('summary'); head.className = 'stephead';
     const chev = document.createElement('i'); chev.className = 'schev';
@@ -154,23 +198,32 @@ function drawCraftDetail() {
     head.append(chev, badge, res, sum);
     const tbl = document.createElement('table');
     w.parts.forEach((p) => {
-      const tr = tbl.insertRow();
+      const tr = tbl.insertRow(), key = w.name + '|' + p.name, has = own.has(key);
+      if (has) tr.className = 'own';
       const a = tr.insertCell(); const mat = document.createElement('div'); mat.className = 'mat';
+      const ck = document.createElement('input'); ck.type = 'checkbox'; ck.className = 'ownck'; ck.checked = has; ck.disabled = skip;
+      ck.title = 'Ce l\'ho già'; ck.setAttribute('aria-label', `Ce l'ho già: ${p.q} × ${p.name}`);
+      ck.addEventListener('change', () => { const o = ownSet(r.name); if (ck.checked) o.add(key); else o.delete(key); saveOwned(r.name, o); craftOpen = openSteps(); drawCraftDetail(); });
+      mat.appendChild(ck);
       const mg = gradeOf(p.name);
       const slot = document.createElement('div'); slot.className = 'slot g-' + mg;
       if (ICONS[p.name]) { const img = document.createElement('img'); img.src = ICONS[p.name]; img.alt = ''; img.loading = 'lazy'; slot.appendChild(img); }
       const txt = document.createElement('div');
       const nm = document.createElement('span'); nm.className = 'nm g-' + mg; nm.textContent = `${p.q} × ${p.name}`;
       const v = document.createElement('span'); v.className = 'via';
-      v.textContent = !isFinite(p.price) ? 'Prezzo non disponibile' : p.src === 'market' ? `${fmtK(Math.round(p.price))} l'uno al Market`
+      v.textContent = has ? 'Ce l\'hai già' : !isFinite(p.price) ? 'Prezzo non disponibile' : p.src === 'market' ? `${fmtK(Math.round(p.price))} l'uno al Market`
         : p.src === 'npc' ? `${fmtK(Math.round(p.price))} l'uno dal negozio NPC` : `${fmtK(Math.round(p.price))} l'uno craftandolo (passo ${stepNo.get(p.name)})`;
       txt.append(nm, v); mat.append(slot, txt); a.appendChild(mat);
       const t = tr.insertCell(); t.className = 'n'; t.textContent = isFinite(p.price) ? fmtK(Math.round(p.q * p.price)) : '—';
     });
     const tot = tbl.insertRow(); tot.className = 'tot'; const c1 = tot.insertCell(); c1.textContent = 'Totale'; const c2 = tot.insertCell(); c2.className = 'n'; c2.textContent = w.cost == null ? '—' : fmtK(Math.round(w.cost));
+    const wl = leftCost(w, own);
+    if (!skip && wl != null && w.cost != null && Math.round(wl) !== Math.round(w.cost)) {
+      const lr = tbl.insertRow(); lr.className = 'left'; const l1 = lr.insertCell(); l1.textContent = 'Ti manca'; const l2 = lr.insertCell(); l2.className = 'n'; l2.textContent = fmtK(Math.round(wl));
+    }
     const est = tbl.insertRow(); est.className = 'est'; const e1 = est.insertCell(); e1.textContent = estLabel(w) + (w.mode !== 'combo' && w.r.q > 1 ? ', a pezzo' : ''); const e2 = est.insertCell(); e2.className = 'n'; e2.textContent = w.est == null ? '—' : fmtK(Math.round(w.est));
     const info = document.createElement('p'); info.className = 'stepinfo';
-    info.textContent = w.mode === 'combo' ? `Esce solo con la combo (${Math.round(w.r.c * 100)}%) di un craft riuscito (${fmtPct(w.r.ok)}): in media 1 craft su ${d3.format('.1f')(1 / w.per)}.`
+    info.textContent = skip ? 'Non serve: hai già spuntato questo ingrediente nel passo che lo usa.' : w.mode === 'combo' ? `Esce solo con la combo (${Math.round(w.r.c * 100)}%) di un craft riuscito (${fmtPct(w.r.ok)}): in media 1 craft su ${d3.format('.1f')(1 / w.per)}.`
       : w.r.tr && !w.r.nr ? `Transfer: trasforma il pezzo di equipaggiamento della ricetta in uno di livello superiore. Riesce il ${fmtPct(w.r.ok)} delle volte.`
       : w.r.nr ? (w.r.base ? `Potenziamento: consuma un ${w.r.base}, contato tra gli ingredienti. ` : '') + 'I file di gioco non indicano una probabilità di fallimento per questa ricetta: è calcolata come sempre riuscita.'
       : `Il craft riesce il ${fmtPct(w.r.ok)} delle volte: il costo stimato conta anche i tentativi falliti.` + (w.r.q > 1 ? ` Ogni craft ne produce ${w.r.q}.` : '');
