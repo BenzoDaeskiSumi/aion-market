@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Replace the icons cropped from videos with NCSOFT's official item icons.
 
 item name -> item id : aion2.exchange API (/api/items, server Marchutan EU)

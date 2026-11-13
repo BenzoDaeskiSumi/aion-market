@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Mauro's fixed messages in the guild server: #benvenuto, #regole, #scegli-ruoli, #info.
 Run by the 'Discord setup' workflow, mode msg-plan (dry run) / msg-apply.
 apply = delete every message Mauro wrote in those four channels, then post the new ones (the timer and alert channels are left alone).

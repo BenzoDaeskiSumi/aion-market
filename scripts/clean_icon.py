@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Remove the in-game overlays from Market icons (96x96 BGR): red 'book' marker, red no-sign, '?' scroll badge
 (bottom-left), green arrow and white dash (top-left). Each overlay is found by masked template matching
 (templates in scripts/marker_*.npy: BGR + mask) and painted over with OpenCV inpainting."""

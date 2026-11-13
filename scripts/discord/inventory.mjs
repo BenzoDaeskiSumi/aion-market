@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 // Read-only: what the bot's Discord servers look like now (channels, roles, the bot's permissions). Changes nothing.
 import {writeFileSync} from 'node:fs';
 const T = process.env.DISCORD_TOKEN, API = 'https://discord.com/api/v10';

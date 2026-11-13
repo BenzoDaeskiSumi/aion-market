@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Item database for the site's 'Database' tab, from NCSOFT's official AION 2 item dictionary (English, global names).
 
 Source: tw.ncsoft.com/aion2_tw/v2.0/dict/search/item?locale=en-US — the same dictionary the 'Official icons' workflow uses.

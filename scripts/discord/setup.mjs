@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 // Sets up the guild's Discord server with the bot (Mauro). Run by the 'Discord setup' workflow.
 // MODE=plan (default) only reads the server and prints what it would do; MODE=apply does it.
 // (#eventi, #candidature, #compro-vendo and #crafting were removed by the owner: not recreated.)

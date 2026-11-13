@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Aesthetic pass on the guild's Discord server (run by the 'Discord setup' workflow, mode style-plan / style-apply).
 - uploads the 8 official class icons (NCSOFT CDN) as server emojis :gladiator: … :chanter:
 - gives every channel an emoji prefix ('👋・benvenuto'), matching channels by their name without the prefix

@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Draws the two images of #andamento-prezzi from out/andamento.json (scripts/price_patterns.py), with Playwright.
 Discord shrinks embed images to ~400-520 px, so they are drawn at 1000 px with big type and few labels.
   settimana.png = game week x hour of day, colour only (green = cheaper than the week's average, orange = dearer)

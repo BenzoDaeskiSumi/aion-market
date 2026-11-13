@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 // Interactive map data from MetaBot.GG (reuse allowed by MetaBot with a dofollow credit link).
 // Per region: map data -> data/map/<key>.json (main), icons -> img/mapicons/, tiles -> map/tiles/<dir>/<z>/<x>/<y>.webp (the 'tiles' branch).
 // Polite and patient: one map at a time, pauses, retries on 403/429 (their CDN rate-limits bursts).

@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 /* Aion 2 Market — Crafting view: recipes engine, table, recipe chain. Classic script: shares globals with the others, loaded in order by index.html. */
 /* ---------- crafting ---------- */
 const TIER_GRADE = ['green', 'blue', 'gold'];

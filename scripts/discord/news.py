@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Announcement of what changed, posted by Mauro in #annunci. news-plan: shows the last messages of #annunci and the text;
 news-apply: posts it (once: skipped if Mauro already posted a message with the same title)."""
 import json, os, sys, urllib.request

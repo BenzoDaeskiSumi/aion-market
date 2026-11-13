@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Entry gate (Discord setup workflow, mode gate-plan / gate-apply).
 New members see only the 『📌 𝐁𝐄𝐍𝐕𝐄𝐍𝐔𝐓𝐎』 category; they press 'Collega il tuo personaggio' in #benvenuto (or use /collega) and Mauro gives
 Recluta (in the in-game Legione on Marchutan) or Ospite (anyone else). This script:

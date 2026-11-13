@@ -4,6 +4,11 @@ Static GitHub Pages site: https://benzodaeskisumi.github.io/aion-market
 
 Overview for a new model: docs/HANDOFF.md (architecture, how-to, Mauro, rules). This file is the detailed log.
 
+## Copyright (13 Nov 2026, the user asked, after someone copied Gettulio's Ludra list)
+- Everything we made is '© 2026 BenzoDaeskiSumi, all rights reserved': LICENSE (IT+EN, proprietary, third-party data/libs excluded) on main and italia-site,
+  a one-line header comment on every authored .js/.mjs/.py/.css/.html/workflow (keep it on new files), visible line in the site footers (i18n 'Tutti i diritti riservati'),
+  embed footers (Gettulio board, Alberto/Ciro panels, Mauro cards, #andamento-prezzi, Excel 'Leggimi'), bot profile descriptions (register scripts append it once).
+
 ## Layout (read first)
 - Home page: index.html + css/home.css + js/home.js (hero with the presentation video media/intro.mp4 + poster, live numbers of the saved server from
   meta.json/summary.json, section cards with img/home/*.jpg, Discord bot + Legione panels). Any query string or a login hash (#access_token/error)

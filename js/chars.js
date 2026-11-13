@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 /* Aion 2 Market — Characters view: search any EU character and open its official profile (Combat Power, gear, Daevanion,
    stats). Data come live from NCSOFT's official character pages through our Worker (bot/src/index.js /char/*), which only
    relays them (the official site does not answer other sites directly). Nothing is saved.

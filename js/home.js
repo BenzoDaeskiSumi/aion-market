@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 /* Aion 2 Market — home page: live numbers of the chosen server (same files the tracker reads), visit counter, service worker. */
 (async () => {
   const server = 12305;   // Marchutan only (Nov 2026)

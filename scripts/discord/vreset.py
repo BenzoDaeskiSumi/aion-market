@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """MarchutanEU (29 Oct, the user asked): everyone must verify. Mode vreset-plan / vreset-apply.
   1. #📢・verify-now: read-only announcements for people without the role (Marchutans can't see it; Admins/Moderator can write and @everyone-ping:
      an @everyone ping there only reaches those who can see the channel)

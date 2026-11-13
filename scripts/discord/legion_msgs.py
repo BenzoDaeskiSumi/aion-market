@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Content of Mauro's fixed messages (#benvenuto, #regole, #scegli-ruoli, #info), shared by messages.py (posts them) and
 preview_msgs.py (renders a picture of them before posting).
 Style: a banner embed (image with the channel title) + a text embed with headings in Unicode bold serif ('↬ 𝐓𝐢𝐭𝐨𝐥𝐨'),

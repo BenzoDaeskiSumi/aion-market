@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Posts (or updates) Mauro's guide message in ℹ️・info: everything the site does, then the bot's commands.
 Run by the 'Discord setup' workflow with mode info-plan / info-apply. One message, two embeds."""
 import json, os, re, time, urllib.request, urllib.error

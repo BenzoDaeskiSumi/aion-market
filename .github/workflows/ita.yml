@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 name: Community italiana (bot)
 # Deploys the three bots of the Italian Aion 2 community (ita/*.js, one Cloudflare Worker + one KV namespace each),
 # registers their guild commands, points each app's Interactions Endpoint URL at its Worker and refreshes the fixed messages.

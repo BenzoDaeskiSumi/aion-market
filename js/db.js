@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 /* Aion 2 Market — Database view: every item of NCSOFT's official AION 2 item dictionary (data/db/items.json, built weekly
    by scripts/item_db.py), with stats, description and, when it is sold on the Market, its price.
    Classic script: shares globals with the others, loaded in order by index.html. */

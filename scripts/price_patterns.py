@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """When are Market prices lowest and highest during the game week? (Italian community, channel #andamento-prezzi)
 
 Reads every server's data/s/<id>/price_log.json (API rows only) and, for consumables and crafting materials:
@@ -166,7 +167,8 @@ def write_xlsx(path, S, allp, groups, cats, srv, items):
              ('Settimana: giorno × ora, tutti gli oggetti insieme.',), ('Per gruppo e Per categoria: giorno e fascia oraria.',),
              ('Oggetti: per ogni oggetto il momento migliore per comprare e per vendere (solo oggetti con abbastanza dati e scambi).',),
              ('Per server: il giorno più economico e più caro su ogni server.',), ('',),
-             ('Sono medie: dicono cosa succede di solito, non cosa succederà domani. Eventi, patch e manutenzioni cambiano tutto.', DIM)]
+             ('Sono medie: dicono cosa succede di solito, non cosa succederà domani. Eventi, patch e manutenzioni cambiano tutto.', DIM), ('',),
+             ('© 2026 BenzoDaeskiSumi · aion2italia.com. Tutti i diritti riservati: analisi e file originali, non ripubblicarli senza permesso.', DIM)]
     for i, l in enumerate(lines, 1):
         c = ws.cell(i, 1, l[0]); c.font = l[1] if len(l) > 1 else Font()
     ws.column_dimensions['A'].width = 140

@@ -1,3 +1,5 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
+export const COPY = '© 2026 BenzoDaeskiSumi · tutti i diritti riservati';
 // Shared helpers for the three bots of the Italian Aion 2 community (guild GUILD): Alberto (verifica), Fabrizio (eventi), Marcello (moderazione).
 // Each bot is its own Cloudflare Worker with its own KV namespace (env.KV), so one going down or hitting a limit does not stop the others.
 export const GUILD = '1553398446524731435';

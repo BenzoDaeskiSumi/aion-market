@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 # Italian Aion 2 community: Mauro's fixed messages (mode itamsg). Re-run safe: Mauro's old messages in each channel are replaced,
 # forum posts are created once (matched by title). Also: Alberto's role board is re-posted in order, Mauro's price alerts go to #comandi-bot.
 import hashlib, json, os, time, urllib.parse, urllib.request, urllib.error

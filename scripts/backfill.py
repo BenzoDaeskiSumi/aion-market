@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Import aion2.exchange price history (one point per day) for one or more servers, from 4 Oct 2026
 up to each server's first row in its own log. Run from the 'Backfill history' workflow:
   python scripts/backfill.py fetch <server_id>   -> backfill/<server_id>.json (rows to add)

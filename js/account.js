@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 /* Aion 2 Market — Discord login (Supabase): profile, favourites, server, account deletion. Classic script: shares globals with the others, loaded in order by index.html. */
 /* ---------- Discord login (Supabase): favourites + server saved in the user's profile ---------- */
 const SB_URL = 'https://xmtenkcpocwwqcpfhkgr.supabase.co';

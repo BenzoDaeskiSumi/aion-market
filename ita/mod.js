@@ -1,9 +1,10 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 // Marcello — moderation of the Italian Aion 2 community.
 // /avverti /avvertimenti /azzera-avvertimenti /timeout /kick /ban /sban /pulisci (staff; Discord also checks the role order), everything logged in #🧹・log.
 // The 3rd warning gives an automatic 1-hour timeout. Tickets in #🎫・ticket: buttons tk:open:<kind> -> private thread with the member + staff, 🔒 tk:close:<uid>.
 // /setup (key) posts the ticket board and creates the AutoMod rules (mention spam, invite links, Kinah selling, spam).
 // KV: warn:<uid> = [{t, by, why}], ticket:<uid> = thread id, setup:* = message ids.
-import {GUILD, verified, dapi, djson, oops, defer, hook, opt, uidOf, roleId, channelId, isStaff, logTo, dm, putErr} from './lib.js';
+import {COPY, GUILD, verified, dapi, djson, oops, defer, hook, opt, uidOf, roleId, channelId, isStaff, logTo, dm, putErr} from './lib.js';
 
 const until = (min) => new Date(Date.now() + min * 6e4).toISOString();
 const DUR = {'5m': 5, '10m': 10, '1h': 60, '6h': 360, '1g': 1440, '3g': 4320, '7g': 10080, '28g': 40320};
@@ -108,7 +109,7 @@ async function ticket(i, env, ctx) {
 async function setup(env) {
   const out = {}, ch = await channelId(env, '・ticket'), log = await channelId(env, '・log');
   const id = await env.KV.get('setup:ticket');
-  const body = {embeds: [{color: 0x5b8cff, title: '🎫 Parla con lo staff', description: Object.values(TICKET).map(([e, n, d]) => `${e} **${n}** · ${d}`).join('\n') + '\n\nPremi un pulsante: si apre una chat privata con lo staff.'}],
+  const body = {embeds: [{color: 0x5b8cff, title: '🎫 Parla con lo staff', description: Object.values(TICKET).map(([e, n, d]) => `${e} **${n}** · ${d}`).join('\n') + '\n\nPremi un pulsante: si apre una chat privata con lo staff.', footer: {text: COPY}}],
     components: [{type: 1, components: Object.entries(TICKET).map(([k, [e, n]]) => ({type: 2, style: 2, custom_id: `tk:open:${k}`, emoji: {name: e}, label: n}))}]};
   if (id && (await dapi(env, 'PATCH', `/channels/${ch}/messages/${id}`, body)).ok) out.ticket = 'edited';
   else { const r = await djson(env, 'POST', `/channels/${ch}/messages`, body); if (r) await env.KV.put('setup:ticket', r.id); out.ticket = r ? 'posted' : 'failed'; }

@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 # One-off (12 Nov 2026): does the site's 'Entra nel server Discord' link land on a valid invite?
 import urllib.request, urllib.error, json
 class NoRedir(urllib.request.HTTPRedirectHandler):

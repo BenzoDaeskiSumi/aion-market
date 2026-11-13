@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 # Renders the Remotion presentation video kept on the 'video' branch; result (MP4 + a few still frames) on the orphan branch 'video-out'.
 name: Video
 on:

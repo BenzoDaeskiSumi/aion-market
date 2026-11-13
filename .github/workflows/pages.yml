@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 name: Publish site
 # The site = the code on main + the data on the 'data' branch (kept as a single commit, so the repository
 # does not grow every hour). Published with GitHub Pages "GitHub Actions" source.

@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Sets Mauro's profile banner (img/discord/mauro-banner.png, 1360x480 = Discord's 17:6) with PATCH /users/@me.
 Discord setup workflow, mode banner-apply."""
 import base64, json, os, urllib.request, urllib.error

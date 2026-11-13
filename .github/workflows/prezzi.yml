@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 name: Andamento prezzi (Discord)
 # Weekly, after the Wednesday reset: works out when prices are lowest/highest during the game week (scripts/price_patterns.py),
 # draws the images (scripts/discord/prezzi_render.py) and Mauro re-posts #📊・andamento-prezzi on the Italian community server

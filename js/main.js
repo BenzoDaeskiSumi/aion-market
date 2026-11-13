@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 /* Aion 2 Market — Start-up: settings, icons, servers, names, recipes, then the chosen server. Classic script: shares globals with the others, loaded in order by index.html. */
 Promise.all([get('data/settings.json'), get('data/icons.json').catch(() => ({})), get('data/servers.json').catch(() => [{id: 12305, name: 'Marchutan'}]),
   LANG === 'fr' ? get('data/names_fr.json').catch(() => ({})) : {}, get('data/recipes.json').catch(() => null)])

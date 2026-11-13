@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 # Italian Aion 2 community (ex Legione server, 1553398446524731435) - structure built by Mauro.
 # Modes (workflow 'Discord setup'): ita-check = secrets + bots in the server (read-only); ita-apply = create/update roles, categories,
 # channels and permissions (idempotent: matches by name, never deletes); ita-community = switch the server to Community (needed for the Stage).

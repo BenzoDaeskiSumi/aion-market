@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 /* Aion 2 Market — service worker: makes the site installable and keeps the last version for when the network is down.
    Network first for everything (prices change every hour, code changes often); the cache is only a fallback.
    Only this site's own files are cached: other sites (NCSOFT icons, the bot, Supabase) are never touched. */

@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Tests of the price signals (python -m unittest scripts/test_summary.py). Run by the 'Tests' workflow."""
 import sys, unittest
 from datetime import datetime, timedelta

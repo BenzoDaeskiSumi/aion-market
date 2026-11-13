@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 /* Aion 2 Market — Market view: sidebar accordion, table, item details and price chart. Classic script: shares globals with the others, loaded in order by index.html. */
 /* ---------- sidebar accordion ---------- */
 const inSel = (r) => SEL.type === 'all' || (SEL.type === 'group' && CAT_GROUP[r.category] === SEL.id) || (SEL.type === 'cat' && r.category === SEL.id);

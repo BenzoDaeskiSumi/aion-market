@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 // Gettulio — events of the Italian Aion 2 community. Only Ludra for now: every list is a Ludra room of 10, opened with /raid (12 Nov, the user asked:
 // no automatic daily list any more). A room = 2 parties of 1 tank + 1 cleric + 1 chanter + 2 DPS; members pick party and role; extras fill the same role's
 // empty slot in the other party, else reserves.
@@ -49,7 +50,7 @@ function board(R, prefix) {
         'Se il tuo posto è preso ma nell\'altro party c\'è spazio per il tuo ruolo, ti metto lì; altrimenti vai in **riserva**. Se vuoi venire solo come riserva, usa i pulsanti **Riserva**.',
         R.role ? `Chi è in lista riceve il ruolo <@&${R.role}>: lo tagghiamo **un\'ora prima** e **15 minuti prima**.` : '',
         `\n**${taken}/${TOT}** posti presi${taken === TOT ? ' · 🔊 stanza piena: i vocali dei party sono qui sotto' : ' · quando la stanza è piena creo i vocali dei due party'}`].join('\n'),
-      fields, footer: {text: past ? 'Iscrizioni chiuse' : `${R.byName ? `Organizza ${R.byName} · ` : ''}Premi un altro pulsante per cambiare party o ruolo · lo staff può modificare la lista`}}],
+      fields, footer: {text: (past ? 'Iscrizioni chiuse' : `${R.byName ? `Organizza ${R.byName} · ` : ''}Premi un altro pulsante per cambiare party o ruolo · lo staff può modificare la lista`) + `\n© 2026 BenzoDaeskiSumi · sistema di iscrizione originale di Gettulio: vietato copiarlo`}}],
     components: [...R.p.map((_, pi) => ({type: 1, components: LU_ROLES.map(([k, label, emo]) => btn(`${pi}:${k}`, `${pi + 1} · ${label}`, emo, STY[k]))})),
       {type: 1, components: LU_ROLES.map(([k, label, emo]) => btn(`r:${k}`, `Riserva · ${label}`, emo, 2))},
       {type: 1, components: [btn('out', 'Ritira', '✖️', 2), btn('edit', 'Gestisci (staff)', '✏️', 2), btn('del', 'Annulla', '🗑️', 2), ...(R.voice ? [btn('close', 'Chiudi vocali (staff)', '🔒', 4, false)] : [])]}],
@@ -194,10 +195,10 @@ async function roomsTick(env) {
   for (const {name: k} of (await env.KV.list({prefix: 'raid:'})).keys) {
     const R = JSON.parse(await env.KV.get(k) || 'null'); if (!R || R.done || !Array.isArray(R.p)) continue;   // old-style lists (before 12 Nov) have no parties
     if (R.v !== 2 && R.t > now) { await upgradeRoom(env, k, R); continue; }
-    if (R.ui !== 4 && R.voice) for (const [p, m] of partyOf(R).entries()) if (R.voice[p]) await dapi(env, 'PATCH', `/channels/${R.voice[p]}`, {permission_overwrites: await voiceOverwrites(env, m)}, 'Vocali visibili a tutti');
-    if (R.ui !== 4 && R.msg) {        // boards posted before the newest buttons: redraw them once
+    if (R.ui !== 5 && R.voice) for (const [p, m] of partyOf(R).entries()) if (R.voice[p]) await dapi(env, 'PATCH', `/channels/${R.voice[p]}`, {permission_overwrites: await voiceOverwrites(env, m)}, 'Vocali visibili a tutti');
+    if (R.ui !== 5 && R.msg) {        // boards posted before the newest buttons: redraw them once
       const r = await dapi(env, 'PATCH', `/channels/${R.ch}/messages/${R.msg}`, board(R, `lr:${k.slice(5)}`));
-      if (r.ok) { R.ui = 4; await env.KV.put(k, JSON.stringify(R), EXP(R)); }
+      if (r.ok) { R.ui = 5; await env.KV.put(k, JSON.stringify(R), EXP(R)); }
     }
     let dirty = false;
     const tag = R.role ? `<@&${R.role}>` : [...allIn(R)].map((u) => `<@${u}>`).join(' '), am = R.role ? {roles: [R.role]} : {users: [...allIn(R)].slice(0, 100)};
@@ -284,7 +285,7 @@ async function raidCreate(i, env) {
   const role = await djson(env, 'POST', `/guilds/${GUILD}/roles`, {name: `🔥 ${title} ${ddmm(t)} ${hhmm(t)}`.slice(0, 100), color: 0xe8603c, mentionable: true, hoist: false}, `Stanza /raid di ${u.username}`);
   if (!role) await putErr(env, 'ev_err', 'role create failed (Manage Roles?)');
   const R = {title, t, note: String(opt(i.data, 'note') || '').slice(0, 300), by: u.id, byName: i.member?.nick || u.global_name || u.username,
-    ch, msg: null, role: role?.id || null, p: emptyParties(), voice: null, pinged: false, called: false, v: 2, ui: 4};
+    ch, msg: null, role: role?.id || null, p: emptyParties(), voice: null, pinged: false, called: false, v: 2, ui: 5};
   const msg = board(R, `lr:${id}`), ping = opt(i.data, 'ping') !== false ? await roleId(env, 'Ping Ludra') : null;
   if (ping) { msg.content = `<@&${ping}> nuova stanza **${R.title}** <t:${Math.floor(t / 1000)}:R>: firmate qui sotto!`; msg.allowed_mentions = {roles: [ping]}; }
   const posted = await djson(env, 'POST', `/channels/${ch}/messages`, msg);

@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Renames the guild's channels in the server's chosen style (Discord setup workflow, mode chan-plan / chan-apply):
   categories  『📋 𝐈𝐍𝐅𝐎』 (Unicode Mathematical Bold: they stand out as headings)
   text/forum  📜・regole      voice  🍻 Taverna

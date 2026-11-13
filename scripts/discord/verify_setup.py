@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Screenshot verification on the MarchutanEU AION2 server (Discord setup workflow, mode vsetup-plan / vsetup-apply). The user's choices (29 Oct):
 English texts, approval gives the existing 'Marchutans' role, current members keep access (they get Marchutans now), only newcomers must verify.
   1. #✅・verify (top, everyone reads, nobody writes, Mauro's instructions) and #🛡️・verify-requests (Admins + Moderator + Mauro only)

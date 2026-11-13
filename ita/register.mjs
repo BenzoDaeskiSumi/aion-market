@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 // Registers the guild commands of one bot and points its Interactions Endpoint URL at its Worker.
 // node ita/register.mjs <verifica|eventi|mod> <worker url>   (env TOKEN, APP_ID)
 const G = '1553398446524731435', [bot, url] = process.argv.slice(2), {TOKEN, APP_ID} = process.env;
@@ -43,3 +44,10 @@ console.log(bot, 'commands', r.status, r.ok ? (await r.json()).map((c) => c.name
 r = await fetch('https://discord.com/api/v10/applications/@me', {method: 'PATCH', headers: H, body: JSON.stringify({interactions_endpoint_url: url})});
 console.log(bot, 'endpoint', url, r.status, r.ok ? 'ok' : await r.text());
 if (!r.ok) process.exitCode = 1;
+// copyright in the bot's profile ('About me'), added once after whatever description it already has
+const app = await (await fetch('https://discord.com/api/v10/applications/@me', {headers: H})).json().catch(() => ({}));
+if (app.id && !(app.description || '').includes('©')) {
+  const NOTE = '© 2026 BenzoDaeskiSumi · tutti i diritti riservati. Bot originale: vietato copiarlo.';
+  r = await fetch('https://discord.com/api/v10/applications/@me', {method: 'PATCH', headers: H, body: JSON.stringify({description: ((app.description ? app.description + '\n\n' : '') + NOTE).slice(0, 400)})});
+  console.log(bot, 'profile copyright', r.status);
+}

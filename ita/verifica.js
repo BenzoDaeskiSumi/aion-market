@@ -1,9 +1,10 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 // Alberto — verification and roles of the Italian Aion 2 community.
 // /verifica personaggio screenshot -> card in #📥・richieste-verifica with ✅ / ❌ for the staff -> Verificato + Elyos|Asmodiani + class + Gear Score tier + nick.
 // /verifica-utente (staff, no screenshot), /verifica-rimuovi (staff), /aggiorna (own roles from the official profile).
 // Role board in #🎭・ruoli: buttons rb:<roleId> (Interessi + Ping). Cron: refreshes 10 verified members per run, keeps #✅・verifica clean.
 // KV: vlink:<uid> = {server, id, name, t}, vchar:<server>:<id> = uid (one character per account), vreq:<uid> = card message id (7 days), setup:* = message ids.
-import {GUILD, verified, dapi, djson, reply, oops, defer, hook, opt, uidOf, roles, roleId, sepId, channelId, isStaff, logTo, dm, putErr,
+import {COPY, GUILD, verified, dapi, djson, reply, oops, defer, hook, opt, uidOf, roles, roleId, sepId, channelId, isStaff, logTo, dm, putErr,
   charChoices, charProfile, CLASSES, GS_TIERS, gsTier, fmt, nickFor, TAIL_RE} from './lib.js';
 
 const FACTIONS = ['Elyos', 'Asmodiani'];
@@ -321,22 +322,22 @@ async function setup(env, hourly) {
       '**1.** Fai uno screenshot del gioco in cui si legge il **nome del tuo personaggio** (per esempio la finestra del personaggio, tasto P).',
       '**2.** Scrivi `/verifica` qui sotto, scegli il personaggio dai suggerimenti e allega lo screenshot.',
       '**3.** Lo staff controlla e ti approva: ricevi un messaggio privato e ottieni fazione, classe e Gear Score in automatico. Il tuo nick diventa `Nome ⚔️ [SERVER]`: personaggio, classe e sigla del server.', '',
-      'Problemi? Scrivi in #🆘・aiuto-verifica.'].join('\n')}]});
+      'Problemi? Scrivi in #🆘・aiuto-verifica.'].join('\n'), footer: {text: COPY}}]});
   for (const [g, items] of Object.entries(PICK)) {
     const head = {Interessi: ['🎯 Cosa ti piace fare?', 0x2ecc71, ''], Ping: ['🔔 Vuoi essere chiamato?', 0xe67e22, 'Chi ha il ruolo viene taggato quando si cerca gente.\n\n'],
       'Force PvP': ['⚔️ Force PvP', 0xd9485f, 'Per formare le force: chiunque può taggare questi ruoli, ma **solo in #⚔️・pvp-abisso**.\n\n']}[g];
     out['board_' + g] = await postOrEdit(env, 'setup:board:' + g, rch, {embeds: [{color: head[1], image: {url: `${SITE}/img/discord/ita/${BANNER[g]}.png?v=2`}},
-      {color: head[1], title: head[0], description: head[2] + items.map(([r, e, d]) => `${e} ➜ <@&${id(r)}>  ·  ${d}`).join('\n') + '\n\nPremi un pulsante per prendere il ruolo, di nuovo per toglierlo.'}],
+      {color: head[1], title: head[0], description: head[2] + items.map(([r, e, d]) => `${e} ➜ <@&${id(r)}>  ·  ${d}`).join('\n') + '\n\nPremi un pulsante per prendere il ruolo, di nuovo per toglierlo.', footer: {text: COPY}}],
       components: [{type: 1, components: items.map(([r, e]) => ({type: 2, style: 2, custom_id: `rb:${id(r)}`, emoji: {name: e}, label: String(n?.[id(r)] || 0)}))}],
       allowed_mentions: {parse: []}}, hourly);
   }
   if (hourly) return out;
   out.auto = await postOrEdit(env, 'setup:board:auto', rch, {embeds: [{color: 0x3fb6d0, image: {url: `${SITE}/img/discord/ita/auto.png?v=2`}}, {color: 0x3fb6d0, title: '🤖 Ruoli automatici',
-    description: 'Fazione (**Elyos** / **Asmodiani**), **classe** e fascia di **Gear Score** li dà Alberto dalla verifica e li aggiorna ogni giorno dal sito ufficiale.\nHai appena migliorato l\'equipaggiamento? Premi il pulsante.'}],
+    description: 'Fazione (**Elyos** / **Asmodiani**), **classe** e fascia di **Gear Score** li dà Alberto dalla verifica e li aggiorna ogni giorno dal sito ufficiale.\nHai appena migliorato l\'equipaggiamento? Premi il pulsante.', footer: {text: COPY}}],
     components: [{type: 1, components: [{type: 2, style: 1, custom_id: 'gs:refresh', emoji: {name: '🔄'}, label: 'Aggiorna i miei ruoli'}]}]});
   const tch = await channelId(env, '・ticket');
   if (tch) out.legion = await postOrEdit(env, 'setup:legion', tch, {embeds: [{color: 0xc9a227, title: '🏰 Sei il leader di una legione?',
-    description: 'Apri una richiesta: lo staff controlla e ti dà il ruolo **Legion Leader**, crea il ruolo della tua legione e lo assegna a tutti i membri verificati che ne fanno parte. Da quel momento chi entra in legione lo riceve da solo.\n\nServe essere verificati: il nome della legione lo leggiamo dal tuo personaggio sul sito ufficiale.'}],
+    description: 'Apri una richiesta: lo staff controlla e ti dà il ruolo **Legion Leader**, crea il ruolo della tua legione e lo assegna a tutti i membri verificati che ne fanno parte. Da quel momento chi entra in legione lo riceve da solo.\n\nServe essere verificati: il nome della legione lo leggiamo dal tuo personaggio sul sito ufficiale.', footer: {text: COPY}}],
     components: [{type: 1, components: [{type: 2, style: 1, custom_id: 'lg:open', emoji: {name: '🏰'}, label: 'Diventa Legion Leader'}]}]});
   out.dupes = await dedupe(env, rch, [...Object.keys(PICK), 'auto'].map((g) => 'setup:board:' + g));
   return out;

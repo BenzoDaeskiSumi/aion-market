@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 // Registers the slash commands. Run by .github/workflows/bot.yml with DISCORD_TOKEN and DISCORD_APP_ID.
 import {readFileSync} from 'node:fs';
 // the market data lives on the 'data' branch, published with the site
@@ -92,3 +93,12 @@ const r3 = await fetch(`https://discord.com/api/v10/applications/${DISCORD_APP_I
   method: 'PUT', headers: {Authorization: `Bot ${DISCORD_TOKEN}`, 'Content-Type': 'application/json'}, body: JSON.stringify(meuCommands)});
 console.log('register MarchutanEU commands:', r3.status, r3.ok ? 'ok' : await r3.text());
 if (!r3.ok) process.exit(1);
+// copyright in the bot's profile ('About me'), added once after whatever description it already has
+{
+  const H = {Authorization: `Bot ${DISCORD_TOKEN}`, 'Content-Type': 'application/json'}, NOTE = '© 2026 BenzoDaeskiSumi · All rights reserved. Original bot: do not copy.';
+  const app = await (await fetch('https://discord.com/api/v10/applications/@me', {headers: H})).json().catch(() => ({}));
+  if (app.id && !(app.description || '').includes('©')) {
+    const r4 = await fetch('https://discord.com/api/v10/applications/@me', {method: 'PATCH', headers: H, body: JSON.stringify({description: ((app.description ? app.description + '\n\n' : '') + NOTE).slice(0, 400)})});
+    console.log('profile copyright:', r4.status);
+  }
+}

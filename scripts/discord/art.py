@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Setup of the concept-art friends' server (not Aion). Discord setup workflow, mode art-plan / art-apply.
 Never deletes anything: renames Discord's default channels, creates what is missing (found by plain name), posts Mauro's welcome
 message with the specialty picker (custom_id rp:spec, handled by the Worker's generic rolePick) and the rules.

@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 /* Aion 2 Market — Language switch and translator (IT -> EN/ES/FR). Classic script: shares globals with the others, loaded in order by index.html. */
 /* ---------- language: the page is written in Italian; with English chosen, a translator rewrites every text node
    and label as it appears (exact phrases, ' · ' separated parts, and patterns for sentences with numbers/names) ---------- */
@@ -93,6 +94,7 @@ const EN = {
   "Cerca": "Search",
   "Filtra gli affari…": "Filter deals…",
   "Sito completo": "Full site",
+  "Tutti i diritti riservati": "All rights reserved",
   "Apri sul sito completo →": "Open on the full site →",
   "Pochi dati": "Few data",
   "Anomalo": "Anomalous",
@@ -376,6 +378,7 @@ const ES = {
   "Cerca": "Buscar",
   "Filtra gli affari…": "Filtra las ofertas…",
   "Sito completo": "Sitio completo",
+  "Tutti i diritti riservati": "Todos los derechos reservados",
   "Apri sul sito completo →": "Abrir en el sitio completo →",
   "Pochi dati": "Pocos datos",
   "Anomalo": "Anómalo",
@@ -650,6 +653,7 @@ const FR = {
   "Cerca": "Chercher",
   "Filtra gli affari…": "Filtrer les affaires…",
   "Sito completo": "Site complet",
+  "Tutti i diritti riservati": "Tous droits réservés",
   "Apri sul sito completo →": "Ouvrir sur le site complet →",
   "Pochi dati": "Peu de données",
   "Anomalo": "Anormal",

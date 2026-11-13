@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Light look for the MarchutanEU AION2 server (Discord setup mode mstyle-plan / mstyle-apply; the user asked 29 Oct, like the Legione's but lighter):
 same channels, only renamed: categories '📢 NEWS', text channels '📣・announcements', voice '⚔️ Abyss'. Matched by the name without the emoji, never deletes."""
 import json, os, re, time, urllib.request, urllib.error

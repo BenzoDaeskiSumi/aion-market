@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Italian community: Mauro's read-only channel #📊・andamento-prezzi in 💰 MARKET (workflow 'Andamento prezzi', weekly after the reset).
 Needs out/andamento.json, out/*.png, out/aion2_andamento_prezzi.xlsx from scripts/price_patterns.py + scripts/discord/prezzi_render.py.
 Creates the channel when missing (same permissions as #🌐・market: everyone reads, nobody writes), then replaces Mauro's messages with:
@@ -61,7 +62,7 @@ for m in api('GET', f"/channels/{ch['id']}/messages?limit=50") or []:
 A, upd = S['all'], S['generated'][:10]
 day_it = lambda iso: f"{int(iso[8:10])}/{int(iso[5:7])}"
 read = lambda name: open(os.path.join(OUT, name), 'rb').read()
-foot = {'text': f"{S['servers']} server europei · ultime {S['weeks']} settimane · aggiornato il {day_it(S['generated'])}"}
+foot = {'text': f"{S['servers']} server europei · ultime {S['weeks']} settimane · aggiornato il {day_it(S['generated'])} · © BenzoDaeskiSumi"}
 
 # 1. the week
 api('POST', f"/channels/{ch['id']}/messages", {'allowed_mentions': {'parse': []}, 'attachments': [{'id': 0, 'filename': 'settimana.png'}], 'embeds': [{

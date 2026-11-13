@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Hourly price sync from the public aion2.exchange API, for every Asmodian server in Europe.
 
 Each server has its own folder data/s/<server_id>/ with price_log.json, meta.json, sales.json, crafts.json.

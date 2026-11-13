@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 /* Aion 2 Market — overlay page (overlay.html): the essentials of the site in a small window, made for Steam's in-game
    browser (Shift+Tab) and phones. Same data as the site: data/s/<server>/summary.json (+ hist.json for the 7-day line),
    data/recipes.json for crafting, the bot's /char routes for characters. Nothing touches the game. */

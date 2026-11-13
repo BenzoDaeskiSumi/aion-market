@@ -1,3 +1,4 @@
+/* © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE. */
 // Aion 2 Market — Discord bot (slash commands over HTTP, runs on Cloudflare Workers).
 // Data: the site's public JSON on GitHub Pages (data/s/<server>/summary.json, written by scripts/sync.py every hour).
 
@@ -87,7 +88,7 @@ function itemEmbed(name, r, sid, sname, ico, env) {
     title: name, url: itemUrl(env, sid, name), color,
     description: [gname, r.c, r.l ? `Item Level ${r.l}` : null].filter(Boolean).join(' · '),
     thumbnail: {url: `${env.SITE}/${icon}`}, fields,
-    footer: {text: `${sname} · Asmodian · data aion2.exchange`}, timestamp: r.t,
+    footer: {text: `${sname} · Asmodian · data aion2.exchange · © BenzoDaeskiSumi`}, timestamp: r.t,
   };
 }
 // ---------- price chart (image drawn by QuickChart from the light history in hist.json) ----------
@@ -116,7 +117,7 @@ async function chartEmbed(name, r, h, view, sid, sname, ico, env) {
   const pts = h?.[view];
   const [, color] = GRADE[r?.g] || GRADE.white;
   const base = {title: name, url: itemUrl(env, sid, name), color, thumbnail: {url: `${env.SITE}/${ico[name] || `icons/${slug(name)}.png`}`},
-    footer: {text: `${sname} · Asmodian · data aion2.exchange`}, timestamp: r?.t};
+    footer: {text: `${sname} · Asmodian · data aion2.exchange · © BenzoDaeskiSumi`}, timestamp: r?.t};
   const span = view === 'w' ? 'last 7 days' : 'last 30 days';
   if (!pts || pts.length < 2) return {...base, description: `📈 Not enough prices in the ${span} for a chart.`};
   const vals = pts.map(([, p]) => p), lo = Math.min(...vals), hi = Math.max(...vals), first = vals[0], last = vals[vals.length - 1];
@@ -234,7 +235,7 @@ async function affari(i, env) {
     title: kind === 'vendi' ? `Sell now · ${sname}` : `Deals to buy · ${sname}`,
     url: env.SITE, color: kind === 'vendi' ? 0xff5c6c : 0x62e07a,
     description: lines.join('\n') || 'No deals right now.',
-    footer: {text: `${top.length} in total · materials and consumables · data aion2.exchange`},
+    footer: {text: `${top.length} in total · materials and consumables · data aion2.exchange · © BenzoDaeskiSumi`},
   }]});
 }
 
@@ -474,7 +475,7 @@ async function craftEmbed(name, sid, env) {
       ...(w.r.base ? [`-# Upgrade: uses up one ${w.r.base} (counted among the ingredients).`] : []),
       verdict].join('\n'),
     fields: [...(steps.length > 4 ? [{name: '…', value: `${steps.length - 4} earlier steps: see them on the site (Crafting).`}] : []), ...fields],
-    footer: {text: `${serverName(srv, sid)} · ingredients at the cheapest of Market, NPC and craft · recipes MetaBot.GG`},
+    footer: {text: `${serverName(srv, sid)} · ingredients at the cheapest of Market, NPC and craft · recipes MetaBot.GG · © BenzoDaeskiSumi`},
   };
 }
 async function craft(i, env) {
@@ -2130,7 +2131,7 @@ async function priceHistory(i, env) {
   for (const [m, p] of rows) if (m >= from && p > 0) { const d = Math.floor(m / 1440); days.set(d, Math.min(days.get(d) ?? Infinity, p)); }
   const pts = [...days.entries()].sort((a, b) => a[0] - b[0]).map(([d, p]) => [d * 24, p]);
   const r = sum[name], [, color] = GRADE[r?.g] || GRADE.white, base = {title: name, url: itemUrl(env, sid, name), color,
-    thumbnail: {url: `${env.SITE}/${ico[name] || `icons/${slug(name)}.png`}`}, footer: {text: `${serverName(srv, sid)} · Asmodian · data aion2.exchange`}};
+    thumbnail: {url: `${env.SITE}/${ico[name] || `icons/${slug(name)}.png`}`}, footer: {text: `${serverName(srv, sid)} · Asmodian · data aion2.exchange · © BenzoDaeskiSumi`}};
   if (pts.length < 2) return reply({embeds: [{...base, description: '📈 Not enough prices yet for a 90-day chart.'}]});
   const vals = pts.map(([, p]) => p), url = await chartUrl(pts, r?.a, 0x5b8cff), first = vals[0], last = vals[vals.length - 1];
   return reply({embeds: [{...base, description: `📈 **Lowest price per day**, last ${Math.round((Date.now() / 36e5 - pts[0][0]) / 24)} days` + (r?.a ? ` · dashed = 3-day average (${kin(r.a)})` : ''),
@@ -2164,7 +2165,7 @@ async function shoppingCmd(i, env) {
     description: [...lines, '', `Total: **${kin(total)}** kinah` + (E.market.get(name) ? ` · buying ${qty} on the Market: **${kin(E.market.get(name) * qty)}**` : ''),
       crafted.size ? `-# Craft first: ${[...crafted.entries()].map(([n, c]) => `${Math.ceil(c)} × ${n}`).join(', ')}` : null,
       '-# Quantities are averages that include failed crafts (and the combo for Splendent items).'].filter((l) => l != null).join('\n').slice(0, 4000),
-    footer: {text: `${serverName(srv, sid)} · cheapest of Market, NPC shop and crafting · recipes MetaBot.GG`}}]});
+    footer: {text: `${serverName(srv, sid)} · cheapest of Market, NPC shop and crafting · recipes MetaBot.GG · © BenzoDaeskiSumi`}}]});
 }
 
 // /watch (boosters): turn on/off a daily DM with the prices of your site favourites (KV watch:list, written only when someone toggles)

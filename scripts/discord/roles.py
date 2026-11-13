@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """Role separators (Discord setup workflow, mode roles-plan / roles-apply).
 Three empty roles act as headings in a member's profile: 𝐆𝐑𝐀𝐃𝐈 ────…, 𝐂𝐋𝐀𝐒𝐒𝐈 ────…, 𝐂𝐎𝐍𝐓𝐄𝐍𝐔𝐓𝐈 ────… (one full line each).
 - creates them if missing (no permissions, no colour, not shown separately, not mentionable)

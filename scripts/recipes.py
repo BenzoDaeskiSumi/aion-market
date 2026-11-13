@@ -1,3 +1,4 @@
+# © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
 """All AION 2 crafting recipes (Asmodian side) for the page's Crafting view.
 
 Source: MetaBot.GG's crafting calculator (https://metabot.gg/en/aion-2/crafting), read from the game files: 512 recipes
