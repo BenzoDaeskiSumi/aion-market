@@ -1,0 +1,86 @@
+/health: HTTP Error 503: Service Unavailable, retrying
+/health: HTTP Error 503: Service Unavailable, retrying
+snapshot 2026-11-14T20:07:55+01:00 (waited 629 s)
+Israphel: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203
+Israphel: 1000 items, 459 rows added (0 new items), log 71267 rows
+Zikel: without a name yet: Artwork #514310109
+Zikel: 1000 items, 354 rows added (0 new items), log 72251 rows
+/items?server=12303&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12303&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Triniel: 1000 items, 383 rows added (0 new items), log 73554 rows
+/crafts/210130014?server=12303: HTTP Error 503: Service Unavailable, retrying
+/crafts/110330014?server=12303: HTTP Error 503: Service Unavailable, retrying
+/crafts/110330014?server=12303: HTTP Error 503: Service Unavailable, retrying
+/crafts/110330014?server=12303: HTTP Error 503: Service Unavailable, retrying
+Triniel: crafts failed: HTTP Error 503: Service Unavailable
+Lumiel: 1000 items, 352 rows added (0 new items), log 73072 rows
+Marchutan: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202
+Marchutan: 1000 items, 344 rows added (0 new items), log 69237 rows
+/crafts?server=12305: HTTP Error 503: Service Unavailable, retrying
+/crafts?server=12305: HTTP Error 503: Service Unavailable, retrying
+/crafts/110830014?server=12305: HTTP Error 503: Service Unavailable, retrying
+/crafts/110830014?server=12305: HTTP Error 503: Service Unavailable, retrying
+/crafts/110830014?server=12305: HTTP Error 503: Service Unavailable, retrying
+Marchutan: crafts failed: HTTP Error 503: Service Unavailable
+Azphel: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202
+Azphel: 1000 items, 334 rows added (0 new items), log 67013 rows
+Ereshkigal: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203, Sealed wings #602460007
+Ereshkigal: 993 items, 310 rows added (0 new items), log 64826 rows
+/items?server=12308&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Beritra: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203, Sealed wings #602460007
+Beritra: 947 items, 276 rows added (0 new items), log 62183 rows
+/items?server=12309&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12309&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12309&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Nemon: price sync failed: HTTP Error 503: Service Unavailable
+/crafts/110430014?server=12309: HTTP Error 503: Service Unavailable, retrying
+/crafts/110430014?server=12309: HTTP Error 503: Service Unavailable, retrying
+/crafts/110830014?server=12309: HTTP Error 503: Service Unavailable, retrying
+/crafts/110830014?server=12309: HTTP Error 503: Service Unavailable, retrying
+/crafts/110830014?server=12309: HTTP Error 503: Service Unavailable, retrying
+Nemon: crafts failed: HTTP Error 503: Service Unavailable
+/items?server=12310&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12310&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12310&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Hadala: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203, Sealed wings #602460007
+Hadala: 875 items, 306 rows added (0 new items), log 55510 rows
+Ludra: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203, Sealed wings #602460007
+Ludra: 992 items, 350 rows added (0 new items), log 66731 rows
+Ulgorn: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203, Sealed wings #602460007
+Ulgorn: 907 items, 286 rows added (0 new items), log 56695 rows
+/items?server=12313&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12313&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12313&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Munin: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203
+Munin: 851 items, 270 rows added (0 new items), log 52742 rows
+Odar: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203
+Odar: 901 items, 279 rows added (0 new items), log 54239 rows
+Zemurru: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203, Sealed wings #602460007
+Zemurru: 922 items, 311 rows added (0 new items), log 60821 rows
+/crafts?server=12315: HTTP Error 503: Service Unavailable, retrying
+/crafts?server=12315: HTTP Error 503: Service Unavailable, retrying
+/crafts/110430014?server=12315: HTTP Error 503: Service Unavailable, retrying
+/crafts/110430014?server=12315: HTTP Error 503: Service Unavailable, retrying
+/crafts/110430014?server=12315: HTTP Error 503: Service Unavailable, retrying
+Zemurru: crafts failed: HTTP Error 503: Service Unavailable
+Kromede: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203, Sealed wings #602460007
+Kromede: 927 items, 311 rows added (0 new items), log 60531 rows
+/items?server=12317&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12317&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12317&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Quai: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203, Sealed wings #602460007
+Quai: 882 items, 294 rows added (0 new items), log 53673 rows
+Baba: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203, Sealed wings #602460007
+Baba: 913 items, 309 rows added (0 new items), log 58695 rows
+Fafnir: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203, Sealed wings #602460007
+Fafnir: 913 items, 266 rows added (0 new items), log 52976 rows
+Indnath: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203
+Indnath: 804 items, 199 rows added (0 new items), log 44608 rows
+Agnita: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203, Sealed wings #602460007
+Agnita: 885 items, 246 rows added (0 new items), log 50693 rows
+/crafts/115030014?server=12321: HTTP Error 503: Service Unavailable, retrying
+Agnita: crafts 19 lines
+Atiel: without a name yet: Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203, Sealed wings #602460007
+Atiel: 865 items, 217 rows added (0 new items), log 50337 rows
+Tassin: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203
+Tassin: 771 items, 194 rows added (0 new items), log 41743 rows
