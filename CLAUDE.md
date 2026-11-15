@@ -15,6 +15,7 @@ Overview for a new model: docs/HANDOFF.md (architecture, how-to, Mauro, rules). 
 - 13 Nov 2026 (the user asked): Wednesday 07:00-11:59 Rome (usual maintenance, MAINT) is left out of every number ('manut.' cells in the Excel, striped cells in the image);
   a day/band cell needs >= 3 usable hours (MIN_BAND_H), so Wednesday 'mattina' is empty. Price 0 (nothing on sale) now ends the previous price instead of being skipped by the 13 h fill.
   Weekly run moved to Wednesday 13:23 Rome (after maintenance).
+- Optional 3rd argument = server ids (e.g. `python3 scripts/price_patterns.py out data 12305` = Marchutan only; with 1-2 servers an item needs 3 weeks instead of 8 server-weeks).
 
 ## Copyright (13 Nov 2026, the user asked, after someone copied Gettulio's Ludra list)
 - Everything we made is '© 2026 BenzoDaeskiSumi, all rights reserved': LICENSE (IT+EN, proprietary, third-party data/libs excluded) on main and italia-site,

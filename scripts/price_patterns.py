@@ -23,6 +23,7 @@ import pandas as pd
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else 'out'
 DATA = sys.argv[2] if len(sys.argv) > 2 else 'data'
+ONLY = set(sys.argv[3].split(',')) if len(sys.argv) > 3 else None   # optional: only these server ids, e.g. 12305 (Marchutan)
 ROME = ZoneInfo('Europe/Rome')
 WEEKS = 6                      # most recent complete + current game weeks used
 MIN_HOURS = 72                 # a week counts for an item only with at least 3 days of prices
@@ -54,6 +55,7 @@ def week_start(ts):
 
 def main():
     servers = json.load(open(os.path.join(DATA, 'servers.json'), encoding='utf-8'))
+    if ONLY: servers = [s for s in servers if str(s['id']) in ONLY]
     now = datetime.now(ROME).replace(minute=0, second=0, microsecond=0)
     first_week = week_start(now) - timedelta(days=7 * (WEEKS - 1))
     grid = pd.date_range(first_week, now, freq='h')
@@ -117,7 +119,7 @@ def main():
     for name in sorted({u['item'] for u in units}):
         us = [u for u in units if u['item'] == name]
         sw = sum(u['weeks'] for u in us)
-        if sw < 8 or np.median([u['listings'] for u in us]) < 3: continue        # too little history or too thin a market
+        if sw < (8 if not ONLY or len(ONLY) > 2 else 3) or np.median([u['listings'] for u in us]) < 3: continue        # too little history or too thin a market
         b = profiles(us)['band']
         lo = np.unravel_index(np.nanargmin(b), b.shape); hi = np.unravel_index(np.nanargmax(b), b.shape)
         items.append({'item': name, 'cat': us[0]['cat'], 'group': us[0]['group'], 'servers': len(us), 'server_weeks': sw,
@@ -133,7 +135,7 @@ def main():
         return {'buy': [DAYS[lo[0]], BANDS[lo[1]][0], float(b[lo])], 'sell': [DAYS[hi[0]], BANDS[hi[1]][0], float(b[hi])],
                 'cheap_day': DAYS[int(np.nanargmin(p['day']))], 'dear_day': DAYS[int(np.nanargmax(p['day']))],
                 'cheap_hour': int(np.nanargmin(p['hour'])), 'dear_hour': int(np.nanargmax(p['hour']))}
-    summary = {'generated': now.isoformat(), 'from': first_week.isoformat(), 'weeks': WEEKS, 'servers': len(srv), 'units': len(units),
+    summary = {'only': ', '.join(x['name'] for x in servers) if ONLY else None, 'generated': now.isoformat(), 'from': first_week.isoformat(), 'weeks': WEEKS, 'servers': len(srv), 'units': len(units),
                'items': len({u['item'] for u in units}), 'days': DAYS, 'bands': [b[0] for b in BANDS],
                'all': {**best(allp), 'grid': allp['grid'].tolist(), 'day': allp['day'].tolist(), 'hour': allp['hour'].tolist()},
                'groups': {g: {**best(p), 'day': p['day'].tolist(), 'hour': p['hour'].tolist(), 'n': sum(u['group'] == g for u in units)} for g, p in groups.items()},
@@ -167,7 +169,7 @@ def write_xlsx(path, S, allp, groups, cats, srv, items):
             for i, w in enumerate(widths, 1): ws.column_dimensions[L(i)].width = w
 
     ws = wb.active; ws.title = 'Leggimi'
-    lines = [('Aion 2 · quando conviene comprare e vendere', T), ('',), (f"Dati: {S['servers']} server europei, ultime {S['weeks']} settimane di gioco (dal {S['from'][:10]}), {S['items']} consumabili e materiali per il craft.",),
+    lines = [('Aion 2 · quando conviene comprare e vendere', T), ('',), (f"Dati: {'server ' + S['only'] if S.get('only') else str(S['servers']) + ' server europei'}, ultime {S['weeks']} settimane di gioco (dal {S['from'][:10]}), {S['items']} consumabili e materiali per il craft.",),
              (f"Aggiornato il {S['generated'][:10]}. Fonte prezzi: aion2.exchange, tramite aion2italia.com.",), ('',),
              ('Come leggere i numeri', Font(bold=True)),
              ('Ogni numero dice quanto il prezzo più basso di quel momento è sopra (+) o sotto (−) la media della sua settimana di gioco.',),
