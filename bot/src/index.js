@@ -858,6 +858,13 @@ async function timerMessage(env) {
 }
 const dapi = (env, method, path, body) => fetch(`https://discord.com/api/v10${path}`, {method,
   headers: {Authorization: `Bot ${env.DISCORD_TOKEN}`, 'Content-Type': 'application/json', 'X-Audit-Log-Reason': 'Canale timer degli eventi'}, body: body ? JSON.stringify(body) : undefined});
+// POST a message with a file attached (multipart): the file lives with the message, unlike links to other uploads that expire
+const dapiFile = (env, path, body, file) => {
+  const fd = new FormData();
+  fd.append('payload_json', JSON.stringify({...body, attachments: [{id: 0, filename: file.name}]}));
+  fd.append('files[0]', new Blob([file.data], {type: file.type}), file.name);
+  return fetch(`https://discord.com/api/v10${path}`, {method: 'POST', headers: {Authorization: `Bot ${env.DISCORD_TOKEN}`}, body: fd});
+};
 async function timerChannel(env) {        // creates the read-only channel once (next to #annunci), then remembers it
   let ch = await env.USERS.get('cfg:timer_channel');
   if (ch) return ch;
@@ -1587,10 +1594,15 @@ async function verifyRequest(i, env, ctx) {
     const c = await charProfile(+server, id).catch(() => null);
     if (!c?.name) return void await hook(i, env, {content: 'The official NCSOFT site is not answering: try again in a few minutes.'});
     const req = {server: +server, id, name: c.name, cls: c.cls, lv: c.lv, il: c.il, sn: c.serverName, t: Date.now()};
-    const r = await dapi(env, 'POST', `/channels/${cfg.mod}/messages`, {allowed_mentions: {parse: []}, embeds: [{color: 0xf2c94c, title: `Verification request · ${c.name}`,
+    // the screenshot is copied INTO the card: the slash-command upload link is temporary and the image vanished from older cards (15 Nov)
+    const ext = (/\.(png|jpe?g|webp|gif)(\?|$)/i.exec(att.filename || att.url) || [, 'png'])[1].toLowerCase(), fname = `screenshot.${ext}`;
+    const shot = await fetch(att.url).then((x) => x.ok ? x.arrayBuffer() : null).catch(() => null);
+    const card = {allowed_mentions: {parse: []}, embeds: [{color: 0xf2c94c, title: `Verification request · ${c.name}`,
       description: `<@${uid}> says they are **${c.name}**\n${c.cls || '?'} · Lv ${c.lv || '?'} · ${c.serverName || ''}${c.legion ? ` · Legion: ${c.legion}` : ''}${c.cp ? ` · CP ${kin(c.cp)}` : ''}\n\nCheck that the screenshot shows **${c.name}**.`,
-      thumbnail: avatarProxy(c.img, env) ? {url: avatarProxy(c.img, env)} : undefined, image: {url: att.url}, timestamp: new Date().toISOString()}],
-      components: [{type: 1, components: [{type: 2, style: 3, label: 'Approve', emoji: {name: '✅'}, custom_id: `vf:ok:${uid}:${server}:${id}`.slice(0, 100)}, {type: 2, style: 4, label: 'Reject', emoji: {name: '❌'}, custom_id: `vf:no:${uid}`}]}]});
+      thumbnail: avatarProxy(c.img, env) ? {url: avatarProxy(c.img, env)} : undefined, image: {url: shot ? `attachment://${fname}` : att.url}, timestamp: new Date().toISOString()}],
+      components: [{type: 1, components: [{type: 2, style: 3, label: 'Approve', emoji: {name: '✅'}, custom_id: `vf:ok:${uid}:${server}:${id}`.slice(0, 100)}, {type: 2, style: 4, label: 'Reject', emoji: {name: '❌'}, custom_id: `vf:no:${uid}`}]}]};
+    const r = shot ? await dapiFile(env, `/channels/${cfg.mod}/messages`, card, {name: fname, data: shot, type: att.content_type || 'image/png'})
+                   : await dapi(env, 'POST', `/channels/${cfg.mod}/messages`, card);
     if (r.ok) await env.USERS.put(`vreq:${g}:${uid}`, JSON.stringify({...req, msg: (await r.clone().json().catch(() => ({}))).id}), {expirationTtl: 14 * 86400}).catch(() => {});
     else { await putErr(env, 'verify_err', `${new Date().toISOString()} post ${r.status} ${(await r.text().catch(() => '')).slice(0, 300)}`); }
     await hook(i, env, {content: r.ok ? `📨 Request sent to the moderators for **${c.name}** (${c.serverName}). I'll DM you as soon as they check it.` : 'I cannot write in the moderators\' channel: tell an admin.'});

@@ -4,7 +4,7 @@
 // /verifica-utente (staff, no screenshot), /verifica-rimuovi (staff), /aggiorna (own roles from the official profile).
 // Role board in #🎭・ruoli: buttons rb:<roleId> (Interessi + Ping). Cron: refreshes 10 verified members per run, keeps #✅・verifica clean.
 // KV: vlink:<uid> = {server, id, name, t}, vchar:<server>:<id> = uid (one character per account), vreq:<uid> = card message id (7 days), setup:* = message ids.
-import {COPY, GUILD, verified, dapi, djson, reply, oops, defer, hook, opt, uidOf, roles, roleId, sepId, channelId, isStaff, logTo, dm, putErr,
+import {COPY, GUILD, verified, dapi, djson, postFile, reply, oops, defer, hook, opt, uidOf, roles, roleId, sepId, channelId, isStaff, logTo, dm, putErr,
   charChoices, charProfile, CLASSES, GS_TIERS, gsTier, fmt, nickFor, TAIL_RE} from './lib.js';
 
 const FACTIONS = ['Elyos', 'Asmodiani'];
@@ -79,9 +79,13 @@ async function verificaCmd(i, env, ctx) {
     if (!prof) return hook(i, env, {content: 'Il sito ufficiale non risponde o non trova il personaggio: riprova tra poco.'});
     const ch = await channelId(env, '・richieste-verifica');
     const staff = await Promise.all(['Admin', 'Moderatore', 'Helper'].map((n) => roleId(env, n)));
-    const body = await card(env, uid, prof, att.url);
+    // the screenshot is copied INTO the card: the slash-command upload link is temporary (Mauro's cards lost their images, 15 Nov)
+    const ext = (/\.(png|jpe?g|webp|gif)(\?|$)/i.exec(att.filename || att.url) || [, 'png'])[1].toLowerCase(), fname = `screenshot.${ext}`;
+    const shot = await fetch(att.url).then((x) => x.ok ? x.arrayBuffer() : null).catch(() => null);
+    const body = await card(env, uid, prof, shot ? `attachment://${fname}` : att.url);
     body.content = staff.filter(Boolean).map((r) => `<@&${r}>`).join(' '); body.allowed_mentions = {roles: staff.filter(Boolean)};
-    const r = await djson(env, 'POST', `/channels/${ch}/messages`, body);
+    const r = shot ? await postFile(env, `/channels/${ch}/messages`, body, {name: fname, data: shot, type: att.content_type || 'image/png'})
+                   : await djson(env, 'POST', `/channels/${ch}/messages`, body);
     if (!r) return hook(i, env, {content: 'Non riesco a inviare la richiesta allo staff: scrivi in #🆘・aiuto-verifica.'});
     await env.KV.put('vreq:' + uid, `${ch}:${r.id}`, {expirationTtl: 7 * 86400}).catch(() => {});
     await hook(i, env, {content: `📨 Richiesta inviata per **${prof.name}** (${prof.serverName}, ${prof.race}). Lo staff la controlla a breve: riceverai un messaggio privato.`});

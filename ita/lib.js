@@ -18,6 +18,14 @@ export async function verified(req, body, env) {
 export const dapi = (env, method, path, body, reason) => fetch(`https://discord.com/api/v10${path}`, {method,
   headers: {Authorization: `Bot ${env.DISCORD_TOKEN}`, 'Content-Type': 'application/json', ...(reason ? {'X-Audit-Log-Reason': encodeURIComponent(reason)} : {})},
   body: body === undefined ? undefined : JSON.stringify(body)});
+// POST a message with one file attached (multipart): the file lives with the message, unlike the temporary link of a slash-command upload
+export async function postFile(env, path, body, file) {
+  const fd = new FormData();
+  fd.append('payload_json', JSON.stringify({...body, attachments: [{id: 0, filename: file.name}]}));
+  fd.append('files[0]', new Blob([file.data], {type: file.type}), file.name);
+  const r = await fetch(`https://discord.com/api/v10${path}`, {method: 'POST', headers: {Authorization: `Bot ${env.DISCORD_TOKEN}`}, body: fd});
+  return r.ok ? r.json().catch(() => null) : null;
+}
 export const djson = async (env, method, path, body, reason) => { const r = await dapi(env, method, path, body, reason); return r.ok ? r.json().catch(() => null) : null; };
 export const reply = (data) => Response.json({type: 4, data: {allowed_mentions: {parse: []}, ...data}});
 export const oops = (content) => reply({content, flags: 64});
