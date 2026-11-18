@@ -14,7 +14,7 @@ const CMDS = {
     {name: 'verifica-rimuovi', description: 'Staff: togli la verifica a un membro', default_member_permissions: ROLES,
       options: [o(U, 'utente', 'Il membro'), o(B, 'tieni_accesso', 'Lascia ruoli e nick (toglie solo il collegamento al personaggio)', {required: false})]},
     {name: 'aggiorna', description: 'Aggiorna i tuoi ruoli (fazione, classe, Gear Score) dal sito ufficiale'},
-    {name: 'legione', description: 'Admin: rendi qualcuno Legion Leader, crea il ruolo della legione, lo dà ai membri e apre il post nel forum', default_member_permissions: '8',
+    {name: 'legione', description: 'Admin: nomina un Legion Leader, crea il ruolo della legione e apre il post nel forum', default_member_permissions: '8',
       options: [o(U, 'leader', 'Il capo della legione'), o(S, 'personaggio', 'Il suo personaggio, se non è ancora verificato (dai suggerimenti)', {required: false, autocomplete: true}),
         o(B, 'post', 'Apri/aggiorna il post nel forum legioni (sì se vuoto)', {required: false})]},
   ],
