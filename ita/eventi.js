@@ -363,13 +363,35 @@ async function teamCmd(i, env, ctx) {
     ctx.waitUntil(teamBoard(env));
     return say(`✅ Team **${teams[id].name}** creato. Aggiungi i membri con \`/team aggiungi\` (scegli il ruolo: massimo 2 tank, 2 cleric, 2 chanter, 4 DPS), poi sceglilo quando apri una stanza con \`/raid\`.`);
   }
-  if (!key) return say(`Non trovo il team **${name}**: scegli dai suggerimenti.`);
-  const T = teams[key];
+  let key2 = key;
+  if (!key2 && sub === 'imposta' && slugT(name)) { key2 = slugT(name); teams[key2] = {name: name.slice(0, 40), m: [], r: {}}; }   // imposta also creates the team
+  if (!key2) return say(`Non trovo il team **${name}**: scegli dai suggerimenti.`);
+  const T = teams[key2];
   if (sub === 'elimina') {
-    delete teams[key];
+    delete teams[key2];
     await env.KV.put('teams', JSON.stringify(teams));
-    ctx.waitUntil(syncTeamRooms(env, ctx, key, null)); ctx.waitUntil(teamBoard(env));
+    ctx.waitUntil(syncTeamRooms(env, ctx, key2, null)); ctx.waitUntil(teamBoard(env));
     return say(`🗑️ Team **${T.name}** eliminato. Nelle stanze già aperte con questo team non c'è più la priorità.`);
+  }
+  if (sub === 'imposta') {               // the whole team in one command: one user option per seat, the seat gives the role
+    const SLOTS = [['tank', 't'], ['tank2', 't'], ['cleric', 'c'], ['cleric2', 'c'], ['chanter', 'ch'], ['chanter2', 'ch'], ['dps', 'd'], ['dps2', 'd'], ['dps3', 'd'], ['dps4', 'd']];
+    const picks = SLOTS.map(([n, k]) => [opt(i.data, n), k]).filter(([u]) => u && !i.data.resolved?.users?.[u]?.bot);
+    if (!picks.length) return say('Scegli almeno un membro nelle caselle tank / cleric / chanter / dps.');
+    const dup = picks.map(([u]) => u).find((u, j, a) => a.indexOf(u) !== j);
+    if (dup) return say(`<@${dup}> è in due caselle: ognuno ha un ruolo solo.`);
+    T.r ||= {};
+    const fresh = opt(i.data, 'da_zero') === true, set = new Set(picks.map(([u]) => u));
+    const keep = fresh ? [] : T.m.filter((u) => !set.has(u));
+    for (const [k] of LU_ROLES) {
+      const n = keep.filter((u) => T.r[u] === k).length + picks.filter(([, r]) => r === k).length;
+      if (n > TEAM_CAP[k]) return say(`Così il team **${T.name}** avrebbe ${n} ${roleOf(k)[1]} (massimo ${TEAM_CAP[k]}): ` +
+        `ci sono già ${keep.filter((u) => T.r[u] === k).map((u) => `<@${u}>`).join(' ')}. Toglili prima con \`/team togli\`, oppure usa \`da_zero: True\` per rifare il team da capo.`);
+    }
+    T.m = [...keep, ...picks.map(([u]) => u)];
+    T.r = Object.fromEntries([...keep.map((u) => [u, T.r[u]]).filter(([, r]) => r), ...picks]);
+    await env.KV.put('teams', JSON.stringify(teams));
+    ctx.waitUntil(syncTeamRooms(env, ctx, key2, T)); ctx.waitUntil(teamBoard(env));
+    return say(`✅ Team **${T.name}** ${fresh ? 'rifatto da capo' : 'aggiornato'} (${teamCount(T)}):\n${teamLines(T)}\nLe stanze già aperte con questo team si aggiornano.`);
   }
   const users = ['utente', 'utente2', 'utente3', 'utente4', 'utente5'].map((n) => opt(i.data, n)).filter(Boolean).filter((u) => !i.data.resolved?.users?.[u]?.bot);
   if (!users.length) return say('Scegli almeno un membro (i bot non contano).');
@@ -385,7 +407,7 @@ async function teamCmd(i, env, ctx) {
   }
   if (sub === 'togli') { T.m = T.m.filter((u) => !users.includes(u)); users.forEach((u) => delete T.r[u]); }
   await env.KV.put('teams', JSON.stringify(teams));
-  ctx.waitUntil(syncTeamRooms(env, ctx, key, T)); ctx.waitUntil(teamBoard(env));
+  ctx.waitUntil(syncTeamRooms(env, ctx, key2, T)); ctx.waitUntil(teamBoard(env));
   const rk = sub === 'aggiungi' ? roleOf(opt(i.data, 'ruolo')) : null;
   return say(`${sub === 'aggiungi' ? '➕' : '➖'} ${users.map((u) => `<@${u}>`).join(' ')} ${sub === 'aggiungi' ? 'aggiunt' : 'tolt'}${users.length > 1 ? 'i' : 'o'} ${sub === 'aggiungi' ? `al team **${T.name}** come ${rk[2]} ${rk[1]}` : `dal team **${T.name}**`} (${teamCount(T)}). Le stanze già aperte con questo team si aggiornano.`);
 }

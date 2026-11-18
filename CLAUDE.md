@@ -317,6 +317,8 @@ each legion will get its own section later; verification like MarchutanEU; separ
     board. /team changes update open rooms using that team (syncTeamRooms). A non-member pushed out comes back by himself when a seat frees (he stays in R.p).
     Team roles (same day): /team aggiungi has a required 'ruolo' (t|c|ch|d, applied to every user of the call); caps TEAM_CAP 2 tank, 2 cleric, 2 chanter, 4 DPS;
     teams[slug].r = {uid: role}; priority only in the member's team role (hasPrio; members without a role: any role). Board/list grouped by role, count x/10.
+    /team imposta nome [tank tank2 cleric cleric2 chanter chanter2 dps dps2 dps3 dps4] [da_zero]: whole team in one command (the slot gives the role; creates the
+    team if missing; adds to who is there unless da_zero; refuses over the caps or a user in two slots).
     Read-only channel '👥・team' (ita.py, after 🔥・ludra): ONE Gettulio message listing every team (teamBoard(), KV teams_msg = 'channel:message'), rewritten after each
     /team change and by /tick; the cron posts it once if missing (re-posts only when the message is gone: 404).
   * Ciro (was Marcello) = ita-mod (mod.js): /avverti (3rd = 1 h timeout) /avvertimenti /azzera-avvertimenti /timeout /togli-timeout /kick /ban /sban /pulisci, all logged in 🧹・log;

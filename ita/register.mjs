@@ -24,6 +24,10 @@ const CMDS = {
         o(S, 'team', 'Team con la priorità: i suoi membri passano davanti agli altri', {required: false, autocomplete: true})]},
     {name: 'team', description: 'Staff: team di giocatori con la priorità nelle stanze Ludra', default_member_permissions: MSG, options: [
       {type: 1, name: 'crea', description: 'Crea un team', options: [o(S, 'nome', 'Nome del team')]},
+      {type: 1, name: 'imposta', description: 'Componi il team in un colpo solo: una casella per posto (2 tank, 2 cleric, 2 chanter, 4 DPS)', options: [o(S, 'nome', 'Il team', {autocomplete: true}),
+        ...[['tank', 'Tank'], ['tank2', '2° Tank'], ['cleric', 'Cleric'], ['cleric2', '2° Cleric'], ['chanter', 'Chanter'], ['chanter2', '2° Chanter'],
+          ['dps', 'DPS'], ['dps2', '2° DPS'], ['dps3', '3° DPS'], ['dps4', '4° DPS']].map(([n, d]) => o(U, n, d, {required: false})),
+        o(B, 'da_zero', 'Svuota prima il team (sì = rifallo da capo; no/vuoto = aggiungi a chi c\'è già)', {required: false})]},
       {type: 1, name: 'aggiungi', description: 'Aggiungi membri a un team (max 2 tank, 2 cleric, 2 chanter, 4 DPS)', options: [o(S, 'nome', 'Il team', {autocomplete: true}),
         o(S, 'ruolo', 'Il loro ruolo nel team', {choices: [['🛡️ Tank', 't'], ['✨ Cleric', 'c'], ['🎶 Chanter', 'ch'], ['⚔️ DPS', 'd']].map(([name, value]) => ({name, value}))}), o(U, 'utente', 'Membro'),
         ...[2, 3, 4, 5].map((n) => o(U, 'utente' + n, 'Altro membro', {required: false}))]},
