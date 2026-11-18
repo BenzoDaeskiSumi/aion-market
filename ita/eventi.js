@@ -27,13 +27,20 @@ const RSV = (R) => LU_ROLES.flatMap(([k]) => (R.r?.[k] || []).map((u) => [k, u])
 const dayName = (t) => new Date(t).toLocaleDateString('it-IT', {timeZone: TZ, weekday: 'long', day: 'numeric', month: 'long'});
 const emptyParties = () => [...Array(LUDRA.parties)].map(() => ({t: [], c: [], ch: [], d: []}));
 const prio = (R) => new Set(R.team?.m || []);
-const teamFirst = (R, arr) => { const T = prio(R); return T.size ? [...arr.filter((x) => T.has(x.u ?? x)), ...arr.filter((x) => !T.has(x.u ?? x))] : arr; };
+// a team member goes first only in the role he has in the team (R.team.r[uid]; no role recorded = any role)
+const hasPrio = (R, u, k) => prio(R).has(u) && (!R.team.r?.[u] || R.team.r[u] === k);
+const teamFirst = (R, arr, k) => prio(R).size ? [...arr.filter((x) => hasPrio(R, x.u ?? x, k)), ...arr.filter((x) => !hasPrio(R, x.u ?? x, k))] : arr;
+const TEAM_CAP = {t: 2, c: 2, ch: 2, d: 4};             // a team = one full room: 2 tank, 2 cleric, 2 chanter, 4 DPS
+const roleOf = (k) => LU_ROLES.find((r) => r[0] === k);
+const teamCount = (T) => `${T.m.length}/${Object.values(TEAM_CAP).reduce((a, b) => a + b, 0)}`;
+const teamLines = (T, sep = '\n') => T.m.length ? LU_ROLES.flatMap(([k, , emo]) => T.m.filter((u) => (T.r?.[u] || '?') === k).map((u) => `${emo} <@${u}>`))
+  .concat(T.m.filter((u) => !T.r?.[u]).map((u) => `❔ <@${u}>`)).join(sep) : '*ancora nessuno*';
 function seat(R) {                    // sign-up order, but members of the room's team go first (they push the others to the other party or the reserves)
   const slots = R.p.map(() => ({})), res = [];
   for (const [k, , , n] of LU_ROLES) {
     let extra = [];
-    R.p.forEach((P, pi) => { const q = teamFirst(R, P[k]); slots[pi][k] = [...Array(n)].map((_, j) => q[j] || null); q.slice(n).forEach((u) => extra.push({pi, u})); });
-    extra = teamFirst(R, extra).map(({pi, u}) => [pi, u]);
+    R.p.forEach((P, pi) => { const q = teamFirst(R, P[k], k); slots[pi][k] = [...Array(n)].map((_, j) => q[j] || null); q.slice(n).forEach((u) => extra.push({pi, u})); });
+    extra = teamFirst(R, extra, k).map(({pi, u}) => [pi, u]);
     for (const [pi, u] of extra) { const q = slots.findIndex((S) => S[k].includes(null)); if (q >= 0) slots[q][k][slots[q][k].indexOf(null)] = u; else res.push([k, pi, u]); }
   }
   return {slots, res};
@@ -299,14 +306,14 @@ const findTeam = (teams, v) => teams[v] ? v : Object.keys(teams).find((k) => k =
 async function teamChoices(env, q) {
   const teams = await getTeams(env), s = slugT(q);
   return Object.entries(teams).filter(([k, T]) => !s || k.includes(s) || T.name.toLowerCase().includes(String(q).toLowerCase()))
-    .slice(0, 25).map(([k, T]) => ({name: `${T.name} · ${T.m.length} ${T.m.length === 1 ? 'membro' : 'membri'}`.slice(0, 100), value: k}));
+    .slice(0, 25).map(([k, T]) => ({name: `${T.name} · ${teamCount(T)}`.slice(0, 100), value: k}));
 }
 async function syncTeamRooms(env, ctx, id, T) {            // a team changed: open rooms that use it follow (board redrawn, people moved told)
   for (const {name: k} of (await env.KV.list({prefix: 'raid:'})).keys) {
     const R = JSON.parse(await env.KV.get(k) || 'null');
     if (!R || R.v !== 2 || R.team?.id !== id || R.done || Date.now() > R.t) continue;
     const before = mains(R);
-    R.team = T ? {id, name: T.name, m: [...T.m]} : null;
+    R.team = T ? {id, name: T.name, m: [...T.m], r: {...(T.r || {})}} : null;
     await env.KV.put(k, JSON.stringify(R), EXP(R));
     if (R.msg) await dapi(env, 'PATCH', `/channels/${R.ch}/messages/${R.msg}`, board(R, `lr:${k.slice(5)}`));
     if (T) ctx.waitUntil(moved(env, R, before, null));
@@ -319,12 +326,12 @@ async function teamBoard(env) {
   if (!ch) return 'no channel';
   const teams = Object.values(await getTeams(env)).sort((a, b) => a.name.localeCompare(b.name, 'it'));
   const fields = teams.slice(0, 25).map((T) => {
-    let v = T.m.length ? T.m.map((u) => `<@${u}>`).join('\n') : '*ancora nessuno*';
+    let v = teamLines(T);
     if (v.length > 1024) v = v.slice(0, 1000).replace(/\n[^\n]*$/, '') + '\n…';
-    return {name: `⭐ ${T.name} · ${T.m.length} ${T.m.length === 1 ? 'membro' : 'membri'}`, value: v, inline: true};
+    return {name: `⭐ ${T.name} · ${teamCount(T)}`, value: v, inline: true};
   });
   const body = {content: '', allowed_mentions: {parse: []}, embeds: [{color: 0xe8603c, title: '👥 Team del Ludra',
-    description: ['Quando lo staff apre una stanza con `/raid` e sceglie un team, i suoi membri hanno la **precedenza**: se uno di loro prende un posto già occupato, chi c\'era passa nell\'altro party o in riserva, e torna dentro appena si libera un posto.',
+    description: ['Ogni team ha al massimo 2 tank, 2 cleric, 2 chanter e 4 DPS. Quando lo staff apre una stanza con `/raid` e sceglie un team, i suoi membri hanno la **precedenza** nel loro ruolo: se uno di loro prende un posto già occupato, chi c\'era passa nell\'altro party o in riserva, e torna dentro appena si libera un posto.',
       '', teams.length ? 'Questa lista si aggiorna da sola.' : 'Non c\'è ancora nessun team.'].join('\n'),
     fields, footer: {text: `I team li gestisce lo staff con /team\n© 2026 BenzoDaeskiSumi · sistema di iscrizione originale di Gettulio: vietato copiarlo`}, timestamp: new Date().toISOString()}]};
   const old = await env.KV.get('teams_msg');
@@ -341,20 +348,20 @@ async function teamCmd(i, env, ctx) {
   if (!await isStaff(env, i)) return oops('Solo lo staff può gestire i team.');
   const sub = i.data.options?.[0]?.name, teams = await getTeams(env), name = String(opt(i.data, 'nome') || '').trim(), key = findTeam(teams, name);
   const say = (content) => Response.json({type: 4, data: {content, flags: 64, allowed_mentions: {parse: []}}});
-  const list = (T) => T.m.length ? T.m.map((u) => `<@${u}>`).join(' ') : '*nessuno*';
+  const list = (T) => teamLines(T, ' · ');
   if (sub === 'lista') {
-    if (name) return key ? say(`👥 **${teams[key].name}** (${teams[key].m.length}): ${list(teams[key])}`) : say(`Non trovo il team **${name}**.`);
+    if (name) return key ? say(`👥 **${teams[key].name}** (${teamCount(teams[key])}): ${list(teams[key])}`) : say(`Non trovo il team **${name}**.`);
     const all = Object.values(teams);
-    return say(all.length ? all.map((T) => `👥 **${T.name}** (${T.m.length}): ${list(T)}`).join('\n').slice(0, 1900) : 'Non c\'è ancora nessun team: crealo con `/team crea`.');
+    return say(all.length ? all.map((T) => `👥 **${T.name}** (${teamCount(T)}): ${list(T)}`).join('\n').slice(0, 1900) : 'Non c\'è ancora nessun team: crealo con `/team crea`.');
   }
   if (sub === 'crea') {
     const id = slugT(name);
     if (!id) return say('Scrivi un nome per il team.');
     if (teams[id]) return say(`Il team **${teams[id].name}** esiste già.`);
-    teams[id] = {name: name.slice(0, 40), m: []};
+    teams[id] = {name: name.slice(0, 40), m: [], r: {}};
     await env.KV.put('teams', JSON.stringify(teams));
     ctx.waitUntil(teamBoard(env));
-    return say(`✅ Team **${teams[id].name}** creato. Aggiungi i membri con \`/team aggiungi\`, poi sceglilo quando apri una stanza con \`/raid\`.`);
+    return say(`✅ Team **${teams[id].name}** creato. Aggiungi i membri con \`/team aggiungi\` (scegli il ruolo: massimo 2 tank, 2 cleric, 2 chanter, 4 DPS), poi sceglilo quando apri una stanza con \`/raid\`.`);
   }
   if (!key) return say(`Non trovo il team **${name}**: scegli dai suggerimenti.`);
   const T = teams[key];
@@ -366,11 +373,21 @@ async function teamCmd(i, env, ctx) {
   }
   const users = ['utente', 'utente2', 'utente3', 'utente4', 'utente5'].map((n) => opt(i.data, n)).filter(Boolean).filter((u) => !i.data.resolved?.users?.[u]?.bot);
   if (!users.length) return say('Scegli almeno un membro (i bot non contano).');
-  if (sub === 'aggiungi') users.forEach((u) => { if (!T.m.includes(u)) T.m.push(u); });
-  if (sub === 'togli') T.m = T.m.filter((u) => !users.includes(u));
+  T.r ||= {};
+  if (sub === 'aggiungi') {
+    const k = opt(i.data, 'ruolo');
+    if (!TEAM_CAP[k]) return say('Scegli il ruolo: Tank, Cleric, Chanter o DPS.');
+    const others = T.m.filter((u) => T.r[u] === k && !users.includes(u)).length, room = TEAM_CAP[k] - others;
+    if (users.length > room) return say((room <= 0 ? `Il team **${T.name}** ha già ${TEAM_CAP[k]} ${roleOf(k)[1]} (il massimo): togli prima qualcuno con \`/team togli\`.`
+      : `Nel team **${T.name}** c'è posto solo per ${room} ${roleOf(k)[1]} in più (massimo ${TEAM_CAP[k]}): aggiungine di meno.`) +
+      `\n${roleOf(k)[1]} ora: ${T.m.filter((u) => T.r[u] === k).map((u) => `<@${u}>`).join(' ') || 'nessuno'}`);
+    users.forEach((u) => { if (!T.m.includes(u)) T.m.push(u); T.r[u] = k; });
+  }
+  if (sub === 'togli') { T.m = T.m.filter((u) => !users.includes(u)); users.forEach((u) => delete T.r[u]); }
   await env.KV.put('teams', JSON.stringify(teams));
   ctx.waitUntil(syncTeamRooms(env, ctx, key, T)); ctx.waitUntil(teamBoard(env));
-  return say(`${sub === 'aggiungi' ? '➕' : '➖'} ${users.map((u) => `<@${u}>`).join(' ')} ${sub === 'aggiungi' ? 'aggiunt' : 'tolt'}${users.length > 1 ? 'i' : 'o'} ${sub === 'aggiungi' ? 'al' : 'dal'} team **${T.name}** (${T.m.length} ${T.m.length === 1 ? 'membro' : 'membri'}). Le stanze già aperte con questo team si aggiornano.`);
+  const rk = sub === 'aggiungi' ? roleOf(opt(i.data, 'ruolo')) : null;
+  return say(`${sub === 'aggiungi' ? '➕' : '➖'} ${users.map((u) => `<@${u}>`).join(' ')} ${sub === 'aggiungi' ? 'aggiunt' : 'tolt'}${users.length > 1 ? 'i' : 'o'} ${sub === 'aggiungi' ? `al team **${T.name}** come ${rk[2]} ${rk[1]}` : `dal team **${T.name}**`} (${teamCount(T)}). Le stanze già aperte con questo team si aggiornano.`);
 }
 async function raidCreate(i, env) {
   // the board goes in #🔥・ludra (read-only: everybody signs up with the buttons); the command can be used from any channel
@@ -382,7 +399,7 @@ async function raidCreate(i, env) {
   if (opt(i.data, 'team')) {
     const teams = await getTeams(env), k = findTeam(teams, opt(i.data, 'team'));
     if (!k) return {content: `Non trovo il team **${opt(i.data, 'team')}**: scegli dai suggerimenti (i team si creano con \`/team crea\`).`};
-    team = {id: k, name: teams[k].name, m: [...teams[k].m]};
+    team = {id: k, name: teams[k].name, m: [...teams[k].m], r: {...(teams[k].r || {})}};
   }
   const role = await djson(env, 'POST', `/guilds/${GUILD}/roles`, {name: `🔥 ${title} ${ddmm(t)} ${hhmm(t)}`.slice(0, 100), color: 0xe8603c, mentionable: true, hoist: false}, `Stanza /raid di ${u.username}`);
   if (!role) await putErr(env, 'ev_err', 'role create failed (Manage Roles?)');
