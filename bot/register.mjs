@@ -75,8 +75,10 @@ const legionCommands = [
     {type: 3, name: 'note', description: 'Requisiti o dettagli (CP minimo, punto di ritrovo…)', required: false, max_length: 300}]},
 ];
 const {DISCORD_TOKEN, DISCORD_APP_ID} = process.env;
+// 18 Nov (the user asked): the screenshot verification is a MarchutanEU guild command only, so it no longer shows in the Italian community (Alberto verifies there)
+const VERIFY = commands.filter((c) => c.name.startsWith('verify'));
 const r = await fetch(`https://discord.com/api/v10/applications/${DISCORD_APP_ID}/commands`, {
-  method: 'PUT', headers: {Authorization: `Bot ${DISCORD_TOKEN}`, 'Content-Type': 'application/json'}, body: JSON.stringify(commands)});
+  method: 'PUT', headers: {Authorization: `Bot ${DISCORD_TOKEN}`, 'Content-Type': 'application/json'}, body: JSON.stringify(commands.filter((c) => !c.name.startsWith('verify')))});
 console.log('register commands:', r.status, r.ok ? 'ok' : await r.text());
 if (!r.ok) process.exit(1);
 const LEGIONE_GUILD = '1553398446524731435';
@@ -88,7 +90,7 @@ if (!r2.ok) process.exit(1);
 const meuCommands = [{name: 'refresh', description: 'Update your Gear Score role from the official Aion 2 armory', dm_permission: false},
   {name: 'top', description: 'Verified members ranked by Gear Score or Combat Power', dm_permission: false, options: [
     {type: 3, name: 'by', description: 'Ranking (default: Gear Score)', required: false, choices: [{name: 'Gear Score', value: 'gs'}, {name: 'Combat Power', value: 'cp'}]}]},
-  {name: 'whois', description: "A member's verified character", dm_permission: false, options: [{type: 6, name: 'user', description: 'The member', required: true}]}];
+  {name: 'whois', description: "A member's verified character", dm_permission: false, options: [{type: 6, name: 'user', description: 'The member', required: true}]}, ...VERIFY];
 const r3 = await fetch(`https://discord.com/api/v10/applications/${DISCORD_APP_ID}/guilds/1564968231410864160/commands`, {
   method: 'PUT', headers: {Authorization: `Bot ${DISCORD_TOKEN}`, 'Content-Type': 'application/json'}, body: JSON.stringify(meuCommands)});
 console.log('register MarchutanEU commands:', r3.status, r3.ok ? 'ok' : await r3.text());
