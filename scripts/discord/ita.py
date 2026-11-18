@@ -80,6 +80,7 @@ NOWRITE = ('SEND', 'PUBTH', 'PRIVTH', 'THREADS')
 # type 0 text, 2 voice, 13 stage, 15 forum
 CATS = [
     ('『📌 𝐁𝐄𝐍𝐕𝐄𝐍𝐔𝐓𝐎』', 'all', [
+        (0, '👋・benvenuto', 'Chi entra nel server: lo annuncia Discord in automatico.', 'readonly'),
         (0, '📜・regole', 'Le regole della community. Leggile prima di verificarti.', 'readonly'),
         (0, '✅・verifica', 'Verificati con /verifica: scegli il tuo personaggio e allega uno screenshot.', 'verify'),
         (0, '🆘・aiuto-verifica', 'Problemi con la verifica? Scrivi qui, lo staff ti aiuta.', 'verifyhelp'),
@@ -225,6 +226,13 @@ def run_apply():
         else: print('automod force:', bool(api('POST', f'/guilds/{G}/auto-moderation/rules', rule)))
     afk = find('💤 AFK', 2)
     if afk: api('PATCH', f'/guilds/{G}', {'afk_channel_id': afk['id'], 'afk_timeout': 900})
+    # 19 Nov (the user asked): Discord's own join messages go to #👋・benvenuto (system channel); boost messages stay on, tips/sticker replies off
+    wel = next((c for c in api('GET', f'/guilds/{G}/channels') if c['type'] == 0 and c['name'].endswith('・benvenuto')), None)
+    if wel:
+        g = api('GET', f'/guilds/{G}')
+        flags = (g.get('system_channel_flags', 0) & ~1) | 4 | 8      # join messages ON (bit 0 off); setup tips and 'wave' sticker replies off
+        r = api('PATCH', f'/guilds/{G}', {'system_channel_id': wel['id'], 'system_channel_flags': flags})
+        print('system channel -> 👋・benvenuto' if r else 'system channel FAILED (Manage Server?)')
     out = api('GET', f'/guilds/{G}/channels'); cats = {c['id']: c['name'] for c in out if c['type'] == 4}
     for c in sorted(out, key=lambda c: (c['type'] == 4 and -1 or 0, c['position'])):
         if c['type'] != 4: print('  ', cats.get(c.get('parent_id'), '-'), '|', c['name'])
