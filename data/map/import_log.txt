@@ -1,11 +1,15 @@
 kept previous World_D_Starter
 World_D_Starter Ishalgen [object Object]
+kept previous World_D_A
 World_D_A Altgard [object Object]
+kept previous World_D_B
 World_D_B Morheim [object Object]
 kept previous World_L_Starter
 World_L_Starter Poeta [object Object]
+kept previous World_L_A
 World_L_A Verteron [object Object]
 key eltnen World_L_B
+kept previous World_L_B
 World_L_B Eltnen [object Object]
 kept previous Abyss_Reshanta_A
 Abyss_Reshanta_A Chaotic Lower Reshanta [object Object]
