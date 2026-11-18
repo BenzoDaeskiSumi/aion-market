@@ -65,6 +65,10 @@ if rq:
     print('  Alberto cards in the last 100 messages:', len(mine), '| still to decide:', len(pend),
           '| with the screenshot attached to the card:', sum(bool(m.get('attachments')) for m in mine),
           '| image link only:', sum(not m.get('attachments') and bool((m.get('embeds') or [{}])[0].get('image')) for m in mine))
+    for m in mine[:5]:
+        u = ((m.get('embeds') or [{}])[0].get('image') or {}).get('url', '')
+        kind = 'ephemeral upload link' if 'ephemeral-attachments' in u else ('stored with the card' if f'/{rq["id"]}/' in u else ('other link' if u else 'no image'))
+        print('   card', m['timestamp'][:16], '| image:', kind, '| attachments listed:', len(m.get('attachments', [])))
     if mine: print('  newest card:', mine[0]['timestamp'][:16], '| oldest pending:', pend[-1]['timestamp'][:16] if pend else '-')
 print('== KV (ita-verifica)')
 CT, CA = os.environ['CF_TOKEN'], os.environ['CF_ACCOUNT']
