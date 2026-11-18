@@ -315,6 +315,8 @@ each legion will get its own section later; verification like MarchutanEU; separ
     /raid team:<autocomplete> copies the team into the room (R.team = {id, name, m}); seat() puts team members first in each role queue (teamFirst), so a team
     member takes a non-member's seat and the non-member slides to the other party or the reserves (moved() posts '⬇️ … sei in riserva'); members marked ⭐ on the
     board. /team changes update open rooms using that team (syncTeamRooms). A non-member pushed out comes back by himself when a seat frees (he stays in R.p).
+    Read-only channel '👥・team' (ita.py, after 🔥・ludra): ONE Gettulio message listing every team (teamBoard(), KV teams_msg = 'channel:message'), rewritten after each
+    /team change and by /tick; the cron posts it once if missing (re-posts only when the message is gone: 404).
   * Ciro (was Marcello) = ita-mod (mod.js): /avverti (3rd = 1 h timeout) /avvertimenti /azzera-avvertimenti /timeout /togli-timeout /kick /ban /sban /pulisci, all logged in 🧹・log;
     tickets in 🎫・ticket (tk:open:segnalazione|idea|aiuto -> private thread, tk:close:<uid>); /setup also owns the AutoMod rules (mention spam 15, invite links, Kinah selling,
     spam; the single-instance types are taken over from older rules). Its role got Manage Server for AutoMod.

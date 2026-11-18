@@ -312,6 +312,31 @@ async function syncTeamRooms(env, ctx, id, T) {            // a team changed: op
     if (T) ctx.waitUntil(moved(env, R, before, null));
   }
 }
+// read-only #👥・team: ONE Gettulio message with every team and its members, rewritten after each /team change (KV teams_msg = message id)
+async function teamBoard(env) {
+  let ch = await channelId(env, '・team');
+  if (!ch) ch = (await djson(env, 'GET', `/guilds/${GUILD}/channels`) || []).find((c) => c.name.endsWith('・team'))?.id;
+  if (!ch) return 'no channel';
+  const teams = Object.values(await getTeams(env)).sort((a, b) => a.name.localeCompare(b.name, 'it'));
+  const fields = teams.slice(0, 25).map((T) => {
+    let v = T.m.length ? T.m.map((u) => `<@${u}>`).join('\n') : '*ancora nessuno*';
+    if (v.length > 1024) v = v.slice(0, 1000).replace(/\n[^\n]*$/, '') + '\n…';
+    return {name: `⭐ ${T.name} · ${T.m.length} ${T.m.length === 1 ? 'membro' : 'membri'}`, value: v, inline: true};
+  });
+  const body = {content: '', allowed_mentions: {parse: []}, embeds: [{color: 0xe8603c, title: '👥 Team del Ludra',
+    description: ['Quando lo staff apre una stanza con `/raid` e sceglie un team, i suoi membri hanno la **precedenza**: se uno di loro prende un posto già occupato, chi c\'era passa nell\'altro party o in riserva, e torna dentro appena si libera un posto.',
+      '', teams.length ? 'Questa lista si aggiorna da sola.' : 'Non c\'è ancora nessun team.'].join('\n'),
+    fields, footer: {text: `I team li gestisce lo staff con /team\n© 2026 BenzoDaeskiSumi · sistema di iscrizione originale di Gettulio: vietato copiarlo`}, timestamp: new Date().toISOString()}]};
+  const old = await env.KV.get('teams_msg');
+  if (old) {
+    const [och, mid] = old.split(':');
+    if (och === ch) { const r = await dapi(env, 'PATCH', `/channels/${ch}/messages/${mid}`, body); if (r.ok) return 'edited'; if (r.status !== 404) return 'edit ' + r.status; }
+  }
+  const m = await djson(env, 'POST', `/channels/${ch}/messages`, body);
+  if (!m) return 'post failed';
+  await env.KV.put('teams_msg', `${ch}:${m.id}`);
+  return 'posted';
+}
 async function teamCmd(i, env, ctx) {
   if (!await isStaff(env, i)) return oops('Solo lo staff può gestire i team.');
   const sub = i.data.options?.[0]?.name, teams = await getTeams(env), name = String(opt(i.data, 'nome') || '').trim(), key = findTeam(teams, name);
@@ -328,6 +353,7 @@ async function teamCmd(i, env, ctx) {
     if (teams[id]) return say(`Il team **${teams[id].name}** esiste già.`);
     teams[id] = {name: name.slice(0, 40), m: []};
     await env.KV.put('teams', JSON.stringify(teams));
+    ctx.waitUntil(teamBoard(env));
     return say(`✅ Team **${teams[id].name}** creato. Aggiungi i membri con \`/team aggiungi\`, poi sceglilo quando apri una stanza con \`/raid\`.`);
   }
   if (!key) return say(`Non trovo il team **${name}**: scegli dai suggerimenti.`);
@@ -335,7 +361,7 @@ async function teamCmd(i, env, ctx) {
   if (sub === 'elimina') {
     delete teams[key];
     await env.KV.put('teams', JSON.stringify(teams));
-    ctx.waitUntil(syncTeamRooms(env, ctx, key, null));
+    ctx.waitUntil(syncTeamRooms(env, ctx, key, null)); ctx.waitUntil(teamBoard(env));
     return say(`🗑️ Team **${T.name}** eliminato. Nelle stanze già aperte con questo team non c'è più la priorità.`);
   }
   const users = ['utente', 'utente2', 'utente3', 'utente4', 'utente5'].map((n) => opt(i.data, n)).filter(Boolean).filter((u) => !i.data.resolved?.users?.[u]?.bot);
@@ -343,7 +369,7 @@ async function teamCmd(i, env, ctx) {
   if (sub === 'aggiungi') users.forEach((u) => { if (!T.m.includes(u)) T.m.push(u); });
   if (sub === 'togli') T.m = T.m.filter((u) => !users.includes(u));
   await env.KV.put('teams', JSON.stringify(teams));
-  ctx.waitUntil(syncTeamRooms(env, ctx, key, T));
+  ctx.waitUntil(syncTeamRooms(env, ctx, key, T)); ctx.waitUntil(teamBoard(env));
   return say(`${sub === 'aggiungi' ? '➕' : '➖'} ${users.map((u) => `<@${u}>`).join(' ')} ${sub === 'aggiungi' ? 'aggiunt' : 'tolt'}${users.length > 1 ? 'i' : 'o'} ${sub === 'aggiungi' ? 'al' : 'dal'} team **${T.name}** (${T.m.length} ${T.m.length === 1 ? 'membro' : 'membri'}). Le stanze già aperte con questo team si aggiornano.`);
 }
 async function raidCreate(i, env) {
@@ -374,7 +400,7 @@ async function raidCreate(i, env) {
 const flatFocused = (data) => { const o = data?.options || [], l = o.length && o[0].type === 1 ? o[0].options || [] : o; return String(l.find((x) => x.focused)?.value || ''); };
 export default {
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(Promise.allSettled([convertDaily(env).catch(() => {}).then(() => dropOldDaily(env)).catch(() => {}), roomsTick(env).catch((e) => putErr(env, 'raid_err', String(e?.stack || e).slice(0, 300)))]));
+    ctx.waitUntil(Promise.allSettled([env.KV.get('teams_msg').then((m) => m ? null : teamBoard(env)).catch(() => {}), convertDaily(env).catch(() => {}).then(() => dropOldDaily(env)).catch(() => {}), roomsTick(env).catch((e) => putErr(env, 'raid_err', String(e?.stack || e).slice(0, 300)))]));
   },
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
@@ -382,7 +408,7 @@ export default {
     if (url.pathname === '/tick') { let err = null; const conv = await convertDaily(env).catch((e) => 'err ' + e); await dropOldDaily(env).catch(() => {}); await roomsTick(env).catch((e) => { err = String(e?.stack || e).slice(0, 300); }); if (!err) await env.KV.delete('raid_err');
       const rooms = [];
       for (const {name: k} of (await env.KV.list({prefix: 'raid:'})).keys) { const R = JSON.parse(await env.KV.get(k) || 'null'); if (R) rooms.push({k, keys: R.v === 2 ? undefined : Object.keys(R).join(','), list: R.v === 2 ? undefined : JSON.stringify(Object.fromEntries(Object.entries(R).filter(([x, y]) => Array.isArray(y) || (y && typeof y === 'object')).map(([x, y]) => [x, Array.isArray(y) ? y.length : Object.keys(y).length]))), v: R.v || 1, when: R.t ? new Date(R.t).toISOString() : null, n: Array.isArray(R.p) ? allIn(R).size : null, role: !!R.role, msg: !!R.msg, done: !!R.done}); }
-      return Response.json({raid: err, conv, rooms}); }
+      return Response.json({raid: err, conv, rooms, teams: await teamBoard(env).catch((e) => 'err ' + e)}); }
     if (req.method !== 'POST') return new Response('Gettulio: ok');
     const body = await req.text();
     if (!(await verified(req, body, env))) return new Response('bad signature', {status: 401});
