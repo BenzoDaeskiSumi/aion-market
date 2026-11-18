@@ -311,6 +311,10 @@ each legion will get its own section later; verification like MarchutanEU; separ
     Full room = 2 TEMPORARY voice channels in VOCALI (one per party: its 5 + staff + Gettulio; overwrites follow changes).
     Staff edit: '✏️ Gestisci (staff)' -> ephemeral user select le:<id> -> place select lm:<id>:<uid> (party+role or out); same place() as the buttons, board PATCHed,
     a short note under the board. Gettulio's role has Manage Channels + Manage Roles + voice perms (audit.py one-off, 12 Nov). /tick = cleanup + roomsTick.
+    Teams (18 Nov, the user asked): /team crea|aggiungi|togli|lista|elimina (staff, default perm Manage Messages; KV teams = {slug: {name, m: [uid]}}, up to 5 users per call);
+    /raid team:<autocomplete> copies the team into the room (R.team = {id, name, m}); seat() puts team members first in each role queue (teamFirst), so a team
+    member takes a non-member's seat and the non-member slides to the other party or the reserves (moved() posts '⬇️ … sei in riserva'); members marked ⭐ on the
+    board. /team changes update open rooms using that team (syncTeamRooms). A non-member pushed out comes back by himself when a seat frees (he stays in R.p).
   * Ciro (was Marcello) = ita-mod (mod.js): /avverti (3rd = 1 h timeout) /avvertimenti /azzera-avvertimenti /timeout /togli-timeout /kick /ban /sban /pulisci, all logged in 🧹・log;
     tickets in 🎫・ticket (tk:open:segnalazione|idea|aiuto -> private thread, tk:close:<uid>); /setup also owns the AutoMod rules (mention spam 15, invite links, Kinah selling,
     spam; the single-instance types are taken over from older rules). Its role got Manage Server for AutoMod.

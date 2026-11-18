@@ -20,7 +20,16 @@ const CMDS = {
   eventi: [
     {name: 'raid', description: 'Apri una stanza Ludra da 10 in #ludra: chi si iscrive viene taggato 1 ora e 15 minuti prima',
       options: [o(S, 'quando', "Es. 21:00, domani 21, sabato 21:30, 25/11 21:00 (ora italiana)"), o(S, 'titolo', 'Nome della stanza (Ludra se vuoto)', {required: false}),
-        o(S, 'note', 'Note (requisiti, punto di ritrovo…)', {required: false}), o(B, 'ping', 'Tagga Ping Ludra (sì se vuoto)', {required: false})]},
+        o(S, 'note', 'Note (requisiti, punto di ritrovo…)', {required: false}), o(B, 'ping', 'Tagga Ping Ludra (sì se vuoto)', {required: false}),
+        o(S, 'team', 'Team con la priorità: i suoi membri passano davanti agli altri', {required: false, autocomplete: true})]},
+    {name: 'team', description: 'Staff: team di giocatori con la priorità nelle stanze Ludra', default_member_permissions: MSG, options: [
+      {type: 1, name: 'crea', description: 'Crea un team', options: [o(S, 'nome', 'Nome del team')]},
+      {type: 1, name: 'aggiungi', description: 'Aggiungi membri a un team', options: [o(S, 'nome', 'Il team', {autocomplete: true}), o(U, 'utente', 'Membro'),
+        ...[2, 3, 4, 5].map((n) => o(U, 'utente' + n, 'Altro membro', {required: false}))]},
+      {type: 1, name: 'togli', description: 'Togli membri da un team', options: [o(S, 'nome', 'Il team', {autocomplete: true}), o(U, 'utente', 'Membro'),
+        ...[2, 3, 4, 5].map((n) => o(U, 'utente' + n, 'Altro membro', {required: false}))]},
+      {type: 1, name: 'lista', description: 'Vedi i team e i loro membri', options: [o(S, 'nome', 'Un team solo (tutti se vuoto)', {required: false, autocomplete: true})]},
+      {type: 1, name: 'elimina', description: 'Elimina un team', options: [o(S, 'nome', 'Il team', {autocomplete: true})]}]},
   ],
   mod: [
     {name: 'avverti', description: 'Dai un avvertimento (al 3° scatta 1 ora di timeout)', default_member_permissions: MOD, options: [o(U, 'utente', 'Il membro'), o(S, 'motivo', 'Il motivo (lo riceve in privato)')]},

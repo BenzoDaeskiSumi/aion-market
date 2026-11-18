@@ -8,7 +8,10 @@
 //    The party voice channels are visible to every verified member (only the party + staff can join) and stay until the staff presses 🔒 Chiudi vocali.
 //  * When the room is full: two TEMPORARY voice channels (one per party, only its 5 members + staff), kept in sync while people change.
 //  * Staff (Admin/Moderatore/Helper) edit the list with ✏️ Gestisci: ephemeral user select le:<id> -> place select lm:<id>:<uid> (party + role, or out).
-// KV: raid:<id> = {title, t, ch, msg, note, by, byName, p, role, voice: [id, id] | null, pinged, called, done}.
+//  * Teams (18 Nov, the user asked): the staff builds named teams with /team; /raid team:<name> gives that team's members PRIORITY: when one of them takes
+//    a seat held by a non-member, the non-member slides to the other party (same role, if free) or to the reserves, and gets a message. Rooms keep a copy
+//    of the team (R.team = {id, name, m}) that /team changes update while the room is open.
+// KV: raid:<id> = {title, t, ch, msg, note, by, byName, p, role, voice: [id, id] | null, pinged, called, done, team}; teams = {slug: {name, m: [uid]}}.
 import {GUILD, verified, dapi, djson, oops, defer, hook, opt, uidOf, roleId, channelId, channels, isStaff, putErr, localDay, atLocal, TZ, STAFF_ROLES} from './lib.js';
 
 const LUDRA = {parties: 2};
@@ -23,11 +26,14 @@ const allIn = (R) => new Set([...R.p.flatMap((P) => Object.values(P).flat()), ..
 const RSV = (R) => LU_ROLES.flatMap(([k]) => (R.r?.[k] || []).map((u) => [k, u]));      // chosen reserves, in sign-up order per role
 const dayName = (t) => new Date(t).toLocaleDateString('it-IT', {timeZone: TZ, weekday: 'long', day: 'numeric', month: 'long'});
 const emptyParties = () => [...Array(LUDRA.parties)].map(() => ({t: [], c: [], ch: [], d: []}));
-function seat(R) {
+const prio = (R) => new Set(R.team?.m || []);
+const teamFirst = (R, arr) => { const T = prio(R); return T.size ? [...arr.filter((x) => T.has(x.u ?? x)), ...arr.filter((x) => !T.has(x.u ?? x))] : arr; };
+function seat(R) {                    // sign-up order, but members of the room's team go first (they push the others to the other party or the reserves)
   const slots = R.p.map(() => ({})), res = [];
   for (const [k, , , n] of LU_ROLES) {
-    const extra = [];
-    R.p.forEach((P, pi) => { slots[pi][k] = [...Array(n)].map((_, j) => P[k][j] || null); P[k].slice(n).forEach((u) => extra.push([pi, u])); });
+    let extra = [];
+    R.p.forEach((P, pi) => { const q = teamFirst(R, P[k]); slots[pi][k] = [...Array(n)].map((_, j) => q[j] || null); q.slice(n).forEach((u) => extra.push({pi, u})); });
+    extra = teamFirst(R, extra).map(({pi, u}) => [pi, u]);
     for (const [pi, u] of extra) { const q = slots.findIndex((S) => S[k].includes(null)); if (q >= 0) slots[q][k][slots[q][k].indexOf(null)] = u; else res.push([k, pi, u]); }
   }
   return {slots, res};
@@ -37,7 +43,7 @@ const mains = (R) => new Set(partyOf(R).flat());
 const free = (R) => TOT - mains(R).size;
 
 function board(R, prefix) {
-  const who = (u) => (u ? `<@${u}>` : '*libero*'), past = Date.now() > R.t, ts = Math.floor(R.t / 1000), {slots, res} = seat(R);
+  const T = prio(R), who = (u) => (u ? `<@${u}>${T.has(u) ? ' ⭐' : ''}` : '*libero*'), past = Date.now() > R.t, ts = Math.floor(R.t / 1000), {slots, res} = seat(R);
   const fields = slots.map((S, p) => ({name: `Party ${p + 1}${R.voice?.[p] ? ` · 🔊 <#${R.voice[p]}>` : ''}`, inline: true,
     value: LU_ROLES.flatMap(([k, , emo]) => S[k].map((u) => `${emo} ${who(u)}`)).join('\n')}));
   const rs = [...RSV(R).map(([k, u]) => `${LU_ROLES.find((r) => r[0] === k)[2]} ${who(u)}`), ...res.map(([k, pi, u]) => `${LU_ROLES.find((r) => r[0] === k)[2]} ${who(u)} · voleva il Party ${pi + 1}`)];
@@ -47,6 +53,7 @@ function board(R, prefix) {
   return {content: '', embeds: [{title: `🔥 ${R.title} · ${dayName(R.t)}`, color: past ? 0x5c5f66 : 0xe8603c,
       description: [`🕙 <t:${ts}:F> · <t:${ts}:R>`, R.note ? `\n${R.note}` : '',
         '\nScegli party e ruolo. Ogni party: 1 tank, 1 cleric, 1 chanter, 2 DPS.',
+        R.team ? `👥 Priorità al team **${R.team.name}** (⭐): se uno di loro prende il tuo posto passi nell'altro party o in **riserva**, e torni dentro appena si libera un posto.` : '',
         'Se il tuo posto è preso ma nell\'altro party c\'è spazio per il tuo ruolo, ti metto lì; altrimenti vai in **riserva**. Se vuoi venire solo come riserva, usa i pulsanti **Riserva**.',
         R.role ? `Chi è in lista riceve il ruolo <@&${R.role}>: lo tagghiamo **un\'ora prima** e **15 minuti prima**.` : '',
         `\n**${taken}/${TOT}** posti presi${taken === TOT ? ' · 🔊 stanza piena: i vocali dei party sono qui sotto' : ' · quando la stanza è piena creo i vocali dei due party'}`].join('\n'),
@@ -113,10 +120,19 @@ async function place(env, ctx, R, kvKey, uid, dest) {        // dest = 'p:k' | '
     if (after.has(uid) && !beforeAll.has(uid)) ctx.waitUntil(dapi(env, 'PUT', `/guilds/${GUILD}/members/${uid}/roles/${R.role}`, undefined, `Iscritto a ${R.title}`));
     if (!after.has(uid) && beforeAll.has(uid)) ctx.waitUntil(dapi(env, 'DELETE', `/guilds/${GUILD}/members/${uid}/roles/${R.role}`, undefined, `Uscito da ${R.title}`));
   }
-  const up = [...mains(R)].filter((u) => !before.has(u) && u !== uid);
-  if ((R.pinged || R.voice) && up.length)
-    ctx.waitUntil(dapi(env, 'POST', `/channels/${R.ch}/messages`, {content: `🔁 ${up.map((u) => `<@${u}>`).join(' ')} si è liberato un posto: sei nel party di **${R.title}** delle ${hhmm(R.t)}!`, allowed_mentions: {users: up}}).catch(() => {}));
+  ctx.waitUntil(moved(env, R, before, uid));
   if (created && !wasFull) ctx.waitUntil(fullCall(env, R));
+}
+// after a change: who left the parties because a team member took their seat (always told), who got in from the reserves (told once the room was tagged)
+async function moved(env, R, before, uid, why) {
+  const now = mains(R), all = allIn(R), T = prio(R);
+  const down = [...before].filter((u) => !now.has(u) && all.has(u) && u !== uid && !T.has(u));
+  const up = [...now].filter((u) => !before.has(u) && u !== uid);
+  const ref = R.msg ? {message_reference: {message_id: R.msg, fail_if_not_exists: false}} : {};
+  if (down.length && T.size) await dapi(env, 'POST', `/channels/${R.ch}/messages`, {content: `⬇️ ${down.map((u) => `<@${u}>`).join(' ')} ${why || (uid ? `<@${uid}>, del team **${R.team.name}**, ha la precedenza` : `il team **${R.team.name}** ha la precedenza`)}: ${down.length > 1 ? 'siete' : 'sei'} in **riserva** per **${R.title}** delle ${hhmm(R.t)}. Se si libera un posto ${down.length > 1 ? 'tornate' : 'torni'} dentro da ${down.length > 1 ? 'soli' : 'solo'}.`,
+    allowed_mentions: {users: down}, ...ref}).catch(() => {});
+  if ((R.pinged || R.voice) && up.length)
+    await dapi(env, 'POST', `/channels/${R.ch}/messages`, {content: `🔁 ${up.map((u) => `<@${u}>`).join(' ')} si è liberato un posto: sei nel party di **${R.title}** delle ${hhmm(R.t)}!`, allowed_mentions: {users: up}}).catch(() => {});
 }
 async function press(i, env, ctx) {
   const parts = i.data.custom_id.split(':'), key = parts[1], a = parts[2], b = parts[3], uid = uidOf(i), kvKey = 'raid:' + key;
@@ -276,25 +292,86 @@ function parseQuando(txt, now = Date.now()) {
   if (ts < now - 5 * 6e4) { if (head === 'oggi' || head === 'stasera') return null; const d2 = localDay(now + (head ? day + 7 : 1) * 864e5); ts = atLocal(d2.y, d2.m, d2.d, min); }
   return ts;
 }
+// ---------- teams (staff): /team crea|aggiungi|togli|lista|elimina ----------
+const slugT = (x) => String(x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
+const getTeams = async (env) => JSON.parse(await env.KV.get('teams') || '{}');
+const findTeam = (teams, v) => teams[v] ? v : Object.keys(teams).find((k) => k === slugT(v) || teams[k].name.toLowerCase() === String(v || '').toLowerCase());
+async function teamChoices(env, q) {
+  const teams = await getTeams(env), s = slugT(q);
+  return Object.entries(teams).filter(([k, T]) => !s || k.includes(s) || T.name.toLowerCase().includes(String(q).toLowerCase()))
+    .slice(0, 25).map(([k, T]) => ({name: `${T.name} · ${T.m.length} ${T.m.length === 1 ? 'membro' : 'membri'}`.slice(0, 100), value: k}));
+}
+async function syncTeamRooms(env, ctx, id, T) {            // a team changed: open rooms that use it follow (board redrawn, people moved told)
+  for (const {name: k} of (await env.KV.list({prefix: 'raid:'})).keys) {
+    const R = JSON.parse(await env.KV.get(k) || 'null');
+    if (!R || R.v !== 2 || R.team?.id !== id || R.done || Date.now() > R.t) continue;
+    const before = mains(R);
+    R.team = T ? {id, name: T.name, m: [...T.m]} : null;
+    await env.KV.put(k, JSON.stringify(R), EXP(R));
+    if (R.msg) await dapi(env, 'PATCH', `/channels/${R.ch}/messages/${R.msg}`, board(R, `lr:${k.slice(5)}`));
+    if (T) ctx.waitUntil(moved(env, R, before, null));
+  }
+}
+async function teamCmd(i, env, ctx) {
+  if (!await isStaff(env, i)) return oops('Solo lo staff può gestire i team.');
+  const sub = i.data.options?.[0]?.name, teams = await getTeams(env), name = String(opt(i.data, 'nome') || '').trim(), key = findTeam(teams, name);
+  const say = (content) => Response.json({type: 4, data: {content, flags: 64, allowed_mentions: {parse: []}}});
+  const list = (T) => T.m.length ? T.m.map((u) => `<@${u}>`).join(' ') : '*nessuno*';
+  if (sub === 'lista') {
+    if (name) return key ? say(`👥 **${teams[key].name}** (${teams[key].m.length}): ${list(teams[key])}`) : say(`Non trovo il team **${name}**.`);
+    const all = Object.values(teams);
+    return say(all.length ? all.map((T) => `👥 **${T.name}** (${T.m.length}): ${list(T)}`).join('\n').slice(0, 1900) : 'Non c\'è ancora nessun team: crealo con `/team crea`.');
+  }
+  if (sub === 'crea') {
+    const id = slugT(name);
+    if (!id) return say('Scrivi un nome per il team.');
+    if (teams[id]) return say(`Il team **${teams[id].name}** esiste già.`);
+    teams[id] = {name: name.slice(0, 40), m: []};
+    await env.KV.put('teams', JSON.stringify(teams));
+    return say(`✅ Team **${teams[id].name}** creato. Aggiungi i membri con \`/team aggiungi\`, poi sceglilo quando apri una stanza con \`/raid\`.`);
+  }
+  if (!key) return say(`Non trovo il team **${name}**: scegli dai suggerimenti.`);
+  const T = teams[key];
+  if (sub === 'elimina') {
+    delete teams[key];
+    await env.KV.put('teams', JSON.stringify(teams));
+    ctx.waitUntil(syncTeamRooms(env, ctx, key, null));
+    return say(`🗑️ Team **${T.name}** eliminato. Nelle stanze già aperte con questo team non c'è più la priorità.`);
+  }
+  const users = ['utente', 'utente2', 'utente3', 'utente4', 'utente5'].map((n) => opt(i.data, n)).filter(Boolean).filter((u) => !i.data.resolved?.users?.[u]?.bot);
+  if (!users.length) return say('Scegli almeno un membro (i bot non contano).');
+  if (sub === 'aggiungi') users.forEach((u) => { if (!T.m.includes(u)) T.m.push(u); });
+  if (sub === 'togli') T.m = T.m.filter((u) => !users.includes(u));
+  await env.KV.put('teams', JSON.stringify(teams));
+  ctx.waitUntil(syncTeamRooms(env, ctx, key, T));
+  return say(`${sub === 'aggiungi' ? '➕' : '➖'} ${users.map((u) => `<@${u}>`).join(' ')} ${sub === 'aggiungi' ? 'aggiunt' : 'tolt'}${users.length > 1 ? 'i' : 'o'} ${sub === 'aggiungi' ? 'al' : 'dal'} team **${T.name}** (${T.m.length} ${T.m.length === 1 ? 'membro' : 'membri'}). Le stanze già aperte con questo team si aggiornano.`);
+}
 async function raidCreate(i, env) {
   // the board goes in #🔥・ludra (read-only: everybody signs up with the buttons); the command can be used from any channel
   const t = parseQuando(opt(i.data, 'quando'));
   if (!t) return {content: 'Non ho capito quando. Esempi: `21:00`, `domani 21`, `sabato 21:30`, `25/11 21:00` (ora italiana).'};
   const id = crypto.randomUUID().slice(0, 8), u = i.member?.user || i.user, ch = await channelId(env, '・ludra') || i.channel_id;
   const title = String(opt(i.data, 'titolo') || 'Ludra').slice(0, 60);
+  let team = null;
+  if (opt(i.data, 'team')) {
+    const teams = await getTeams(env), k = findTeam(teams, opt(i.data, 'team'));
+    if (!k) return {content: `Non trovo il team **${opt(i.data, 'team')}**: scegli dai suggerimenti (i team si creano con \`/team crea\`).`};
+    team = {id: k, name: teams[k].name, m: [...teams[k].m]};
+  }
   const role = await djson(env, 'POST', `/guilds/${GUILD}/roles`, {name: `🔥 ${title} ${ddmm(t)} ${hhmm(t)}`.slice(0, 100), color: 0xe8603c, mentionable: true, hoist: false}, `Stanza /raid di ${u.username}`);
   if (!role) await putErr(env, 'ev_err', 'role create failed (Manage Roles?)');
   const R = {title, t, note: String(opt(i.data, 'note') || '').slice(0, 300), by: u.id, byName: i.member?.nick || u.global_name || u.username,
-    ch, msg: null, role: role?.id || null, p: emptyParties(), voice: null, pinged: false, called: false, v: 2, ui: 5};
+    ch, msg: null, role: role?.id || null, p: emptyParties(), voice: null, pinged: false, called: false, v: 2, ui: 5, team};
   const msg = board(R, `lr:${id}`), ping = opt(i.data, 'ping') !== false ? await roleId(env, 'Ping Ludra') : null;
   if (ping) { msg.content = `<@&${ping}> nuova stanza **${R.title}** <t:${Math.floor(t / 1000)}:R>: firmate qui sotto!`; msg.allowed_mentions = {roles: [ping]}; }
   const posted = await djson(env, 'POST', `/channels/${ch}/messages`, msg);
   if (!posted) { if (role) await dapi(env, 'DELETE', `/guilds/${GUILD}/roles/${role.id}`); return {content: 'Non riesco a pubblicare la lista: riprova tra poco.'}; }
   R.msg = posted.id;
   await env.KV.put('raid:' + id, JSON.stringify(R), EXP(R));
-  return {content: `✅ Stanza **${R.title}** creata in <#${ch}> per ${dayName(t)} alle ${hhmm(t)}. Chi si iscrive riceve il ruolo${role ? ` <@&${role.id}>` : ''}: lo tagghiamo un'ora prima e 15 minuti prima.`};
+  return {content: `✅ Stanza **${R.title}** creata in <#${ch}> per ${dayName(t)} alle ${hhmm(t)}. Chi si iscrive riceve il ruolo${role ? ` <@&${role.id}>` : ''}: lo tagghiamo un'ora prima e 15 minuti prima.${team ? ` Priorità al team **${team.name}** (${team.m.length} membri).` : ''}`};
 }
 
+const flatFocused = (data) => { const o = data?.options || [], l = o.length && o[0].type === 1 ? o[0].options || [] : o; return String(l.find((x) => x.focused)?.value || ''); };
 export default {
   async scheduled(event, env, ctx) {
     ctx.waitUntil(Promise.allSettled([convertDaily(env).catch(() => {}).then(() => dropOldDaily(env)).catch(() => {}), roomsTick(env).catch((e) => putErr(env, 'raid_err', String(e?.stack || e).slice(0, 300)))]));
@@ -313,6 +390,8 @@ export default {
     if (i.type === 1) return Response.json({type: 1});
     if (i.guild_id && i.guild_id !== GUILD) return oops('Funziono solo nella community italiana di Aion 2.');
     try {
+      if (i.type === 4) return Response.json({type: 8, data: {choices: await teamChoices(env, flatFocused(i.data))}});
+      if (i.type === 2 && i.data.name === 'team') return await teamCmd(i, env, ctx);
       if (i.type === 2 && i.data.name === 'raid') {        // role + post can take a moment: answer at once, finish in the background
         ctx.waitUntil(raidCreate(i, env).catch(async (e) => { await putErr(env, 'ev_err', String(e?.stack || e).slice(0, 300)); return {content: 'Qualcosa è andato storto, riprova tra poco.'}; })
           .then((d) => hook(i, env, {...d, allowed_mentions: {parse: []}})));
