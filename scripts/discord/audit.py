@@ -32,7 +32,8 @@ def legions():
     return out
 before = legions()
 print('verified:', sum(len(v) for v in before.values()), '| legion never read:', len(before.get(None, [])), '| no legion in game:', len(before.get('', [])))
-recs = {key: json.loads(get(key)) for key in keys if key.startswith('legrole:')}
+J = lambda v: v if isinstance(v, dict) else json.loads(v)
+recs = {key: J(get(key)) for key in keys if key.startswith('legrole:')}
 for key, r in recs.items(): print('legion role', r.get('name'), '| verified members in it BEFORE:', len(before.get(r.get('name'), [])))
 # refresh everybody, 6 per call
 frm, res = 0, {}
@@ -45,6 +46,7 @@ while True:
     time.sleep(1)
 print('refresh results:', res)
 after = legions()
+print('legions of verified members now:', sorted(((len(v), k) for k, v in after.items() if k), reverse=True)[:8])
 s, roles = call(f'https://discord.com/api/v10/guilds/{G}/roles', VT)
 for key, r in recs.items():
     have = 0; after_ = 0
