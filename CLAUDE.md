@@ -306,6 +306,9 @@ each legion will get its own section later; verification like MarchutanEU; separ
     verifies the leader on the spot via applyVerify when personaggio is given (needed if not verified), then legionApprove (Legion Leader + '🏰 <legion>' role to verified
     mates), then legionPost(): Alberto opens ONE post in the forum 🏰・legioni (title 'Legion · Server · Faction', tags faction + Recluta, embed with what the official site
     knows, leader tagged to complete it by replying); thread id saved as legrole rec.post, a second /legione refreshes that post instead of opening another.
+    Role grants are QUEUED (19 Nov: only 9 of 35 got the role, a Worker run makes ~50 calls): legionApprove gives 6 at once, the rest go to KV legfill {roleId: {name, uids}};
+    the reply has a '▶️ Continua (n rimasti)' button lgf (staff, 40 per press, fresh run each) and the */15 cron drains the queue (30 per run, skipping that run's profile sweep).
+    Mates come from vlink.legion (read at each refresh); /sweep (audit.py one-off) refreshes everybody at once when needed.
   * 18 Nov (the user asked): '🔥・ludra' is OPEN to writing (members chat there and the command box shows, so anyone can /raid there); /raid team: stays staff-only.
   * Gettulio (was Fabrizio) = ita-eventi (eventi.js), Ludra only. 12 Nov evening (the user asked): NO automatic daily list any more (the old board was deleted
     by dropOldDaily; lu: buttons answer 'use /raid'). /raid quando [titolo] [note] [ping] posts a room of 10 in 🔥・ludra (read-only; the command works from any channel,

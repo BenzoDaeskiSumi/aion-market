@@ -274,10 +274,27 @@ async function legioneCmd(i, env, ctx) {
       const post = await legionPost(env, x.key, x.rec, x.prof, leader, x.mates).catch(() => null);
       out.push(post ? `📌 Post della legione: <#${post}> (il leader lo completa rispondendo lì).` : '⚠️ Non sono riuscito ad aprire il post nel forum 🏰・legioni.');
     }
-    await hook(i, env, {content: out.join('\n'), allowed_mentions: {parse: []}});
+    await hook(i, env, {content: out.join('\n'), allowed_mentions: {parse: []}, components: fillRow(x.left)});
   })());
   return defer();
 }
+async function legFill(env, max, only) {          // gives queued legion roles, up to max calls; members who already have it are skipped quickly
+  const q = JSON.parse(await env.KV.get('legfill') || '{}');
+  let done = 0, calls = 0;
+  for (const [role, job] of Object.entries(q)) {
+    if (only && role !== only) continue;
+    while (job.uids.length && calls < max) {
+      const u = job.uids.shift(); calls++;
+      const r = await dapi(env, 'PUT', `/guilds/${GUILD}/members/${u}/roles/${role}`, undefined, `Legione ${job.name}`);
+      if (r.ok) done++; else if (r.status === 429) { job.uids.unshift(u); break; }
+    }
+    if (!job.uids.length) delete q[role];
+  }
+  await env.KV.put('legfill', JSON.stringify(q));
+  const left = Object.values(q).reduce((a, j) => a + j.uids.length, 0);
+  return {done, left};
+}
+const fillRow = (left) => left > 0 ? [{type: 1, components: [{type: 2, style: 1, custom_id: 'lgf', emoji: {name: '▶️'}, label: `Continua a dare il ruolo (${left} rimasti)`}]}] : [];
 async function legionApprove(env, leader, by) {     // Legion Leader role + legion role (created once) on everyone verified in that legion
   const L = JSON.parse(await env.KV.get('vlink:' + leader) || 'null'); if (!L) return 'Il richiedente non è più verificato.';
   const prof = await charProfile(L.server, L.id).catch(() => null);
@@ -302,10 +319,15 @@ async function legionApprove(env, leader, by) {     // Legion Leader role + legi
     const v = JSON.parse(await env.KV.get(k.name) || 'null');
     if (v && v.server === prof.server && v.legion === prof.legion) mates.push(k.name.slice(6));
   }
-  let done = 0;
-  for (const u of mates.slice(0, 35)) if ((await dapi(env, 'PUT', `/guilds/${GUILD}/members/${u}/roles/${rec.role}`, undefined, `Legione ${prof.legion}`)).ok) done++;
+  // a Worker run can make about 50 calls and /legione already spends many: give the role to a few now, queue the others (KV legfill),
+  // given by the '▶️ Continua' button (each press = a fresh run) or by the cron (18 Nov: only 9 of 35 got it at once)
+  const q = JSON.parse(await env.KV.get('legfill') || '{}');
+  q[rec.role] = {name: prof.legion, uids: mates};
+  await env.KV.put('legfill', JSON.stringify(q));
+  const done = (await legFill(env, 6, rec.role)).done;
   await logTo(env, {color: 0xc9a227, title: '🏰 Legion Leader approvato', description: `<@${leader}> · <@&${rec.role}> · ${done} membri${by ? ` · da <@${by}>` : ''}`});
-  return {rec, prof, key, mates: mates.length, done, msg: `✅ <@${leader}> è Legion Leader di **${prof.legion}**. Ruolo <@&${rec.role}> dato a **${done}** verificati della legione${mates.length > 35 ? ` (gli altri ${mates.length - 35} entro un giorno)` : ''}. Chi entra in legione dopo lo riceve da solo.`};
+  const left = mates.length - done;
+  return {rec, prof, key, mates: mates.length, done, left, msg: `✅ <@${leader}> è Legion Leader di **${prof.legion}**. Ruolo <@&${rec.role}> dato a **${done}** dei **${mates.length}** verificati della legione${left > 0 ? ` (gli altri ${left}: premi ▶️ qui sotto, o arrivano da soli entro un quarto d'ora)` : ''}. Chi entra in legione dopo lo riceve da solo.`};
 }
 async function legionButton(i, env, ctx) {
   const [, what, leader] = i.data.custom_id.split(':'), uid = uidOf(i);
@@ -321,8 +343,8 @@ async function legionButton(i, env, ctx) {
   }
   if (!await isStaff(env, i)) return oops('Solo lo staff può approvare.');
   ctx.waitUntil((async () => {
-    const msg = await legionApprove(env, leader, uid).then((x) => typeof x === 'string' ? x : x.msg).catch((e) => `Errore: ${String(e?.message || e).slice(0, 150)}`);
-    await dapi(env, 'POST', `/channels/${i.channel_id}/messages`, {content: msg, allowed_mentions: {users: [leader]}});
+    const x = await legionApprove(env, leader, uid).catch((e) => `Errore: ${String(e?.message || e).slice(0, 150)}`);
+    await dapi(env, 'POST', `/channels/${i.channel_id}/messages`, {content: typeof x === 'string' ? x : x.msg, allowed_mentions: {users: [leader]}, components: typeof x === 'string' ? [] : fillRow(x.left)});
     await hook(i, env, {content: 'Fatto.'});
   })());
   return defer();
@@ -415,7 +437,7 @@ const keyOf = async (env) => [...new Uint8Array(await crypto.subtle.digest('SHA-
 export default {
   async scheduled(event, env, ctx) {
     const min = +new Date().toLocaleString('en-GB', {timeZone: 'Europe/Rome', minute: '2-digit'});
-    ctx.waitUntil(Promise.allSettled([...(min < 15 ? [setup(env, true).catch((e) => putErr(env, 'setup_err', String(e?.message || e).slice(0, 200)))] : []), sweep(env).catch((e) => putErr(env, 'sweep_err', String(e?.stack || e).slice(0, 300))), cleanVerify(env).catch(() => {})]));
+    ctx.waitUntil(Promise.allSettled([...(min < 15 ? [setup(env, true).catch((e) => putErr(env, 'setup_err', String(e?.message || e).slice(0, 200)))] : []), (env.KV.get('legfill').then((q) => q && q !== '{}' ? legFill(env, 30) : sweep(env)).catch((e) => putErr(env, 'sweep_err', String(e?.stack || e).slice(0, 300))), cleanVerify(env).catch(() => {})]));
   },
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
@@ -451,6 +473,12 @@ export default {
         if (c.startsWith('vf:')) return await decide(i, env, ctx);
         if (c.startsWith('rb:')) return await roleButton(i, env, ctx);
         if (c.startsWith('lg:')) return await legionButton(i, env, ctx);
+        if (c === 'lgf') {                    // ▶️ continue giving the queued legion roles (a fresh run each press)
+          if (!await isStaff(env, i)) return oops('Solo lo staff può continuare.');
+          const r = await legFill(env, 40);
+          const base = (i.message.content || '').replace(/\n▶️ .*$/s, '');
+          return Response.json({type: 7, data: {content: `${base}\n▶️ Dato il ruolo ad altri **${r.done}**.${r.left ? ` Ne restano ${r.left}.` : ' Finito: ce l\'hanno tutti.'}`, allowed_mentions: {parse: []}, components: fillRow(r.left)}});
+        }
         if (c === 'gs:refresh') { ctx.waitUntil(refresh(env, uidOf(i)).then((r) => hook(i, env, {content: r.err || `🔄 Ruoli aggiornati: **${r.prof.name}** · ${r.prof.race} · ${r.prof.cls} · GS ${fmt(r.prof.il)}`}))); return defer(); }
       }
       if (i.type === 5 && i.data.custom_id.startsWith('vfm:')) return await rejectModal(i, env, ctx);
