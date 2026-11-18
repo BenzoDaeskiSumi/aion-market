@@ -437,7 +437,12 @@ const keyOf = async (env) => [...new Uint8Array(await crypto.subtle.digest('SHA-
 export default {
   async scheduled(event, env, ctx) {
     const min = +new Date().toLocaleString('en-GB', {timeZone: 'Europe/Rome', minute: '2-digit'});
-    ctx.waitUntil(Promise.allSettled([...(min < 15 ? [setup(env, true).catch((e) => putErr(env, 'setup_err', String(e?.message || e).slice(0, 200)))] : []), (env.KV.get('legfill').then((q) => q && q !== '{}' ? legFill(env, 30) : sweep(env)).catch((e) => putErr(env, 'sweep_err', String(e?.stack || e).slice(0, 300))), cleanVerify(env).catch(() => {})]));
+    const work = env.KV.get('legfill').then((q) => q && q !== '{}' ? legFill(env, 30) : sweep(env));   // queued legion roles first, the profile sweep next run
+    ctx.waitUntil(Promise.allSettled([
+      ...(min < 15 ? [setup(env, true).catch((e) => putErr(env, 'setup_err', String(e?.message || e).slice(0, 200)))] : []),
+      work.catch((e) => putErr(env, 'sweep_err', String(e?.stack || e).slice(0, 300))),
+      cleanVerify(env).catch(() => {}),
+    ]));
   },
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
