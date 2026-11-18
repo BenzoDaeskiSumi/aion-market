@@ -328,6 +328,11 @@ each legion will get its own section later; verification like MarchutanEU; separ
     teams[slug].r = {uid: role}; priority only in the member's team role (hasPrio; members without a role: any role). Board/list grouped by role, count x/10.
     /team imposta nome [tank tank2 cleric cleric2 chanter chanter2 dps dps2 dps3 dps4] [da_zero]: whole team in one command (the slot gives the role; creates the
     team if missing; adds to who is there unless da_zero; refuses over the caps or a user in two slots).
+    Weekly progress (19 Nov, the user asked; Mauro's old Legione report redone): weeklyTick() in Gettulio's */15 cron; read-only '📈・progressi' (ita.py, in 🛡️ LEGIONI);
+    members = Alberto's vlinks via KV binding VKV (ita.yml binds namespace ita-verifica to ita-eventi); official profiles read 15 per run (wkFill) into wk:snap
+    (first baseline right after deploy) / wk:cur (Wednesday from 12:30); report at the first run from 14:00 when all are fresh (15:00 at the latest): a header +
+    one message per legion with >= 2 verified members (alphabetical, GS and CP with ▲/▼ since the baseline, *nuovo*), others in 'Altre legioni e senza legione';
+    then wk:snap = wk:cur, wk:last = day. /status shows weekly + wk_err.
     Read-only channel '👥・team' (ita.py, after 🔥・ludra): ONE Gettulio message listing every team (teamBoard(), KV teams_msg = 'channel:message'), rewritten after each
     /team change and by /tick; the cron posts it once if missing (re-posts only when the message is gone: 404).
   * Ciro (was Marcello) = ita-mod (mod.js): /avverti (3rd = 1 h timeout) /avvertimenti /azzera-avvertimenti /timeout /togli-timeout /kick /ban /sban /pulisci, all logged in 🧹・log;

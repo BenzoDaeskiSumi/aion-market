@@ -112,6 +112,7 @@ CATS = [
     ]),
     ('『🛡️ 𝐋𝐄𝐆𝐈𝐎𝐍𝐈』', 'members', [
         (15, '🏰・legioni', 'Un post per legione: chi siete, cosa fate, come entrare. Solo i Legion Leader aprono i post.', 'forum_l'),
+        (0, '📈・progressi', 'Ogni mercoledì alle 14: Gear Score e CP di ogni verificato, una lista per legione, con i progressi della settimana.', 'readonly'),
     ]),
     ('『🔊 𝐕𝐎𝐂𝐀𝐋𝐈』', 'members', [
         (2, '🍻 Taverna 2', None, None),

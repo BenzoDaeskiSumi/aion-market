@@ -12,7 +12,7 @@
 //    a seat held by a non-member, the non-member slides to the other party (same role, if free) or to the reserves, and gets a message. Rooms keep a copy
 //    of the team (R.team = {id, name, m}) that /team changes update while the room is open.
 // KV: raid:<id> = {title, t, ch, msg, note, by, byName, p, role, voice: [id, id] | null, pinged, called, done, team}; teams = {slug: {name, m: [uid]}}.
-import {GUILD, verified, dapi, djson, oops, defer, hook, opt, uidOf, roleId, channelId, channels, isStaff, putErr, localDay, atLocal, TZ, STAFF_ROLES} from './lib.js';
+import {GUILD, verified, dapi, djson, oops, defer, hook, opt, uidOf, roleId, channelId, channels, isStaff, putErr, localDay, atLocal, TZ, STAFF_ROLES, charProfile, CLASS_EMOJI} from './lib.js';
 
 const LUDRA = {parties: 2};
 const VOICE_TTL = 3 * 36e5;                 // after this the room's role is deleted; the voice channels stay until an admin closes them
@@ -438,13 +438,82 @@ async function raidCreate(i, env) {
 }
 
 const flatFocused = (data) => { const o = data?.options || [], l = o.length && o[0].type === 1 ? o[0].options || [] : o; return String(l.find((x) => x.focused)?.value || ''); };
+// ---------- weekly progress (19 Nov, the user asked; like Mauro's old Legione report): every Wednesday at 14:00 Rome, in the read-only #📈・progressi,
+// one list per legion (alphabetical, no ranking: the user's choice in October) with each verified member's Gear Score and CP and the change since last week.
+// Members = Alberto's verified links (KV binding VKV = namespace ita-verifica, read-only use). The official site is read in batches of PER_RUN per cron run:
+// from 12:30 on Wednesday (after maintenance) into wk:cur; the report goes out at the first run from 14:00 once everybody is fresh (15:00 at the latest).
+// wk:snap = the baseline (values at the last report; the very first one is taken right after the deploy), wk:last = day of the last report.
+const WK = {from: 12 * 60 + 30, post: 14 * 60, late: 15 * 60, PER_RUN: 15};
+const nfmt = (n) => Math.round(n).toLocaleString('it-IT');
+const delta = (a, b) => b == null ? '' : a > b ? ` (▲${nfmt(a - b)})` : a < b ? ` (▼${nfmt(b - a)})` : ' (=)';
+async function wkFill(env, key) {            // refresh up to PER_RUN members into wk:<key>; returns {fresh, total}
+  const links = [];
+  for (const {name} of (await env.VKV.list({prefix: 'vlink:'})).keys) links.push(name.slice(6));
+  const W = JSON.parse(await env.KV.get('wk:' + key) || '{"p":{}}'), since = W.since || Date.now();
+  W.since = since;
+  const todo = links.filter((u) => !W.p[u] || W.p[u].t < since).slice(0, WK.PER_RUN);
+  for (const u of todo) {
+    const L = JSON.parse(await env.VKV.get('vlink:' + u) || 'null'); if (!L) continue;
+    const p = await charProfile(L.server, L.id).catch(() => null);
+    W.p[u] = p ? {n: p.name, c: p.cls, il: p.il, cp: p.cp, lg: p.legion || '', s: p.serverName, t: Date.now()} : {...(W.p[u] || {n: L.name}), t: Date.now(), miss: true};
+  }
+  for (const u of Object.keys(W.p)) if (!links.includes(u)) delete W.p[u];       // no longer verified
+  await env.KV.put('wk:' + key, JSON.stringify(W));
+  return {fresh: links.filter((u) => W.p[u] && W.p[u].t >= since).length, total: links.length};
+}
+async function wkPost(env, cur, snap, day) {
+  let ch = await channelId(env, '・progressi');
+  if (!ch) ch = (await djson(env, 'GET', `/guilds/${GUILD}/channels`) || []).find((c) => c.name.endsWith('・progressi'))?.id;
+  if (!ch) return 'no channel';
+  const by = {};
+  for (const [u, p] of Object.entries(cur.p)) if (!p.miss) (by[p.lg || ''] ||= []).push([u, p]);
+  const big = Object.entries(by).filter(([lg, l]) => lg && l.length >= 2).sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0], 'it'));
+  const rest = Object.entries(by).filter(([lg, l]) => !lg || l.length < 2).flatMap(([, l]) => l);
+  const line = ([u, p]) => { const o = snap.p?.[u]; return `${CLASS_EMOJI[p.c] || '•'} **${p.n}** · GS ${nfmt(p.il)}${delta(p.il, o?.il)} · CP ${nfmt(p.cp)}${o ? delta(p.cp, o.cp) : ' · *nuovo*'}`; };
+  const block = (title, l, withLegion) => {
+    l.sort((a, b) => a[1].n.localeCompare(b[1].n, 'it'));
+    const up = l.filter(([u, p]) => snap.p?.[u] && p.il > snap.p[u].il).length, avg = l.reduce((a, [, p]) => a + p.il, 0) / l.length;
+    let d = l.map((x) => line(x) + (withLegion ? ` · ${x[1].lg || 'senza legione'}` : '')).join('\n');
+    if (d.length > 4000) d = d.slice(0, 3990).replace(/\n[^\n]*$/, '') + '\n…';
+    return {color: 0xc9a227, title, description: d, footer: {text: `${l.length} verificati · GS medio ${nfmt(avg)} · ${up} migliorati questa settimana`}};
+  };
+  const from = snap.t ? new Date(snap.t).toLocaleDateString('it-IT', {timeZone: TZ, day: 'numeric', month: 'numeric'}) : null;
+  const head = {color: 0x5fd6a0, title: `📈 Progressi della settimana · ${day}`, description: [
+    from ? `Gear Score e CP di ogni membro verificato, con la differenza dal ${from}. Una lista per legione, in ordine alfabetico.` : 'Prima settimana: da qui in avanti vedrete anche quanto è cambiato ognuno.',
+    '-# ▲ migliorato · ▼ sceso · = uguale · *nuovo* = verificato da poco. Dati dal sito ufficiale di Aion 2, presi il mercoledì dopo la manutenzione.'].join('\n'),
+    footer: {text: '© 2026 BenzoDaeskiSumi · Gettulio'}};
+  await dapi(env, 'POST', `/channels/${ch}/messages`, {embeds: [head], allowed_mentions: {parse: []}});
+  for (const [lg, l] of big) await dapi(env, 'POST', `/channels/${ch}/messages`, {embeds: [block(`🏰 ${lg}`, l)], allowed_mentions: {parse: []}});
+  if (rest.length) await dapi(env, 'POST', `/channels/${ch}/messages`, {embeds: [block('🌍 Altre legioni e senza legione', rest, true)], allowed_mentions: {parse: []}});
+  return `posted ${big.length + (rest.length ? 1 : 0)} lists`;
+}
+async function weeklyTick(env, force) {
+  if (!env.VKV) return 'no VKV binding';
+  const now = Date.now(), d = localDay(now), today = `${d.y}-${String(d.m).padStart(2, '0')}-${String(d.d).padStart(2, '0')}`;
+  const min = Math.floor((now - atLocal(d.y, d.m, d.d, 0)) / 6e4);
+  const snap = JSON.parse(await env.KV.get('wk:snap') || 'null');
+  if (!snap || !snap.done) {                 // first baseline, right after the deploy
+    const r = await wkFill(env, 'snap');
+    if (r.fresh >= r.total) { const S = JSON.parse(await env.KV.get('wk:snap')); S.done = true; S.t = Date.now(); await env.KV.put('wk:snap', JSON.stringify(S)); }
+    return `baseline ${r.fresh}/${r.total}`;
+  }
+  if (!force && (d.dow !== 3 || min < WK.from || await env.KV.get('wk:last') === today)) return 'waiting';
+  const r = await wkFill(env, 'cur');
+  if (!force && (min < WK.post || (r.fresh < r.total && min < WK.late))) return `refreshing ${r.fresh}/${r.total}`;
+  const cur = JSON.parse(await env.KV.get('wk:cur'));
+  const out = await wkPost(env, cur, snap, `${d.d}/${d.m}`);
+  if (!out.startsWith('posted')) return out;
+  await env.KV.put('wk:snap', JSON.stringify({...cur, done: true, t: Date.now()}));
+  await env.KV.delete('wk:cur'); await env.KV.put('wk:last', today);
+  return out;
+}
 export default {
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(Promise.allSettled([env.KV.get('teams_msg').then((m) => m ? null : teamBoard(env)).catch(() => {}), convertDaily(env).catch(() => {}).then(() => dropOldDaily(env)).catch(() => {}), roomsTick(env).catch((e) => putErr(env, 'raid_err', String(e?.stack || e).slice(0, 300)))]));
+    ctx.waitUntil(Promise.allSettled([weeklyTick(env).then((r) => env.KV.put('wk_state', r)).catch((e) => putErr(env, 'wk_err', String(e?.stack || e).slice(0, 300))), env.KV.get('teams_msg').then((m) => m ? null : teamBoard(env)).catch(() => {}), convertDaily(env).catch(() => {}).then(() => dropOldDaily(env)).catch(() => {}), roomsTick(env).catch((e) => putErr(env, 'raid_err', String(e?.stack || e).slice(0, 300)))]));
   },
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
-    if (url.pathname === '/status') return Response.json({ludra: await env.KV.get('ludra_err'), raid: await env.KV.get('raid_err'), voice: await env.KV.get('voice_err'), ev: await env.KV.get('ev_err')});
+    if (url.pathname === '/status') return Response.json({weekly: await env.KV.get('wk_state'), wk_err: await env.KV.get('wk_err'), ludra: await env.KV.get('ludra_err'), raid: await env.KV.get('raid_err'), voice: await env.KV.get('voice_err'), ev: await env.KV.get('ev_err')});
     if (url.pathname === '/tick') { let err = null; const conv = await convertDaily(env).catch((e) => 'err ' + e); await dropOldDaily(env).catch(() => {}); await roomsTick(env).catch((e) => { err = String(e?.stack || e).slice(0, 300); }); if (!err) await env.KV.delete('raid_err');
       const rooms = [];
       for (const {name: k} of (await env.KV.list({prefix: 'raid:'})).keys) { const R = JSON.parse(await env.KV.get(k) || 'null'); if (R) rooms.push({k, keys: R.v === 2 ? undefined : Object.keys(R).join(','), list: R.v === 2 ? undefined : JSON.stringify(Object.fromEntries(Object.entries(R).filter(([x, y]) => Array.isArray(y) || (y && typeof y === 'object')).map(([x, y]) => [x, Array.isArray(y) ? y.length : Object.keys(y).length]))), v: R.v || 1, when: R.t ? new Date(R.t).toISOString() : null, n: Array.isArray(R.p) ? allIn(R).size : null, role: !!R.role, msg: !!R.msg, done: !!R.done}); }
