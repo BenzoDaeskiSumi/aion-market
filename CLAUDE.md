@@ -15,6 +15,7 @@ Overview for a new model: docs/HANDOFF.md (architecture, how-to, Mauro, rules). 
 - 13 Nov 2026 (the user asked): Wednesday 07:00-11:59 Rome (usual maintenance, MAINT) is left out of every number ('manut.' cells in the Excel, striped cells in the image);
   a day/band cell needs >= 3 usable hours (MIN_BAND_H), so Wednesday 'mattina' is empty. Price 0 (nothing on sale) now ends the previous price instead of being skipped by the 13 h fill.
   Weekly run moved to Wednesday 13:23 Rome (after maintenance).
+  GitHub never ran that schedule (18 Nov): sync.yml (hourly, cron-job.org) now starts prezzi.yml on Wednesday from 13:00 Rome if it hasn't run since 12:00 (needs actions: write).
 - Optional 3rd argument = server ids (e.g. `python3 scripts/price_patterns.py out data 12305` = Marchutan only; with 1-2 servers an item needs 3 weeks instead of 8 server-weeks).
 
 ## Copyright (13 Nov 2026, the user asked, after someone copied Gettulio's Ludra list)
@@ -301,6 +302,7 @@ each legion will get its own section later; verification like MarchutanEU; separ
   * Legions (Alberto): button 🏰 lg:open in 🎫・ticket -> private thread (verified only; legion = official profile.regionName) with ✅ lg:ok:<uid> (staff) / 🔒 lg:close;
     approve (or /legione leader:@x) = Legion Leader role + role '🏰 <legion>' (created once, under Legion Leader) on every verified member whose vlink.legion matches (35 at once,
     the cron does the rest); refresh() keeps exactly the member's legion role (KV legrole:<server>:<legion> = {role, leader, name}). vlink.legion filled by refresh.
+  * 18 Nov (the user asked): '🔥・ludra' is OPEN to writing (members chat there and the command box shows, so anyone can /raid there); /raid team: stays staff-only.
   * Gettulio (was Fabrizio) = ita-eventi (eventi.js), Ludra only. 12 Nov evening (the user asked): NO automatic daily list any more (the old board was deleted
     by dropOldDaily; lu: buttons answer 'use /raid'). /raid quando [titolo] [note] [ping] posts a room of 10 in 🔥・ludra (read-only; the command works from any channel,
     deferred answer): 2 parties of 1 tank + 1 cleric + 1 chanter + 2 DPS, buttons lr:<id>:<p>:<role>|r:<role> (chosen reserve, R.r; never seated by itself, staff move them)|out|del|edit, KV raid:<id> {.., ch, msg, role, voice, pinged, called, done}.

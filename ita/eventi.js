@@ -412,12 +412,13 @@ async function teamCmd(i, env, ctx) {
   return say(`${sub === 'aggiungi' ? '➕' : '➖'} ${users.map((u) => `<@${u}>`).join(' ')} ${sub === 'aggiungi' ? 'aggiunt' : 'tolt'}${users.length > 1 ? 'i' : 'o'} ${sub === 'aggiungi' ? `al team **${T.name}** come ${rk[2]} ${rk[1]}` : `dal team **${T.name}**`} (${teamCount(T)}). Le stanze già aperte con questo team si aggiornano.`);
 }
 async function raidCreate(i, env) {
-  // the board goes in #🔥・ludra (read-only: everybody signs up with the buttons); the command can be used from any channel
+  // anyone can open a room (18 Nov: #🔥・ludra is open to writing so the command box shows there); the team option is staff-only
   const t = parseQuando(opt(i.data, 'quando'));
   if (!t) return {content: 'Non ho capito quando. Esempi: `21:00`, `domani 21`, `sabato 21:30`, `25/11 21:00` (ora italiana).'};
   const id = crypto.randomUUID().slice(0, 8), u = i.member?.user || i.user, ch = await channelId(env, '・ludra') || i.channel_id;
   const title = String(opt(i.data, 'titolo') || 'Ludra').slice(0, 60);
   let team = null;
+  if (opt(i.data, 'team') && !await isStaff(env, i)) return {content: 'Le stanze con un team con la priorità le apre solo lo staff: rifai `/raid` senza la casella team.'};
   if (opt(i.data, 'team')) {
     const teams = await getTeams(env), k = findTeam(teams, opt(i.data, 'team'));
     if (!k) return {content: `Non trovo il team **${opt(i.data, 'team')}**: scegli dai suggerimenti (i team si creano con \`/team crea\`).`};

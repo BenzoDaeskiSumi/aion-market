@@ -99,7 +99,7 @@ CATS = [
     ]),
     ('『⚔️ 𝐆𝐈𝐎𝐂𝐎』', 'members', [
         (0, '🏰・cerca-gruppo', 'Cerchi party per dungeon, raid, spedizioni? Scrivi qui.', None),
-        (0, '🔥・ludra', 'Le stanze del Ludra: aprine una con /raid, iscriviti con i pulsanti.', 'readonly'),
+        (0, '🔥・ludra', 'Le stanze del Ludra: aprine una con /raid, iscriviti con i pulsanti. Qui si può anche scrivere per organizzarsi.', None),
         (0, '👥・team', 'I team con la priorità nelle stanze del Ludra: li gestisce lo staff con /team.', 'readonly'),
         (0, '⚔️・pvp-abisso', 'PvP, Abisso, arene.', None),
         (0, '🏯・assedi', 'Organizzazione degli assedi.', None),

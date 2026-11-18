@@ -6,6 +6,7 @@ on:
   workflow_dispatch: {}
 permissions:
   contents: write
+  actions: write      # to start 'Andamento prezzi' on Wednesday (GitHub's own schedule skipped it)
 concurrency:
   group: sync-prices
   cancel-in-progress: false
@@ -35,3 +36,13 @@ jobs:
           git add -A
           git commit -qm "Dati del Market $(date -u +%Y-%m-%dT%H:%MZ)"
           git push -q -f origin fresh:data
+      - name: Wednesday after maintenance, start 'Andamento prezzi' once (GitHub's schedule for it is not reliable)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          d=$(TZ=Europe/Rome date +%u); h=$(TZ=Europe/Rome date +%H)
+          if [ "$d" = 3 ] && [ "$h" -ge 13 ]; then
+            since=$(TZ=Europe/Rome date -d 'today 12:00' -u +%FT%TZ)
+            n=$(gh run list -R "$GITHUB_REPOSITORY" --workflow prezzi.yml --limit 5 --json createdAt -q "[.[] | select(.createdAt >= \"$since\")] | length")
+            [ "${n:-0}" = 0 ] && gh workflow run prezzi.yml -R "$GITHUB_REPOSITORY" --ref main && echo "started Andamento prezzi" || echo "already ran this week ($n)"
+          fi
