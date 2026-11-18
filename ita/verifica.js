@@ -229,6 +229,55 @@ async function legionTicket(i, env, ctx) {
   })());
   return defer();
 }
+// the legion's post in the forum 🏰・legioni (18 Nov, the user asked: admins do it for lazy leaders): opened once by Alberto with what the official
+// site knows, the leader completes it by answering in the post; the thread id is kept in legrole (rec.post) so a second /legione only refreshes it
+async function legionPost(env, key, rec, prof, leader, mates) {
+  const forum = (await djson(env, 'GET', `/guilds/${GUILD}/channels`) || []).find((c) => c.type === 15 && c.name.endsWith('・legioni'));
+  if (!forum) return null;
+  const embed = {color: CARD_COLOR[prof.race] || 0xc9a227, title: `🏰 ${prof.legion}`, thumbnail: prof.img ? {url: prof.img} : undefined,
+    description: [`👑 **Legion Leader:** <@${leader}> (${prof.name})`, `🌍 **Server:** ${prof.serverName} · ${prof.race}`,
+      `👥 **Membri verificati qui:** ${mates} · ruolo <@&${rec.role}>`, '',
+      '🏰 **Livello legione:** —', '🎯 **Focus:** —', '📈 **Requisiti:** —', '🕘 **Orari:** —', '✉️ **Come entrare:** scrivi in privato al leader', '',
+      `-# <@${leader}> completa i campi con un messaggio qui sotto (livello, focus, requisiti, orari, assedi, come entrare): lo staff aggiorna il post.`].join('\n'),
+    footer: {text: 'Post aperto da Alberto per lo staff · © 2026 BenzoDaeskiSumi'}, timestamp: new Date().toISOString()};
+  if (rec.post) {
+    const th = await djson(env, 'GET', `/channels/${rec.post}`);
+    if (th) { await dapi(env, 'PATCH', `/channels/${rec.post}/messages/${rec.post}`, {embeds: [embed], allowed_mentions: {parse: []}}); return rec.post; }
+  }
+  const tags = (forum.available_tags || []).filter((t) => t.name === prof.race || t.name === 'Recluta').map((t) => t.id).slice(0, 5);
+  const th = await djson(env, 'POST', `/channels/${forum.id}/threads`, {name: `${prof.legion} · ${prof.serverName} · ${prof.race}`.slice(0, 100), applied_tags: tags,
+    message: {content: `<@${leader}>`, embeds: [embed], allowed_mentions: {users: [leader]}}}, `Legione ${prof.legion}`);
+  if (!th) return null;
+  await env.KV.put('legrole:' + key, JSON.stringify({...rec, post: th.id})); legCache = null;
+  return th.id;
+}
+const isAdmin = (i) => (BigInt(i.member?.permissions || 0) & 8n) === 8n;     // Administrator permission (Admin role)
+async function legioneCmd(i, env, ctx) {
+  if (!isAdmin(i)) return oops('Solo gli admin possono usare questo comando.');
+  const leader = opt(i.data, 'leader'), c = opt(i.data, 'personaggio') ? pickChar(opt(i.data, 'personaggio')) : null, by = uidOf(i);
+  if (opt(i.data, 'personaggio') && !c) return oops('Scegli il personaggio dai suggerimenti.');
+  ctx.waitUntil((async () => {
+    const out = [];
+    if (c) {                                   // not verified yet (or another character): verify the leader first
+      const prof = await charProfile(c.server, c.id).catch(() => null);
+      if (!prof) return hook(i, env, {content: 'Il sito ufficiale non trova il personaggio.'});
+      const r = await applyVerify(env, leader, prof, by);
+      if (r.why) return hook(i, env, {content: `⚠️ <@${leader}>: ${r.why}`});
+      out.push(`✅ <@${leader}> verificato come **${prof.name}** · ${prof.race} · ${prof.cls}`);
+    } else if (!await env.KV.get('vlink:' + leader)) {
+      return hook(i, env, {content: `<@${leader}> non è verificato: rifai il comando compilando anche **personaggio** (lo verifico io al volo).`});
+    }
+    const x = await legionApprove(env, leader, by);
+    if (typeof x === 'string') return hook(i, env, {content: [...out, x].join('\n')});
+    out.push(x.msg);
+    if (opt(i.data, 'post') !== false) {
+      const post = await legionPost(env, x.key, x.rec, x.prof, leader, x.mates).catch(() => null);
+      out.push(post ? `📌 Post della legione: <#${post}> (il leader lo completa rispondendo lì).` : '⚠️ Non sono riuscito ad aprire il post nel forum 🏰・legioni.');
+    }
+    await hook(i, env, {content: out.join('\n'), allowed_mentions: {parse: []}});
+  })());
+  return defer();
+}
 async function legionApprove(env, leader, by) {     // Legion Leader role + legion role (created once) on everyone verified in that legion
   const L = JSON.parse(await env.KV.get('vlink:' + leader) || 'null'); if (!L) return 'Il richiedente non è più verificato.';
   const prof = await charProfile(L.server, L.id).catch(() => null);
@@ -256,7 +305,7 @@ async function legionApprove(env, leader, by) {     // Legion Leader role + legi
   let done = 0;
   for (const u of mates.slice(0, 35)) if ((await dapi(env, 'PUT', `/guilds/${GUILD}/members/${u}/roles/${rec.role}`, undefined, `Legione ${prof.legion}`)).ok) done++;
   await logTo(env, {color: 0xc9a227, title: '🏰 Legion Leader approvato', description: `<@${leader}> · <@&${rec.role}> · ${done} membri${by ? ` · da <@${by}>` : ''}`});
-  return `✅ <@${leader}> è Legion Leader di **${prof.legion}**. Ruolo <@&${rec.role}> dato a **${done}** verificati della legione${mates.length > 35 ? ` (gli altri ${mates.length - 35} entro un giorno)` : ''}. Chi entra in legione dopo lo riceve da solo.`;
+  return {rec, prof, key, mates: mates.length, done, msg: `✅ <@${leader}> è Legion Leader di **${prof.legion}**. Ruolo <@&${rec.role}> dato a **${done}** verificati della legione${mates.length > 35 ? ` (gli altri ${mates.length - 35} entro un giorno)` : ''}. Chi entra in legione dopo lo riceve da solo.`};
 }
 async function legionButton(i, env, ctx) {
   const [, what, leader] = i.data.custom_id.split(':'), uid = uidOf(i);
@@ -272,7 +321,7 @@ async function legionButton(i, env, ctx) {
   }
   if (!await isStaff(env, i)) return oops('Solo lo staff può approvare.');
   ctx.waitUntil((async () => {
-    const msg = await legionApprove(env, leader, uid).catch((e) => `Errore: ${String(e?.message || e).slice(0, 150)}`);
+    const msg = await legionApprove(env, leader, uid).then((x) => typeof x === 'string' ? x : x.msg).catch((e) => `Errore: ${String(e?.message || e).slice(0, 150)}`);
     await dapi(env, 'POST', `/channels/${i.channel_id}/messages`, {content: msg, allowed_mentions: {users: [leader]}});
     await hook(i, env, {content: 'Fatto.'});
   })());
@@ -391,11 +440,7 @@ export default {
         if (n === 'verifica') return await verificaCmd(i, env, ctx);
         if (n === 'verifica-utente') return await verificaUtente(i, env, ctx);
         if (n === 'verifica-rimuovi') return await verificaRimuovi(i, env, ctx);
-        if (n === 'legione') {
-          if (!await isStaff(env, i)) return oops('Solo lo staff può usare questo comando.');
-          ctx.waitUntil(legionApprove(env, opt(i.data, 'leader'), uidOf(i)).then((m) => hook(i, env, {content: m})).catch((e) => hook(i, env, {content: `Errore: ${String(e?.message || e).slice(0, 150)}`})));
-          return defer();
-        }
+        if (n === 'legione') return await legioneCmd(i, env, ctx);
         if (n === 'aggiorna') {
           ctx.waitUntil(refresh(env, uidOf(i)).then((r) => hook(i, env, {content: r.err || `🔄 Ruoli aggiornati: **${r.prof.name}** · ${r.prof.race} · ${r.prof.cls} · GS ${fmt(r.prof.il)}`})));
           return defer();

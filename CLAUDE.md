@@ -302,6 +302,10 @@ each legion will get its own section later; verification like MarchutanEU; separ
   * Legions (Alberto): button 🏰 lg:open in 🎫・ticket -> private thread (verified only; legion = official profile.regionName) with ✅ lg:ok:<uid> (staff) / 🔒 lg:close;
     approve (or /legione leader:@x) = Legion Leader role + role '🏰 <legion>' (created once, under Legion Leader) on every verified member whose vlink.legion matches (35 at once,
     the cron does the rest); refresh() keeps exactly the member's legion role (KV legrole:<server>:<legion> = {role, leader, name}). vlink.legion filled by refresh.
+  * /legione (18 Nov, the user asked: lazy guild leaders): ADMIN only (default perm Administrator + isAdmin check); leader:@x [personaggio:<autocomplete>] [post]:
+    verifies the leader on the spot via applyVerify when personaggio is given (needed if not verified), then legionApprove (Legion Leader + '🏰 <legion>' role to verified
+    mates), then legionPost(): Alberto opens ONE post in the forum 🏰・legioni (title 'Legion · Server · Faction', tags faction + Recluta, embed with what the official site
+    knows, leader tagged to complete it by replying); thread id saved as legrole rec.post, a second /legione refreshes that post instead of opening another.
   * 18 Nov (the user asked): '🔥・ludra' is OPEN to writing (members chat there and the command box shows, so anyone can /raid there); /raid team: stays staff-only.
   * Gettulio (was Fabrizio) = ita-eventi (eventi.js), Ludra only. 12 Nov evening (the user asked): NO automatic daily list any more (the old board was deleted
     by dropOldDaily; lu: buttons answer 'use /raid'). /raid quando [titolo] [note] [ping] posts a room of 10 in 🔥・ludra (read-only; the command works from any channel,
