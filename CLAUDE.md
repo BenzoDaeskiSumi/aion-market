@@ -292,7 +292,7 @@ each legion will get its own section later; verification like MarchutanEU; separ
   Gear Score (GS 3000+ … 700+) / Interessi (PvE, PvP, Market e Crafting) / Ping (Ping Ludra, Ping Assedi, Ping Dungeon), Verificato.
   '👋・benvenuto' (19 Nov, the user asked; first in 📌 BENVENUTO, read-only): the guild's SYSTEM channel, so Discord itself posts every join there (ita.py sets
   system_channel_id + flags: join messages on, setup tips and wave-sticker replies off; bots here have no gateway and can't see joins).
-  'Ospite' (12 Nov, the user asked): given by hand by the staff, sees and uses every members' channel like Verificato without /verifica (ita.py copies every
+  'Ospite' (12 Nov, the user asked): given by hand by the staff or (19 Nov) by Alberto's button 👋 og:get 'Entra come ospite' on the #verifica message (guestButton; logged in 🧹・log; verification removes Ospite), sees and uses every members' channel like Verificato without /verifica (ita.py copies every
   Verificato overwrite to it, except hiding #verifica/#aiuto-verifica; Gettulio's party voices show to it too).
   Categories: 📌 BENVENUTO (everyone: regole, verifica, aiuto-verifica) · 📢 INFO (annunci, guida-server, ruoli, patch-e-news, ticket) · 💬 COMMUNITY (chiacchiere,
   forum domande, screenshot-e-clip, meme, 🤡・hall-of-shame: in-game fails, 19 Nov; 🌍・international: English chat for non-Italians, 19 Nov; same channel on MarchutanEU in 💬 GENERAL before the archive) · ⚔️ GIOCO (cerca-gruppo, ludra, pvp-abisso, assedi, forum guide) · 💰 MARKET · 🛡️ LEGIONI (forum legioni: Legion Leader posts) ·

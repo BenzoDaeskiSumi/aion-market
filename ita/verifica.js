@@ -49,6 +49,8 @@ async function applyVerify(env, uid, prof, by) {
   const ok = await syncRoles(env, uid, new Set(m.roles), {Verificato: 'Verificato', Fazione: prof.race, Classe: CLASSES.includes(prof.cls) ? prof.cls : null, 'Gear Score': tier ? `GS ${tier}+` : null},
     `Verifica: ${prof.name}`);
   const nick = (await dapi(env, 'PATCH', `/guilds/${GUILD}/members/${uid}`, {nick: nickFor(prof)}, 'Verifica: nome del personaggio')).ok;
+  const og = await roleId(env, 'Ospite');            // verified now: the guest role is no longer needed
+  if (og && m.roles.includes(og)) await dapi(env, 'DELETE', `/guilds/${GUILD}/members/${uid}/roles/${og}`, undefined, 'Verificato: niente più Ospite');
   await logTo(env, {color: 0x2ecc71, title: '✅ Verificato', description: `<@${uid}> → **${prof.name}** · ${prof.serverName} · ${prof.race} · ${prof.cls} · GS ${fmt(prof.il)}${by ? `\nda <@${by}>` : ''}`});
   return {ok, nick};
 }
@@ -351,6 +353,16 @@ async function legionButton(i, env, ctx) {
 }
 
 // ---------- fixed messages: verification how-to in #✅・verifica, role board in #🎭・ruoli (POST /setup with the key) ----------
+async function guestButton(i, env) {            // 👋 in #✅・verifica: the 'Ospite' role without verification (19 Nov 2026, the user asked)
+  const uid = uidOf(i), have = i.member?.roles || [], [og, vf] = await Promise.all([roleId(env, 'Ospite'), roleId(env, 'Verificato')]);
+  if (!og) return oops('Il ruolo Ospite non esiste: avvisa lo staff.');
+  if (vf && have.includes(vf)) return oops('Sei già verificato: vedi già tutti i canali.');
+  if (have.includes(og)) return oops('Sei già ospite: trovi tutti i canali nella lista a sinistra.');
+  const r = await dapi(env, 'PUT', `/guilds/${GUILD}/members/${uid}/roles/${og}`, undefined, 'Entra come ospite (pulsante)');
+  if (!r.ok) return oops('Non riesco a darti il ruolo, riprova tra poco o scrivi in #🆘・aiuto-verifica.');
+  await logTo(env, {color: 0x95a5a6, title: '👋 Ospite', description: `<@${uid}> è entrato come ospite (pulsante in #verifica)`}).catch(() => {});
+  return oops('👋 Benvenuto! Ora sei **Ospite** e vedi tutti i canali della community. Quando vuoi, verificati con `/verifica` da qualsiasi canale.');
+}
 async function postOrEdit(env, key, ch, body, hourly) {   // posts a NEW message only when there is none (no id or 404): a failed edit (429…) never duplicates
   const id = await env.KV.get(key);
   if (id) {
@@ -397,7 +409,9 @@ async function setup(env, hourly) {
       '**1.** Fai uno screenshot del gioco in cui si legge il **nome del tuo personaggio** (per esempio la finestra del personaggio, tasto P).',
       '**2.** Scrivi `/verifica` qui sotto, scegli il personaggio dai suggerimenti e allega lo screenshot.',
       '**3.** Lo staff controlla e ti approva: ricevi un messaggio privato e ottieni fazione, classe e Gear Score in automatico. Il tuo nick diventa `Nome ⚔️ [SERVER]`: personaggio, classe e sigla del server.', '',
-      'Problemi? Scrivi in #🆘・aiuto-verifica.'].join('\n'), footer: {text: COPY}}]});
+      'Problemi? Scrivi in #🆘・aiuto-verifica.', '',
+      '👋 **Non vuoi verificarti?** Premi **Entra come ospite**: vedi e usi tutti i canali, senza i ruoli di fazione, classe e Gear Score. Puoi verificarti quando vuoi con `/verifica`, da qualsiasi canale.'].join('\n'), footer: {text: COPY}}],
+    components: [{type: 1, components: [{type: 2, style: 2, custom_id: 'og:get', label: 'Entra come ospite', emoji: {name: '👋'}}]}]});
   for (const [g, items] of Object.entries(PICK)) {
     const head = {Interessi: ['🎯 Cosa ti piace fare?', 0x2ecc71, ''], Ping: ['🔔 Vuoi essere chiamato?', 0xe67e22, 'Chi ha il ruolo viene taggato quando si cerca gente.\n\n'],
       'Force PvP': ['⚔️ Force PvP', 0xd9485f, 'Per formare le force: chiunque può taggare questi ruoli, ma **solo in #⚔️・pvp-abisso**.\n\n']}[g];
@@ -476,6 +490,7 @@ export default {
       if (i.type === 3) {
         const c = i.data.custom_id;
         if (c.startsWith('vf:')) return await decide(i, env, ctx);
+        if (c === 'og:get') return await guestButton(i, env);
         if (c.startsWith('rb:')) return await roleButton(i, env, ctx);
         if (c.startsWith('lg:')) return await legionButton(i, env, ctx);
         if (c === 'lgf') {                    // ▶️ continue giving the queued legion roles (a fresh run each press)
