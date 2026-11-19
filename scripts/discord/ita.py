@@ -119,6 +119,7 @@ CATS = [
     ]),
     ('『🔊 𝐕𝐎𝐂𝐀𝐋𝐈』', 'members', [
         (2, '🍻 Taverna 2', None, None),
+        (2, '🔥 Ludra', None, None),                # 19 Nov: fixed voice for the Ludra (the rooms' party voices stay temporary)
         (2, '⚔️ Party 1', None, None), (2, '⚔️ Party 2', None, None), (2, '⚔️ Party 3', None, None), (2, '⚔️ Party 4', None, None),
         (2, '💤 AFK', None, 'afk'),
     ]),
