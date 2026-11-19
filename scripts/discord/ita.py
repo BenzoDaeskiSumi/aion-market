@@ -98,6 +98,7 @@ CATS = [
         (0, '📸・screenshot-e-clip', 'I vostri screenshot e le vostre clip.', None),
         (0, '😂・meme', 'Meme su Aion e dintorni.', None),
         (0, '🤡・hall-of-shame', 'Le figuracce in gioco: fail, wipe e momenti da dimenticare. Si ride insieme, senza prendere di mira nessuno.', None),
+        (0, '🌍・international', "For players who don't speak Italian: chat here in English. Need help? Ping the staff.", None),
     ]),
     ('『⚔️ 𝐆𝐈𝐎𝐂𝐎』', 'members', [
         (0, '🏰・cerca-gruppo', 'Cerchi party per dungeon, raid, spedizioni? Scrivi qui.', None),

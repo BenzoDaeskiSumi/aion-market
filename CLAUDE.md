@@ -288,7 +288,7 @@ each legion will get its own section later; verification like MarchutanEU; separ
   'Ospite' (12 Nov, the user asked): given by hand by the staff, sees and uses every members' channel like Verificato without /verifica (ita.py copies every
   Verificato overwrite to it, except hiding #verifica/#aiuto-verifica; Gettulio's party voices show to it too).
   Categories: 📌 BENVENUTO (everyone: regole, verifica, aiuto-verifica) · 📢 INFO (annunci, guida-server, ruoli, patch-e-news, ticket) · 💬 COMMUNITY (chiacchiere,
-  forum domande, screenshot-e-clip, meme, 🤡・hall-of-shame: in-game fails, 19 Nov; same channel on MarchutanEU in 💬 GENERAL before the archive) · ⚔️ GIOCO (cerca-gruppo, ludra, pvp-abisso, assedi, forum guide) · 💰 MARKET · 🛡️ LEGIONI (forum legioni: Legion Leader posts) ·
+  forum domande, screenshot-e-clip, meme, 🤡・hall-of-shame: in-game fails, 19 Nov; 🌍・international: English chat for non-Italians, 19 Nov; same channel on MarchutanEU in 💬 GENERAL before the archive) · ⚔️ GIOCO (cerca-gruppo, ludra, pvp-abisso, assedi, forum guide) · 💰 MARKET · 🛡️ LEGIONI (forum legioni: Legion Leader posts) ·
   🔊 VOCALI · 🔒 STAFF (staff-chat, richieste-verifica, log). Not verified = only BENVENUTO + 🍻 Taverna (left open to everyone for now). Community mode + Stage 🏯 Assedi: not yet.
   Role moves: one role per PATCH; swapping two neighbours works only as a 2-item PATCH. ita.py bits() ORs permission names (a sum counted VIEW twice: 11 Nov bug, members saw nothing).
 - Bots (usernames = their role names since 11 Nov; avatars img/discord/bots/*.png, drawn over Mauro's) = separate Workers in ita/ (shared ita/lib.js), workflow 'Community italiana (bot)' (.github/workflows/ita.yml, on push ita/**): KV namespace ita-<bot> each,
