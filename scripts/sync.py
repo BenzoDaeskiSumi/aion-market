@@ -1,5 +1,5 @@
 # © 2026 BenzoDaeskiSumi — Aion 2 Market, bot Mauro, Alberto, Gettulio, Ciro. Tutti i diritti riservati / All rights reserved. Copia, riuso o modifica vietati senza permesso scritto: vedi LICENSE.
-"""Hourly price sync from the public aion2.exchange API, for every Asmodian server in Europe.
+"""Hourly price sync from the public aion2.exchange API, for every server in Europe (Asmodian and, since 19 Nov 2026, Elyos).
 
 Each server has its own folder data/s/<server_id>/ with price_log.json, meta.json, sales.json, crafts.json.
 A row is appended only when an item's lowest price or listing count changed since its last row,
@@ -14,7 +14,8 @@ from zoneinfo import ZoneInfo
 API = 'https://aion2.exchange/api'
 HOME = 12305              # Marchutan · Europe · Asmodian (videos, default on the page)
 SERVER = HOME             # used by backfill.py
-REGION, FACTION = 'EU', 'Asmodian'
+REGION, FACTIONS = 'EU', ('Asmodian', 'Elyos')   # Asmodian first: the bot's server choices keep the first 25
+FAC = {}                  # server id -> faction, filled by main()
 CRAFT_EVERY = 6           # hours between full crafting refreshes of a server (Marchutan: every run)
 KEEPALIVE = timedelta(hours=12)
 # names (and grade) for items the API has no name for yet, by item_key: {"514310198": {"name": "Artwork: …", "grade": "orange"}}
@@ -322,7 +323,7 @@ def sync_server(server, name, catalog, fam, health):
         write_summary(server, log, sales, st[0] if isinstance(st, list) else st, snap)
     except Exception as ex:
         print(f'{name}: summary failed: {ex}')
-    json.dump({'source': 'aion2.exchange', 'server': f'{name} · Europe · Asmodian', 'server_id': server, 'snapshot': snap.isoformat(),
+    json.dump({'source': 'aion2.exchange', 'server': f"{name} · Europe · {FAC.get(server, 'Asmodian')}", 'faction': FAC.get(server, 'Asmodian'), 'server_id': server, 'snapshot': snap.isoformat(),
                'synced_at': datetime.now(ROME).replace(microsecond=0).isoformat(), 'items': len(items)},
               open(path(server, 'meta.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     print(f'{name}: {len(items)} items, {added} rows added ({new} new items), log {len(log)} rows')
@@ -354,9 +355,10 @@ def wait_for_new_snapshot(max_wait=25 * 60):
 
 def main():
     health = wait_for_new_snapshot()
-    servers = [s for s in get('/servers')['servers'] if s['region'] == REGION and s['faction'] == FACTION and s.get('has_data')]
-    servers.sort(key=lambda s: s['server_id'])
-    json.dump([{'id': s['server_id'], 'name': s['name']} for s in servers], open('data/servers.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    servers = [s for s in get('/servers')['servers'] if s['region'] == REGION and s['faction'] in FACTIONS and s.get('has_data')]
+    servers.sort(key=lambda s: (FACTIONS.index(s['faction']), s['server_id']))
+    FAC.update({s['server_id']: s['faction'] for s in servers})
+    json.dump([{'id': s['server_id'], 'name': s['name'], 'faction': s['faction']} for s in servers], open('data/servers.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     catalog = load_catalog()
     fam = {}
     for nm, c in catalog.items():
@@ -368,6 +370,8 @@ def main():
             sync_server(sid, nm, catalog, fam, health)
         except Exception as ex:
             print(f'{nm}: price sync failed: {ex}')
+        if s['faction'] != 'Asmodian':    # crafts.json is unused by the page; only the Asmodian ones are kept
+            time.sleep(1); continue
         if sid == HOME or i % CRAFT_EVERY == hour % CRAFT_EVERY or not os.path.exists(path(sid, 'crafts.json')):
             try:
                 print(f'{nm}: crafts {sync_crafts(sid)} lines')

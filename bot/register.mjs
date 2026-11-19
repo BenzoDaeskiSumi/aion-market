@@ -9,7 +9,7 @@ catch { servers = await (await fetch('https://benzodaeskisumi.github.io/aion-mar
 // 1 Nov 2026: English only for everyone (the user asked); the Italian localizations are switched off but kept in the code.
 const it = () => ({});
 const server = {type: 3, name: 'server', description: 'Asmodian server (default: the one saved with /server)', ...it(null, 'Server Asmodian (predefinito: quello registrato con /server)'), required: false,
-  choices: servers.slice(0, 25).map((s) => ({name: s.name, value: String(s.id)}))};
+  choices: servers.filter((s) => (s.faction || 'Asmodian') === 'Asmodian').slice(0, 25).map((s) => ({name: s.name, value: String(s.id)}))};
 const commands = [
   {name: 'item', description: 'Price, charts and details of a Market item', ...it(null, 'Prezzo, grafici e info di un oggetto del Market'), options: [
     {type: 3, name: 'item', description: 'Item name (English, as in game)', ...it('oggetto', 'Nome dell’oggetto (in inglese, come in gioco)'), required: true, autocomplete: true}, server]},

@@ -22,7 +22,8 @@ async function json(env, file, ttl) {
   return r.json();
 }
 const summary = (env, sid) => json(env, `data/s/${sid}/summary.json`, 300);
-const servers = (env) => json(env, 'data/servers.json', 3600).catch(() => [{id: 12305, name: 'Marchutan'}]);
+const FAC = {};   // server id -> faction (servers.json has it since 19 Nov 2026, when Elyos servers were added)
+const servers = (env) => json(env, 'data/servers.json', 3600).then((l) => { for (const s of l) FAC[s.id] = s.faction || 'Asmodian'; return l; }).catch(() => [{id: 12305, name: 'Marchutan'}]);
 const hist = (env, sid) => json(env, `data/s/${sid}/hist.json`, 300).catch(() => ({}));
 const icons = (env) => json(env, 'data/icons.json', 3600).catch(() => ({}));
 const recipes = (env) => json(env, 'data/recipes.json', 3600).catch(() => ({recipes: [], npc: {}}));
@@ -88,7 +89,7 @@ function itemEmbed(name, r, sid, sname, ico, env) {
     title: name, url: itemUrl(env, sid, name), color,
     description: [gname, r.c, r.l ? `Item Level ${r.l}` : null].filter(Boolean).join(' · '),
     thumbnail: {url: `${env.SITE}/${icon}`}, fields,
-    footer: {text: `${sname} · Asmodian · data aion2.exchange · © BenzoDaeskiSumi`}, timestamp: r.t,
+    footer: {text: `${sname} · ${FAC[sid] || 'Asmodian'} · data aion2.exchange · © BenzoDaeskiSumi`}, timestamp: r.t,
   };
 }
 // ---------- price chart (image drawn by QuickChart from the light history in hist.json) ----------
@@ -117,7 +118,7 @@ async function chartEmbed(name, r, h, view, sid, sname, ico, env) {
   const pts = h?.[view];
   const [, color] = GRADE[r?.g] || GRADE.white;
   const base = {title: name, url: itemUrl(env, sid, name), color, thumbnail: {url: `${env.SITE}/${ico[name] || `icons/${slug(name)}.png`}`},
-    footer: {text: `${sname} · Asmodian · data aion2.exchange · © BenzoDaeskiSumi`}, timestamp: r?.t};
+    footer: {text: `${sname} · ${FAC[sid] || 'Asmodian'} · data aion2.exchange · © BenzoDaeskiSumi`}, timestamp: r?.t};
   const span = view === 'w' ? 'last 7 days' : 'last 30 days';
   if (!pts || pts.length < 2) return {...base, description: `📈 Not enough prices in the ${span} for a chart.`};
   const vals = pts.map(([, p]) => p), lo = Math.min(...vals), hi = Math.max(...vals), first = vals[0], last = vals[vals.length - 1];
@@ -2143,7 +2144,7 @@ async function priceHistory(i, env) {
   for (const [m, p] of rows) if (m >= from && p > 0) { const d = Math.floor(m / 1440); days.set(d, Math.min(days.get(d) ?? Infinity, p)); }
   const pts = [...days.entries()].sort((a, b) => a[0] - b[0]).map(([d, p]) => [d * 24, p]);
   const r = sum[name], [, color] = GRADE[r?.g] || GRADE.white, base = {title: name, url: itemUrl(env, sid, name), color,
-    thumbnail: {url: `${env.SITE}/${ico[name] || `icons/${slug(name)}.png`}`}, footer: {text: `${serverName(srv, sid)} · Asmodian · data aion2.exchange · © BenzoDaeskiSumi`}};
+    thumbnail: {url: `${env.SITE}/${ico[name] || `icons/${slug(name)}.png`}`}, footer: {text: `${serverName(srv, sid)} · ${FAC[sid] || 'Asmodian'} · data aion2.exchange · © BenzoDaeskiSumi`}};
   if (pts.length < 2) return reply({embeds: [{...base, description: '📈 Not enough prices yet for a 90-day chart.'}]});
   const vals = pts.map(([, p]) => p), url = await chartUrl(pts, r?.a, 0x5b8cff), first = vals[0], last = vals[vals.length - 1];
   return reply({embeds: [{...base, description: `📈 **Lowest price per day**, last ${Math.round((Date.now() / 36e5 - pts[0][0]) / 24)} days` + (r?.a ? ` · dashed = 3-day average (${kin(r.a)})` : ''),

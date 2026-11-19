@@ -32,6 +32,7 @@ jobs:
       - name: Assemble
         run: |
           mkdir -p data && cp -r _data/data/. data/
+          rm -f data/s/*/price_log.json   # raw logs (~300 MB, 600 with Elyos) are read from the data branch, never by the page or the bots
           if [ -d _tiles/map ]; then mkdir -p map && cp -r _tiles/map/. map/; fi
           rm -rf _data _tiles .git .github
           python3 scripts/selfhost.py index.html

@@ -18,6 +18,13 @@ Overview for a new model: docs/HANDOFF.md (architecture, how-to, Mauro, rules). 
   GitHub never ran that schedule (18 Nov): sync.yml (hourly, cron-job.org) now starts prezzi.yml on Wednesday from 13:00 Rome if it hasn't run since 12:00 (needs actions: write).
 - Optional 3rd argument = server ids (e.g. `python3 scripts/price_patterns.py out data 12305` = Marchutan only; with 1-2 servers an item needs 3 weeks instead of 8 server-weeks).
 
+## Elyos markets (19 Nov 2026, the user asked)
+- sync.py syncs EU Asmodian AND Elyos servers (46; aion2.exchange has data for both); servers.json rows have 'faction' (Asmodian first), meta.json too; crafts.json only for Asmodian.
+- pages.yml no longer publishes data/s/*/price_log.json (only the data branch, price_patterns, names_fr, backfill read it): the Pages site stays well under 1 GB.
+- italia site: server picker grouped Asmodiani / Elyos, home comparison only across servers of the same faction. main site still Marchutan only.
+- Mauro: footers show the server's faction (FAC from servers.json); the 'server' option choices stay Asmodian (Discord max 25). price_patterns.py = Asmodian only.
+- Crafting recipes are the Asmodian ones (MetaBot.GG): on Elyos servers faction-specific item names may not match.
+
 ## Copyright (13 Nov 2026, the user asked, after someone copied Gettulio's Ludra list)
 - Everything we made is '© 2026 BenzoDaeskiSumi, all rights reserved': LICENSE (IT+EN, proprietary, third-party data/libs excluded) on main and italia-site,
   a one-line header comment on every authored .js/.mjs/.py/.css/.html/workflow (keep it on new files), visible line in the site footers (i18n 'Tutti i diritti riservati'),

@@ -55,6 +55,7 @@ def week_start(ts):
 
 def main():
     servers = json.load(open(os.path.join(DATA, 'servers.json'), encoding='utf-8'))
+    servers = [s for s in servers if s.get('faction', 'Asmodian') == 'Asmodian']   # Elyos servers (19 Nov 2026) stay out: the report is about the Asmodian markets
     if ONLY: servers = [s for s in servers if str(s['id']) in ONLY]
     now = datetime.now(ROME).replace(minute=0, second=0, microsecond=0)
     first_week = week_start(now) - timedelta(days=7 * (WEEKS - 1))
