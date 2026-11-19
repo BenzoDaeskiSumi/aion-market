@@ -78,6 +78,8 @@ h1, h2, h3 { font-family: var(--display); font-weight: 600; letter-spacing: -.01
 .srvlist button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .srvlist button[aria-current="true"] { background: var(--accent-fill); color: var(--on-accent); }
 .srvlist p { grid-column: 1 / -1; margin: 6px 2px; }
+.srvlist h3 { grid-column: 1 / -1; margin: 8px 2px 2px; font-size: 12px; font-weight: 700; color: var(--dim); }
+.srvlist h3:first-child { margin-top: 0; }
 .bar .right { display: none; width: 320px; flex-direction: column; gap: 14px; }
 .bar.menu-open .right { display: flex; }
 .setrow { display: flex; flex-direction: column; gap: 6px; }

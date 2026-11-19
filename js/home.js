@@ -14,8 +14,9 @@
   };
   async function compare(item) {
     const my = ++token, rows = $('brows'), note = $('bnote');
-    note.textContent = `Leggo il prezzo di ${item} su ${servers.length} server…`;
-    const list = await Promise.all(servers.map((s) => getJson(`${SRC}data/s/${s.id}/h/${slug(item)}.json`)
+    note.textContent = `Leggo il prezzo di ${item} sui server ${(servers.find((s) => s.id === home) || {}).faction === 'Elyos' ? 'Elyos' : 'Asmodiani'}…`;
+    const fac = (servers.find((s) => s.id === home) || {}).faction || 'Asmodian', same = servers.filter((s) => (s.faction || 'Asmodian') === fac);   // one faction can't buy on the other's market
+    const list = await Promise.all(same.map((s) => getJson(`${SRC}data/s/${s.id}/h/${slug(item)}.json`)
       .then((h) => { const last = h[h.length - 1]; return {...s, price: last?.[1] || 0, n: last?.[2] || 0, t: last ? last[0] * 6e4 : 0}; })
       .catch(() => ({...s, price: 0, n: 0, t: 0}))));
     if (my !== token) return;

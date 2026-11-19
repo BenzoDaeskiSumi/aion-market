@@ -49,12 +49,19 @@ const SERVERS_READY = getJson(SRC + 'data/servers.json').catch(() => [{id: DEFAU
   const open = (on) => { pop.hidden = !on; btn.setAttribute('aria-expanded', String(on)); if (on) { filter.value = ''; draw(); filter.focus(); } };
   function draw() {
     const q = fold(filter.value.trim());
-    list.replaceChildren(...[...sel.options].filter((o) => !q || fold(o.textContent).includes(q)).map((o) => {
-      const b = document.createElement('button'); b.type = 'button'; b.dataset.id = o.value; b.textContent = o.textContent;
-      b.setAttribute('aria-current', String(o.value === sel.value));
-      b.addEventListener('click', () => { sel.value = o.value; lsSet('aion-server', o.value); sel.dispatchEvent(new Event('change')); paint(); open(false); btn.focus(); });
-      return b;
-    }));
+    const shown = [...sel.options].filter((o) => !q || fold(o.textContent).includes(q)), out = [];
+    for (const f of ['Asmodian', 'Elyos']) {          // one group per faction (Elyos servers since 19 Nov 2026)
+      const opts = shown.filter((o) => (o.dataset.f || 'Asmodian') === f);
+      if (!opts.length) continue;
+      out.push(Object.assign(document.createElement('h3'), {textContent: f === 'Elyos' ? 'Elyos' : 'Asmodiani'}));
+      for (const o of opts) {
+        const b = document.createElement('button'); b.type = 'button'; b.dataset.id = o.value; b.textContent = o.textContent;
+        b.setAttribute('aria-current', String(o.value === sel.value));
+        b.addEventListener('click', () => { sel.value = o.value; lsSet('aion-server', o.value); sel.dispatchEvent(new Event('change')); paint(); open(false); btn.focus(); });
+        out.push(b);
+      }
+    }
+    list.replaceChildren(...out);
     if (!list.children.length) list.append(Object.assign(document.createElement('p'), {textContent: 'Nessun server con questo nome.'}));
   }
   filter.addEventListener('input', draw);
@@ -65,7 +72,7 @@ const SERVERS_READY = getJson(SRC + 'data/servers.json').catch(() => [{id: DEFAU
   sel.addEventListener('change', paint); sel.addEventListener('paint', paint);
   SERVERS_READY.then((servers) => {
     const cur = savedServer(), has = servers.some((x) => x.id === cur);
-    sel.replaceChildren(...servers.slice().sort((a, b) => a.name.localeCompare(b.name)).map((x) => Object.assign(document.createElement('option'), {value: x.id, textContent: x.name, selected: x.id === (has ? cur : DEFAULT_SERVER)})));
+    sel.replaceChildren(...servers.slice().sort((a, b) => (a.faction === 'Elyos') - (b.faction === 'Elyos') || a.name.localeCompare(b.name)).map((x) => { const o = Object.assign(document.createElement('option'), {value: x.id, textContent: x.name, selected: x.id === (has ? cur : DEFAULT_SERVER)}); o.dataset.f = x.faction || 'Asmodian'; return o; }));
     pop.querySelector('.srvn').textContent = servers.length;
     paint();
     document.dispatchEvent(new CustomEvent('serversready', {detail: servers}));
