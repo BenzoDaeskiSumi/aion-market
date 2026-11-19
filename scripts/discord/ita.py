@@ -97,6 +97,7 @@ CATS = [
         (15, '❓・domande', 'Una domanda per post, con il tag giusto.', 'forum_q'),
         (0, '📸・screenshot-e-clip', 'I vostri screenshot e le vostre clip.', None),
         (0, '😂・meme', 'Meme su Aion e dintorni.', None),
+        (0, '🤡・hall-of-shame', 'Le figuracce in gioco: fail, wipe e momenti da dimenticare. Si ride insieme, senza prendere di mira nessuno.', None),
     ]),
     ('『⚔️ 𝐆𝐈𝐎𝐂𝐎』', 'members', [
         (0, '🏰・cerca-gruppo', 'Cerchi party per dungeon, raid, spedizioni? Scrivi qui.', None),
