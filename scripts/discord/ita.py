@@ -80,7 +80,6 @@ NOWRITE = ('SEND', 'PUBTH', 'PRIVTH', 'THREADS')
 # type 0 text, 2 voice, 13 stage, 15 forum
 CATS = [
     ('『📌 𝐁𝐄𝐍𝐕𝐄𝐍𝐔𝐓𝐎』', 'all', [
-        (0, '👋・benvenuto', 'Chi entra nel server: lo annuncia Discord in automatico.', 'readonly'),
         (0, '📜・regole', 'Le regole della community. Leggile prima di verificarti.', 'readonly'),
         (0, '✅・verifica', 'Verificati con /verifica: scegli il tuo personaggio e allega uno screenshot.', 'verify'),
         (0, '🆘・aiuto-verifica', 'Problemi con la verifica? Scrivi qui, lo staff ti aiuta.', 'verifyhelp'),
