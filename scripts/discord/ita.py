@@ -229,13 +229,14 @@ def run_apply():
         else: print('automod force:', bool(api('POST', f'/guilds/{G}/auto-moderation/rules', rule)))
     afk = find('💤 AFK', 2)
     if afk: api('PATCH', f'/guilds/{G}', {'afk_channel_id': afk['id'], 'afk_timeout': 900})
-    # 19 Nov (the user asked): Discord's own join messages go to #👋・benvenuto (system channel); boost messages stay on, tips/sticker replies off
-    wel = next((c for c in api('GET', f'/guilds/{G}/channels') if c['type'] == 0 and c['name'].endswith('・benvenuto')), None)
+    # 20 Nov (the user asked): Discord's own join messages go to #💬・chiacchiere (system channel; was #👋・benvenuto on 19 Nov) so members can greet;
+    # boost messages and the 'wave' sticker reply button ON, setup tips off
+    wel = next((c for c in api('GET', f'/guilds/{G}/channels') if c['type'] == 0 and c['name'].endswith('・chiacchiere')), None)
     if wel:
         g = api('GET', f'/guilds/{G}')
-        flags = (g.get('system_channel_flags', 0) & ~1) | 4 | 8      # join messages ON (bit 0 off); setup tips and 'wave' sticker replies off
+        flags = (g.get('system_channel_flags', 0) & ~1 & ~8) | 4     # join messages ON (bit 0 off), wave sticker replies ON (bit 3 off), setup tips off
         r = api('PATCH', f'/guilds/{G}', {'system_channel_id': wel['id'], 'system_channel_flags': flags})
-        print('system channel -> 👋・benvenuto' if r else 'system channel FAILED (Manage Server?)')
+        print('system channel -> 💬・chiacchiere' if r else 'system channel FAILED (Manage Server?)')
     out = api('GET', f'/guilds/{G}/channels'); cats = {c['id']: c['name'] for c in out if c['type'] == 4}
     for c in sorted(out, key=lambda c: (c['type'] == 4 and -1 or 0, c['position'])):
         if c['type'] != 4: print('  ', cats.get(c.get('parent_id'), '-'), '|', c['name'])

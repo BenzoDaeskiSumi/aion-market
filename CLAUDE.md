@@ -290,8 +290,8 @@ each legion will get its own section later; verification like MarchutanEU; separ
 - Structure: scripts/discord/ita.py (Discord setup mode ita-check = secrets + bots in the server; ita-apply = roles, categories, channels, permissions; idempotent by name).
   Roles: Admin (Administrator), Moderatore, Helper, [bots' roles], Shotcaller, Legion Leader, separators (bold + U+3164) Fazione (Elyos, Asmodiani) / Classe (8) /
   Gear Score (GS 3000+ … 700+) / Interessi (PvE, PvP, Market e Crafting) / Ping (Ping Ludra, Ping Assedi, Ping Dungeon), Verificato.
-  '👋・benvenuto' (19 Nov, the user asked; first in 📌 BENVENUTO, read-only): the guild's SYSTEM channel, so Discord itself posts every join there (ita.py sets
-  system_channel_id + flags: join messages on, setup tips and wave-sticker replies off; bots here have no gateway and can't see joins).
+  System channel (Discord's own join messages; bots here have no gateway and can't see joins): '💬・chiacchiere' since 20 Nov (the user asked, to greet newcomers;
+  join messages + wave-sticker replies on, setup tips off). '👋・benvenuto' (19 Nov, first in 📌 BENVENUTO, read-only) was the system channel for one day and now gets nothing.
   'Ospite' (12 Nov, the user asked): given by hand by the staff or (19 Nov) by Alberto's button 👋 og:get 'Entra come ospite' on the #verifica message (guestButton; logged in 🧹・log; verification removes Ospite), sees and uses every members' channel like Verificato without /verifica (ita.py copies every
   Verificato overwrite to it, except hiding #verifica/#aiuto-verifica; Gettulio's party voices show to it too).
   Categories: 📌 BENVENUTO (everyone: regole, verifica, aiuto-verifica) · 📢 INFO (annunci, guida-server, ruoli, patch-e-news, ticket) · 💬 COMMUNITY (chiacchiere,
