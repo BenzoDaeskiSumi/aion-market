@@ -344,6 +344,8 @@ each legion will get its own section later; verification like MarchutanEU; separ
     then wk:snap = wk:cur, wk:last = day. /status shows weekly + wk_err.
     News (21 Nov, the user asked): steamNews() in the */15 cron posts every new official AION 2 announcement from Steam (ISteamNews GetNewsForApp, appid 3393110,
     feed steam_community_announcements only) into '📰・patch-e-news' as an embed (title, link, ~600 chars, first image); KV news:seen (gids), errors news_err, GET /news runs it.
+    Italian (same day, the user asked): newsMessage() asks Workers AI (binding AI in wrangler-eventi.toml, model llama-3.3-70b-instruct-fp8-fast) for JSON {title, type patch|manutenzione|evento|notizia, summary, points};
+    embed = type emoji/colour, translated title, italic summary, 'In breve' bullets, image, link button to Steam; English fallback if the model fails. /news?redo=1 rewrites already posted ones.
     The official Discord's announcements: the user follows them with Discord's 'Follow' button (no API for bots outside that server).
     Read-only channel '👥・team' (ita.py, after 🔥・ludra): ONE Gettulio message listing every team (teamBoard(), KV teams_msg = 'channel:message'), rewritten after each
     /team change and by /tick; the cron posts it once if missing (re-posts only when the message is gone: 404).
