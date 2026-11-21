@@ -525,6 +525,7 @@ function steamText(raw) {
 }
 // Italian version (21 Nov, the user asked): Workers AI (binding AI) translates and condenses each announcement into {title, type, summary, points};
 // if the model fails the English text is posted as before.
+let NEWS_LAST = '';   // first 300 chars of the last raw answer (diagnostics for /news?redo)
 const NEWS_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
 const NEWS_TYPE = {patch: ['🛠️', 'Patch note', 0x3fb6d0], manutenzione: ['⏰', 'Manutenzione', 0xe0a526], evento: ['🎉', 'Evento', 0xd9468f], notizia: ['📢', 'Notizia', 0x8a6cf0]};
 async function newsIt(env, n, text) {
@@ -534,8 +535,9 @@ async function newsIt(env, n, text) {
     'Rispondi SOLO con un oggetto JSON valido, senza testo prima o dopo: {"title": titolo tradotto, "type": "patch" | "manutenzione" | "evento" | "notizia", ' +
     '"summary": una o due frasi che spiegano di cosa si tratta, "points": array di al massimo 12 punti brevi con le novità più importanti, comprese date, orari (con il fuso orario indicato nell\'originale) e ricompense}.';
   const out = await env.AI.run(NEWS_MODEL, {messages: [{role: 'system', content: sys}, {role: 'user', content: `TITLE: ${n.title}\n\n${text.slice(0, 9000)}`}], max_tokens: 1400, temperature: 0.2});
-  const raw = String(out?.response ?? out?.result?.response ?? (typeof out === 'string' ? out : JSON.stringify(out || {})));
-  const j = JSON.parse((raw.match(/\{[\s\S]*\}/) || ['null'])[0]);
+  const r0 = out?.response ?? out?.result?.response ?? out;
+  let j = r0 && typeof r0 === 'object' && !Array.isArray(r0) && r0.title ? r0 : null;     // some models hand back JSON already parsed
+  if (!j) { const raw = typeof r0 === 'string' ? r0 : JSON.stringify(r0 || {}); NEWS_LAST = raw.slice(0, 300); j = JSON.parse((raw.match(/\{[\s\S]*\}/) || ['null'])[0]); }
   if (!j?.title || !Array.isArray(j.points)) return null;
   return {title: String(j.title).slice(0, 240), type: NEWS_TYPE[j.type] ? j.type : 'notizia', summary: String(j.summary || '').slice(0, 600), points: j.points.map((x) => String(x).trim()).filter(Boolean).slice(0, 12)};
 }
@@ -583,7 +585,7 @@ async function newsRedo(env) {          // rewrites Gettulio's already posted ne
     const body = await newsMessage(env, it); if (body.embeds[0].author) it_++;
     if ((await dapi(env, 'PATCH', `/channels/${ch}/messages/${m.id}`, body)).ok) n++;
   }
-  if (!it_) err = await newsIt(env, items[items.length - 1], steamText(items[items.length - 1].contents).text).then((x) => x ? 'ok now' : 'model gave no json').catch((e) => String(e?.message || e).slice(0, 200));
+  if (!it_) err = await newsIt(env, items[items.length - 1], steamText(items[items.length - 1].contents).text).then((x) => x ? 'ok now' : 'model gave no json: ' + NEWS_LAST).catch((e) => String(e?.message || e).slice(0, 200));
   return `redone ${n}, translated ${it_}${err ? ' · ' + err : ''}`;
 }
 
