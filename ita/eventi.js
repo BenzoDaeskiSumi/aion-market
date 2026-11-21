@@ -507,13 +507,51 @@ async function weeklyTick(env, force) {
   await env.KV.delete('wk:cur'); await env.KV.put('wk:last', today);
   return out;
 }
+// ---------- 📰 news: official Aion 2 announcements on Steam -> #📰・patch-e-news (21 Nov 2026, the user asked) ----------
+// Steam's public news API, only the developers' own announcements feed (no third-party sites). New items are posted once (KV news:seen);
+// the first run posts just the newest one. The official Discord's announcements reach the channel through Discord's own 'Follow' button.
+const STEAM_APP = 3393110;   // AION 2 on Steam
+const steamImg = (s) => s.replace(/\{STEAM_CLAN_IMAGE\}/g, 'https://clan.akamai.steamstatic.com/images');
+function steamText(raw) {
+  const s = steamImg(String(raw || ''));
+  const img = (s.match(/\[img[^\]]*\]\s*(https?:\/\/[^\s\[]+)\s*\[\/img\]/i) || s.match(/<img[^>]+src="(https?:\/\/[^"]+)"/i) || [])[1] || null;
+  const text = s.replace(/\[img[^\]]*\][\s\S]*?\[\/img\]/gi, ' ').replace(/\[url=[^\]]*\]([\s\S]*?)\[\/url\]/gi, '$1').replace(/\[\*\]/g, '\n• ')
+    .replace(/\[\/?b\]/gi, '**').replace(/\[\/?i\]/gi, '*').replace(/\[\/?u\]/gi, '__').replace(/\[\/?(strike|spoiler|noparse)\]/gi, '')
+    .replace(/\[\/?(h\d|list|olist|p|quote|code|hr|table|tr|td|th|previewyoutube[^\]]*|video[^\]]*)\]/gi, '\n')
+    .replace(/\[[^\]]{1,40}\]/g, ' ').replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/[ \t]+/g, ' ').replace(/\s*\n\s*/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+  return {img, text};
+}
+async function steamNews(env) {
+  const r = await fetch(`https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=${STEAM_APP}&count=10&maxlength=0&feeds=steam_community_announcements&format=json`, {headers: {'User-Agent': 'ita-eventi (Discord bot)'}});
+  if (!r.ok) throw new Error('steam ' + r.status);
+  const items = ((await r.json())?.appnews?.newsitems || []).sort((a, b) => a.date - b.date);
+  if (!items.length) return 'no items';
+  const ch = await channelId(env, '・patch-e-news'); if (!ch) return 'no channel';
+  const seen = JSON.parse(await env.KV.get('news:seen') || 'null');
+  const fresh = seen ? items.filter((n) => !seen.includes(String(n.gid))) : items.slice(-1);
+  let posted = 0;
+  for (const n of fresh.slice(-3)) {
+    const {img, text} = steamText(n.contents), cut = text.length > 600 ? text.slice(0, 600).replace(/\s+\S*$/, '') + '…' : text;
+    const ok = await dapi(env, 'POST', `/channels/${ch}/messages`, {content: '📰 **Nuova notizia ufficiale di Aion 2**', allowed_mentions: {parse: []},
+      embeds: [{color: 0x1b2838, title: String(n.title || 'Aion 2').slice(0, 250), url: n.url, description: `${cut}\n\n[Leggi tutto su Steam](${n.url})`.slice(0, 4000),
+        image: img ? {url: img} : undefined, footer: {text: 'Steam · annuncio ufficiale di AION 2'}, timestamp: new Date(n.date * 1000).toISOString()}]});
+    if (ok.ok) posted++;
+  }
+  const all = [...new Set([...(seen || []), ...items.map((n) => String(n.gid))])].slice(-60);
+  if (!seen || fresh.length) await env.KV.put('news:seen', JSON.stringify(all));
+  return `ok ${items.length} items, ${posted} posted`;
+}
+
 export default {
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(Promise.allSettled([weeklyTick(env).then((r) => env.KV.put('wk_state', r)).catch((e) => putErr(env, 'wk_err', String(e?.stack || e).slice(0, 300))), env.KV.get('teams_msg').then((m) => m ? null : teamBoard(env)).catch(() => {}), convertDaily(env).catch(() => {}).then(() => dropOldDaily(env)).catch(() => {}), roomsTick(env).catch((e) => putErr(env, 'raid_err', String(e?.stack || e).slice(0, 300)))]));
+    ctx.waitUntil(Promise.allSettled([weeklyTick(env).then((r) => env.KV.put('wk_state', r)).catch((e) => putErr(env, 'wk_err', String(e?.stack || e).slice(0, 300))), env.KV.get('teams_msg').then((m) => m ? null : teamBoard(env)).catch(() => {}), convertDaily(env).catch(() => {}).then(() => dropOldDaily(env)).catch(() => {}), roomsTick(env).catch((e) => putErr(env, 'raid_err', String(e?.stack || e).slice(0, 300))), steamNews(env).then(() => env.KV.get('news_err').then((e) => e && env.KV.delete('news_err'))).catch((e) => putErr(env, 'news_err', String(e?.message || e).slice(0, 200)))]));
   },
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
-    if (url.pathname === '/status') return Response.json({weekly: await env.KV.get('wk_state'), wk_err: await env.KV.get('wk_err'), ludra: await env.KV.get('ludra_err'), raid: await env.KV.get('raid_err'), voice: await env.KV.get('voice_err'), ev: await env.KV.get('ev_err')});
+    if (url.pathname === '/status') return Response.json({weekly: await env.KV.get('wk_state'), wk_err: await env.KV.get('wk_err'), ludra: await env.KV.get('ludra_err'), raid: await env.KV.get('raid_err'), voice: await env.KV.get('voice_err'), ev: await env.KV.get('ev_err'), news: await env.KV.get('news_err')});
+    if (url.pathname === '/news') return new Response(await steamNews(env).catch((e) => 'err ' + e));
     if (url.pathname === '/tick') { let err = null; const conv = await convertDaily(env).catch((e) => 'err ' + e); await dropOldDaily(env).catch(() => {}); await roomsTick(env).catch((e) => { err = String(e?.stack || e).slice(0, 300); }); if (!err) await env.KV.delete('raid_err');
       const rooms = [];
       for (const {name: k} of (await env.KV.list({prefix: 'raid:'})).keys) { const R = JSON.parse(await env.KV.get(k) || 'null'); if (R) rooms.push({k, keys: R.v === 2 ? undefined : Object.keys(R).join(','), list: R.v === 2 ? undefined : JSON.stringify(Object.fromEntries(Object.entries(R).filter(([x, y]) => Array.isArray(y) || (y && typeof y === 'object')).map(([x, y]) => [x, Array.isArray(y) ? y.length : Object.keys(y).length]))), v: R.v || 1, when: R.t ? new Date(R.t).toISOString() : null, n: Array.isArray(R.p) ? allIn(R).size : null, role: !!R.role, msg: !!R.msg, done: !!R.done}); }

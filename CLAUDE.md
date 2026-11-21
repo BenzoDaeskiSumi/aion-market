@@ -342,6 +342,9 @@ each legion will get its own section later; verification like MarchutanEU; separ
     (first baseline right after deploy) / wk:cur (Wednesday from 12:30); report at the first run from 14:00 when all are fresh (15:00 at the latest): a header +
     one message per legion with >= 2 verified members (alphabetical, GS and CP with ▲/▼ since the baseline, *nuovo*), others in 'Altre legioni e senza legione';
     then wk:snap = wk:cur, wk:last = day. /status shows weekly + wk_err.
+    News (21 Nov, the user asked): steamNews() in the */15 cron posts every new official AION 2 announcement from Steam (ISteamNews GetNewsForApp, appid 3393110,
+    feed steam_community_announcements only) into '📰・patch-e-news' as an embed (title, link, ~600 chars, first image); KV news:seen (gids), errors news_err, GET /news runs it.
+    The official Discord's announcements: the user follows them with Discord's 'Follow' button (no API for bots outside that server).
     Read-only channel '👥・team' (ita.py, after 🔥・ludra): ONE Gettulio message listing every team (teamBoard(), KV teams_msg = 'channel:message'), rewritten after each
     /team change and by /tick; the cron posts it once if missing (re-posts only when the message is gone: 404).
   * Ciro (was Marcello) = ita-mod (mod.js): /avverti (3rd = 1 h timeout) /avvertimenti /azzera-avvertimenti /timeout /togli-timeout /kick /ban /sban /pulisci, all logged in 🧹・log;
