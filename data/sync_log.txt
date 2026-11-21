@@ -1,0 +1,102 @@
+snapshot 2026-11-21T15:07:55+01:00 (waited 98 s)
+/items?server=12301&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12301&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12301&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Israphel: price sync failed: HTTP Error 503: Service Unavailable
+/items?server=12302&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12302&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12302&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Zikel: price sync failed: HTTP Error 503: Service Unavailable
+/items?server=12303&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12303&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12303&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Triniel: price sync failed: HTTP Error 503: Service Unavailable
+/items?server=12304&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Lumiel: 1000 items, 450 rows added (0 new items), log 78532 rows
+/items?server=12305&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12305&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12305&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Marchutan: price sync failed: HTTP Error 503: Service Unavailable
+/items?server=12306&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12306&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12306&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Azphel: price sync failed: HTTP Error 503: Service Unavailable
+/items?server=12307&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12307&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12307&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Ereshkigal: price sync failed: HTTP Error 503: Service Unavailable
+/items?server=12308&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12308&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12308&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Beritra: price sync failed: HTTP Error 503: Service Unavailable
+/items?server=12309&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12309&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12309&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Nemon: price sync failed: HTTP Error 503: Service Unavailable
+/items?server=12310&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12310&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12310&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Hadala: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203, Sealed wings #602460007
+Hadala: 903 items, 596 rows added (0 new items), log 60730 rows
+/items?server=12311&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12311&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12311&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Ludra: price sync failed: HTTP Error 503: Service Unavailable
+/items?server=12312&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12312&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12312&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Ulgorn: price sync failed: HTTP Error 503: Service Unavailable
+/items?server=12313&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12313&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12313&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Munin: price sync failed: HTTP Error 503: Service Unavailable
+/items?server=12314&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12314&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Odar: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203, Sealed wings #602460007
+Odar: 932 items, 222 rows added (0 new items), log 59753 rows
+Zemurru: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203, Sealed wings #602460007
+Zemurru: 930 items, 226 rows added (0 new items), log 64945 rows
+/items?server=12316&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12316&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12316&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Kromede: price sync failed: HTTP Error 503: Service Unavailable
+/items?server=12317&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12317&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Quai: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203, Sealed wings #602460007
+Quai: 897 items, 210 rows added (0 new items), log 59108 rows
+/items?server=12318&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12318&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Baba: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203, Sealed wings #602460007
+Baba: 941 items, 245 rows added (0 new items), log 64430 rows
+Fafnir: without a name yet: Artwork #514310109, Artwork #514310198, Artwork #514310199, Artwork #514310200, Artwork #514310201, Artwork #514310202, Artwork #514310203, Sealed wings #602460007
+Fafnir: 950 items, 611 rows added (0 new items), log 58536 rows
+/items?server=12320&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12320&limit=1000: HTTP Error 503: Service Unavailable, retrying
+/items?server=12320&limit=1000: HTTP Error 503: Service Unavailable, retrying
+Indnath: price sync failed: HTTP Error 503: Service Unavailable
+Agnita: skipped (time budget of 33 min used up; next run)
+Atiel: skipped (time budget of 33 min used up; next run)
+Tassin: skipped (time budget of 33 min used up; next run)
+Siel: skipped (time budget of 33 min used up; next run)
+Nezekan: skipped (time budget of 33 min used up; next run)
+Vaizel: skipped (time budget of 33 min used up; next run)
+Kaisinel: skipped (time budget of 33 min used up; next run)
+Yustiel: skipped (time budget of 33 min used up; next run)
+Ariel: skipped (time budget of 33 min used up; next run)
+Fregion: skipped (time budget of 33 min used up; next run)
+Meslamtaeda: skipped (time budget of 33 min used up; next run)
+Hithanya: skipped (time budget of 33 min used up; next run)
+Nania: skipped (time budget of 33 min used up; next run)
+Tahavatha: skipped (time budget of 33 min used up; next run)
+Luteros: skipped (time budget of 33 min used up; next run)
+Phernos: skipped (time budget of 33 min used up; next run)
+Daminu: skipped (time budget of 33 min used up; next run)
+Kasaka: skipped (time budget of 33 min used up; next run)
+Bakarma: skipped (time budget of 33 min used up; next run)
+Tsenka: skipped (time budget of 33 min used up; next run)
+Kochi: skipped (time budget of 33 min used up; next run)
+Ishtar: skipped (time budget of 33 min used up; next run)
+Tiamat: skipped (time budget of 33 min used up; next run)
+Gauss: skipped (time budget of 33 min used up; next run)
+Lamuatan: skipped (time budget of 33 min used up; next run)
+Nathara: skipped (time budget of 33 min used up; next run)
