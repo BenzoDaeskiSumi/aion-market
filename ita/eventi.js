@@ -576,12 +576,15 @@ async function steamNews(env) {
 async function newsRedo(env) {          // rewrites Gettulio's already posted news (last 30 messages) in the current format
   const items = await steamItems(), ch = await channelId(env, '・patch-e-news'), me = env.DISCORD_APP_ID;
   const msgs = await djson(env, 'GET', `/channels/${ch}/messages?limit=30`) || [];
-  let n = 0;
+  let n = 0, it_ = 0, err = '';
   for (const m of msgs) {
     const it = m.author?.id === me && items.find((x) => x.url === m.embeds?.[0]?.url);
-    if (it && (await dapi(env, 'PATCH', `/channels/${ch}/messages/${m.id}`, await newsMessage(env, it))).ok) n++;
+    if (!it) continue;
+    const body = await newsMessage(env, it); if (body.embeds[0].author) it_++;
+    if ((await dapi(env, 'PATCH', `/channels/${ch}/messages/${m.id}`, body)).ok) n++;
   }
-  return `redone ${n}`;
+  if (!it_) err = await newsIt(env, items[items.length - 1], steamText(items[items.length - 1].contents).text).then((x) => x ? 'ok now' : 'model gave no json').catch((e) => String(e?.message || e).slice(0, 200));
+  return `redone ${n}, translated ${it_}${err ? ' · ' + err : ''}`;
 }
 
 export default {
