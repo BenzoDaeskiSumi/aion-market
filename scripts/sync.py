@@ -16,6 +16,7 @@ HOME = 12305              # Marchutan · Europe · Asmodian (videos, default on 
 SERVER = HOME             # used by backfill.py
 REGION, FACTIONS = 'EU', ('Asmodian', 'Elyos')   # Asmodian first: the bot's server choices keep the first 25
 FAC = {}                  # server id -> faction, filled by main()
+T0, BUDGET = time.time(), 33 * 60   # the job times out at 45 min: stay well inside it (checkout + save take ~5 min)
 CRAFT_EVERY = 6           # hours between full crafting refreshes of a server (Marchutan: every run)
 KEEPALIVE = timedelta(hours=12)
 # names (and grade) for items the API has no name for yet, by item_key: {"514310198": {"name": "Artwork: …", "grade": "orange"}}
@@ -338,13 +339,21 @@ def wait_for_new_snapshot(max_wait=25 * 60):
     except Exception:
         have = None
     start = time.time()
+    health = None
     while True:
-        health = get('/health')
+        try:
+            health = get('/health')
+        except Exception as ex:           # the API is down for a moment (503s on 21 Nov 2026): keep waiting instead of failing the run
+            if time.time() - start > max_wait:
+                raise
+            print(f'/health unavailable ({ex}), waiting')
+            time.sleep(60); continue
         snap = rome(health['latest_snapshot_at'])
         if have is None or snap > have:
             if time.time() - start > 1:
                 time.sleep(90)            # let the snapshot's item rows settle
-                health = get('/health')
+                try: health = get('/health')
+                except Exception: pass
             print(f'snapshot {snap.isoformat()} (waited {int(time.time() - start)} s)')
             return health
         if time.time() - start > max_wait:
@@ -363,20 +372,18 @@ def main():
     fam = {}
     for nm, c in catalog.items():
         f = fam.setdefault(' '.join(nm.split()[:-1]), {}); f[c['grade']] = f.get(c['grade'], 0) + 1
-    hour = datetime.now(ROME).hour
-    for i, s in enumerate(servers):
+    # 21 Nov 2026: the API answered many 503s and runs hit the 45-min job timeout, which saves NOTHING. So: no crafts.json any more
+    # (19 extra calls per server, unused by the page and the bots), and a time budget: servers left when it runs out wait for the next run
+    # (Asmodian first, so Marchutan is always among the first).
+    for s in servers:
         sid, nm = s['server_id'], s['name']
+        if time.time() - T0 > BUDGET:
+            print(f'{nm}: skipped (time budget of {BUDGET // 60} min used up; next run)')
+            continue
         try:
             sync_server(sid, nm, catalog, fam, health)
         except Exception as ex:
             print(f'{nm}: price sync failed: {ex}')
-        if s['faction'] != 'Asmodian':    # crafts.json is unused by the page; only the Asmodian ones are kept
-            time.sleep(1); continue
-        if sid == HOME or i % CRAFT_EVERY == hour % CRAFT_EVERY or not os.path.exists(path(sid, 'crafts.json')):
-            try:
-                print(f'{nm}: crafts {sync_crafts(sid)} lines')
-            except Exception as ex:      # crafting data is optional; never block the price sync
-                print(f'{nm}: crafts failed: {ex}')
         time.sleep(1)
     json.dump(dict(sorted(catalog.items())), open('data/catalog.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=0)
 

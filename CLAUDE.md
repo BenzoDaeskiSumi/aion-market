@@ -24,6 +24,8 @@ Overview for a new model: docs/HANDOFF.md (architecture, how-to, Mauro, rules). 
 - italia site: server picker grouped Asmodiani / Elyos, home comparison only across servers of the same faction. main site still Marchutan only.
 - Mauro: footers show the server's faction (FAC from servers.json); the 'server' option choices stay Asmodian (Discord max 25). price_patterns.py = Asmodian only.
 - Crafting recipes are the Asmodian ones (MetaBot.GG): on Elyos servers faction-specific item names may not match.
+- 21 Nov: aion2.exchange answered many 503s, runs hit the 45-min timeout (nothing saved, watchdog fired). sync.py now: /health failures keep waiting,
+  no crafts.json calls any more, time budget BUDGET = 33 min from start (remaining servers are skipped until the next run; Marchutan is among the first).
 
 ## Copyright (13 Nov 2026, the user asked, after someone copied Gettulio's Ludra list)
 - Everything we made is '© 2026 BenzoDaeskiSumi, all rights reserved': LICENSE (IT+EN, proprietary, third-party data/libs excluded) on main and italia-site,
